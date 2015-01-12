@@ -1,0 +1,10 @@
+
+-- Set GHCi prompt to "ghci> "
+-- :set prompt "ghci> "
+
+-- Set GHCi prompt to a blue "λ> "
+:set prompt "\ESC[01;34mλ> \ESC[m"
+
+-- Show result type
+:set +t
+
