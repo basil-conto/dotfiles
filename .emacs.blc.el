@@ -10,9 +10,11 @@
  '(custom-enabled-themes (quote (tango-dark)))
  '(custom-safe-themes (quote ("132ccc75b7fdcd9f5979329620a1151953a8f65efad06b988deed7cba9338eab" default)))
  '(doc-view-continuous t)
+ '(font-lock-maximum-decoration 2)
  '(ido-enable-flex-matching t)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
+ '(jit-lock-stealth-time 16)
  '(minimap-recenter-type (quote relative))
  '(scroll-conservatively 10000)
  '(scroll-error-top-bottom t)
@@ -166,3 +168,6 @@
 (setq auto-mode-alist (append '(("\\.ATG$" . csharp-mode)) auto-mode-alist))
 ;; TAS -> CMode
 (setq auto-mode-alist (append '(("\\.TAS$" . c-mode)) auto-mode-alist))
+
+;;; VeryLargeFiles
+(require 'vlf)
