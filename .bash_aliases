@@ -4,7 +4,9 @@
 alias nano='nano -A -E -T4'
 
 # ls
-alias la='ls -al'
+alias l='ls -F'
+alias ll='ls -lF'
+alias la='ls -AlF'
 
 # apt
 alias update='sudo apt-get update'

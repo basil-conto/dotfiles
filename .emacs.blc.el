@@ -97,12 +97,13 @@
 
 ;;; FillColumnIndicator - Enable via M-x fci-mode
 (require 'fill-column-indicator)
-(setq fci-rule-column 100)
+(setq fci-rule-column 80)
 (setq fci-rule-color "DimGrey")
 (add-hook   'text-mode-hook 'fci-mode)
 (add-hook   'prog-mode-hook 'fci-mode)
 (add-hook 'prolog-mode-hook 'fci-mode)
 (add-hook 'csharp-mode-hook 'fci-mode)
+(add-hook    'ess-mode-hook 'fci-mode)
 
 ;;; ColumnEnforceMode
 ;; (require 'column-enforce-mode)
@@ -160,8 +161,8 @@
                                auto-mode-alist))
 
 ;;; ToDooMode
-(autoload 'todoo "todoo" "TODO Mode" t)
-(add-to-list 'auto-mode-alist '("TODO$" . todoo-mode))
+;; (autoload 'todoo "todoo" "TODO Mode" t)
+;; (add-to-list 'auto-mode-alist '("TODO$" . todoo-mode))
 
 ;;; Uncommon file modes
 ;; ATG -> CSharpMode
@@ -170,4 +171,9 @@
 (setq auto-mode-alist (append '(("\\.TAS$" . c-mode)) auto-mode-alist))
 
 ;;; VeryLargeFiles
-(require 'vlf)
+;; (require 'vlf)
+
+;;; Markdown Mode
+(setq auto-mode-alist (append '(("\\.md$" . markdown-mode)
+                                ("\\.markdown$" . markdown-mode))
+                              auto-mode-alist))
