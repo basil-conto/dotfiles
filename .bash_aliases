@@ -11,6 +11,7 @@ alias la='ls -AlF'
 # apt
 alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
+alias uu='sudo apt-get update && sudo apt-get upgrade'
 
 # wajig
 alias list='wajig listinstalled'
