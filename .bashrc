@@ -69,3 +69,6 @@ force_color_prompt=yes
 export TERM=xterm-256color
 
 alias hi='echo -e "\033[1;31mI Love You\033[0m"'
+
+# added by Anaconda 2.1.0 installer
+export PATH="/home/blc/anaconda/bin:$PATH"

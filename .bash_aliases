@@ -27,9 +27,9 @@ alias dim='xbacklight -dec 10'
 alias brighten='xbacklight -inc 10'
 
 # GNU compilers
-alias g++11='g++ -std=c++11'
-alias gcc99='gcc -std=c99'
-alias gcc11='gcc -std=c11'
+alias g++11='g++ -std=gnu++11'
+alias gcc99='gcc -std=gnu99'
+alias gcc11='gcc -std=gnu11'
 
 # tmux, emacs colours
 alias tmux='TERM=xterm-256color tmux'

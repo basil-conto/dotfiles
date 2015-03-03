@@ -41,6 +41,17 @@
 ;;; Start emacs server
 ;; (server-start)
 
+;;; C-mode settings
+;; Brace indentation
+(setq c-default-style "linux" c-basic-offset 2)
+;; Comment style
+(add-hook 'c-mode-hook (lambda () (setq comment-start "//"
+                                        comment-end   "")))
+
+;;; Sh-mode settings
+(setq sh-basic-offset 2
+      sh-indentation 2)
+
 ;;; Commenting key bindings
 (global-set-key (kbd "C-x /")   'comment-region)
 (global-set-key (kbd "C-x C-/") 'uncomment-region)
