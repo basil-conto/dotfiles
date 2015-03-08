@@ -76,8 +76,8 @@ ${color grey}L:$color   ${loadavg}  ${color grey}T:$color ${alignr}$uptime
 ${color grey}F:$color          ${freq_g}GHz\
   ${color grey}P:$color ${alignr}$processes ($running_processes)
 ${if_existing /proc/net/route eth0}\
-${color grey}U:$color  ${lua_parse format %10s ${upspeed eth0}}\
-${color grey}D:$color  ${lua_parse format %10s ${downspeed eth0}}\
+${color grey}U:$color  ${lua_parse format %12s ${upspeedf eth0}}KiB\
+  ${color grey}D:$color  ${lua_parse format %12s ${downspeedf eth0}}KiB\
 ${else if_existing /proc/net/route wlan0}\
 ${color grey}U:$color  ${lua_parse format %12s ${upspeedf wlan0}}KiB\
   ${color grey}D:$color  ${lua_parse format %12s ${downspeedf wlan0}}KiB\
