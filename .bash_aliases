@@ -4,13 +4,11 @@
 alias nano='nano -A -E -T4'
 
 # ls
-alias l='ls -F'
-alias ll='ls -lF'
-alias la='ls -AlF'
+alias l='ls -FX'
+alias ll='ls -hlFX'
+alias la='ls -AhlFX'
 
 # apt
-alias update='sudo apt-get update'
-alias upgrade='sudo apt-get upgrade'
 alias uu='sudo apt-get update && sudo apt-get upgrade'
 
 # wajig
