@@ -137,6 +137,9 @@
 ;; (add-hook 'prolog-mode-hook (lambda () (column-marker-4 80)))
 ;; (add-hook 'csharp-mode-hook (lambda () (column-marker-4 80)))
 
+;; ESS
+(add-hook 'ess-mode-hook (lambda () (setq ess-arg-function-offset nil)))
+
 ;;; CSharpMode
 (require 'csharp-mode)
 ;; Bind opening brace to c-electric-brace rather than csharp-insert-open-brace

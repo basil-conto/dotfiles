@@ -25,3 +25,6 @@ fi
 if [ -d "$HOME/.cabal/bin" ] ; then
     PATH="$HOME/.cabal/bin:$PATH"
 fi
+
+# limit number of user processes
+ulimit -u 1024

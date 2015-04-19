@@ -59,6 +59,35 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# Colour definitions
+if [ -f ~/.bash_colours ]; then
+    . ~/.bash_colours
+fi
+
+# Colour man pages
+man() {
+    env LESS_TERMCAP_mb=$'\E[01;31m' \
+    LESS_TERMCAP_md=$'\E[01;38;5;74m' \
+    LESS_TERMCAP_me=$'\E[0m' \
+    LESS_TERMCAP_se=$'\E[0m' \
+    LESS_TERMCAP_so=$'\E[38;5;246m' \
+    LESS_TERMCAP_ue=$'\E[0m' \
+    LESS_TERMCAP_us=$'\E[04;38;5;146m' \
+    man "$@"
+}
+
+# Prompt
+brack_hi='\342\224\214'
+brack_lo='\342\224\224'
+
+PS1="\[${WHT_BF}\]${brack_hi}[\[${GRN_BF}\]\u@\h${WHT_BF}]\[${BLU_BF}\] \w "
+PS1+="\[${PRP}\]${debian_chroot:+($debian_chroot)}"
+PS1+="\[${RED}\]\$(RC=\$?; [[ \$RC != 0 ]] && echo -n [\$RC])"
+PS1+="\n\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\$ \[${RESET}\]"
+
+# ┌[blc@t430-mint] ~/Documents
+# └$ 
+
 # mint-fortune
 /usr/bin/mint-fortune
 
@@ -68,7 +97,5 @@ force_color_prompt=yes
 # Helps with colours and special keys in tmux
 export TERM=xterm-256color
 
-alias hi='echo -e "\033[1;31mI Love You\033[0m"'
-
 # added by Anaconda 2.1.0 installer
-export PATH="/home/blc/anaconda/bin:$PATH"
+export PATH="${PATH}:/home/blc/anaconda/bin"

@@ -4,9 +4,9 @@
 alias nano='nano -A -E -T4'
 
 # ls
-alias l='ls -FX'
-alias ll='ls -hlFX'
-alias la='ls -AhlFX'
+alias l='ls -Fh --group-directories-first'
+alias ll='l -l'
+alias la='ll -A'
 
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
@@ -36,3 +36,6 @@ alias emacs='TERM=xterm-256color emacs -nw'
 # youtube-dl
 alias youtube-mp3='youtube-dl -x --audio-format mp3 --audio-quality 256K'
 alias youtube-vorbis='youtube-dl -x --audio-format vorbis --audio-quality 128K'
+
+# fun fun fun
+alias hi='echo -e "\e[1;31mI Love You\e[0m"'
