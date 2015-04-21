@@ -4,11 +4,16 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(TeX-PDF-mode t)
- '(ansi-color-names-vector ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#ad7fa8" "#8cc4ff" "#eeeeec"])
+ '(ansi-color-names-vector
+   ["#212526" "#ff4b4b" "#b4fa70" "#fce94f"
+    "#729fcf""#ad7fa8" "#8cc4ff" "#eeeeec"])
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(custom-enabled-themes (quote (tango-dark)))
- '(custom-safe-themes (quote ("132ccc75b7fdcd9f5979329620a1151953a8f65efad06b988deed7cba9338eab" default)))
+ '(custom-safe-themes
+   (quote
+    ("132ccc75b7fdcd9f5979329620a1151953a8f65efad06b988deed7cba9338eab"
+     default)))
  '(doc-view-continuous t)
  '(font-lock-maximum-decoration 2)
  '(ido-enable-flex-matching t)
@@ -30,13 +35,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "DejaVu Sans Mono" :foundry "unknown" :slant normal :weight normal :height 90 :width normal))))
+ '(default ((t (:family "DejaVu Sans Mono" :foundry "unknown" :slant normal
+                :weight normal :height 90 :width normal))))
  '(minimap-active-region-background ((t (:background "dim gray"))))
  '(minimap-font-face ((t (:height 8 :family "DejaVu Sans Mono")))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ============================================================================
 ;;; Personal settings
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ============================================================================
 
 ;;; Start emacs server
 ;; (server-start)
@@ -55,6 +61,7 @@
 ;;; Commenting key bindings
 (global-set-key (kbd "C-x /")   'comment-region)
 (global-set-key (kbd "C-x C-/") 'uncomment-region)
+(global-set-key (kbd "C-x C-_") 'uncomment-region)
 
 ;;; Mouse wheel scrolls one line at a time
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
@@ -95,16 +102,16 @@
 ;; (require 'printing)
 ;; (pr-update-menus)
 
-;;; Interactively Do Things
-(require 'ido)
-(ido-mode t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ============================================================================
 ;;; Packages
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ============================================================================
 
 ;;; Personal package file directory
 (add-to-list 'load-path "~/.emacs.d/lisp/")
+
+;;; Interactively Do Things
+(require 'ido)
+(ido-mode t)
 
 ;;; FillColumnIndicator - Enable via M-x fci-mode
 (require 'fill-column-indicator)
@@ -166,8 +173,8 @@
 (require 'minimap)
 
 ;;; Prolog
-(autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
-(autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
+(autoload 'run-prolog   "prolog" "Start a Prolog sub-process."              t)
+(autoload 'prolog-mode  "prolog" "Major mode for editing Prolog programs."  t)
 (autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
 (setq prolog-system 'swi)
 (setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
@@ -177,12 +184,6 @@
 ;;; ToDooMode
 ;; (autoload 'todoo "todoo" "TODO Mode" t)
 ;; (add-to-list 'auto-mode-alist '("TODO$" . todoo-mode))
-
-;;; Uncommon file modes
-;; ATG -> CSharpMode
-(setq auto-mode-alist (append '(("\\.ATG$" . csharp-mode)) auto-mode-alist))
-;; TAS -> CMode
-(setq auto-mode-alist (append '(("\\.TAS$" . c-mode)) auto-mode-alist))
 
 ;;; VeryLargeFiles
 ;; (require 'vlf)

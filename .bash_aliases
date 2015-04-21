@@ -1,3 +1,4 @@
+# -*- sh -*-
 # ~/.bash_aliases
 
 # nano with smart home and tabs = 4 spaces
@@ -36,6 +37,10 @@ alias emacs='TERM=xterm-256color emacs -nw'
 # youtube-dl
 alias youtube-mp3='youtube-dl -x --audio-format mp3 --audio-quality 256K'
 alias youtube-vorbis='youtube-dl -x --audio-format vorbis --audio-quality 128K'
+
+# chromium
+alias chrome-proxy='google-chrome --proxy-auto-detect &> /dev/null &'
+alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 
 # fun fun fun
 alias hi='echo -e "\e[1;31mI Love You\e[0m"'
