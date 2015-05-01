@@ -59,7 +59,7 @@
       sh-indentation 2)
 
 ;;; Commenting key bindings
-(global-set-key (kbd "C-x /")   'comment-region)
+(global-set-key (kbd "C-x /")     'comment-region)
 (global-set-key (kbd "C-x C-/") 'uncomment-region)
 (global-set-key (kbd "C-x C-_") 'uncomment-region)
 

@@ -91,9 +91,6 @@ PS1+="\n\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\$ \[${RESET}\]"
 # mint-fortune
 /usr/bin/mint-fortune
 
-# Colourful prompt
-force_color_prompt=yes
-
 # Helps with colours and special keys in tmux
 export TERM=xterm-256color
 
