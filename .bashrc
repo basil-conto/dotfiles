@@ -35,26 +35,26 @@ shopt -s checkwinsize
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
-
+# # If this is an xterm set the title to user@host:dir
+# case "$TERM" in
+# xterm*|rxvt*)
+#     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+#     ;;
+# *)
+#     ;;
+# esac
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
+# colored GCC warnings and errors
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
@@ -64,15 +64,20 @@ if [ -f ~/.bash_colours ]; then
     . ~/.bash_colours
 fi
 
+# User completions
+if [ -f ~/.bash_completion ]; then
+    . ~/.bash_completion
+fi
+
 # Colour man pages
 man() {
-    env LESS_TERMCAP_mb=$'\E[01;31m' \
-    LESS_TERMCAP_md=$'\E[01;38;5;74m' \
-    LESS_TERMCAP_me=$'\E[0m' \
-    LESS_TERMCAP_se=$'\E[0m' \
-    LESS_TERMCAP_so=$'\E[38;5;246m' \
-    LESS_TERMCAP_ue=$'\E[0m' \
-    LESS_TERMCAP_us=$'\E[04;38;5;146m' \
+    env LESS_TERMCAP_mb=$'\E[01;31m'       \
+        LESS_TERMCAP_md=$'\E[01;38;5;74m'  \
+        LESS_TERMCAP_me=$'\E[0m'           \
+        LESS_TERMCAP_se=$'\E[0m'           \
+        LESS_TERMCAP_so=$'\E[38;5;246m'    \
+        LESS_TERMCAP_ue=$'\E[0m'           \
+        LESS_TERMCAP_us=$'\E[04;38;5;146m' \
     man "$@"
 }
 
@@ -88,11 +93,5 @@ PS1+="\n\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\$ \[${RESET}\]"
 # ┌[blc@t430-mint] ~/Documents
 # └$ 
 
-# mint-fortune
-/usr/bin/mint-fortune
-
 # Helps with colours and special keys in tmux
 export TERM=xterm-256color
-
-# added by Anaconda 2.1.0 installer
-export PATH="${PATH}:/home/blc/anaconda/bin"

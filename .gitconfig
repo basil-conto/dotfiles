@@ -1,0 +1,10 @@
+[user]
+	name = Basil L. Contovounesios
+	email = contovob@tcd.ie
+[core]
+	editor = emacs
+[color]
+	ui = auto
+[alias]
+	unadd = reset HEAD --
+	last = log -1 HEAD

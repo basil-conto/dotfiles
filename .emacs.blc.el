@@ -1,50 +1,8 @@
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(TeX-PDF-mode t)
- '(ansi-color-names-vector
-   ["#212526" "#ff4b4b" "#b4fa70" "#fce94f"
-    "#729fcf""#ad7fa8" "#8cc4ff" "#eeeeec"])
- '(blink-cursor-mode nil)
- '(column-number-mode t)
- '(custom-enabled-themes (quote (tango-dark)))
- '(custom-safe-themes
-   (quote
-    ("132ccc75b7fdcd9f5979329620a1151953a8f65efad06b988deed7cba9338eab"
-     default)))
- '(doc-view-continuous t)
- '(font-lock-maximum-decoration 2)
- '(ido-enable-flex-matching t)
- '(indent-tabs-mode nil)
- '(inhibit-startup-screen t)
- '(jit-lock-stealth-time 16)
- '(minimap-recenter-type (quote relative))
- '(scroll-conservatively 10000)
- '(scroll-error-top-bottom t)
- '(scroll-preserve-screen-position t)
- '(scroll-step 1)
- '(show-paren-mode t)
- '(tab-always-indent t)
- '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76)))
- '(tool-bar-mode nil)
- '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "DejaVu Sans Mono" :foundry "unknown" :slant normal
-                :weight normal :height 90 :width normal))))
- '(minimap-active-region-background ((t (:background "dim gray"))))
- '(minimap-font-face ((t (:height 8 :family "DejaVu Sans Mono")))))
-
 ;;; ============================================================================
 ;;; Personal settings
 ;;; ============================================================================
 
-;;; Start emacs server
+;; ;;; Start emacs server
 ;; (server-start)
 
 ;;; C-mode settings
@@ -63,13 +21,28 @@
 (global-set-key (kbd "C-x C-/") 'uncomment-region)
 (global-set-key (kbd "C-x C-_") 'uncomment-region)
 
+;;; Transpose window split
+(defun transpose-split ()
+  "If the frame is split vertically, split it horizontally or vice versa.
+Assumes that the frame is only split into two."
+  (interactive)
+  (unless (= (length (window-list)) 2)
+    (error "Can only toggle a frame split in two"))
+  (let ((split-vertically-p (window-combined-p)))
+    (delete-window) ; closes current window
+    (if split-vertically-p
+        (split-window-horizontally)
+      (split-window-vertically)) ; gives split with the other window twice
+    (switch-to-buffer nil))) ; restore original window in this part of the frame
+(global-set-key (kbd "C-x 4") 'transpose-split)
+
 ;;; Mouse wheel scrolls one line at a time
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
 ;;; Overwrite active region when typing
 (delete-selection-mode 1)
 
-;;; Enable word-wrapping and edit by visual lines
+;; ;;; Enable word-wrapping and edit by visual lines
 ;; (global-visual-line-mode)
 
 ;;; Display line numbers alongside buffer
@@ -98,10 +71,6 @@
  kept-old-versions 2
  version-control t)         ; versioned backups
 
-;;; Use Printing package
-;; (require 'printing)
-;; (pr-update-menus)
-
 ;;; ============================================================================
 ;;; Packages
 ;;; ============================================================================
@@ -109,28 +78,14 @@
 ;;; Personal package file directory
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-;;; Interactively Do Things
-(require 'ido)
-(ido-mode t)
-
-;;; FillColumnIndicator - Enable via M-x fci-mode
-(require 'fill-column-indicator)
-(setq fci-rule-column 80)
-(setq fci-rule-color "DimGrey")
-(add-hook   'text-mode-hook 'fci-mode)
-(add-hook   'prog-mode-hook 'fci-mode)
-(add-hook 'prolog-mode-hook 'fci-mode)
-(add-hook 'csharp-mode-hook 'fci-mode)
-(add-hook    'ess-mode-hook 'fci-mode)
-
-;;; ColumnEnforceMode
+;; ;;; ColumnEnforceMode
 ;; (require 'column-enforce-mode)
 ;; (add-hook 'text-mode-hook 'column-enforce-mode)
 ;; (add-hook 'prog-mode-hook 'column-enforce-mode)
 ;; (add-hook 'prolog-mode-hook 'column-enforce-mode)
 ;; (add-hook 'csharp-mode-hook 'column-enforce-mode)
 
-;;; ColumnMarker
+;; ;;; ColumnMarker
 ;; (require 'column-marker)
 ;; ;; Define red-background, white-foreground fill column face
 ;; (defface column-marker-4 '((t (:background "red" :foreground "white")))
@@ -144,22 +99,55 @@
 ;; (add-hook 'prolog-mode-hook (lambda () (column-marker-4 80)))
 ;; (add-hook 'csharp-mode-hook (lambda () (column-marker-4 80)))
 
-;; ESS
-(add-hook 'ess-mode-hook (lambda () (setq ess-arg-function-offset nil)))
+;; ;;; CSharpMode
+;; (require 'csharp-mode)
+;; ;; Bind opening brace to c-electric-brace rather than csharp-insert-open-brace
+;; (add-hook 'csharp-mode-hook
+;;           (lambda ()
+;;             (local-set-key (kbd "{") 'c-electric-brace)))
+;; (setq auto-mode-alist (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
-;;; CSharpMode
-(require 'csharp-mode)
-;; Bind opening brace to c-electric-brace rather than csharp-insert-open-brace
-(add-hook 'csharp-mode-hook
-          (lambda ()
-            (local-set-key (kbd "{") 'c-electric-brace)))
-(setq auto-mode-alist (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
+;; ;;; ESS
+;; (add-hook 'ess-mode-hook (lambda () (setq ess-arg-function-offset nil)))
+;; (if ( get-buffer "*ESS*")
+;;     (kill-buffer "*ESS*"))
+
+;;; FillColumnIndicator - Enable via M-x fci-mode
+(require 'fill-column-indicator)
+(setq fci-rule-column 80)
+(setq fci-rule-color "DimGrey")
+(add-hook   'text-mode-hook 'fci-mode)
+(add-hook   'prog-mode-hook 'fci-mode)
+(add-hook 'prolog-mode-hook 'fci-mode)
+(add-hook 'csharp-mode-hook 'fci-mode)
+(add-hook    'ess-mode-hook 'fci-mode)
+;; ;; previous-line workaround
+;; (make-variable-buffer-local 'line-move-visual)
+;; (defadvice previous-line (around avoid-jumpy-fci activate)
+;;   (if (and (symbol-value 'fci-mode) (> (count-lines 1 (point)) 0))
+;;       (prog (fci-mode -1) ad-do-it (fci-mode 1))
+;;     ad-do-it))
+
+;; ;;; Flex
+;; (require 'flex-mode)
 
 ;;; HaskellMode
 ;; (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
 ;; Pretty lambda
 ;; (setq haskell-font-lock-symbols t)
+
+;;; Interactively Do Things
+(require 'ido)
+(ido-mode t)
+
+;; ;;; Js2Mode
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+;;; Markdown Mode
+(setq auto-mode-alist (append '(("\\.md$" . markdown-mode)
+                                ("\\.markdown$" . markdown-mode))
+                              auto-mode-alist))
 
 ;;; MELPA
 (require 'package)
@@ -169,8 +157,12 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 
-;;; Minimap
-(require 'minimap)
+;; ;;; Minimap
+;; (require 'minimap)
+
+;; ;;; Printing package
+;; (require 'printing)
+;; (pr-update-menus)
 
 ;;; Prolog
 (autoload 'run-prolog   "prolog" "Start a Prolog sub-process."              t)
@@ -179,16 +171,24 @@
 (setq prolog-system 'swi)
 (setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
                                 ("\\.m$" . mercury-mode))
-                               auto-mode-alist))
+                              auto-mode-alist))
+
+;; ;;; RequireJSMode
+;; (require 'requirejs-mode)
+;; (add-hook 'javascript-mode-hook (lambda () (requirejs-mode)))
+
+;;; SrSpeedbar
+(require 'sr-speedbar)
 
 ;;; ToDooMode
-;; (autoload 'todoo "todoo" "TODO Mode" t)
-;; (add-to-list 'auto-mode-alist '("TODO$" . todoo-mode))
+(autoload 'todoo "todoo" "TODO Mode" t)
+(add-to-list 'auto-mode-alist '("TODO$" . todoo-mode))
+(defun toggle-todoo ()
+  (interactive)
+  (if (eq major-mode 'todoo-mode)
+      (call-interactively 'todoo-save-and-exit)
+    (call-interactively 'todoo)))
+(global-set-key (kbd "<f12>") 'toggle-todoo)
 
-;;; VeryLargeFiles
+;; ;;; VeryLargeFiles
 ;; (require 'vlf)
-
-;;; Markdown Mode
-(setq auto-mode-alist (append '(("\\.md$" . markdown-mode)
-                                ("\\.markdown$" . markdown-mode))
-                              auto-mode-alist))

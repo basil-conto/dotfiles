@@ -1,3 +1,5 @@
+# -*- sh -*-
+
 # Reset colours
 RESET='\e[0m'
 # Regular colours
@@ -36,3 +38,9 @@ BLU_BG='\e[44m'
 PRP_BG='\e[45m'
 CYN_BG='\e[46m'
 WHT_BG='\e[47m'
+
+bash_colours_unset() {
+  unset RESET BLK RED GRN YLW BLU PRP CYN WHT BLK_BF RED_BF GRN_BF YLW_BF     \
+        BLU_BF PRP_BF CYN_BF WHT_BF BLK_UL RED_UL GRN_UL YLW_UL BLU_UL PRP_UL \
+        CYN_UL WHT_UL BLK_BG RED_BG GRN_BG YLW_BG BLU_BG PRP_BG CYN_BG WHT_BG
+}

@@ -5,9 +5,13 @@
 alias nano='nano -A -E -T4'
 
 # ls
+alias ls='ls --color=auto'
 alias l='ls -Fh --group-directories-first'
 alias ll='l -l'
 alias la='ll -A'
+
+# grep
+alias grep='grep --color=auto'
 
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
@@ -32,14 +36,14 @@ alias gcc11='gcc -std=gnu11'
 
 # tmux, emacs colours
 alias tmux='TERM=xterm-256color tmux'
-alias emacs='TERM=xterm-256color emacs -nw'
+alias ec='TERM=xterm-256color emacsclient -t'
+alias ecc='emacsclient -c -n'
 
 # youtube-dl
 alias youtube-mp3='youtube-dl -x --audio-format mp3 --audio-quality 256K'
 alias youtube-vorbis='youtube-dl -x --audio-format vorbis --audio-quality 128K'
 
 # chromium
-alias chrome-proxy='google-chrome --proxy-auto-detect &> /dev/null &'
 alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 
 # fun fun fun
