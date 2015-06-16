@@ -4,5 +4,6 @@
 * js2-mode
 * js3-mode
 * json-mode
+* markdown-mode
 * minimap
 * requirejs-mode

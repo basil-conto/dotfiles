@@ -78,10 +78,14 @@ man() {
         LESS_TERMCAP_so=$'\E[38;5;246m'    \
         LESS_TERMCAP_ue=$'\E[0m'           \
         LESS_TERMCAP_us=$'\E[04;38;5;146m' \
-    man "$@"
+        man "$@"
 }
 
 # Prompt
+
+# ┌[blc@t430-mint] ~/Documents
+# └$ 
+
 brack_hi='\342\224\214'
 brack_lo='\342\224\224'
 
@@ -90,8 +94,10 @@ PS1+="\[${PRP}\]${debian_chroot:+($debian_chroot)}"
 PS1+="\[${RED}\]\$(RC=\$?; [[ \$RC != 0 ]] && echo -n [\$RC])"
 PS1+="\n\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\$ \[${RESET}\]"
 
-# ┌[blc@t430-mint] ~/Documents
-# └$ 
+# Don't pollute the environment
+bash_colours_unset
+unset brack_hi brack_lo
+unset -f bash_colours_unset
 
 # Helps with colours and special keys in tmux
 export TERM=xterm-256color

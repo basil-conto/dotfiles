@@ -58,7 +58,7 @@ Assumes that the frame is only split into two."
 (setq indent-line-function 'insert-tab)
 
 ;;; Enable upcase & downcase regions
-(put 'upcase-region 'disabled nil)
+(put   'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
 ;;; File backup settings
@@ -80,8 +80,8 @@ Assumes that the frame is only split into two."
 
 ;; ;;; ColumnEnforceMode
 ;; (require 'column-enforce-mode)
-;; (add-hook 'text-mode-hook 'column-enforce-mode)
-;; (add-hook 'prog-mode-hook 'column-enforce-mode)
+;; (add-hook   'text-mode-hook 'column-enforce-mode)
+;; (add-hook   'prog-mode-hook 'column-enforce-mode)
 ;; (add-hook 'prolog-mode-hook 'column-enforce-mode)
 ;; (add-hook 'csharp-mode-hook 'column-enforce-mode)
 
@@ -109,10 +109,10 @@ Assumes that the frame is only split into two."
 
 ;; ;;; ESS
 ;; (add-hook 'ess-mode-hook (lambda () (setq ess-arg-function-offset nil)))
-;; (if ( get-buffer "*ESS*")
-;;     (kill-buffer "*ESS*"))
+(if ( get-buffer "*ESS*")
+    (kill-buffer "*ESS*"))
 
-;;; FillColumnIndicator - Enable via M-x fci-mode
+;;; FillColumnIndicator
 (require 'fill-column-indicator)
 (setq fci-rule-column 80)
 (setq fci-rule-color "DimGrey")
@@ -179,6 +179,7 @@ Assumes that the frame is only split into two."
 
 ;;; SrSpeedbar
 (require 'sr-speedbar)
+(global-set-key (kbd "C-x t") 'sr-speedbar-toggle)
 
 ;;; ToDooMode
 (autoload 'todoo "todoo" "TODO Mode" t)
