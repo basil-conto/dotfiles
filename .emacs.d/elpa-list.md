@@ -1,4 +1,5 @@
 * auctex
+* chsarp-mode
 * gitconfig-mode
 * gitignore-mode
 * js2-mode
