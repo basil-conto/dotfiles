@@ -79,6 +79,10 @@
 
 ;;; Change log:
 ;;
+;; * 16 Jun 2015:
+;;   * Contovounesios, Basil L. <contovob@tcd.ie>
+;;      * Define `helm-alive-p' to remove free variable warning.
+;;
 ;; * 15 Sep 2014:
 ;;   * Tu, Do Hoang <tuhdo1710@gmail.com>
 ;;      * define `sr-speedbar-handle-other-window-advice' and `ad-advised-definition-p'
@@ -613,13 +617,14 @@ any functions that use `display-buffer' can't split windows
 to display buffer, even option `pop-up-windows' is enable.
 
 And the example function that can occur above problem is `pop-to-buffer'."
+  (defvar helm-alive-p)
   (when (and pop-up-windows                            ;`pop-up-windows' is enable
              (sr-speedbar-window-dedicated-only-one-p) ;just have one `non-dedicated' window
              (sr-speedbar-window-exist-p sr-speedbar-window)
              (not (sr-speedbar-window-p)) ;not in `sr-speedbar' window
              (if (featurep 'helm)
-		 (not helm-alive-p)
-	       t))
+                 (not helm-alive-p)
+               t))
     (split-window-vertically)
     (windmove-down)))
 
