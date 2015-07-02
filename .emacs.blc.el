@@ -5,10 +5,13 @@
 ;;; Personal package file directory
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-;;; Commenting key bindings
+;;; Key bindings
+;; Comments
 (global-set-key (kbd "C-x /")     'comment-region)
 (global-set-key (kbd "C-x C-/") 'uncomment-region)
 (global-set-key (kbd "C-x C-_") 'uncomment-region)
+;; Prop line file variables
+(global-set-key (kbd "C-x C-a") 'add-file-local-variable-prop-line)
 
 ;;; Transpose window split
 (defun transpose-split ()
