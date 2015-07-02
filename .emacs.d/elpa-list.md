@@ -8,3 +8,4 @@
 * markdown-mode
 * minimap
 * requirejs-mode
+* vlf

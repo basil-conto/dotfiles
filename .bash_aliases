@@ -36,6 +36,7 @@ alias gcc11='gcc -std=gnu11'
 
 # tmux, emacs colours
 alias tmux='TERM=xterm-256color tmux'
+alias em='TERM=xterm-256color emacs -nw'
 alias ec='TERM=xterm-256color emacsclient -t'
 alias ecc='emacsclient -c -n'
 

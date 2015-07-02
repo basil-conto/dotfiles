@@ -1,20 +1,9 @@
 ;;; ============================================================================
-;;; Personal settings
+;;; General settings
 ;;; ============================================================================
 
-;; ;;; Start emacs server
-;; (server-start)
-
-;;; C-mode settings
-;; Brace indentation
-(setq c-default-style "linux" c-basic-offset 2)
-;; Comment style
-(add-hook 'c-mode-hook (lambda () (setq comment-start "//"
-                                        comment-end   "")))
-
-;;; Sh-mode settings
-(setq sh-basic-offset 2
-      sh-indentation 2)
+;;; Personal package file directory
+(add-to-list 'load-path "~/.emacs.d/lisp/")
 
 ;;; Commenting key bindings
 (global-set-key (kbd "C-x /")     'comment-region)
@@ -71,21 +60,46 @@ Assumes that the frame is only split into two."
  kept-old-versions 2
  version-control t)         ; versioned backups
 
+;;; MELPA
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+(package-initialize)
+
+;; ;;; Printing
+;; (require 'printing)
+;; (pr-update-menus)
+
 ;;; ============================================================================
-;;; Packages
+;;; Mode settings
 ;;; ============================================================================
 
-;;; Personal package file directory
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+;;; ------
+;;; c-mode
+;;; ------
 
-;; ;;; ColumnEnforceMode
+;; Brace indentation
+(setq c-default-style "linux" c-basic-offset 2)
+;; Comment style
+(add-hook 'c-mode-hook (lambda () (setq comment-start "//"
+                                        comment-end   "")))
+
+;;; -------------------
+;;; column-enforce-mode
+;;; -------------------
+
 ;; (require 'column-enforce-mode)
 ;; (add-hook   'text-mode-hook 'column-enforce-mode)
 ;; (add-hook   'prog-mode-hook 'column-enforce-mode)
 ;; (add-hook 'prolog-mode-hook 'column-enforce-mode)
 ;; (add-hook 'csharp-mode-hook 'column-enforce-mode)
 
-;; ;;; ColumnMarker
+;;; -------------
+;;; column-marker
+;;; -------------
+
 ;; (require 'column-marker)
 ;; ;; Define red-background, white-foreground fill column face
 ;; (defface column-marker-4 '((t (:background "red" :foreground "white")))
@@ -99,7 +113,10 @@ Assumes that the frame is only split into two."
 ;; (add-hook 'prolog-mode-hook (lambda () (column-marker-4 80)))
 ;; (add-hook 'csharp-mode-hook (lambda () (column-marker-4 80)))
 
-;; ;;; CSharpMode
+;;; -----------
+;;; csharp-mode
+;;; -----------
+
 ;; (require 'csharp-mode)
 ;; ;; Bind opening brace to c-electric-brace rather than csharp-insert-open-brace
 ;; (add-hook 'csharp-mode-hook
@@ -107,12 +124,18 @@ Assumes that the frame is only split into two."
 ;;             (local-set-key (kbd "{") 'c-electric-brace)))
 ;; (setq auto-mode-alist (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
-;; ;;; ESS
+;;; ------------
+;;; ESS (R-mode)
+;;; ------------
+
 ;; (add-hook 'ess-mode-hook (lambda () (setq ess-arg-function-offset nil)))
 (if ( get-buffer "*ESS*")
     (kill-buffer "*ESS*"))
 
-;;; FillColumnIndicator
+;;; ---------------------
+;;; fill-column-indicator
+;;; ---------------------
+
 (require 'fill-column-indicator)
 (setq fci-rule-column 80)
 (setq fci-rule-color "DimGrey")
@@ -128,43 +151,53 @@ Assumes that the frame is only split into two."
 ;;       (prog (fci-mode -1) ad-do-it (fci-mode 1))
 ;;     ad-do-it))
 
-;; ;;; Flex
+;;; ---------
+;;; flex-mode
+;;; ---------
+
 ;; (require 'flex-mode)
 
-;;; HaskellMode
-;; (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+;;; ------------
+;;; haskell-mode
+;;; ------------
+
+(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
 ;; Pretty lambda
 ;; (setq haskell-font-lock-symbols t)
 
-;;; Interactively Do Things
+;;; --------
+;;; ido-mode
+;;; --------
+
 (require 'ido)
 (ido-mode t)
 
-;; ;;; Js2Mode
+;;; --------
+;;; js2-mode
+;;; --------
+
 ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
-;;; Markdown Mode
+;;; -------------
+;;; markdown-mode
+;;; -------------
+
 (setq auto-mode-alist (append '(("\\.md$" . markdown-mode)
                                 ("\\.markdown$" . markdown-mode))
                               auto-mode-alist))
+(add-hook 'markdown-mode-hook
+          (lambda () (local-set-key (kbd "TAB") 'markdown-cycle)))
 
-;;; MELPA
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-(package-initialize)
+;;; ------------
+;;; minimap-mode
+;;; ------------
 
-;; ;;; Minimap
 ;; (require 'minimap)
 
-;; ;;; Printing package
-;; (require 'printing)
-;; (pr-update-menus)
+;;; -----------
+;;; prolog-mode
+;;; -----------
 
-;;; Prolog
 (autoload 'run-prolog   "prolog" "Start a Prolog sub-process."              t)
 (autoload 'prolog-mode  "prolog" "Major mode for editing Prolog programs."  t)
 (autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
@@ -173,23 +206,37 @@ Assumes that the frame is only split into two."
                                 ("\\.m$" . mercury-mode))
                               auto-mode-alist))
 
-;; ;;; RequireJSMode
+;;; --------------
+;;; requirejs-mode
+;;; --------------
+
 ;; (require 'requirejs-mode)
 ;; (add-hook 'javascript-mode-hook (lambda () (requirejs-mode)))
 
-;;; SrSpeedbar
+;;; -------
+;;; sh-mode
+;;; -------
+
+(setq sh-basic-offset 2
+      sh-indentation 2)
+
+;;; -----------
+;;; sr-speedbar
+;;; -----------
+
 (require 'sr-speedbar)
 (global-set-key (kbd "C-x t") 'sr-speedbar-toggle)
 
-;;; ToDooMode
+;;; ----------
+;;; todoo-mode
+;;; ----------
+
 (autoload 'todoo "todoo" "TODO Mode" t)
-(add-to-list 'auto-mode-alist '("TODO$" . todoo-mode))
+(add-to-list 'auto-mode-alist '("TODO" . todoo-mode))
+(add-hook 'todoo-mode-hook (lambda () (electric-indent-local-mode -1)))
 (defun toggle-todoo ()
   (interactive)
   (if (eq major-mode 'todoo-mode)
       (call-interactively 'todoo-save-and-exit)
     (call-interactively 'todoo)))
 (global-set-key (kbd "<f12>") 'toggle-todoo)
-
-;; ;;; VeryLargeFiles
-;; (require 'vlf)
