@@ -247,7 +247,8 @@ Assumes that the frame is only split into two."
 ;;; todoo-mode
 ;;; ----------
 
-(autoload 'todoo "todoo" "TODO Mode" t)
+(autoload 'todoo "todoo" "Open TODO file" t)
+(autoload 'todoo-mode "todoo" "TODO Mode" t)
 (add-to-list 'auto-mode-alist '("TODO" . todoo-mode))
 (add-hook 'todoo-mode-hook 'fix-electric-indent)
 (defun toggle-todoo ()
