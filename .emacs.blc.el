@@ -95,33 +95,6 @@ Assumes that the frame is only split into two."
 (add-hook 'c-mode-hook (lambda () (setq comment-start "//"
                                         comment-end   "")))
 
-;;; -------------------
-;;; column-enforce-mode
-;;; -------------------
-
-;; (require 'column-enforce-mode)
-;; (add-hook   'text-mode-hook 'column-enforce-mode)
-;; (add-hook   'prog-mode-hook 'column-enforce-mode)
-;; (add-hook 'prolog-mode-hook 'column-enforce-mode)
-;; (add-hook 'csharp-mode-hook 'column-enforce-mode)
-
-;;; -------------
-;;; column-marker
-;;; -------------
-
-;; (require 'column-marker)
-;; ;; Define red-background, white-foreground fill column face
-;; (defface column-marker-4 '((t (:background "red" :foreground "white")))
-;;   "Face used for the fill column marker." :group 'faces)
-;; (defvar column-marker-4-face 'column-marker-4
-;;                              "Face used for the fill column marker.")
-;; (column-marker-create column-marker-4 column-marker-4-face)
-;; ;; Use fill column face
-;; (add-hook   'text-mode-hook (lambda () (column-marker-4 80)))
-;; (add-hook   'prog-mode-hook (lambda () (column-marker-4 80)))
-;; (add-hook 'prolog-mode-hook (lambda () (column-marker-4 80)))
-;; (add-hook 'csharp-mode-hook (lambda () (column-marker-4 80)))
-
 ;;; ---------
 ;;; conf-mode
 ;;; ---------
@@ -132,7 +105,6 @@ Assumes that the frame is only split into two."
 ;;; csharp-mode
 ;;; -----------
 
-;; (require 'csharp-mode)
 ;; ;; Bind opening brace to c-electric-brace rather than csharp-insert-open-brace
 ;; (add-hook 'csharp-mode-hook
 ;;           (lambda ()
@@ -151,7 +123,6 @@ Assumes that the frame is only split into two."
 ;;; fill-column-indicator
 ;;; ---------------------
 
-(require 'fill-column-indicator)
 (setq fci-rule-column 80)
 (setq fci-rule-color "DimGrey")
 (add-hook   'text-mode-hook 'fci-mode)
@@ -185,14 +156,7 @@ Assumes that the frame is only split into two."
 ;;; ido-mode
 ;;; --------
 
-(require 'ido)
 (ido-mode t)
-
-;;; --------
-;;; js2-mode
-;;; --------
-
-;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 ;;; -------------
 ;;; markdown-mode
@@ -203,12 +167,6 @@ Assumes that the frame is only split into two."
                               auto-mode-alist))
 (add-hook 'markdown-mode-hook
           (lambda () (local-set-key (kbd "TAB") 'markdown-cycle)))
-
-;;; ------------
-;;; minimap-mode
-;;; ------------
-
-;; (require 'minimap)
 
 ;;; -----------
 ;;; prolog-mode
@@ -222,13 +180,6 @@ Assumes that the frame is only split into two."
                                 ("\\.m$" . mercury-mode))
                               auto-mode-alist))
 
-;;; --------------
-;;; requirejs-mode
-;;; --------------
-
-;; (require 'requirejs-mode)
-;; (add-hook 'javascript-mode-hook (lambda () (requirejs-mode)))
-
 ;;; -------
 ;;; sh-mode
 ;;; -------
@@ -240,7 +191,8 @@ Assumes that the frame is only split into two."
 ;;; sr-speedbar
 ;;; -----------
 
-(require 'sr-speedbar)
+(autoload 'sr-speedbar "sr-speedbar" nil t)
+(autoload 'sr-speedbar-toggle "sr-speedbar" nil t)
 (global-set-key (kbd "C-x t") 'sr-speedbar-toggle)
 
 ;;; ----------

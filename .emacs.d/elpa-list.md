@@ -1,5 +1,6 @@
 * auctex
 * chsarp-mode
+* fill-column-indicator
 * gitconfig-mode
 * gitignore-mode
 * js2-mode
@@ -7,5 +8,4 @@
 * json-mode
 * markdown-mode
 * minimap
-* requirejs-mode
 * vlf

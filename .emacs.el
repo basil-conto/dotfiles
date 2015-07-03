@@ -21,7 +21,6 @@
  '(jit-lock-stealth-time 16)
  '(js-enabled-frameworks (quote (javascript prototype dojo)))
  '(js-indent-level 2)
- '(js2-basic-offset 2)
  '(minimap-highlight-line nil)
  '(minimap-recenter-type (quote relative))
  '(minimap-width-fraction 0.05)
