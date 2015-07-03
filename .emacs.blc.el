@@ -28,6 +28,10 @@ Assumes that the frame is only split into two."
     (switch-to-buffer nil))) ; restore original window in this part of the frame
 (global-set-key (kbd "C-x 4") 'transpose-split)
 
+;;; Window switching with <S-arrow>
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
+
 ;;; Mouse wheel scrolls one line at a time
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
@@ -48,6 +52,8 @@ Assumes that the frame is only split into two."
 ;;; Indentation settings
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
+(defun fix-electric-indent ()
+  (electric-indent-local-mode -1))
 
 ;;; Enable upcase & downcase regions
 (put   'upcase-region 'disabled nil)
@@ -116,6 +122,12 @@ Assumes that the frame is only split into two."
 ;; (add-hook 'prolog-mode-hook (lambda () (column-marker-4 80)))
 ;; (add-hook 'csharp-mode-hook (lambda () (column-marker-4 80)))
 
+;;; ---------
+;;; conf-mode
+;;; ---------
+
+(add-hook 'conf-mode-hook 'fix-electric-indent)
+
 ;;; -----------
 ;;; csharp-mode
 ;;; -----------
@@ -164,7 +176,8 @@ Assumes that the frame is only split into two."
 ;;; haskell-mode
 ;;; ------------
 
-(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+(add-hook 'haskell-mode-hook 'fix-electric-indent)
 ;; Pretty lambda
 ;; (setq haskell-font-lock-symbols t)
 
@@ -236,7 +249,7 @@ Assumes that the frame is only split into two."
 
 (autoload 'todoo "todoo" "TODO Mode" t)
 (add-to-list 'auto-mode-alist '("TODO" . todoo-mode))
-(add-hook 'todoo-mode-hook (lambda () (electric-indent-local-mode -1)))
+(add-hook 'todoo-mode-hook 'fix-electric-indent)
 (defun toggle-todoo ()
   (interactive)
   (if (eq major-mode 'todoo-mode)

@@ -100,4 +100,6 @@ unset brack_hi brack_lo
 unset -f bash_colours_unset
 
 # Helps with colours and special keys in tmux
-export TERM=xterm-256color
+if [ -z "${TMUX}" ]; then
+  export TERM=xterm-256color
+fi
