@@ -1,8 +1,8 @@
 # -*- sh -*-
 # ~/.bash_aliases
 
-# nano with smart home and tabs = 4 spaces
-alias nano='nano -A -E -T4'
+# nano with smart home and 2-space tabs
+alias nano='nano -A -E -T2'
 
 # ls
 alias ls='ls --color=auto'
@@ -12,9 +12,12 @@ alias la='ll -A'
 
 # grep
 alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
 
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
+alias uuu='uu && sudo apt-get dist-upgrade'
+alias uuuu='uuu && sudo apt-get autoremove && sudo apt-get autoclean'
 
 # wajig
 alias list='wajig listinstalled'
@@ -30,14 +33,15 @@ alias dim='xbacklight -dec 10'
 alias brighten='xbacklight -inc 10'
 
 # GNU compilers
-alias g++11='g++ -std=gnu++11'
+alias gcc='gcc -fdiagnostics-color'
+alias g++='g++ -fdiagnostics-color'
 alias gcc99='gcc -std=gnu99'
 alias gcc11='gcc -std=gnu11'
+alias g++11='g++ -std=gnu++11'
 
-# tmux, emacs colours
-alias tmux='TERM=xterm-256color tmux'
-alias em='TERM=xterm-256color emacs -nw'
-alias ec='TERM=xterm-256color emacsclient -t'
+# emacsen
+alias em='emacs -nw'
+alias ec='emacsclient -t'
 alias ecc='emacsclient -c -n'
 
 # youtube-dl

@@ -4,13 +4,13 @@
 
 # Source global definitions
 if [ -f /etc/bash.bashrc ]; then
-        . /etc/bash.bashrc
+  . /etc/bash.bashrc
 fi
 
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-      *) return;;
+  *i*) ;;
+  *) return ;;
 esac
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -37,54 +37,52 @@ shopt -s checkwinsize
 
 # # If this is an xterm set the title to user@host:dir
 # case "$TERM" in
-# xterm*|rxvt*)
+#   xterm*|rxvt*)
 #     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
 #     ;;
-# *)
+#   *)
 #     ;;
 # esac
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# colored GCC warnings and errors
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)"
+             "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+  . ~/.bash_aliases
 fi
 
 # Colour definitions
 if [ -f ~/.bash_colours ]; then
-    . ~/.bash_colours
+  . ~/.bash_colours
 fi
 
 # User completions
 if [ -f ~/.bash_completion ]; then
-    . ~/.bash_completion
+  . ~/.bash_completion
 fi
 
 # Colour man pages
 man() {
-    env LESS_TERMCAP_mb=$'\E[01;31m'       \
-        LESS_TERMCAP_md=$'\E[01;38;5;74m'  \
-        LESS_TERMCAP_me=$'\E[0m'           \
-        LESS_TERMCAP_se=$'\E[0m'           \
-        LESS_TERMCAP_so=$'\E[38;5;246m'    \
-        LESS_TERMCAP_ue=$'\E[0m'           \
-        LESS_TERMCAP_us=$'\E[04;38;5;146m' \
-        man "$@"
+  env LESS_TERMCAP_mb=$'\E[01;31m'       \
+      LESS_TERMCAP_md=$'\E[01;38;5;74m'  \
+      LESS_TERMCAP_me=$'\E[0m'           \
+      LESS_TERMCAP_se=$'\E[0m'           \
+      LESS_TERMCAP_so=$'\E[38;5;246m'    \
+      LESS_TERMCAP_ue=$'\E[0m'           \
+      LESS_TERMCAP_us=$'\E[04;38;5;146m' \
+      man "$@"
 }
 
 # Prompt
 
 # ┌[blc@t430-mint] ~/Documents
-# └$ 
+# └$
 
 brack_hi='\342\224\214'
 brack_lo='\342\224\224'
