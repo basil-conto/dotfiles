@@ -44,6 +44,9 @@ alias em='emacs -nw'
 alias ec='emacsclient -t'
 alias ecc='emacsclient -c -n'
 
+# colordiff
+alias ciff='colordiff -y -W 160'
+
 # youtube-dl
 alias youtube-mp3='youtube-dl -x --audio-format mp3 --audio-quality 256K'
 alias youtube-vorbis='youtube-dl -x --audio-format vorbis --audio-quality 128K'
