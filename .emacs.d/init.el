@@ -26,14 +26,6 @@
 ;;; Key bindings
 ;;; ============
 
-;;; Comments
-(bind-key "C-x /"     'comment-region)
-(bind-key "C-x C-/" 'uncomment-region)
-(bind-key "C-x C-_" 'uncomment-region)
-
-;;; Prop line file variables
-(bind-key "C-. a" 'add-file-local-variable-prop-line)
-
 ;;; Transpose window split
 (defun transpose-split ()
   "If the frame is split vertically, split it horizontally or vice versa.
@@ -48,7 +40,20 @@ Assumes that the frame is only split into two."
       (split-window-vertically))
     (switch-to-buffer nil)))
 
-(bind-key "C-x 4" 'transpose-split)
+(bind-keys
+ ;; Comments
+ ("C-x /"       .   comment-region)
+ ("C-x C-/"     . uncomment-region)
+ ("C-x C-_"     . uncomment-region)
+ ;; Windows
+ ("C-x 4"       .  transpose-split)
+ ;; Buffers
+ ("S-<prior>"   .  previous-buffer)
+ ("M-[ 5 ; 2 ~" .  previous-buffer)
+ ("S-<next>"    .      next-buffer)
+ ("M-[ 6 ; 2 ~" .      next-buffer)
+ ;; Prop line file variables
+ ("C-c a"       . add-file-local-variable-prop-line))
 
 ;;; Window switching with <S-arrow>
 (when (fboundp 'windmove-default-keybindings)
@@ -138,18 +143,17 @@ Assumes that the frame is only split into two."
 (use-package bytecomp
   :preface
   (defconst init-file-src (concat user-emacs-directory "init.el"))
-  :bind (("C-. c" . byte-compile-file)
-         ("C-. f" . byte-recompile-file)
-         ("C-. d" . byte-recompile-directory))
+  :bind (("C-c c" . byte-compile-file)
+         ("C-c f" . byte-recompile-file)
+         ("C-c d" . byte-recompile-directory))
   :config
   (add-hook 'kill-emacs-hook
             (lambda () (byte-recompile-file init-file-src nil 0))))
 
 (use-package cc-mode
-  :init
+  :config
   (setq c-default-style "linux"
         c-basic-offset  2)
-  :config
   (add-hook 'c-mode-hook (lambda () (setq comment-start "//"
                                           comment-end   ""))))
 
@@ -201,6 +205,8 @@ Assumes that the frame is only split into two."
     (add-hook hook 'fci-mode)))
 
 (use-package flex-mode
+  :no-require t
+  :disabled t
   :load-path "lisp")
 
 (use-package gitconfig-mode
@@ -238,15 +244,14 @@ Assumes that the frame is only split into two."
   :ensure t)
 
 (use-package linum
-  :preface
-  ;; Line number format - right-aligned followed by vertical line
-  (defun linum-format-func (line)
-    (let ((w (length (number-to-string (count-lines (point-min)
-                                                    (point-max))))))
-      (propertize (format (format "%%%dd\u2502" w) line) 'face 'linum)))
   :config
   (global-linum-mode)
-  (setq linum-format 'linum-format-func))
+  ;; Right-aligned followed by vertical line
+  (setq linum-format
+        (lambda (line)
+          (let ((w (length (number-to-string (count-lines (point-min)
+                                                          (point-max))))))
+            (propertize (format (format "%%%dd\u2502" w) line) 'face 'linum)))))
 
 (use-package markdown-mode
   :ensure t
@@ -300,13 +305,13 @@ Assumes that the frame is only split into two."
 
 (use-package sr-speedbar
   :ensure t
-  :defines helm-alive-p
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq sr-speedbar-auto-refresh nil))
 
 (use-package todoo
   :mode ("TODO" . todoo-mode)
+  :bind ("<f12>" . toggle-todoo)
   :config
   (defun toggle-todoo ()
     (interactive)
@@ -314,8 +319,7 @@ Assumes that the frame is only split into two."
         (call-interactively 'todoo-save-and-exit)
       (call-interactively 'todoo)))
   (add-hook 'todoo-mode-hook 'fix-electric-indent)
-  (setq todoo-indent-column 2)
-  :bind ("<f12>" . toggle-todoo))
+  (setq todoo-indent-column 2))
 
 (use-package vlf
   :no-require t
