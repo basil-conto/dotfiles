@@ -307,16 +307,15 @@ Assumes that the frame is only split into two."
 
 (use-package todoo
   :mode ("TODO" . todoo-mode)
-  :preface
+  :config
   (defun toggle-todoo ()
     (interactive)
     (if (eq major-mode 'todoo-mode)
         (call-interactively 'todoo-save-and-exit)
       (call-interactively 'todoo)))
-  :bind ("<f12>" . toggle-todoo)
-  :config
   (add-hook 'todoo-mode-hook 'fix-electric-indent)
-  (setq todoo-indent-column 2))
+  (setq todoo-indent-column 2)
+  :bind ("<f12>" . toggle-todoo))
 
 (use-package vlf
   :no-require t
