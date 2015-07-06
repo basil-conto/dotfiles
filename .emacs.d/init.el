@@ -32,7 +32,7 @@
 (bind-key "C-x C-_" 'uncomment-region)
 
 ;;; Prop line file variables
-(bind-key "C-x C-a" 'add-file-local-variable-prop-line)
+(bind-key "C-. a" 'add-file-local-variable-prop-line)
 
 ;;; Transpose window split
 (defun transpose-split ()
@@ -136,14 +136,14 @@ Assumes that the frame is only split into two."
   (setq TeX-PDF-mode t))
 
 (use-package bytecomp
-  :config
+  :preface
   (defconst init-file-src (concat user-emacs-directory "init.el"))
-  (defconst init-file-obj (byte-compile-dest-file init-file-src))
+  :bind (("C-. c" . byte-compile-file)
+         ("C-. f" . byte-recompile-file)
+         ("C-. d" . byte-recompile-directory))
+  :config
   (add-hook 'kill-emacs-hook
-            (lambda ()
-              (and (file-exists-p init-file-src)
-                   (file-newer-than-file-p init-file-src init-file-obj)
-                   (byte-compile-file init-file-src)))))
+            (lambda () (byte-recompile-file init-file-src nil 0))))
 
 (use-package cc-mode
   :init
@@ -167,6 +167,8 @@ Assumes that the frame is only split into two."
             (lambda () (local-set-key (kbd "{") 'c-electric-brace))))
 
 (use-package doc-view
+  :no-require t
+  :disabled t
   :config
   (setq doc-view-continuous t))
 
@@ -194,7 +196,8 @@ Assumes that the frame is only split into two."
                     prog-mode-hook
                   prolog-mode-hook
                   csharp-mode-hook
-                     ess-mode-hook))
+                     ess-mode-hook
+                     js3-mode-hook))
     (add-hook hook 'fci-mode)))
 
 (use-package flex-mode
@@ -223,7 +226,13 @@ Assumes that the frame is only split into two."
   :disabled t)
 
 (use-package js3-mode
-  :ensure t)
+  :ensure t
+  :config
+  (setq-default
+   js3-auto-indent-p                         t
+   js3-enter-indents-newline                 t
+   js3-indent-on-enter-key                   t
+   js3-consistent-level-indent-inner-bracket t))
 
 (use-package json-mode
   :ensure t)
