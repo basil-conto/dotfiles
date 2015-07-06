@@ -71,6 +71,20 @@ Assumes that the frame is only split into two."
 
 (load-theme 'tango-dark)
 
+(set-face-attribute 'default nil
+  :family  "DejaVu Sans Mono"
+  :foundry "unknown"
+  :slant   'normal
+  :weight  'normal
+  :height  90
+  :width   'normal)
+
+(defun what-face (pos)
+  (interactive "d")
+  (let ((face (or (get-char-property (point) 'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
 (setq
  font-lock-maximum-decoration 2
  jit-lock-stealth-time        4
@@ -144,6 +158,8 @@ Assumes that the frame is only split into two."
   (add-hook 'conf-mode-hook 'fix-electric-indent))
 
 (use-package csharp-mode
+  :no-require t
+  :disabled t
   :ensure t
   :mode "\\.cs$"
   :config
@@ -155,12 +171,14 @@ Assumes that the frame is only split into two."
   (setq doc-view-continuous t))
 
 (use-package ess
-  :init
-  (if ( get-buffer "*ESS*")
-      (kill-buffer "*ESS*"))
+  :no-require t
+  :disabled t
   :config
   (setq-default ess-default-style 'DEFAULT)
   (setq ess-arg-function-offset nil))
+
+(if ( get-buffer "*ESS*")
+    (kill-buffer "*ESS*"))
 
 (use-package ido
   :config
@@ -182,6 +200,12 @@ Assumes that the frame is only split into two."
 (use-package flex-mode
   :load-path "lisp")
 
+(use-package gitconfig-mode
+  :ensure t)
+
+(use-package gitignore-mode
+  :ensure t)
+
 (use-package haskell-mode
   :config
   ;; Pretty lambda
@@ -201,6 +225,9 @@ Assumes that the frame is only split into two."
 (use-package js3-mode
   :ensure t)
 
+(use-package json-mode
+  :ensure t)
+
 (use-package linum
   :preface
   ;; Line number format - right-aligned followed by vertical line
@@ -208,7 +235,6 @@ Assumes that the frame is only split into two."
     (let ((w (length (number-to-string (count-lines (point-min)
                                                     (point-max))))))
       (propertize (format (format "%%%dd\u2502" w) line) 'face 'linum)))
-
   :config
   (global-linum-mode)
   (setq linum-format 'linum-format-func))
@@ -221,14 +247,23 @@ Assumes that the frame is only split into two."
             (lambda () (local-set-key (kbd "TAB") 'markdown-cycle))))
 
 (use-package minimap
+  :no-require t
+  :disabled t
   :ensure t
   :config
   (setq minimap-highlight-line  nil
         minimap-recenter-type   'relative
         minimap-width-fraction  0.05
-        minimap-window-location 'right))
+        minimap-window-location 'right)
+  (set-face-attribute 'minimap-active-region-background nil
+    :background "dim grey")
+  (set-face-attribute 'minimap-font-face nil
+    :height 8
+    :family "DejaVu Sans Mono"))
 
 (use-package pascal
+  :no-require t
+  :disabled t
   :config
   (add-hook 'pascal-mode-hook (lambda () (setq comment-start "//"
                                                comment-end   ""))))
@@ -273,3 +308,8 @@ Assumes that the frame is only split into two."
   :config
   (add-hook 'todoo-mode-hook 'fix-electric-indent)
   (setq todoo-indent-column 2))
+
+(use-package vlf
+  :no-require t
+  :disabled t
+  :ensure t)
