@@ -123,6 +123,7 @@ Assumes that the frame is only split into two."
 ;;; fill-column-indicator
 ;;; ---------------------
 
+(autoload 'fci-mode "fill-column-indicator" nil t)
 (setq fci-rule-column 80)
 (setq fci-rule-color "DimGrey")
 (add-hook   'text-mode-hook 'fci-mode)
@@ -130,12 +131,6 @@ Assumes that the frame is only split into two."
 (add-hook 'prolog-mode-hook 'fci-mode)
 (add-hook 'csharp-mode-hook 'fci-mode)
 (add-hook    'ess-mode-hook 'fci-mode)
-;; ;; previous-line workaround
-;; (make-variable-buffer-local 'line-move-visual)
-;; (defadvice previous-line (around avoid-jumpy-fci activate)
-;;   (if (and (symbol-value 'fci-mode) (> (count-lines 1 (point)) 0))
-;;       (prog (fci-mode -1) ad-do-it (fci-mode 1))
-;;     ad-do-it))
 
 ;;; ---------
 ;;; flex-mode
