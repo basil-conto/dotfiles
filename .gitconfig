@@ -8,3 +8,4 @@
 [alias]
 	unadd = reset HEAD --
 	last = log -1 HEAD
+	history = log --graph --all --oneline --decorate
