@@ -46,25 +46,23 @@ Assumes that the frame is only split into two."
  ("C-x C-/"     . uncomment-region)
  ("C-x C-_"     . uncomment-region)
  ;; Windows
- ("C-x 4"       .  transpose-split)
+ ("C-x 4"       . transpose-split )
  ;; Buffers
  ("S-<prior>"   .  previous-buffer)
- ("M-[ 5 ; 2 ~" .  previous-buffer)
  ("S-<next>"    .      next-buffer)
+ ;; Mutatis mutandis within tmux
+ ("M-[ 5 ; 2 ~" .  previous-buffer)
  ("M-[ 6 ; 2 ~" .      next-buffer)
  ;; Prop line file variables
- ("C-c a"       . add-file-local-variable-prop-line))
-
-;;; Window switching with <S-arrow>
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings))
+ ("C-c a"       .  add-file-local-variable-prop-line))
 
 ;;; =========
 ;;; Scrolling
 ;;; =========
 
 (setq
- mouse-wheel-scroll-amount       '(1 ((shift) . 1)) ; One line at a time
+ ;; One line at a time
+ mouse-wheel-scroll-amount       '(1 ((shift) . 1))
  scroll-conservatively           10000
  scroll-error-top-bottom         t
  scroll-preserve-screen-position t
@@ -124,12 +122,15 @@ Assumes that the frame is only split into two."
 ;;; ======
 
 (setq
- backup-by-copying      t                       ; Don't clobber symlinks
- backup-directory-alist '(("." . "~/.backup/")) ; Backup directory
+ ;; Don't clobber symlinks
+ backup-by-copying      t
+ ;; Backup directory
+ backup-directory-alist '(("." . "~/.backup/"))
  delete-old-versions    t
  kept-new-versions      6
  kept-old-versions      2
- version-control        t)                      ; Versioned backups
+ ;; Versioned backups
+ version-control        t)
 
 ;;; ================
 ;;; Package settings
@@ -201,7 +202,8 @@ Assumes that the frame is only split into two."
                   prolog-mode-hook
                   csharp-mode-hook
                      ess-mode-hook
-                     js3-mode-hook))
+                     js3-mode-hook
+                   todoo-mode-hook))
     (add-hook hook 'fci-mode)))
 
 (use-package flex-mode
@@ -325,3 +327,14 @@ Assumes that the frame is only split into two."
   :no-require t
   :disabled t
   :ensure t)
+
+(use-package windmove
+  :bind (("S-<up>"      . windmove-up   )
+         ("S-<down>"    . windmove-down )
+         ("S-<left>"    . windmove-left )
+         ("S-<right>"   . windmove-right)
+         ;; Mutatis mutandis within tmux
+         ("M-[ 1 ; 2 A" . windmove-up   )
+         ("M-[ 1 ; 2 B" . windmove-down )
+         ("M-[ 1 ; 2 D" . windmove-left )
+         ("M-[ 1 ; 2 C" . windmove-right)))
