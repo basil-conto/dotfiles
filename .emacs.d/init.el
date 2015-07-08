@@ -197,13 +197,14 @@ Assumes that the frame is only split into two."
   :config
   (setq fci-rule-column 80
         fci-rule-color "DimGrey")
-  (dolist (hook '(  text-mode-hook
-                    prog-mode-hook
-                  prolog-mode-hook
-                  csharp-mode-hook
-                     ess-mode-hook
-                     js3-mode-hook
-                   todoo-mode-hook))
+  (dolist (hook '(     text-mode-hook
+                       prog-mode-hook
+                     prolog-mode-hook
+                     csharp-mode-hook
+                        ess-mode-hook
+                        js3-mode-hook
+                      todoo-mode-hook
+                  gitconfig-mode-hook))
     (add-hook hook 'fci-mode)))
 
 (use-package flex-mode
@@ -312,7 +313,7 @@ Assumes that the frame is only split into two."
   (setq sr-speedbar-auto-refresh nil))
 
 (use-package todoo
-  :mode ("TODO" . todoo-mode)
+  :mode ("TODO"  .  todoo-mode )
   :bind ("<f12>" . toggle-todoo)
   :config
   (defun toggle-todoo ()
