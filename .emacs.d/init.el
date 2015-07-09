@@ -243,6 +243,11 @@ Assumes that the frame is only split into two."
    js3-indent-dots                           t
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
+  (setq
+   js3-global-externs          (mapcar 'symbol-name '(console define require))
+   js3-include-browser-externs nil
+   js3-include-gears-externs   nil
+   js3-include-rhino-externs   nil)
   (set-face-attribute 'js3-function-param-face nil
     :foreground "white"))
 
