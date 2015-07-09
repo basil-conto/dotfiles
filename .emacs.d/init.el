@@ -242,7 +242,9 @@ Assumes that the frame is only split into two."
    js3-enter-indents-newline                 t
    js3-indent-dots                           t
    js3-indent-on-enter-key                   t
-   js3-consistent-level-indent-inner-bracket t))
+   js3-consistent-level-indent-inner-bracket t)
+  (set-face-attribute 'js3-function-param-face nil
+    :foreground "white"))
 
 (use-package json-mode
   :ensure t)
