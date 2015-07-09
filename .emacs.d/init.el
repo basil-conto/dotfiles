@@ -240,6 +240,7 @@ Assumes that the frame is only split into two."
   (setq-default
    js3-auto-indent-p                         t
    js3-enter-indents-newline                 t
+   js3-indent-dots                           t
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t))
 
