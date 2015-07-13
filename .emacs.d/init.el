@@ -74,13 +74,7 @@ Assumes that the frame is only split into two."
 
 (load-theme 'tango-dark)
 
-(set-face-attribute 'default nil
-  :family  "DejaVu Sans Mono"
-  :foundry "unknown"
-  :slant   'normal
-  :weight  'normal
-  :height  90
-  :width   'normal)
+(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 9"))
 
 (defun what-face (pos)
   (interactive "d")
