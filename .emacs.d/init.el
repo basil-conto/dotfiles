@@ -149,8 +149,8 @@ Assumes that the frame is only split into two."
   :config
   (setq c-default-style "linux"
         c-basic-offset  2)
-  (add-hook 'c-mode-hook (lambda () (setq comment-start "//"
-                                          comment-end   ""))))
+  (add-hook 'c-mode-common-hook (lambda () (setq comment-start "//"
+                                                 comment-end   ""))))
 
 (use-package conf-mode
   :config
