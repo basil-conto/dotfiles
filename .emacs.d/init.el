@@ -245,7 +245,8 @@ Assumes that the frame is only split into two."
 (use-package js
   :config
   (setq js-enabled-frameworks '(javascript prototype dojo)
-        js-indent-level 2))
+        js-indent-level 2
+        js-switch-indent-offset 2))
 
 (use-package js2-mode
   :no-require t
@@ -261,12 +262,13 @@ Assumes that the frame is only split into two."
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
   (setq
-   js3-global-externs          (mapcar 'symbol-name '(console define require))
-   js3-include-browser-externs nil
-   js3-include-gears-externs   nil
-   js3-include-rhino-externs   nil)
-  (set-face-attribute 'js3-function-param-face nil
-    :foreground "white"))
+   js3-global-externs (mapcar 'symbol-name '(console define require))
+   js3-include-browser-externs      nil
+   js3-include-gears-externs        nil
+   js3-include-rhino-externs        nil
+   js3-skip-preprocessor-directives t)
+  (set-face-attribute 'js3-function-param-face    nil :foreground "white")
+  (set-face-attribute 'js3-external-variable-face nil :foreground "red"))
 
 (use-package json-mode
   :ensure t)
