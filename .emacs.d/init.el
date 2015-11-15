@@ -130,6 +130,9 @@ Assumes that the frame is only split into two."
 ;;; Package settings
 ;;; ================
 
+(use-package ag
+  :ensure t)
+
 (use-package tex
   :ensure auctex
   :config
