@@ -141,7 +141,9 @@ Assumes that the frame is only split into two."
 ;;; ================
 
 (use-package ag
-  :ensure t)
+  :config
+  (setq ag-highlight-search t)
+  (add-to-list 'ag-arguments "-C 5"))
 
 (use-package tex
   :ensure auctex
