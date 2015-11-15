@@ -2,7 +2,7 @@
 	name = Basil L. Contovounesios
 	email = contovob@tcd.ie
 [core]
-	editor = emacs
+	editor = emacs -nw
 [color]
 	ui = auto
 [alias]
