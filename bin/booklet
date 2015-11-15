@@ -1,7 +1,11 @@
 #!/bin/sh
 
 # ------------------------------------------------------------------------------
-# LaTeX booklet maker
+# LaTeX booklet maker.
+#
+# Copyright (c) 2015 Basil L. Contovounesios <contovob@tcd.ie>
+#
+# This code is distributed under the BSD3 license.
 # ------------------------------------------------------------------------------
 
 # CONSTANTS --------------------------------------------------------------------
