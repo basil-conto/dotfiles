@@ -79,12 +79,6 @@ Assumes that the frame is only split into two."
 
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 9"))
 
-(defun what-face (pos)
-  (interactive "d")
-  (let ((face (or (get-char-property (point) 'read-face-name)
-                  (get-char-property (point) 'face))))
-    (if face (message "Face: %s" face) (message "No face at %d" pos))))
-
 (setq
  font-lock-maximum-decoration 2
  jit-lock-stealth-time        4
@@ -99,6 +93,19 @@ Assumes that the frame is only split into two."
 
 (put   'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+(defun what-face (pos)
+  (interactive "d")
+  (let ((face (or (get-char-property (point) 'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
+(defun iwb ()
+  "indent whole buffer"
+  (interactive)
+  (delete-trailing-whitespace)
+  (indent-region (point-min) (point-max) nil)
+  (untabify (point-min) (point-max)))
 
 ;;; ===========
 ;;; Indentation
