@@ -45,8 +45,11 @@ Assumes that the frame is only split into two."
  ("C-x /"       .   comment-region)
  ("C-x C-/"     . uncomment-region)
  ("C-x C-_"     . uncomment-region)
+ ;; Murder
+ ("C-k"         .  kill-whole-line)
+ ("C-x C-k"     .        kill-line)
  ;; Windows
- ("C-x 4"       . transpose-split )
+ ("C-x 4"       .  transpose-split)
  ;; Buffers
  ("S-<prior>"   .  previous-buffer)
  ("S-<next>"    .      next-buffer)
