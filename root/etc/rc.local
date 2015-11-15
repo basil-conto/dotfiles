@@ -12,10 +12,11 @@
 # By default this script does nothing.
 
 # Disable bluetooth on startup
+# Added blc 31/05/15
 rfkill block bluetooth
 
-# Dim backlight
-echo 50 > /sys/class/backlight/acpi_video0/brightness
-echo 850 > /sys/class/backlight/intel_backlight/brightness
+# Dim screen to half brightness
+# Added blc 31/05/15
+echo 2219 >> /sys/class/backlight/intel_backlight/brightness
 
 exit 0
