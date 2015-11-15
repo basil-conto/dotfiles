@@ -283,6 +283,10 @@ Assumes that the frame is only split into two."
                                                           (point-max))))))
             (propertize (format (format "%%%dd\u2502" w) line) 'face 'linum)))))
 
+(use-package lisp-mode
+  :config
+  (add-hook 'lisp-mode-hook 'fix-electric-indent))
+
 (use-package markdown-mode
   :ensure t
   :mode ("\\.md$" "\\.markdown$")
