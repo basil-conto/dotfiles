@@ -287,6 +287,9 @@ Assumes that the frame is only split into two."
   :config
   (add-hook 'lisp-mode-hook 'fix-electric-indent))
 
+(use-package list-unicode-display
+  :ensure t)
+
 (use-package markdown-mode
   :ensure t
   :mode ("\\.md$" "\\.markdown$")
