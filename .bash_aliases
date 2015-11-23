@@ -60,5 +60,9 @@ alias youtube-vorbis='youtube-dl -x --audio-format vorbis --audio-quality 128K'
 # chromium
 alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 
+# notify-send
+alias apprise='notify-send -u low'
+alias error='notify-send -u critical -i error'
+
 # fun fun fun
 alias hi='echo -e "\e[1;31mI Love You\e[0m"'
