@@ -1,6 +1,3 @@
-;;; TODO
-;;; * crontab-mode
-
 ;;; =============
 ;;; Bootstrapping
 ;;; =============
@@ -183,6 +180,10 @@ Assumes that the frame is only split into two."
   :config
   (add-hook 'csharp-mode-hook
             (lambda () (local-set-key (kbd "{") 'c-electric-brace))))
+
+(use-package crontab-mode
+  :ensure t
+  :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
 
 (use-package doc-view
   :no-require t
