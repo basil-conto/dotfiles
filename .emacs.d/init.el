@@ -185,6 +185,11 @@ Assumes that the frame is only split into two."
   :ensure t
   :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
 
+(use-package dafny-mode
+  :ensure boogie-friends
+  :config
+  (add-hook 'boogie-friends-hook (lambda () (prettify-symbols-mode -1))))
+
 (use-package doc-view
   :no-require t
   :disabled t
