@@ -103,3 +103,6 @@ unset -f bash_colours_unset
 if [ -z "${TMUX}" ]; then
   export TERM=xterm-256color
 fi
+
+# Used, for example, by crontab
+export EDITOR='emacs -nw'
