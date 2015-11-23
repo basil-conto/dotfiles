@@ -137,3 +137,4 @@ Categories=Network;WebBrowser;
 MimeType=text/html;text/xml;application/xhtml_xml;x-scheme-handler/http;x-scheme-handler/https;
 StartupWMClass=Chromium
 StartupNotify=true
+NoDisplay=true
