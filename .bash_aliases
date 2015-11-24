@@ -65,4 +65,4 @@ alias apprise='notify-send -u low'
 alias error='notify-send -u critical -i error'
 
 # fun fun fun
-alias hi='echo -e "\e[1;31mI Love You\e[0m"'
+alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'
