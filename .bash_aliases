@@ -5,9 +5,9 @@
 alias nano='nano -A -E -T2'
 
 # ls
-alias ls='ls --color=auto'
-alias l='ls -Fh --group-directories-first'
-alias ll='l -l'
+alias ls='ls --color=auto --group-directories-first'
+alias l='ls -F'
+alias ll='l -lh'
 alias la='ll -A'
 
 # grep
