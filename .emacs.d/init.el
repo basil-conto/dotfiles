@@ -164,7 +164,11 @@ Assumes that the frame is only split into two."
   :config
   (setq c-default-style "linux"
         c-basic-offset  2)
-  (c-set-offset 'case-label '+)
+  (font-lock-add-keywords 'c++-mode
+                          '(("constexpr" . font-lock-keyword-face)))
+  (loop for (k . v) in '((case-label  . +)
+                         (innamespace . 0))
+        do (c-set-offset k v))
   (add-hook 'c-mode-common-hook (lambda () (setq comment-start "//"
                                                  comment-end   ""))))
 
