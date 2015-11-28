@@ -177,8 +177,6 @@ Assumes that the frame is only split into two."
   (add-hook 'conf-mode-hook 'fix-electric-indent))
 
 (use-package csharp-mode
-  :no-require t
-  :disabled t
   :ensure t
   :mode "\\.cs$"
   :config
