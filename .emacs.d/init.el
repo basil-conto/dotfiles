@@ -166,8 +166,9 @@ Assumes that the frame is only split into two."
         c-basic-offset  2)
   (font-lock-add-keywords 'c++-mode
                           '(("constexpr" . font-lock-keyword-face)))
-  (loop for (k . v) in '((case-label  . +)
-                         (innamespace . 0))
+  (loop for (k . v) in '((access-label . /)
+                         (  case-label . +)
+                         ( innamespace . 0))
         do (c-set-offset k v))
   (add-hook 'c-mode-common-hook (lambda () (setq comment-start "//"
                                                  comment-end   ""))))
