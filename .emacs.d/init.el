@@ -107,6 +107,9 @@ Assumes that the frame is only split into two."
   (indent-region (point-min) (point-max) nil)
   (untabify (point-min) (point-max)))
 
+(add-hook 'text-mode-hook (lambda () (setq fill-column 80
+                                           sentence-end-double-space nil)))
+
 ;;; ===========
 ;;; Indentation
 ;;; ===========
