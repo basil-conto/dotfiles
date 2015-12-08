@@ -256,8 +256,9 @@ Assumes that the frame is only split into two."
   :config
   ;; Pretty lambda
   ;; (setq haskell-font-lock-symbols t)
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
-  (add-hook 'haskell-mode-hook 'fix-electric-indent))
+  (add-hook 'haskell-mode-hook (lambda ()
+                                 (turn-on-haskell-simple-indent)
+                                 (fix-electric-indent))))
 
 (use-package js
   :config
