@@ -64,5 +64,8 @@ alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 alias apprise='notify-send -u low'
 alias error='notify-send -u critical -i error'
 
+# gcal
+alias gcal='gcal -s 1'
+
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'
