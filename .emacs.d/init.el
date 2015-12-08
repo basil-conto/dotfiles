@@ -194,7 +194,9 @@ Assumes that the frame is only split into two."
 (use-package dafny-mode
   :ensure boogie-friends
   :config
-  (add-hook 'boogie-friends-hook (lambda () (prettify-symbols-mode -1))))
+  (add-hook 'dafny-mode-hook (lambda ()
+                               (prettify-symbols-mode -1)
+                               (flycheck-mode -1))))
 
 (use-package doc-view
   :no-require t
