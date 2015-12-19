@@ -198,6 +198,7 @@ Assumes that the frame is only split into two."
   :ensure boogie-friends
   :config
   (add-hook 'dafny-mode-hook (lambda ()
+                               (fix-electric-indent)
                                (prettify-symbols-mode -1)
                                (flycheck-mode -1))))
 
