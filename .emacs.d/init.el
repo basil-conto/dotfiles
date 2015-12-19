@@ -388,6 +388,12 @@ Assumes that the frame is only split into two."
   :disabled t
   :ensure t)
 
+(use-package whitespace
+  :config
+  (global-whitespace-mode)
+  (setq whitespace-style
+        '(face tabs trailing empty tab-mark)))
+
 (use-package windmove
   :bind (("S-<up>"      . windmove-up   )
          ("S-<down>"    . windmove-down )
