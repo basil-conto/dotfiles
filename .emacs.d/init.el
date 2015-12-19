@@ -151,7 +151,10 @@ Assumes that the frame is only split into two."
 (use-package tex
   :ensure auctex
   :config
-  (setq TeX-PDF-mode t))
+  (setq TeX-PDF-mode t)
+  (defun latexmk-pvc ()
+    (interactive)
+    (shell-command "latexmk -pvc &")))
 
 (use-package bytecomp
   :preface
@@ -336,6 +339,9 @@ Assumes that the frame is only split into two."
   :config
   (add-hook 'pascal-mode-hook (lambda () (setq comment-start "//"
                                                comment-end   ""))))
+
+(use-package perl-mode
+  :mode "\\latexmkrc$")
 
 (use-package prolog
   :mode ("\\.pl$" . prolog-mode)
