@@ -220,8 +220,9 @@ Assumes that the frame is only split into two."
 (use-package fic-mode
   :ensure t
   :config
-  (dolist (hook '(prog-mode-hook
-                   js3-mode-hook))
+  (dolist (hook '( prog-mode-hook
+                    js3-mode-hook
+                  LaTeX-mode-hook))
     (add-hook hook 'turn-on-fic-mode)))
 
 (use-package ido
