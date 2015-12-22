@@ -8,9 +8,3 @@ Emacs
 * Improve haskell-mode indentation
 * Add abbreviations?
 * http://www.emacswiki.org/emacs/ThreeWindows
-* Fix multiline function call indentation in cc-mode, for example:
-
-foo(
-  a,
-  b,
-  );
