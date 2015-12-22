@@ -1,3 +1,15 @@
 * Fix tmux bash completion
 * Backup etckeeper
 * Moar automation
+
+Emacs
+
+* Incorporate more dwim commenting
+* Improve haskell-mode indentation
+* Add abbreviations?
+* Fix multiline function call indentation in cc-mode, for example:
+
+foo(
+  a,
+  b,
+  );
