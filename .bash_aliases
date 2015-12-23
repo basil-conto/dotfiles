@@ -4,6 +4,11 @@
 # nano with smart home and 2-space tabs
 alias nano='nano -A -E -T2'
 
+# safety
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -I'
+
 # ls
 alias ls='ls --color=auto --group-directories-first'
 alias l='ls -F'
