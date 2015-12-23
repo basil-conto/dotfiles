@@ -41,10 +41,6 @@ Assumes that the frame is only split into two."
     (switch-to-buffer nil)))
 
 (bind-keys
- ;; Comments
- ("C-x /"       .   comment-region)
- ("C-x C-/"     . uncomment-region)
- ("C-x C-_"     . uncomment-region)
  ;; Murder
  ("C-k"         .  kill-whole-line)
  ("C-x C-k"     .        kill-line)
