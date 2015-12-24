@@ -168,11 +168,12 @@ Assumes that the frame is only split into two."
         c-basic-offset  2)
   (font-lock-add-keywords 'c++-mode
                           '(("constexpr" . font-lock-keyword-face)))
-  (loop for (k . v) in '(( access-label . /)
-                         (   case-label . +)
-                         (  innamespace . 0)
-                         (  inline-open . 0)
-                         (arglist-close . 0))
+  (loop for (k . v) in '((     access-label . / )
+                         (       case-label . + )
+                         (      innamespace . 0 )
+                         (      inline-open . 0 )
+                         (    arglist-close . 0 )
+                         (member-init-intro . ++))
         do (c-set-offset k v))
   (add-hook 'c-mode-common-hook (lambda () (setq comment-start "//"
                                                  comment-end   ""))))
