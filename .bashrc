@@ -70,17 +70,25 @@ man() {
 }
 
 # Prompt
-
-# ┌[blc@t430-mint] ~/Documents
+#
+# ┌[blc@t430-mint] (master) ~/dotfiles [1]
 # └$
+
+git_ps1() {
+  local rc=$?
+  printf "$(__git_ps1)"
+  return $rc
+}
 
 brack_hi='\342\224\214'
 brack_lo='\342\224\224'
 
-PS1="\[${WHT_BF}\]${brack_hi}[\[${GRN_BF}\]\u@\h${WHT_BF}]\[${BLU_BF}\] \w "
+PS1="\[${WHT_BF}\]${brack_hi}[\[${GRN_BF}\]\u@\h${WHT_BF}]"
+PS1+="\[${YLW_BF}\]\$(git_ps1)"
+PS1+="\[${BLU_BF}\] \w "
 PS1+="\[${PRP}\]${debian_chroot:+($debian_chroot)}"
-PS1+="\[${RED}\]\$(RC=\$?; [[ \$RC != 0 ]] && echo -n [\$RC])"
-PS1+="\n\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\$ \[${RESET}\]"
+PS1+="\[${RED}\]\$(RC=\$?; [ \$RC -ne 0 ] && printf [\$RC])\n"
+PS1+="\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\$ \[${RESET}\]"
 
 # Don't pollute the environment
 bash_colours_unset
