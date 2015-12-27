@@ -1,5 +1,5 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# See /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
 # If not running interactively, don't do anything
@@ -8,18 +8,18 @@ case $- in
     *) return ;;
 esac
 
-# don't put duplicate lines or lines starting with space in the history.
+# Don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
 
-# append to the history file, don't overwrite it
+# Append to the history file, don't overwrite it
 shopt -s histappend
 
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+# For setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
 
-# check the window size after each command and, if necessary,
+# Check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
@@ -27,7 +27,7 @@ shopt -s checkwinsize
 # # match all files and zero or more directories and subdirectories.
 # shopt -s globstar
 
-# make less more friendly for non-text input files, see lesspipe(1)
+# Make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # # If this is an xterm set the title to user@host:dir
@@ -39,35 +39,23 @@ shopt -s checkwinsize
 #     ;;
 # esac
 
-# # set variable identifying the chroot you work in (used in the prompt below)
+# # Set variable identifying the chroot you work in (used in the prompt below)
 # if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 #   debian_chroot=$(cat /etc/debian_chroot)
 # fi
 
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-  test -r ~/.dircolors                     \
-    && eval "$(dircolors -b ~/.dircolors)" \
-    || eval "$(dircolors -b)"
-fi
+# Enable color support of ls and also add handy aliases
+[ -x /usr/bin/dircolors ]                \
+  && test -r ~/.dircolors                \
+  && eval "$(dircolors -b ~/.dircolors)" \
+  || eval "$(dircolors -b)"
 
 # Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-if [ -f ~/.bash_aliases ]; then
-  . ~/.bash_aliases
-fi
-
+[ -f ~/.bash_aliases    ] && . ~/.bash_aliases
 # Colour definitions
-if [ -f ~/.bash_colours ]; then
-  . ~/.bash_colours
-fi
-
+[ -f ~/.bash_colours    ] && . ~/.bash_colours
 # User completions
-if [ -f ~/.bash_completion ]; then
-  . ~/.bash_completion
-fi
+[ -f ~/.bash_completion ] && . ~/.bash_completion
 
 # Colour man pages
 man() {
@@ -99,10 +87,8 @@ bash_colours_unset
 unset brack_hi brack_lo
 unset -f bash_colours_unset
 
-# Helps with colours and special keys in tmux
-if [ -z "${TMUX}" ]; then
-  export TERM=xterm-256color
-fi
+# Enable colour and special key support in tmux
+[ -z "${TMUX}" ] && export TERM=xterm-256color
 
 # Used, for example, by crontab
 export EDITOR='emacs -nw'
@@ -120,3 +106,7 @@ export GREP_OPTIONS='--color=auto'
 #     . /etc/bash_completion
 #   fi
 # fi
+
+# Allow safe usage of boolean expressions without spamming error return codes;
+# actual errors should (hopefully) manifest by other means
+true
