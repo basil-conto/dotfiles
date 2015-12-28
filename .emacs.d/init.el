@@ -85,7 +85,9 @@ Assumes that the frame is only split into two."
 (   column-number-mode   )
 (delete-selection-mode   )
 (      show-paren-mode   )
-(        tool-bar-mode -1)
+
+(if window-system
+    (tool-bar-mode 0))
 
 (put   'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
