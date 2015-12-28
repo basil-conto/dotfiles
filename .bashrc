@@ -44,7 +44,7 @@ shopt -s checkwinsize
 #   debian_chroot=$(cat /etc/debian_chroot)
 # fi
 
-# Enable color support of ls and also add handy aliases
+# Enable ls colour support
 [ -x /usr/bin/dircolors ]                \
   && test -r ~/.dircolors                \
   && eval "$(dircolors -b ~/.dircolors)" \
