@@ -81,10 +81,10 @@ Assumes that the frame is only split into two."
  inhibit-startup-screen       1
  uniquify-buffer-name-style   'forward)
 
-(    blink-cursor-mode -1)
-(   column-number-mode   )
-(delete-selection-mode   )
-(      show-paren-mode   )
+(    blink-cursor-mode 0)
+(   column-number-mode  )
+(delete-selection-mode  )
+(      show-paren-mode  )
 
 (if window-system
     (tool-bar-mode 0))
@@ -120,7 +120,7 @@ Assumes that the frame is only split into two."
 (setq indent-line-function 'insert-tab)
 
 (defun fix-electric-indent ()
-  (electric-indent-local-mode -1))
+  (electric-indent-local-mode 0))
 
 ;;; ======
 ;;; Backup
@@ -200,8 +200,8 @@ Assumes that the frame is only split into two."
   :config
   (add-hook 'dafny-mode-hook (lambda ()
                                (fix-electric-indent)
-                               (prettify-symbols-mode -1)
-                               (flycheck-mode -1))))
+                               (prettify-symbols-mode 0)
+                               (flycheck-mode 0))))
 
 (use-package doc-view
   :no-require t
