@@ -42,18 +42,20 @@ Assumes that the frame is only split into two."
 
 (bind-keys
  ;; Murder
- ("C-k"         .  kill-whole-line)
- ("C-x C-k"     .        kill-line)
+ ("C-k"         . kill-whole-line)
+ ("C-x C-k"     .       kill-line)
  ;; Windows
- ("C-x 4"       .  transpose-split)
+ ("C-x 4"       . transpose-split)
  ;; Buffers
- ("S-<prior>"   .  previous-buffer)
- ("S-<next>"    .      next-buffer)
+ ("S-<prior>"   . previous-buffer)
+ ("S-<next>"    .     next-buffer)
  ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" .  previous-buffer)
- ("M-[ 6 ; 2 ~" .      next-buffer)
+ ("M-[ 5 ; 2 ~" . previous-buffer)
+ ("M-[ 6 ; 2 ~" .     next-buffer)
+ ("M-[ 1 ; 5 C" .      right-word)
+ ("M-[ 1 ; 5 D" .       left-word)
  ;; Prop line file variables
- ("C-c a"       .  add-file-local-variable-prop-line))
+ ("C-c a"       . add-file-local-variable-prop-line))
 
 ;;; =========
 ;;; Scrolling
