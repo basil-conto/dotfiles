@@ -1,0 +1,11 @@
+#!/bin/sh
+
+viewer='mupdf'
+if [ "$1" = "-z" ]; then
+  viewer='zathura'
+  shift
+fi
+
+for file in "$@"; do
+  eval "\"${viewer}\" \"${file}\" 1>/dev/null 2>&1 &"
+done
