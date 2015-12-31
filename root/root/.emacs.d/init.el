@@ -103,6 +103,11 @@ Assumes that the frame is only split into two."
 ;;; Package settings
 ;;; ================
 
+;; apt-sources
+
+(eval-when-compile (require 'apt-sources))
+(add-hook 'apt-sources-mode-hook 'fix-electric-indent)
+
 ;; bytecomp
 
 (autoload 'byte-compile-file "bytecomp" nil t)

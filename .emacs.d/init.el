@@ -148,6 +148,10 @@ Assumes that the frame is only split into two."
   (setq ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
 
+(use-package apt-sources
+  :config
+  (add-hook 'apt-sources-mode-hook 'fix-electric-indent))
+
 (use-package tex
   :ensure auctex
   :config
