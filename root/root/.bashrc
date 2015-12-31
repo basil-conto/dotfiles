@@ -9,17 +9,17 @@ eval "`dircolors`"
 
 export GREP_OPTIONS='--color=auto'
 
-alias ls='ls --color=auto --group-directories-first'
-alias l='ls -F'
-alias ll='l -lh'
-alias la='ll -A'
+[ -f ~/.bash_aliases ] && . ~/.bash_aliases
+[ -f ~/.bash_colours ] && . ~/.bash_colours
 
-# Some more alias to avoid making mistakes:
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
+# Prompt
+PS1="\[${PRP}\]${debian_chroot:+($debian_chroot)}\[${RESET}\]"
+PS1+="[\[${RED_BF}\]\\h\[${RESET}\]] \[${BLU_BF}\]\\w \\$\[${RESET}\] "
 
-# nano with smart home and 2-space tabs
-alias nano='nano -A -E -T2'
+# Don't pollute the environment
+bash_colours_unset
+unset -f bash_colours_unset
 
-alias em='emacs -nw'
+# Allow safe usage of boolean expressions without spamming error return codes;
+# actual errors should (hopefully) manifest by other means
+true
