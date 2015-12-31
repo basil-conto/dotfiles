@@ -41,7 +41,7 @@ shopt -s checkwinsize
 
 # Enable ls colour support
 [ -x /usr/bin/dircolors ]                \
-  && test -r ~/.dircolors                \
+  && [ -r ~/.dircolors  ]                \
   && eval "$(dircolors -b ~/.dircolors)" \
   || eval "$(dircolors -b)"
 
