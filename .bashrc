@@ -39,11 +39,6 @@ shopt -s checkwinsize
 #     ;;
 # esac
 
-# # Set variable identifying the chroot you work in (used in the prompt below)
-# if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-#   debian_chroot=$(cat /etc/debian_chroot)
-# fi
-
 # Enable ls colour support
 [ -x /usr/bin/dircolors ]                \
   && test -r ~/.dircolors                \
@@ -73,6 +68,11 @@ man() {
 #
 # ┌[blc@t430-mint] (master) ~/dotfiles [1]
 # └$
+
+# Set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+  debian_chroot=$(cat /etc/debian_chroot)
+fi
 
 git_ps1() {
   local rc=$?
