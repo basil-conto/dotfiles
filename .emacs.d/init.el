@@ -261,6 +261,9 @@ Assumes that the frame is only split into two."
   :disabled t
   :load-path "lisp")
 
+(use-package git-commit
+  :ensure t)
+
 (use-package gitconfig-mode
   :ensure t)
 
