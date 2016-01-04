@@ -68,5 +68,10 @@ alias error='notify-send -u critical -i error'
 # gcal
 alias gcal='gcal -s 1'
 
+# cpufreq
+alias policy='cpufreq-info -p'
+alias powersave='sudo cpufreq-set -rg powersave'
+alias performance='sudo cpufreq-set -rg performance'
+
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'
