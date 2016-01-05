@@ -55,6 +55,7 @@ alias blaster='padsp mp3blaster'
 alias startvm='vboxmanage startvm'
 
 # youtube-dl
+alias ydl='youtube-dl --prefer-ffmpeg'
 alias ydl-mp3='ydl -x --audio-format mp3 --audio-quality 256K'
 alias ydl-vorbis='ydl -x --audio-format vorbis --audio-quality 128K'
 
