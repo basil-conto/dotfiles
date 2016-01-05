@@ -40,6 +40,10 @@ Assumes that the frame is only split into two."
       (split-window-vertically))
     (switch-to-buffer nil)))
 
+(defun refresh-buffer ()
+  (interactive)
+  (revert-buffer nil t))
+
 (bind-keys
  ;; Murder
  ("C-k"         . kill-whole-line)
@@ -47,6 +51,7 @@ Assumes that the frame is only split into two."
  ;; Windows
  ("C-x 4"       . transpose-split)
  ;; Buffers
+ ("<f5>"        .  refresh-buffer)
  ("S-<prior>"   . previous-buffer)
  ("S-<next>"    .     next-buffer)
  ;; Mutatis mutandis within tmux
