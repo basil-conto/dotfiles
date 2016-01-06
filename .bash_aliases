@@ -36,9 +36,10 @@ alias brighten='xbacklight -inc 10'
 # GNU compilers
 alias gcc='gcc -fdiagnostics-color'
 alias g++='g++ -fdiagnostics-color'
-alias gcc99='gcc -std=gnu99'
-alias gcc11='gcc -std=gnu11'
-alias g++11='g++ -std=gnu++11'
+alias gcc99='gcc -std=c99'
+alias gcc11='gcc -std=c11'
+alias g++03='g++ -std=c++03'
+alias g++11='g++ -std=c++11'
 
 # emacsen
 alias em='emacs -nw'
