@@ -9,3 +9,5 @@ Emacs
 * Improve haskell-mode indentation
 * Add abbreviations?
 * http://www.emacswiki.org/emacs/ThreeWindows
+* Look into use-package :commands keyword
+* Look into ERC/ZNC
