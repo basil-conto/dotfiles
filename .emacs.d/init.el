@@ -176,6 +176,12 @@ Assumes that the frame is only split into two."
             (lambda () (byte-recompile-file init-file-src nil 0))))
 
 (use-package cc-mode
+  :preface
+  (defun comment-line ()
+    "Toggle commenting of current line"
+    (interactive)
+    (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+  :bind ("M-\"" . comment-line)
   :config
   (setq c-default-style "linux"
         c-basic-offset  2)
