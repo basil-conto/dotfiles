@@ -1,4 +1,5 @@
 #!/usr/bin/pulseaudio -nF
+# -*- conf -*-
 #
 # This file is part of PulseAudio.
 #
