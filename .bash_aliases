@@ -1,9 +1,6 @@
 # -*- sh -*-
 # ~/.bash_aliases
 
-# nano with smart home and 2-space tabs
-alias nano='nano -A -E -T2'
-
 # safety
 alias cp='cp -i'
 alias mv='mv -i'

@@ -1,0 +1,23 @@
+# -*- conf-space -*-
+# ~/.nanorc
+
+# Display cursor position
+set const
+
+# Read files into new buffer
+set multibuffer
+
+# No automatic newline insertion
+set nonewlines
+
+# Smart home key
+set smarthome
+
+# Smooth, line-by-line scrolling
+set smooth
+
+# Tab size in spaces
+set tabsize 2
+
+# Prefer spaces over tabs
+set tabstospaces
