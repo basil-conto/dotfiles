@@ -1,17 +1,12 @@
-
 import XMonad
 import XMonad.Hooks.DynamicLog
 import Data.Monoid
 import System.Exit
 
-import qualified XMonad.StackSet as W
-import qualified Data.Map        as M
-
--- Preferred terminal emulator
-myTerminal = "gnome-terminal"
+-- Terminal emulator
+myTerminal = "roxterm"
 
 -- Whether focus follows mouse pointer
-myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 
 -- Width of window border (px)
