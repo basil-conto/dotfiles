@@ -312,10 +312,6 @@ Assumes that the frame is only split into two."
         js-indent-level 2
         js-switch-indent-offset 2))
 
-(use-package js2-mode
-  :no-require t
-  :disabled t)
-
 (use-package js3-mode
   :ensure t
   :config
