@@ -101,9 +101,6 @@ unset -f bash_colours_unset
 # Used, for example, by crontab
 export EDITOR='emacs -nw'
 
-# Coloured grep
-export GREP_OPTIONS='--color=auto'
-
 # # enable programmable completion features (you don't need to enable
 # # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # # sources /etc/bash.bashrc).

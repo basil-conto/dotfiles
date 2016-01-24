@@ -15,6 +15,10 @@ alias l='ls -F'
 alias ll='l -lh'
 alias la='ll -A'
 
+# grep
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
 alias uuu='uu && sudo apt-get dist-upgrade'
