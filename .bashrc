@@ -30,15 +30,6 @@ shopt -s checkwinsize
 # Make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# # If this is an xterm set the title to user@host:dir
-# case "$TERM" in
-#   xterm*|rxvt*)
-#     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-#     ;;
-#   *)
-#     ;;
-# esac
-
 # Enable ls colour support
 [ -x /usr/bin/dircolors ]                \
   && [ -r ~/.dircolors  ]                \
@@ -100,17 +91,6 @@ unset -f bash_colours_unset
 
 # Used, for example, by crontab
 export EDITOR='emacs -nw'
-
-# # enable programmable completion features (you don't need to enable
-# # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# # sources /etc/bash.bashrc).
-# if ! shopt -oq posix; then
-#   if [ -f /usr/share/bash-completion/bash_completion ]; then
-#     . /usr/share/bash-completion/bash_completion
-#   elif [ -f /etc/bash_completion ]; then
-#     . /etc/bash_completion
-#   fi
-# fi
 
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
