@@ -5,6 +5,7 @@
 
 Emacs
 
+* Fix OS X undo, # and buffer/window switching bindings
 * Incorporate more dwim commenting
 * Fix c++-mode memer-init-intro indentation
 * Improve haskell-mode indentation
