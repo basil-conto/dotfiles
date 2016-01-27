@@ -48,7 +48,7 @@ alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 
 # vlc
 alias vlc='VLC_PLUGIN_PATH=/opt/homebrew-cask/Caskroom/vlc/2.2.1/VLC.app/Contents/MacOS/plugins vlc'
-alias nvlc='vlc -I ncurses'
+alias nvlc='vlc -I ncurses --browse-dir .'
 
 # gcal
 alias gcal='gcal -s 1'
