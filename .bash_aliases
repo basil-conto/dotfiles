@@ -71,6 +71,9 @@ alias error='notify-send -u critical -i error'
 # gcal
 alias gcal='gcal -s 1'
 
+# vlc
+alias nvlc='nvlc --browse-dir .'
+
 # cpufreq
 alias policy='cpufreq-info -p'
 alias powersave='sudo cpufreq-set -rg powersave'
