@@ -172,12 +172,6 @@ Offer to revert from the auto-save file, if it exists."
             (lambda () (byte-recompile-file init-file-src nil 0))))
 
 (use-package cc-mode
-  :preface
-  (defun comment-line ()
-    "Toggle commenting of current line"
-    (interactive)
-    (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
-  :bind ("M-\"" . comment-line)
   :config
   (setq c-default-style "linux"
         c-basic-offset  2)
@@ -212,6 +206,10 @@ Offer to revert from the auto-save file, if it exists."
                        (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$"))))
               0                         ; no additional indent
             ad-do-it))))                ; default behavior
+
+(use-package comment-dwim-2
+  :ensure t
+  :bind ("M-;" . comment-dwim-2))
 
 (use-package conf-mode
   :config
