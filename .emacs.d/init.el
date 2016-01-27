@@ -265,6 +265,15 @@ Offer to revert from the auto-save file, if it exists."
                   LaTeX-mode-hook))
     (add-hook hook 'turn-on-fic-mode)))
 
+(use-package find-file
+  :config
+  (add-hook 'find-file-hook
+            (lambda ()
+              (save-excursion
+                (goto-char (point-min))
+                (when (re-search-forward "^<<<<<<< " nil t)
+                  (smerge-mode 1))))))
+
 (use-package ido
   :config
   (ido-mode)
