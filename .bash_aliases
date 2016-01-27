@@ -19,19 +19,6 @@ alias egrep='egrep --color=auto'
 # brew
 alias uu='brew update && brew upgrade $(brew outdated)'
 
-# wajig
-alias list='wajig listinstalled'
-
-# xdg
-alias dis='xdg-open'
-
-# xbacklight
-alias dark='xbacklight -set 0'
-alias half='xbacklight -set 50'
-alias bright='xbacklight -set 100'
-alias dim='xbacklight -dec 10'
-alias brighten='xbacklight -inc 10'
-
 # GNU compilers
 alias gcc='gcc -fdiagnostics-color'
 alias g++='g++ -fdiagnostics-color'
@@ -47,9 +34,6 @@ alias ecc='emacsclient -a "" -c -n'
 
 # colordiff
 alias ciff='colordiff -y -W 160'
-
-# mp3blaster
-alias blaster='padsp mp3blaster'
 
 # virtualbox
 alias startvm='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage startvm'

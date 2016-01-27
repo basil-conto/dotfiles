@@ -1,4 +1,3 @@
-# -*- sh -*-
 # ~/.bashrc
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
@@ -31,7 +30,7 @@ shopt -s checkwinsize
 # shopt -s globstar
 
 # Make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+[ -x /usr/local/bin/lesspipe.sh ] && eval "$(SHELL=/bin/sh lesspipe.sh)"
 
 # Alias definitions.
 [ -f ~/.bash_aliases    ] && . ~/.bash_aliases
