@@ -22,10 +22,9 @@
 ;;; Key bindings
 ;;; ============
 
-;;; Transpose window split
 (defun transpose-split ()
   "If the frame is split vertically, split it horizontally or vice versa.
-Assumes that the frame is only split into two."
+Assumes that the frame is split only in two."
   (interactive)
   (unless (= (length (window-list)) 2)
     (error "Can only toggle a frame split in two"))
@@ -37,6 +36,8 @@ Assumes that the frame is only split into two."
     (switch-to-buffer nil)))
 
 (defun refresh-buffer ()
+  "Reconcile the current buffer with what lives in the real world (the disk).
+Offer to revert from the auto-save file, if it exists."
   (interactive)
   (revert-buffer nil t))
 
@@ -97,13 +98,14 @@ Assumes that the frame is only split into two."
 (put 'downcase-region 'disabled nil)
 
 (defun what-face (pos)
+  "Describe face at current point."
   (interactive "d")
   (let ((face (or (get-char-property (point) 'read-face-name)
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
 (defun iwb ()
-  "indent whole buffer"
+  "Indent Whole Buffer and delete trailing whitespace."
   (interactive)
   (delete-trailing-whitespace)
   (indent-region (point-min) (point-max) nil)
