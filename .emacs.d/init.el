@@ -10,10 +10,9 @@
 
 ;;; use-package
 (unless (package-installed-p 'use-package)
-  (if (y-or-n-p "use-package not installed, would you like to install it?")
-      (progn
-        (package-refresh-contents)
-        (package-install 'use-package))))
+  (when (y-or-n-p "use-package not installed, would you like to install it?")
+    (package-refresh-contents)
+    (package-install 'use-package)))
 
 (eval-when-compile
   (require 'use-package))
@@ -91,8 +90,8 @@ Assumes that the frame is only split into two."
 (delete-selection-mode  )
 (      show-paren-mode  )
 
-(if window-system
-    (tool-bar-mode 0))
+(when window-system
+  (tool-bar-mode 0))
 
 (put   'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -254,7 +253,6 @@ Assumes that the frame is only split into two."
                        prog-mode-hook
                      prolog-mode-hook
                      csharp-mode-hook
-                        ess-mode-hook
                         js3-mode-hook
                       todoo-mode-hook
                   gitconfig-mode-hook))
