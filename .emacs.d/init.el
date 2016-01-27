@@ -215,6 +215,9 @@ Offer to revert from the auto-save file, if it exists."
               0                         ; no additional indent
             ad-do-it))))                ; default behavior
 
+(use-package comment-dwim-2
+  :bind ("M-;" . comment-dwim-2))
+
 (use-package conf-mode
   :config
   (add-hook 'conf-mode-hook 'fix-electric-indent))
