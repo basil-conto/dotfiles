@@ -1,3 +1,6 @@
+# -*- sh -*-
+# ~/.bashrc
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # See /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -30,12 +33,6 @@ shopt -s checkwinsize
 # Make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# Enable ls colour support
-[ -x /usr/bin/dircolors ]                \
-  && [ -r ~/.dircolors  ]                \
-  && eval "$(dircolors -b ~/.dircolors)" \
-  || eval "$(dircolors -b)"
-
 # Alias definitions.
 [ -f ~/.bash_aliases    ] && . ~/.bash_aliases
 # Colour definitions
@@ -59,11 +56,6 @@ man() {
 #
 # ┌[blc@t430-mint] (master) ~/dotfiles [1]
 # └$
-
-# Set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-  debian_chroot=$(cat /etc/debian_chroot)
-fi
 
 git_ps1() {
   local rc=$?
@@ -89,8 +81,9 @@ unset -f bash_colours_unset
 # Enable colour and special key support in tmux
 [ -z "${TMUX}" ] && export TERM=xterm-256color
 
-# Used, for example, by crontab
-export EDITOR='emacs -nw'
+export NVM_DIR="/Users/blc/.nvm"
+# Load nvm
+[ -s "${NVM_DIR}/nvm.sh" ] && . "${NVM_DIR}/nvm.sh"
 
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means

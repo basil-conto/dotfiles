@@ -16,10 +16,8 @@ alias la='ll -A'
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 
-# apt
-alias uu='sudo apt-get update && sudo apt-get upgrade'
-alias uuu='uu && sudo apt-get dist-upgrade'
-alias uuuu='uuu && sudo apt-get autoremove && sudo apt-get autoclean'
+# brew
+alias uu='brew update && brew upgrade $(brew outdated)'
 
 # wajig
 alias list='wajig listinstalled'
@@ -54,7 +52,7 @@ alias ciff='colordiff -y -W 160'
 alias blaster='padsp mp3blaster'
 
 # virtualbox
-alias startvm='vboxmanage startvm'
+alias startvm='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage startvm'
 
 # youtube-dl
 alias ydl='youtube-dl --prefer-ffmpeg'
@@ -64,17 +62,12 @@ alias ydl-vorbis='ydl -x --audio-format vorbis --audio-quality 128K'
 # chromium
 alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 
-# notify-send
-alias apprise='notify-send -u low'
-alias error='notify-send -u critical -i error'
+# vlc
+alias vlc='VLC_PLUGIN_PATH=/opt/homebrew-cask/Caskroom/vlc/2.2.1/VLC.app/Contents/MacOS/plugins vlc'
+alias nvlc='vlc -I ncurses'
 
 # gcal
 alias gcal='gcal -s 1'
-
-# cpufreq
-alias policy='cpufreq-info -p'
-alias powersave='sudo cpufreq-set -rg powersave'
-alias performance='sudo cpufreq-set -rg performance'
 
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'

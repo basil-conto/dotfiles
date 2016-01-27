@@ -62,6 +62,9 @@ Assumes that the frame is only split into two."
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
+;; Because # key missing and Option interpreted as Meta
+(bind-key "M-3" "#" key-translation-map)
+
 ;;; =========
 ;;; Scrolling
 ;;; =========
@@ -79,8 +82,6 @@ Assumes that the frame is only split into two."
 ;;; =======
 
 (load-theme 'tango-dark)
-
-(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 9"))
 
 (setq
  font-lock-maximum-decoration 2
@@ -149,13 +150,10 @@ Assumes that the frame is only split into two."
 ;;; ================
 
 (use-package ag
+  :ensure t
   :config
   (setq ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
-
-(use-package apt-sources
-  :config
-  (add-hook 'apt-sources-mode-hook 'fix-electric-indent))
 
 (use-package tex
   :ensure auctex
@@ -221,24 +219,9 @@ Assumes that the frame is only split into two."
   :config
   (add-hook 'conf-mode-hook 'fix-electric-indent))
 
-(use-package csharp-mode
-  :ensure t
-  :mode "\\.cs$"
-  :config
-  (add-hook 'csharp-mode-hook
-            (lambda () (local-set-key (kbd "{") 'c-electric-brace))))
-
 (use-package crontab-mode
   :ensure t
   :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
-
-(use-package dafny-mode
-  :ensure boogie-friends
-  :config
-  (add-hook 'dafny-mode-hook (lambda ()
-                               (fix-electric-indent)
-                               (prettify-symbols-mode 0)
-                               (flycheck-mode 0))))
 
 (use-package doc-view
   :no-require t
@@ -246,15 +229,11 @@ Assumes that the frame is only split into two."
   :config
   (setq doc-view-continuous t))
 
-(use-package ess
-  :no-require t
-  :disabled t
+(use-package exec-path-from-shell
+  :ensure t
   :config
-  (setq-default ess-default-style 'DEFAULT)
-  (setq ess-arg-function-offset nil))
-
-(if ( get-buffer "*ESS*")
-    (kill-buffer "*ESS*"))
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize)))
 
 (use-package fic-mode
   :ensure t
@@ -284,10 +263,14 @@ Assumes that the frame is only split into two."
                   gitconfig-mode-hook))
     (add-hook hook 'fci-mode)))
 
-(use-package flex-mode
-  :no-require t
-  :disabled t
-  :load-path "lisp")
+(use-package find-file
+  :config
+  (add-hook 'find-file-hook
+            (lambda ()
+              (save-excursion
+                (goto-char (point-min))
+                (when (re-search-forward "^<<<<<<< " nil t)
+                  (smerge-mode 1))))))
 
 (use-package git-commit
   :ensure t)
@@ -299,18 +282,19 @@ Assumes that the frame is only split into two."
   :ensure t)
 
 (use-package haskell-mode
+  :ensure t
   :config
   ;; Pretty lambda
   ;; (setq haskell-font-lock-symbols t)
   (add-hook 'haskell-mode-hook (lambda ()
-                                 (turn-on-haskell-simple-indent)
+                                 (haskell-indentation-mode)
                                  (fix-electric-indent))))
 
 (use-package js
   :config
   (setq js-enabled-frameworks '(javascript prototype dojo)
-        js-indent-level 2
-        js-switch-indent-offset 2))
+        js-indent-level 4
+        js-switch-indent-offset 4))
 
 (use-package js3-mode
   :ensure t
@@ -319,6 +303,7 @@ Assumes that the frame is only split into two."
    js3-auto-indent-p                         t
    js3-enter-indents-newline                 t
    js3-indent-dots                           t
+   js3-indent-level                          4
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
   (setq
@@ -369,8 +354,7 @@ Assumes that the frame is only split into two."
   (set-face-attribute 'minimap-active-region-background nil
     :background "dim grey")
   (set-face-attribute 'minimap-font-face nil
-    :height 8
-    :family "DejaVu Sans Mono"))
+    :height 8))
 
 (use-package pascal
   :no-require t
@@ -410,6 +394,7 @@ Assumes that the frame is only split into two."
   (setq sr-speedbar-auto-refresh nil))
 
 (use-package todoo
+  :load-path "lisp"
   :mode ("TODO"  .  todoo-mode )
   :bind ("<f12>" . toggle-todoo)
   :config
