@@ -10,10 +10,9 @@
 
 ;;; use-package
 (unless (package-installed-p 'use-package)
-  (if (y-or-n-p "use-package not installed, would you like to install it?")
-      (progn
-        (package-refresh-contents)
-        (package-install 'use-package))))
+  (when (y-or-n-p "use-package not installed, would you like to install it?")
+    (package-refresh-contents)
+    (package-install 'use-package)))
 
 (eval-when-compile
   (require 'use-package))
@@ -90,8 +89,8 @@ Assumes that the frame is only split into two."
 (delete-selection-mode  )
 (      show-paren-mode  )
 
-(if window-system
-    (tool-bar-mode 0))
+(when window-system
+  (tool-bar-mode 0))
 
 (put   'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -250,8 +249,8 @@ Assumes that the frame is only split into two."
   (setq-default ess-default-style 'DEFAULT)
   (setq ess-arg-function-offset nil))
 
-(if ( get-buffer "*ESS*")
-    (kill-buffer "*ESS*"))
+(when (get-buffer "*ESS*")
+  (kill-buffer "*ESS*"))
 
 (use-package fic-mode
   :ensure t
