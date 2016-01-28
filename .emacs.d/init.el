@@ -332,7 +332,7 @@ Offer to revert from the auto-save file, if it exists."
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
   (setq
-   js3-global-externs (mapcar 'symbol-name '(console define require))
+   js3-global-externs (mapcar #'symbol-name '(console define require))
    js3-include-browser-externs      nil
    js3-include-gears-externs        nil
    js3-include-rhino-externs        nil
@@ -355,17 +355,18 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package lisp-mode
   :config
-  (add-hook 'lisp-mode-hook 'fix-electric-indent))
+  (add-hook 'lisp-mode-hook #'fix-electric-indent))
 
 (use-package list-unicode-display
   :ensure t)
 
 (use-package markdown-mode
   :ensure t
+  :functions markdown-cycle
   :mode ("\\.md$" "\\.markdown$")
   :config
   (add-hook 'markdown-mode-hook
-            (lambda () (local-set-key (kbd "TAB") 'markdown-cycle))))
+            (lambda () (local-set-key (kbd "TAB") #'markdown-cycle))))
 
 (use-package minimap
   :no-require t
@@ -415,20 +416,22 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package sr-speedbar
   :ensure t
+  :defines helm-alive-p
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq sr-speedbar-auto-refresh nil))
 
 (use-package todoo
+  :functions todoo-save-and-exit
   :mode ("TODO"  .  todoo-mode )
   :bind ("<f12>" . toggle-todoo)
   :config
   (defun toggle-todoo ()
     (interactive)
     (if (eq major-mode 'todoo-mode)
-        (call-interactively 'todoo-save-and-exit)
-      (call-interactively 'todoo)))
-  (add-hook 'todoo-mode-hook 'fix-electric-indent)
+        (call-interactively #'todoo-save-and-exit)
+      (call-interactively #'todoo)))
+  (add-hook 'todoo-mode-hook #'fix-electric-indent)
   (setq todoo-indent-column 2))
 
 (use-package vlf
