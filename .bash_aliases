@@ -15,6 +15,7 @@ alias la='ll -A'
 # grep
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
 
 # brew
 alias uu='brew update && brew upgrade $(brew outdated)'
