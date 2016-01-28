@@ -59,9 +59,6 @@ Offer to revert from the auto-save file, if it exists."
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
-;; Because # key missing and Option interpreted as Meta
-(bind-key "M-3" "#" key-translation-map)
-
 ;;; =========
 ;;; Scrolling
 ;;; =========
