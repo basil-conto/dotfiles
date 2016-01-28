@@ -369,6 +369,17 @@ Offer to revert from the auto-save file, if it exists."
   (add-hook 'markdown-mode-hook
             (lambda () (local-set-key (kbd "TAB") #'markdown-cycle))))
 
+(use-package minibuffer
+  :preface
+  (defconst gc-orig-thresh gc-cons-threshold
+    "http://bling.github.io/blog/\
+2016/01/18/why-are-you-changing-gc-cons-threshold/")
+  :config
+  (add-hook 'minibuffer-setup-hook
+            (lambda () (setq gc-cons-threshold most-positive-fixnum)))
+  (add-hook 'minibuffer-exit-hook
+            (lambda () (setq gc-cons-threshold gc-orig-thresh))))
+
 (use-package minimap
   :no-require t
   :disabled t
