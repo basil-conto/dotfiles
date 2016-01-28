@@ -66,10 +66,11 @@ Offer to revert from the auto-save file, if it exists."
 (setq
  ;; One line at a time
  mouse-wheel-scroll-amount       '(1 ((shift) . 1))
- scroll-conservatively           10000
+ scroll-conservatively           most-positive-fixnum
  scroll-error-top-bottom         t
  scroll-preserve-screen-position t
- scroll-step                     1)
+ scroll-step                     1
+ scroll-margin                   1)
 
 ;;; =======
 ;;; General
