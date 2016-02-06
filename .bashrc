@@ -89,9 +89,6 @@ unset -f bash_colours_unset
 # Enable colour and special key support in tmux
 [ -z "${TMUX}" ] && export TERM=xterm-256color
 
-# Used, for example, by crontab
-export EDITOR='emacs -nw'
-
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
 true

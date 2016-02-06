@@ -18,6 +18,9 @@ fi
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
 export PATH
 
+# Used, for example, by crontab
+export EDITOR='emacs -nw'
+
 # Limit number of user processes
 ulimit -u 1024
 
