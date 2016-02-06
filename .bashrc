@@ -36,6 +36,10 @@ shopt -s checkwinsize
   && eval "$(dircolors -b ~/.dircolors)" \
   || eval "$(dircolors -b)"
 
+# Load nvm
+export NVM_DIR="${HOME}/.nvm"
+[ -s "${NVM_DIR}/nvm.sh" ] && . "${NVM_DIR}/nvm.sh"
+
 # Alias definitions.
 [ -f ~/.bash_aliases    ] && . ~/.bash_aliases
 # Colour definitions
