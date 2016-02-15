@@ -221,6 +221,7 @@ Offer to revert from the auto-save file, if it exists."
             ad-do-it))))                ; default behavior
 
 (use-package comment-dwim-2
+  :ensure t
   :bind ("M-;" . comment-dwim-2))
 
 (use-package conf-mode
