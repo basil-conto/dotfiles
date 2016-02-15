@@ -462,8 +462,6 @@ Offer to revert from the auto-save file, if it exists."
   (setq todoo-indent-column 2))
 
 (use-package vlf
-  :no-require t
-  :disabled t
   :ensure t)
 
 (use-package whitespace
