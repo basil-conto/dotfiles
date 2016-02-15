@@ -41,21 +41,28 @@ Offer to revert from the auto-save file, if it exists."
   (interactive)
   (revert-buffer nil t))
 
+(defun kill-whole-paragraph ()
+  "Kill region defined by `mark-paragraph`."
+  (interactive)
+  (mark-paragraph)
+  (kill-region (region-beginning) (region-end) t))
+
 (bind-keys
  ;; Murder
- ("C-k"         . kill-whole-line)
- ("C-x C-k"     .       kill-line)
+ ("C-x C-k"     . kill-line           )
+ ("C-k"         . kill-whole-line     )
+ ("M-k"         . kill-whole-paragraph)
  ;; Windows
- ("C-x 4"       . transpose-split)
+ ("C-x 4"       .      transpose-split)
  ;; Buffers
- ("<f5>"        .  refresh-buffer)
- ("S-<prior>"   . previous-buffer)
- ("S-<next>"    .     next-buffer)
+ ("<f5>"        .       refresh-buffer)
+ ("S-<prior>"   .      previous-buffer)
+ ("S-<next>"    .          next-buffer)
  ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" . previous-buffer)
- ("M-[ 6 ; 2 ~" .     next-buffer)
- ("M-[ 1 ; 5 C" .      right-word)
- ("M-[ 1 ; 5 D" .       left-word)
+ ("M-[ 5 ; 2 ~" .      previous-buffer)
+ ("M-[ 6 ; 2 ~" .          next-buffer)
+ ("M-[ 1 ; 5 C" .           right-word)
+ ("M-[ 1 ; 5 D" .            left-word)
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
