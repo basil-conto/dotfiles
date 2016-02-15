@@ -20,6 +20,10 @@ alias fgrep='fgrep --color=auto'
 # brew
 alias uu='brew update && brew upgrade $(brew outdated)'
 
+# directories
+alias mkdir='mkdir -pv'
+alias cdtemp='cd $(mktemp -d)'
+
 # GNU compilers
 alias gcc='gcc -fdiagnostics-color'
 alias g++='g++ -fdiagnostics-color'
