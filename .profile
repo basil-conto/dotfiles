@@ -13,13 +13,18 @@ if [ -n "${BASH_VERSION}" ] && [ -f "${HOME}/.bashrc" ]; then
   . "${HOME}/.bashrc"
 fi
 
-# Prepend private and cabal bin directories
+# Rubbish
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
+[ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
-export PATH
 
 # Used, for example, by crontab
-export EDITOR='emacs -nw'
+EDITOR='emacs -nw'
+
+# https://github.com/tj/n
+N_PREFIX="${HOME}/.local"
+
+export PATH EDITOR N_PREFIX
 
 # Limit number of user processes
 ulimit -u 1024
