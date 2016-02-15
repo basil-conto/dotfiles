@@ -17,6 +17,10 @@ alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 
+# directories
+alias mkdir='mkdir -pv'
+alias cdtemp='cd $(mktemp -d)'
+
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
 alias uuu='uu && sudo apt-get dist-upgrade'
