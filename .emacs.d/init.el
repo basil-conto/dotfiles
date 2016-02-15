@@ -58,6 +58,9 @@ Offer to revert from the auto-save file, if it exists."
  ("<f5>"        .       refresh-buffer)
  ("S-<prior>"   .      previous-buffer)
  ("S-<next>"    .          next-buffer)
+ ;; Scrolling
+ ("M-p"         .          "\C-u4\C-v")
+ ("M-n"         .          "\C-u4\M-v")
  ;; Mutatis mutandis within tmux
  ("M-[ 5 ; 2 ~" .      previous-buffer)
  ("M-[ 6 ; 2 ~" .          next-buffer)
