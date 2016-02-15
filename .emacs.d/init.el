@@ -164,7 +164,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package apt-sources
   :config
-  (add-hook 'apt-sources-mode-hook 'fix-electric-indent))
+  (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
 
 (use-package tex
   :ensure auctex
@@ -225,7 +225,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package conf-mode
   :config
-  (add-hook 'conf-mode-hook 'fix-electric-indent))
+  (add-hook 'conf-mode-hook #'fix-electric-indent))
 
 (use-package csharp-mode
   :ensure t
