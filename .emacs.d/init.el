@@ -290,14 +290,15 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (setq fci-rule-column 80
         fci-rule-color "DimGrey")
-  (dolist (hook '(     text-mode-hook
-                       prog-mode-hook
-                     prolog-mode-hook
-                     csharp-mode-hook
-                        ess-mode-hook
-                        js3-mode-hook
-                      todoo-mode-hook
-                  gitconfig-mode-hook))
+  (dolist (hook '(         text-mode-hook
+                           prog-mode-hook
+                         prolog-mode-hook
+                         csharp-mode-hook
+                            ess-mode-hook
+                            js3-mode-hook
+                          todoo-mode-hook
+                      gitconfig-mode-hook
+                  haskell-cabal-mode-hook))
     (add-hook hook 'fci-mode)))
 
 (use-package flex-mode
@@ -313,6 +314,10 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package gitignore-mode
   :ensure t)
+
+(use-package haskell-cabal
+  :config
+  (add-hook 'haskell-cabal-mode-hook #'fix-electric-indent))
 
 (use-package haskell-mode
   :config
