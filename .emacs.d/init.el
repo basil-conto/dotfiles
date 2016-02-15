@@ -315,6 +315,11 @@ Offer to revert from the auto-save file, if it exists."
 (use-package gitignore-mode
   :ensure t)
 
+(use-package git-rebase
+  :ensure magit
+  :config
+  (add-hook 'git-rebase-mode-hook #'hl-line-mode))
+
 (use-package haskell-cabal
   :config
   (add-hook 'haskell-cabal-mode-hook #'fix-electric-indent))
