@@ -75,12 +75,6 @@ alias gcal='gcal -s 1'
 # vlc
 alias nvlc='nvlc --browse-dir .'
 
-# nvm (bit of a kludge)
-alias nvmexec='nvm exec node'
-alias grunt='nvmexec grunt'
-alias node='nvmexec node'
-alias npm='nvmexec npm'
-
 # cpufreq
 alias policy='cpufreq-info -p'
 alias powersave='sudo cpufreq-set -rg powersave'
