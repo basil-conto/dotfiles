@@ -6,6 +6,7 @@
 [color]
 	ui     = auto
 [alias]
+	br     = branch
 	co     = checkout
 	ch     = cherry-pick
 	dc     = diff --cached
