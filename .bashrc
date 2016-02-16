@@ -80,10 +80,6 @@ unset -f bash_colours_unset
 # Enable colour and special key support in tmux
 [ -z "${TMUX}" ] && export TERM=xterm-256color
 
-export NVM_DIR="/Users/blc/.nvm"
-# Load nvm
-[ -s "${NVM_DIR}/nvm.sh" ] && . "${NVM_DIR}/nvm.sh"
-
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
 true
