@@ -11,9 +11,11 @@ for formula in coreutils findutils gnu-sed gnu-tar; do
   MANPATH="${BREW_PREFIX}/opt/${formula}/libexec/gnuman:${MANPATH}"
 done
 
+# Rubbish
 PATH="${HOME}/.pyenv/versions/2.7.8/bin:${PATH}"
 
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
+[ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
 
 export EDITOR PATH MANPATH BREW_PREFIX
