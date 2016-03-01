@@ -376,6 +376,12 @@ Offer to revert from the auto-save file, if it exists."
 (use-package list-unicode-display
   :ensure t)
 
+(use-package magit
+  :config
+  (set-face-attribute 'magit-blame-heading nil
+                      :background "brightblack"
+                      :foreground "white"))
+
 (use-package markdown-mode
   :ensure t
   :functions markdown-cycle
