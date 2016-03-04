@@ -245,6 +245,14 @@ but kills from the start of the paragraph instead of the current point."
                   LaTeX-mode-hook))
     (add-hook hook 'turn-on-fic-mode)))
 
+(use-package find-file
+  :config
+  (add-hook 'find-file-hook (lambda ()
+                              (when (> (buffer-size) (* 1024 1024))
+                                (setq buffer-read-only t)
+                                (buffer-disable-undo)
+                                (fundamental-mode)))))
+
 (use-package ido
   :config
   (ido-mode)
@@ -408,8 +416,6 @@ but kills from the start of the paragraph instead of the current point."
   (setq todoo-indent-column 2))
 
 (use-package vlf
-  :no-require t
-  :disabled t
   :ensure t)
 
 (use-package whitespace
