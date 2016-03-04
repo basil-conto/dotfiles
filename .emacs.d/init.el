@@ -57,13 +57,11 @@ but kills from the start of the paragraph instead of the current point."
  ("C-x 4"       . transpose-split)
  ;; Buffers
  ("<f5>"        .  refresh-buffer)
- ("S-<prior>"   . previous-buffer)
- ("S-<next>"    .     next-buffer)
+ ("S-<home>"    . previous-buffer)
+ ("S-<end>"     .     next-buffer)
  ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" . previous-buffer)
- ("M-[ 6 ; 2 ~" .     next-buffer)
- ("M-[ 1 ; 5 C" .      right-word)
- ("M-[ 1 ; 5 D" .       left-word)
+ ("M-[ 1 ; 2 h" . previous-buffer)
+ ("M-[ 1 ; 2 f" .     next-buffer)
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
