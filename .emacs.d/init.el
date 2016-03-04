@@ -42,8 +42,8 @@ Offer to revert from the auto-save file, if it exists."
   (revert-buffer nil t))
 
 (defun kill-whole-paragraph
-    "Similar to `kill-paragraph`,
-but kills from the start of the paragraph instead of the current point."
+    "Similar to `kill-paragraph`, but kills from the start of the paragraph
+instead of the current point, i.e. the region defined by `mark-paragraph`."
   (interactive)
   (mark-paragraph)
   (kill-region (region-beginning) (region-end) t))
@@ -62,9 +62,9 @@ but kills from the start of the paragraph instead of the current point."
  ;; Mutatis mutandis within tmux
  ("M-[ 1 ; 2 h" . previous-buffer)
  ("M-[ 1 ; 2 f" .     next-buffer)
-  ;; Scrolling
- ("M-n"         .     "\C-u4\C-v")
+ ;; Scrolling
  ("M-p"         .     "\C-u4\M-v")
+ ("M-n"         .     "\C-u4\C-v")
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
@@ -75,10 +75,11 @@ but kills from the start of the paragraph instead of the current point."
 (setq
  ;; One line at a time
  mouse-wheel-scroll-amount       '(1 ((shift) . 1))
- scroll-conservatively           10000
+ scroll-conservatively           most-positive-fixnum
  scroll-error-top-bottom         t
  scroll-preserve-screen-position t
- scroll-step                     1)
+ scroll-step                     1
+ scroll-margin                   1)
 
 ;;; =======
 ;;; General
@@ -219,7 +220,7 @@ but kills from the start of the paragraph instead of the current point."
 
 (use-package conf-mode
   :config
-  (add-hook 'conf-mode-hook 'fix-electric-indent))
+  (add-hook 'conf-mode-hook #'fix-electric-indent))
 
 (use-package crontab-mode
   :ensure t
@@ -247,11 +248,20 @@ but kills from the start of the paragraph instead of the current point."
 
 (use-package find-file
   :config
-  (add-hook 'find-file-hook (lambda ()
-                              (when (> (buffer-size) (* 1024 1024))
-                                (setq buffer-read-only t)
-                                (buffer-disable-undo)
-                                (fundamental-mode)))))
+  (add-hook
+   'find-file-hook
+   (lambda ()
+     (if (> (buffer-size) (* 1024 1024))
+         ;; Strip down emacs
+         (progn (setq buffer-read-only t)
+                (buffer-disable-undo)
+                (fundamental-mode))
+       ;; Detect conflicts
+       (save-excursion
+         (goto-char (point-min))
+         (when (re-search-forward "^<<<<<<< " nil t)
+           (message "Merge conflict detected. Enabling smerge-mode.")
+           (smerge-mode 1)))))))
 
 (use-package ido
   :config
@@ -263,23 +273,13 @@ but kills from the start of the paragraph instead of the current point."
   :config
   (setq fci-rule-column 80
         fci-rule-color "DimGrey")
-  (dolist (hook '(     text-mode-hook
-                       prog-mode-hook
-                     prolog-mode-hook
-                     csharp-mode-hook
-                        js3-mode-hook
-                      todoo-mode-hook
-                  gitconfig-mode-hook))
+  (dolist (hook '(         text-mode-hook
+                           prog-mode-hook
+                            js3-mode-hook
+                          todoo-mode-hook
+                      gitconfig-mode-hook
+                  haskell-cabal-mode-hook))
     (add-hook hook 'fci-mode)))
-
-(use-package find-file
-  :config
-  (add-hook 'find-file-hook
-            (lambda ()
-              (save-excursion
-                (goto-char (point-min))
-                (when (re-search-forward "^<<<<<<< " nil t)
-                  (smerge-mode 1))))))
 
 (use-package git-commit
   :ensure t)
@@ -294,6 +294,10 @@ but kills from the start of the paragraph instead of the current point."
   :ensure magit
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
+
+(use-package haskell-cabal
+  :config
+  (add-hook 'haskell-cabal-mode-hook #'fix-electric-indent))
 
 (use-package haskell-mode
   :ensure t
@@ -317,11 +321,11 @@ but kills from the start of the paragraph instead of the current point."
    js3-auto-indent-p                         t
    js3-enter-indents-newline                 t
    js3-indent-dots                           t
-   js3-indent-level                          4
+   jse-indent-level                          4
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
   (setq
-   js3-global-externs (mapcar 'symbol-name '(console define require))
+   js3-global-externs (mapcar #'symbol-name '(console define require))
    js3-include-browser-externs      nil
    js3-include-gears-externs        nil
    js3-include-rhino-externs        nil
@@ -344,17 +348,35 @@ but kills from the start of the paragraph instead of the current point."
 
 (use-package lisp-mode
   :config
-  (add-hook 'lisp-mode-hook 'fix-electric-indent))
+  (add-hook 'lisp-mode-hook #'fix-electric-indent))
 
 (use-package list-unicode-display
   :ensure t)
 
+(use-package magit
+  :config
+  (set-face-attribute 'magit-blame-heading nil
+                      :background "brightblack"
+                      :foreground "white"))
+
 (use-package markdown-mode
   :ensure t
+  :functions markdown-cycle
   :mode ("\\.md$" "\\.markdown$")
   :config
   (add-hook 'markdown-mode-hook
-            (lambda () (local-set-key (kbd "TAB") 'markdown-cycle))))
+            (lambda () (local-set-key (kbd "TAB") #'markdown-cycle))))
+
+(use-package minibuffer
+  :preface
+  (defconst gc-orig-thresh gc-cons-threshold
+    "http://bling.github.io/blog/\
+2016/01/18/why-are-you-changing-gc-cons-threshold/")
+  :config
+  (add-hook 'minibuffer-setup-hook
+            (lambda () (setq gc-cons-threshold most-positive-fixnum)))
+  (add-hook 'minibuffer-exit-hook
+            (lambda () (setq gc-cons-threshold gc-orig-thresh))))
 
 (use-package minimap
   :no-require t
@@ -403,21 +425,23 @@ but kills from the start of the paragraph instead of the current point."
 
 (use-package sr-speedbar
   :ensure t
+  :defines helm-alive-p
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq sr-speedbar-auto-refresh nil))
 
 (use-package todoo
   :load-path "lisp"
+  :functions todoo-save-and-exit
   :mode ("TODO"  .  todoo-mode )
   :bind ("<f12>" . toggle-todoo)
   :config
   (defun toggle-todoo ()
     (interactive)
     (if (eq major-mode 'todoo-mode)
-        (call-interactively 'todoo-save-and-exit)
-      (call-interactively 'todoo)))
-  (add-hook 'todoo-mode-hook 'fix-electric-indent)
+        (call-interactively #'todoo-save-and-exit)
+      (call-interactively #'todoo)))
+  (add-hook 'todoo-mode-hook #'fix-electric-indent)
   (setq todoo-indent-column 2))
 
 (use-package vlf
