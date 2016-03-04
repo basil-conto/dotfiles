@@ -62,6 +62,9 @@ but kills from the start of the paragraph instead of the current point."
  ;; Mutatis mutandis within tmux
  ("M-[ 1 ; 2 h" . previous-buffer)
  ("M-[ 1 ; 2 f" .     next-buffer)
+  ;; Scrolling
+ ("M-n"         .     "\C-u4\C-v")
+ ("M-p"         .     "\C-u4\M-v")
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
