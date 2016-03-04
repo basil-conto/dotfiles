@@ -1,6 +1,9 @@
 # -*- sh -*-
 # ~/.bash_aliases
 
+# Fly, good Fleance, fly, fly, fly!
+alias hide='pmset displaysleepnow'
+
 # safety
 alias cp='cp -i'
 alias mv='mv -i'
