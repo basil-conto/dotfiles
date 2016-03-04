@@ -41,7 +41,7 @@ Offer to revert from the auto-save file, if it exists."
   (interactive)
   (revert-buffer nil t))
 
-(defun kill-whole-paragraph
+(defun kill-whole-paragraph ()
     "Similar to `kill-paragraph`, but kills from the start of the paragraph
 instead of the current point, i.e. the region defined by `mark-paragraph`."
   (interactive)
