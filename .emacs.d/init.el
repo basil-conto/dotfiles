@@ -303,6 +303,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
                            prog-mode-hook
                          prolog-mode-hook
                          csharp-mode-hook
+                           conf-mode-hook
                             ess-mode-hook
                             js3-mode-hook
                           todoo-mode-hook
