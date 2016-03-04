@@ -274,12 +274,20 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package find-file
   :config
-  (add-hook 'find-file-hook
-            (lambda ()
-              (save-excursion
-                (goto-char (point-min))
-                (when (re-search-forward "^<<<<<<< " nil t)
-                  (smerge-mode 1))))))
+  (add-hook
+   'find-file-hook
+   (lambda ()
+     (if (> (buffer-size) (* 1024 1024))
+         ;; Strip down emacs
+         (progn (setq buffer-read-only t)
+                (buffer-disable-undo)
+                (fundamental-mode))
+       ;; Detect conflicts
+       (save-excursion
+         (goto-char (point-min))
+         (when (re-search-forward "^<<<<<<< " nil t)
+           (message "Merge conflict detected. Enabling smerge-mode.")
+           (smerge-mode 1)))))))
 
 (use-package ido
   :config
