@@ -41,16 +41,17 @@ Offer to revert from the auto-save file, if it exists."
   (interactive)
   (revert-buffer nil t))
 
-(defun kill-whole-paragraph ()
-  "Kill region defined by `mark-paragraph`."
+(defun kill-whole-paragraph
+    "Similar to `kill-paragraph`, but kills from the start of the paragraph
+instead of the current point, i.e. the region defined by `mark-paragraph`."
   (interactive)
   (mark-paragraph)
   (kill-region (region-beginning) (region-end) t))
 
 (bind-keys
  ;; Murder
- ("C-x C-k"     . kill-line           )
- ("C-k"         . kill-whole-line     )
+ ("C-x C-k"     . kill-line)
+ ("C-k"         . kill-whole-line)
  ("M-k"         . kill-whole-paragraph)
  ;; Windows
  ("C-x 4"       .      transpose-split)
