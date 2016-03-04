@@ -290,6 +290,11 @@ but kills from the start of the paragraph instead of the current point."
 (use-package gitignore-mode
   :ensure t)
 
+(use-package git-rebase
+  :ensure magit
+  :config
+  (add-hook 'git-rebase-mode-hook #'hl-line-mode))
+
 (use-package haskell-mode
   :ensure t
   :config
