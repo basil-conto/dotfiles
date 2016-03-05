@@ -275,6 +275,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
         fci-rule-color "DimGrey")
   (dolist (hook '(         text-mode-hook
                            prog-mode-hook
+                           conf-mode-hook
                             js3-mode-hook
                           todoo-mode-hook
                       gitconfig-mode-hook
