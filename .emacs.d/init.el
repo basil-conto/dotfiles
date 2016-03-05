@@ -391,6 +391,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :ensure t)
 
 (use-package magit
+  :ensure t
   :config
   (set-face-attribute 'magit-blame-heading nil
                       :background "brightblack"
