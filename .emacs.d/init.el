@@ -332,7 +332,8 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
    js3-include-rhino-externs        nil
    js3-skip-preprocessor-directives t)
   (set-face-attribute 'js3-function-param-face    nil :foreground "white")
-  (set-face-attribute 'js3-external-variable-face nil :foreground "red"))
+  (set-face-attribute 'js3-external-variable-face nil :foreground "brightred")
+  (set-face-attribute 'js3-error-face             nil :foreground "brightred"))
 
 (use-package json-mode
   :ensure t)
