@@ -37,8 +37,8 @@ alias g++11='g++ -std=c++11'
 
 # emacsen
 alias em='emacs -nw'
-alias ec='emacsclient -a "" -t'
-alias ecc='emacsclient -a "" -c -n'
+alias ec='emacsclient -a= -t'
+alias ecc='emacsclient -a= -c -n'
 
 # colordiff
 alias ciff='colordiff -y -W 160'
