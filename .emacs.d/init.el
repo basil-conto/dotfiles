@@ -105,13 +105,13 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (when window-system
   (tool-bar-mode 0))
 
-(put   'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
+(put   #'upcase-region 'disabled nil)
+(put #'downcase-region 'disabled nil)
 
 (defun what-face (pos)
   "Describe face at current point."
   (interactive "d")
-  (let ((face (or (get-char-property (point) 'read-face-name)
+  (let ((face (or (get-char-property (point) #'read-face-name)
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
@@ -134,7 +134,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
  tab-always-indent t
  tab-width         2)
 
-(setq indent-line-function 'insert-tab)
+(setq indent-line-function #'insert-tab)
 
 (defun fix-electric-indent ()
   (electric-indent-local-mode 0))
@@ -234,7 +234,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :mode "\\.cs$"
   :config
   (add-hook 'csharp-mode-hook
-            (lambda () (local-set-key (kbd "{") 'c-electric-brace))))
+            (lambda () (local-set-key (kbd "{") #'c-electric-brace))))
 
 (use-package crontab-mode
   :ensure t
@@ -267,10 +267,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (use-package fic-mode
   :ensure t
   :config
-  (dolist (hook '( prog-mode-hook
-                    js3-mode-hook
-                  LaTeX-mode-hook))
-    (add-hook hook 'turn-on-fic-mode)))
+  (dolist (hook '(LaTeX-mode-hook
+                   prog-mode-hook
+                    js3-mode-hook))
+    (add-hook hook #'turn-on-fic-mode)))
 
 (use-package find-file
   :config
