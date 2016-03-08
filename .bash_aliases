@@ -4,6 +4,9 @@
 # Fly, good Fleance, fly, fly, fly!
 alias hide='pmset displaysleepnow'
 
+# ps search
+alias psgrep='ps aux | grep'
+
 # safety
 alias cp='cp -i'
 alias mv='mv -i'
