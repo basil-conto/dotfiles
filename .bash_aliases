@@ -29,6 +29,7 @@ alias uu='brew update && brew upgrade $(brew outdated)'
 # directories
 alias mkdir='mkdir -pv'
 alias cdtemp='cd $(mktemp -d)'
+alias venture='pushd .; cd'
 
 # GNU compilers
 alias gcc='gcc -fdiagnostics-color'
