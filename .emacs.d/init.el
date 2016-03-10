@@ -270,11 +270,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :ensure t)
 
 (use-package ess
-  :no-require t
-  :disabled t
+  :ensure t
   :config
   (setq-default ess-default-style 'DEFAULT)
-  (setq ess-arg-function-offset nil))
+  (setq ess-indent-from-lhs nil))
 
 (when (get-buffer "*ESS*")
   (kill-buffer "*ESS*"))
