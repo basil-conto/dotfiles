@@ -124,6 +124,19 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (add-hook 'text-mode-hook (lambda () (setq fill-column 80
                                            sentence-end-double-space nil)))
 
+(defconst all-hooks
+  '(haskell-cabal-mode-hook
+        gitconfig-mode-hook
+           prolog-mode-hook
+           csharp-mode-hook
+            todoo-mode-hook
+             text-mode-hook
+             prog-mode-hook
+             conf-mode-hook
+              ess-mode-hook
+              js3-mode-hook)
+  "Individual hooks to hang from for global effect.")
+
 ;;; ===========
 ;;; Indentation
 ;;; ===========
@@ -283,14 +296,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :config
   (setq fci-rule-column 80
         fci-rule-color "DimGrey")
-  (dolist (hook '(         text-mode-hook
-                           prog-mode-hook
-                           conf-mode-hook
-                            js3-mode-hook
-                          todoo-mode-hook
-                      gitconfig-mode-hook
-                  haskell-cabal-mode-hook))
-    (add-hook hook 'fci-mode)))
+  (mapc (lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
 
 (use-package git-commit
   :ensure t)
