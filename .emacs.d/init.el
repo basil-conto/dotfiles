@@ -266,12 +266,6 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
                                (prettify-symbols-mode 0)
                                (flycheck-mode 0))))
 
-(use-package doc-view
-  :no-require t
-  :disabled t
-  :config
-  (setq doc-view-continuous t))
-
 (use-package ess
   :no-require t
   :disabled t
