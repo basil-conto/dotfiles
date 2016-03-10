@@ -278,6 +278,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (when (get-buffer "*ESS*")
   (kill-buffer "*ESS*"))
 
+(use-package expand-region
+  :ensure t
+  :bind ("M-+" . er/expand-region))
+
 (use-package fic-mode
   :ensure t
   :config
