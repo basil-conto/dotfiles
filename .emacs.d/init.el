@@ -257,6 +257,8 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :ensure t
   :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
 
+(use-package dash
+  :ensure t)
 
 (use-package exec-path-from-shell
   :ensure t
