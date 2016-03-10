@@ -186,6 +186,11 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   (setq ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
 
+(use-package annoying-arrows-mode
+  :ensure t
+  :config
+  (global-annoying-arrows-mode))
+
 (use-package tex
   :ensure auctex
   :config
