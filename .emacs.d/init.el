@@ -64,9 +64,6 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
  ("M-[ 6 ; 2 ~" .     next-buffer)
  ("M-[ 1 ; 5 C" .      right-word)
  ("M-[ 1 ; 5 D" .       left-word)
- ;; Scrolling
- ("M-p"         .     "\C-u4\M-v")
- ("M-n"         .     "\C-u4\C-v")
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
@@ -332,6 +329,11 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :ensure magit
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
+
+(use-package golden-ratio-scroll-screen
+  :ensure t
+  :bind (("M-," . golden-ratio-scroll-screen-down)
+         ("M-." . golden-ratio-scroll-screen-up)))
 
 (use-package haskell-cabal
   :config
