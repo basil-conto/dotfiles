@@ -455,7 +455,6 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package sr-speedbar
   :ensure t
-  :defines helm-alive-p
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq sr-speedbar-auto-refresh nil))
