@@ -242,6 +242,9 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
               0                         ; no additional indent
             ad-do-it))))                ; default behavior
 
+(use-package color-moccur
+  :ensure t)
+
 (use-package comment-dwim-2
   :ensure t
   :bind ("M-;" . comment-dwim-2))
