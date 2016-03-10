@@ -266,6 +266,9 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
                                (prettify-symbols-mode 0)
                                (flycheck-mode 0))))
 
+(use-package dash
+  :ensure t)
+
 (use-package ess
   :no-require t
   :disabled t
