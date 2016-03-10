@@ -121,13 +121,6 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
-(defun iwb ()
-  "Indent Whole Buffer and delete trailing whitespace."
-  (interactive)
-  (delete-trailing-whitespace)
-  (indent-region (point-min) (point-max) nil)
-  (untabify (point-min) (point-max)))
-
 (add-hook 'text-mode-hook (lambda () (setq fill-column 80
                                            sentence-end-double-space nil)))
 
@@ -144,6 +137,13 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (defun fix-electric-indent ()
   (electric-indent-local-mode 0))
+
+(defun iwb ()
+  "Indent Whole Buffer and delete trailing whitespace."
+  (interactive)
+  (delete-trailing-whitespace)
+  (indent-region (point-min) (point-max) nil)
+  (untabify (point-min) (point-max)))
 
 ;;; ======
 ;;; Backup
