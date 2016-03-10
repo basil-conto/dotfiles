@@ -72,9 +72,6 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
  ;; Mutatis mutandis within tmux
  ("M-[ 1 ; 2 h" . previous-buffer)
  ("M-[ 1 ; 2 f" .     next-buffer)
- ;; Scrolling
- ("M-p"         .     "\C-u4\M-v")
- ("M-n"         .     "\C-u4\C-v")
  ;; Prop line file variables
  ("C-c a"       . add-file-local-variable-prop-line))
 
@@ -320,6 +317,11 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :ensure magit
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
+
+(use-package golden-ratio-scroll-screen
+  :ensure t
+  :bind (("M-," . golden-ratio-scroll-screen-down)
+         ("M-." . golden-ratio-scroll-screen-up)))
 
 (use-package haskell-cabal
   :config
