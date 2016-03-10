@@ -476,6 +476,11 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (use-package vlf
   :ensure t)
 
+(use-package wc-mode
+  :ensure t
+  :config
+  (mapc (lambda (hook) (add-hook hook #'wc-mode)) all-hooks))
+
 (use-package whitespace
   :config
   (global-whitespace-mode)
