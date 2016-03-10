@@ -48,11 +48,21 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   (mark-paragraph)
   (kill-region (region-beginning) (region-end) t))
 
+(defun mark-line ()
+  "Move to the beginning and mark until the end of the current line."
+  (interactive)
+  (beginning-of-line)
+  (set-mark (line-end-position)))
+
 (bind-keys
  ;; Murder
  ("C-x C-k"     . kill-line)
  ("C-k"         . kill-whole-line)
  ("M-k"         . kill-whole-paragraph)
+ ;; Region
+ ("C-x C-SPC"   .       mark-line)
+ ;; Mutatis mutandis within tmux
+ ("C-x C-@"     .       mark-line)
  ;; Windows
  ("C-x 4"       . transpose-split)
  ;; Buffers
