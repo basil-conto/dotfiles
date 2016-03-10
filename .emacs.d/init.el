@@ -352,7 +352,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
    js3-auto-indent-p                         t
    js3-enter-indents-newline                 t
    js3-indent-dots                           t
-   jse-indent-level                          4
+   js3-indent-level                          4
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
   (setq
