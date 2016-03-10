@@ -356,11 +356,12 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
   (setq
-   js3-global-externs (mapcar #'symbol-name '(console define require))
    js3-include-browser-externs      nil
    js3-include-gears-externs        nil
    js3-include-rhino-externs        nil
    js3-skip-preprocessor-directives t)
+  (setq js3-global-externs
+        (mapcar 'symbol-name '(window document console define require)))
   (set-face-attribute 'js3-function-param-face    nil :foreground "white")
   (set-face-attribute 'js3-external-variable-face nil :foreground "brightred")
   (set-face-attribute 'js3-error-face             nil :foreground "brightred"))
