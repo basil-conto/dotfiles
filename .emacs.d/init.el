@@ -177,6 +177,9 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 ;;; Package settings
 ;;; ================
 
+(use-package 2048-game
+  :ensure t)
+
 (use-package ag
   :ensure t
   :config
