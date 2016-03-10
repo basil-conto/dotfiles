@@ -266,6 +266,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
 
+(use-package expand-region
+  :ensure t
+  :bind ("M-+" . er/expand-region))
+
 (use-package fic-mode
   :ensure t
   :config
