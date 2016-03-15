@@ -341,12 +341,39 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package js
   :config
-  (setq js-enabled-frameworks '(javascript prototype dojo)
-        js-indent-level 4
+  (setq js-enabled-frameworks   '(javascript prototype dojo)
+        js-indent-level         4
         js-switch-indent-offset 4))
 
 (use-package js3-mode
   :ensure t
+  ;; :preface
+  ;; (defconst i18next-wrap "i18next._(\\&)")
+  ;; (defconst ignore-escapes ".*?\\(?:\\s\\[^\\2]\\|\\S\\??\\).*?")
+  ;; (defconst i18next-re "\\(\\s\"\\).*?\\1")
+  ;; (defconst i18next-re
+  ;;   (concat "\\S\\\\(\\(\\s\"\\)"
+  ;;           ignore-escapes
+  ;;           "[[:upper:]]+?"
+  ;;           ignore-escapes
+  ;;           "\\2\\)"))
+  ;; (defun i18nextify-buffer ()
+  ;;   "Interactively i18next-wrap JS string literals in the current buffer."
+  ;;   (interactive)
+  ;;   ;; Don't forget to set case sensitivity!
+  ;;   (defvar old-case-fold-search case-fold-search)
+  ;;   (setq case-fold-search nil)
+  ;;   (query-replace-regexp i18next-re i18next-wrap)
+  ;;   (setq case-fold-search old-case-fold-search))
+;;   (defun i18nextify-buffer ()
+;;     "Interactively i18next-wrap JS string literals in the current buffer.
+;; The first pass ignores strings lacking upper-case letters.
+;; An optional double-check pass iterates over said ignored strings."
+;;     (query-replace-regexp "\\(\\s\"\\).*?[[:upper:]]+.*?\\1" i18next-wrap)
+;;     (when (y-or-n-p "Double-check strings lacking upper-case letters?")
+;;       (goto-char (point-min))
+;;       (query-replace-regexp "\\(\\s\"\\)[^\n[:upper:]]+?\\1" i18next-wrap)))
+  ;; :bind ("C-c i" . i18nextify-buffer)
   :config
   (setq-default
    js3-auto-indent-p                         t
@@ -441,6 +468,14 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :config
   (setq prolog-system 'swi))
 
+(use-package rx
+  :preface
+  (defun rx-to-string-bold (form)
+    "Interactively wrap `rx-to-string` and remove shy groups around result."
+    (interactive "sRegExp: ")
+    (message "String: \"%s\"" (rx-to-string form t)))
+  :bind ("C-c r" . rx-to-string-bold))
+
 (use-package server
   :config
   (setq server-kill-new-buffers nil))
@@ -459,13 +494,14 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package sr-speedbar
   :ensure t
+  :defines helm-alive-p
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq sr-speedbar-auto-refresh nil))
 
 (use-package todoo
   :load-path "lisp"
-  :functions todoo-save-and-exit
+  :functions todoo todoo-save-and-exit
   :mode ("TODO"  .  todoo-mode )
   :bind ("<f12>" . toggle-todoo)
   :config
@@ -476,6 +512,24 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
       (call-interactively #'todoo)))
   (add-hook 'todoo-mode-hook #'fix-electric-indent)
   (setq todoo-indent-column 2))
+
+(use-package visual-regexp-steroids
+  :ensure visual-regexp
+  :ensure t
+  :preface
+  (defconst i18next-re "((?<!\\\\)([\"']).*?(?<!\\\\)\\2)"
+    "Perl RE matching ES5 string literals")
+  (defconst i18next-wrap "i18next._(\\1)"
+    "Replacement string for ES5 string literals matching `i18next-re`.")
+  :config
+  (defun i18nextify-buffer ()
+    "Interactively i18next-wrap JS string literals in the current buffer."
+    (interactive)
+    (let ((old-dotall-modifier (plist-get vr--regexp-modifiers :S)))
+      (plist-put vr--regexp-modifiers :S t)
+      (vr/query-replace i18next-re i18next-wrap (point) (point-max))
+      (plist-put vr--regexp-modifiers :S old-dotall-modifier)))
+  :bind ("C-c i" . i18nextify-buffer))
 
 (use-package vlf
   :ensure t)
@@ -501,3 +555,6 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
          ("M-[ 1 ; 2 B" . windmove-down )
          ("M-[ 1 ; 2 D" . windmove-left )
          ("M-[ 1 ; 2 C" . windmove-right)))
+
+(use-package wrap-region
+  :ensure t)
