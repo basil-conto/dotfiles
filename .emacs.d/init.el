@@ -253,6 +253,9 @@ Offer to revert from the auto-save file, if it exists."
               0                         ; no additional indent
             ad-do-it))))                ; default behavior
 
+(use-package color-moccur
+  :ensure t)
+
 (use-package comment-dwim-2
   :ensure t
   :bind ("M-;" . comment-dwim-2))
@@ -369,6 +372,12 @@ Offer to revert from the auto-save file, if it exists."
                                  (turn-on-haskell-simple-indent)
                                  (fix-electric-indent))))
 
+(use-package hayoo
+  :ensure t)
+
+(use-package html-mode
+  :mode "\\.mustache$")
+
 (use-package js
   :config
   (setq js-enabled-frameworks '(javascript prototype dojo)
@@ -484,6 +493,14 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (setq prolog-system 'swi))
 
+(use-package rx
+  :preface
+  (defun rx-to-string-bold (form)
+    "Interactively wrap `rx-to-string` and remove shy groups around result."
+    (interactive "sRegExp: ")
+    (message "String: \"%s\"" (rx-to-string form t)))
+  :bind ("C-c r" . rx-to-string-bold))
+
 (use-package server
   :config
   (setq server-kill-new-buffers nil))
@@ -518,6 +535,12 @@ Offer to revert from the auto-save file, if it exists."
     (interactive)
     (shell-command "latexmk -pvc &")))
 
+(use-package visual-regexp-steroids
+  :ensure visual-regexp
+  :ensure t
+  :config
+  (setq-default vr/match-separator-use-custom-face t))
+
 (use-package vlf
   :ensure t)
 
@@ -549,3 +572,6 @@ Offer to revert from the auto-save file, if it exists."
          ;; Mutatis mutandis within tmux
          ("M-[ 5 ; 2 ~" . previous-buffer)
          ("M-[ 6 ; 2 ~" .     next-buffer)))
+
+(use-package wrap-region
+  :ensure t)
