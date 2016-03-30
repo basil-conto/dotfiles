@@ -14,8 +14,10 @@ alias la='ll -A'
 
 # grep
 alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
+alias egrep='grep -E'
+alias fgrep='grep -F'
+alias rgrep='grep -r'
+alias psgrep='ps aux | grep'
 
 # directories
 alias mkdir='mkdir -pv'
