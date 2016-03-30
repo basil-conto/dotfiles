@@ -380,25 +380,34 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package js
   :config
-  (setq js-enabled-frameworks '(javascript prototype dojo)
-        js-indent-level 2
-        js-switch-indent-offset 2))
+  (setq js-enabled-frameworks   '(javascript prototype dojo)
+        js-indent-level         4
+        js-switch-indent-offset 4))
 
 (use-package js3-mode
   :ensure t
   :config
+  (unbind-key "C-c C-g" js3-mode-map)   ; Why...
+  (fix-trailing-enter #'js3-enter-key)
+
   (setq-default
    js3-auto-indent-p                         t
    js3-enter-indents-newline                 t
    js3-indent-dots                           t
+   js3-indent-level                          4
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
+
   (setq
-   js3-global-externs (mapcar #'symbol-name '(console define require))
    js3-include-browser-externs      nil
    js3-include-gears-externs        nil
    js3-include-rhino-externs        nil
    js3-skip-preprocessor-directives t)
+
+  (setq js3-global-externs
+        (mapcar 'symbol-name
+                '(window document location console define require)))
+
   (set-face-attribute 'js3-function-param-face    nil :foreground "white")
   (set-face-attribute 'js3-external-variable-face nil :foreground "brightred")
   (set-face-attribute 'js3-error-face             nil :foreground "brightred"))
