@@ -18,13 +18,14 @@
   (require 'use-package))
 (require 'bind-key)
 
-;;; ============
-;;; Key bindings
-;;; ============
+;;; ===========
+;;; Definitions
+;;; ===========
 
 (defun transpose-split ()
   "If the frame is split vertically, split it horizontally or vice versa.
-Assumes that the frame is split only in two."
+Assumes that the frame is split only in two. Adapted from Wilfred's
+function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (interactive)
   (unless (= (length (window-list)) 2)
     (error "Can only toggle a frame split in two"))
@@ -41,67 +42,101 @@ Offer to revert from the auto-save file, if it exists."
   (interactive)
   (revert-buffer nil t))
 
-(defun kill-whole-paragraph ()
-    "Similar to `kill-paragraph`, but kills from the start of the paragraph
-instead of the current point, i.e. the region defined by `mark-paragraph`."
-  (interactive)
-  (mark-paragraph)
-  (kill-region (region-beginning) (region-end) t))
-
 (defun mark-line ()
   "Move to the beginning and mark until the end of the current line."
   (interactive)
   (beginning-of-line)
   (set-mark (line-end-position)))
 
+(defun open--line (displacement)
+  "Elicit line `displacement' from point before opening an empty line."
+  (save-excursion
+    (forward-line displacement)
+    (open-line 1)))
+
+(defun open-previous-line ()
+  "Open empty line above point without affecting the current line."
+  (interactive)
+  (open--line -1))
+
+(defun open-next-line ()
+  "Open empty line below point without affecting the current line."
+  (interactive)
+  (open--line 1))
+
+(defun what-face (pos)
+  "Describe face at current point."
+  (interactive "d")
+  (let ((face (or (get-char-property (point) #'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
+(defun fix-trailing-enter (enter-key)
+  "Advise given enter key function to first delete trailing whitespace."
+  (advice-add enter-key :before (lambda () (delete-trailing-whitespace
+                                              (line-beginning-position)
+                                              (line-end-position)))))
+
+(defun fix-electric-indent ()
+  (electric-indent-local-mode 0))
+
+(defun iwb ()
+  "Indent Whole Buffer and delete trailing whitespace."
+  (interactive)
+  (delete-trailing-whitespace)
+  (indent-region (point-min) (point-max) nil)
+  (untabify (point-min) (point-max)))
+
+(defconst all-hooks
+  '(haskell-cabal-mode-hook
+        gitconfig-mode-hook
+           prolog-mode-hook
+           csharp-mode-hook
+             text-mode-hook
+             prog-mode-hook
+             conf-mode-hook
+              ess-mode-hook
+              js3-mode-hook)
+  "Individual hooks to hang from for global effect.")
+
+;;; ========
+;;; Bindings
+;;; ========
+
 (bind-keys
- ;; Murder
- ("C-x C-k"     . kill-line)
- ("C-k"         . kill-whole-line)
- ("M-k"         . kill-whole-paragraph)
  ;; Region
- ("C-x C-SPC"   .       mark-line)
+ ("C-x C-SPC"   . mark-line         )
  ;; Mutatis mutandis within tmux
- ("C-x C-@"     .       mark-line)
+ ("C-x C-@"     . mark-line         )
  ;; Windows
- ("C-x 4"       . transpose-split)
+ ("C-x 4"       . transpose-split   )
  ;; Buffers
- ("<f5>"        .  refresh-buffer)
- ("S-<prior>"   . previous-buffer)
- ("S-<next>"    .     next-buffer)
- ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" . previous-buffer)
- ("M-[ 6 ; 2 ~" .     next-buffer)
- ("M-[ 1 ; 5 C" .      right-word)
- ("M-[ 1 ; 5 D" .       left-word)
- ;; Prop line file variables
- ("C-c a"       . add-file-local-variable-prop-line))
+ ("<f5>"        . refresh-buffer    )
+ ;; Other
+ ("C-x C-p"     . open-previous-line)
+ ("C-x C-n"     . open-next-line    )
+ ;; Movement
+ ("M-[ 1 ; 5 C" . right-word        )
+ ("M-[ 1 ; 5 D" . left-word         )
+ ("M-P"         . (lambda () (interactive) (scroll-down 8)))
+ ("M-p"         . (lambda () (interactive) (scroll-down 4)))
+ ("M-n"         . (lambda () (interactive) (scroll-up   4)))
+ ("M-N"         . (lambda () (interactive) (scroll-up   8))))
 
-;;; =========
-;;; Scrolling
-;;; =========
+;;; ========
+;;; Settings
+;;; ========
 
-(setq
- ;; One line at a time
- mouse-wheel-scroll-amount       '(1 ((shift) . 1))
- scroll-conservatively           most-positive-fixnum
- scroll-error-top-bottom         t
- scroll-preserve-screen-position t
- scroll-step                     1
- scroll-margin                   1)
-
-;;; =======
-;;; General
-;;; =======
+;; General
 
 (load-theme 'tango-dark)
 
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 9"))
 
 (setq
+ inhibit-startup-screen       1
  font-lock-maximum-decoration 2
  jit-lock-stealth-time        4
- inhibit-startup-screen       1
  uniquify-buffer-name-style   'forward)
 
 (    blink-cursor-mode 0)
@@ -115,32 +150,18 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (put   #'upcase-region 'disabled nil)
 (put #'downcase-region 'disabled nil)
 
-(defun what-face (pos)
-  "Describe face at current point."
-  (interactive "d")
-  (let ((face (or (get-char-property (point) #'read-face-name)
-                  (get-char-property (point) 'face))))
-    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+;; Scrolling
 
-(add-hook 'text-mode-hook (lambda () (setq fill-column 80
-                                           sentence-end-double-space nil)))
+(setq
+ ;; One line at a time
+ mouse-wheel-scroll-amount       '(1 ((shift) . 1))
+ scroll-conservatively           most-positive-fixnum
+ scroll-error-top-bottom         t
+ scroll-preserve-screen-position t
+ scroll-step                     1
+ scroll-margin                   1)
 
-(defconst all-hooks
-  '(haskell-cabal-mode-hook
-        gitconfig-mode-hook
-           prolog-mode-hook
-           csharp-mode-hook
-            todoo-mode-hook
-             text-mode-hook
-             prog-mode-hook
-             conf-mode-hook
-              ess-mode-hook
-              js3-mode-hook)
-  "Individual hooks to hang from for global effect.")
-
-;;; ===========
-;;; Indentation
-;;; ===========
+;; Spacing
 
 (setq-default
  indent-tabs-mode  nil
@@ -149,19 +170,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (setq indent-line-function #'insert-tab)
 
-(defun fix-electric-indent ()
-  (electric-indent-local-mode 0))
+(add-hook 'text-mode-hook (lambda () (setq fill-column 80
+                                           sentence-end-double-space nil)))
 
-(defun iwb ()
-  "Indent Whole Buffer and delete trailing whitespace."
-  (interactive)
-  (delete-trailing-whitespace)
-  (indent-region (point-min) (point-max) nil)
-  (untabify (point-min) (point-max)))
-
-;;; ======
-;;; Backup
-;;; ======
+;; Backup
 
 (setq
  ;; Don't clobber symlinks
@@ -174,9 +186,9 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
  ;; Versioned backups
  version-control        t)
 
-;;; ================
-;;; Package settings
-;;; ================
+;;; ========
+;;; Packages
+;;; ========
 
 (use-package 2048-game
   :ensure t)
@@ -194,14 +206,6 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (use-package apt-sources
   :config
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
-
-(use-package tex
-  :ensure auctex
-  :config
-  (setq TeX-PDF-mode t)
-  (defun latexmk-pvc ()
-    (interactive)
-    (shell-command "latexmk -pvc &")))
 
 (use-package bytecomp
   :preface
@@ -298,7 +302,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   (dolist (hook '(LaTeX-mode-hook
                    prog-mode-hook
                     js3-mode-hook))
-    (add-hook hook #'turn-on-fic-mode)))
+    (add-hook hook #'fic-mode)))
 
 (use-package find-file
   :config
@@ -446,10 +450,24 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
         minimap-width-fraction  0.05
         minimap-window-location 'right)
   (set-face-attribute 'minimap-active-region-background nil
-    :background "dim grey")
+                      :background "dim grey")
   (set-face-attribute 'minimap-font-face nil
-    :height 8
-    :family "DejaVu Sans Mono"))
+                      :height 8
+                      :family "DejaVu Sans Mono"))
+
+(use-package org-mode
+  :preface
+  (defvar org-file "~/.notes")
+  (defun toggle-org ()
+    (interactive)
+    (if (not (eq major-mode 'org-mode))
+        (find-file-other-window org-file)
+      (basic-save-buffer)
+      (delete-window)))
+  :bind (("C-c l" . org-store-link)
+         ("<f12>" . toggle-org))
+  :init
+  (setq org-special-ctrl-a/e 'reversed))
 
 (use-package pascal
   :no-require t
@@ -475,6 +493,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   (setq sh-basic-offset 2
         sh-indentation  2))
 
+(use-package simple
+  :bind (("C-x C-k" . kill-whole-line)
+         ("M-\\"    .   cycle-spacing)))
+
 (use-package speedbar
   :config
   (setq speedbar-show-unknown-files 1
@@ -488,18 +510,13 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :config
   (setq sr-speedbar-auto-refresh nil))
 
-(use-package todoo
-  :functions todoo-save-and-exit
-  :mode ("TODO"  .  todoo-mode )
-  :bind ("<f12>" . toggle-todoo)
+(use-package tex
+  :ensure auctex
   :config
-  (defun toggle-todoo ()
+  (setq TeX-PDF-mode t)
+  (defun latexmk-pvc ()
     (interactive)
-    (if (eq major-mode 'todoo-mode)
-        (call-interactively #'todoo-save-and-exit)
-      (call-interactively #'todoo)))
-  (add-hook 'todoo-mode-hook #'fix-electric-indent)
-  (setq todoo-indent-column 2))
+    (shell-command "latexmk -pvc &")))
 
 (use-package vlf
   :ensure t)
@@ -525,3 +542,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
          ("M-[ 1 ; 2 B" . windmove-down )
          ("M-[ 1 ; 2 D" . windmove-left )
          ("M-[ 1 ; 2 C" . windmove-right)))
+
+(use-package window
+  :bind (("S-<prior>"   . previous-buffer)
+         ("S-<next>"    .     next-buffer)
+         ;; Mutatis mutandis within tmux
+         ("M-[ 5 ; 2 ~" . previous-buffer)
+         ("M-[ 6 ; 2 ~" .     next-buffer)))
