@@ -441,11 +441,12 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package markdown-mode
   :ensure t
-  :functions markdown-cycle
+  :functions markdown-cycle markdown-enter-key
   :mode ("\\.md$" "\\.markdown$")
   :config
   (add-hook 'markdown-mode-hook
-            (lambda () (local-set-key (kbd "TAB") #'markdown-cycle))))
+            (lambda () (local-set-key (kbd "TAB") #'markdown-cycle)))
+  (fix-trailing-enter #'markdown-enter-key))
 
 (use-package minibuffer
   :preface
