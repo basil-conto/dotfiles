@@ -22,6 +22,7 @@ alias psgrep='ps aux | grep'
 # directories
 alias mkdir='mkdir -pv'
 alias cdtemp='cd $(mktemp -d)'
+alias venture='pushd .; cd'
 
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
