@@ -460,8 +460,6 @@ Offer to revert from the auto-save file, if it exists."
             (lambda () (setq gc-cons-threshold gc-orig-thresh))))
 
 (use-package minimap
-  :no-require t
-  :disabled t
   :ensure t
   :config
   (setq minimap-highlight-line  nil
