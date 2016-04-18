@@ -130,7 +130,6 @@ Offer to revert from the auto-save file, if it exists."
 ;; General
 
 (load-theme 'tango-dark)
-
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 9"))
 
 (setq
@@ -149,6 +148,8 @@ Offer to revert from the auto-save file, if it exists."
 
 (put   #'upcase-region 'disabled nil)
 (put #'downcase-region 'disabled nil)
+
+(defalias #'yes-or-no-p #'y-or-n-p)
 
 ;; Scrolling
 
