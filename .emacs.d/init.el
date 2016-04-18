@@ -493,6 +493,7 @@ Offer to revert from the auto-save file, if it exists."
         (find-file-other-window org-file)
       (basic-save-buffer)
       (delete-window)))
+  :defines org-special-ctrl-a/e
   :bind (("C-c l" . org-store-link)
          ("<f12>" . toggle-org))
   :init
@@ -531,6 +532,7 @@ Offer to revert from the auto-save file, if it exists."
         sh-indentation  2))
 
 (use-package simple
+  :demand
   :bind (("C-x C-k" . kill-whole-line)
          ("M-\\"    .   cycle-spacing)))
 
@@ -543,6 +545,10 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package sr-speedbar
   :ensure t
+  :functions (sr-speedbar-window-exist-p
+              sr-speedbar-remember-window-width
+              sr-speedbar-window-dedicated-only-one-p
+              sr-speedbar-window-p)
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq sr-speedbar-auto-refresh nil))
@@ -576,6 +582,7 @@ Offer to revert from the auto-save file, if it exists."
         '(face tabs trailing empty tab-mark)))
 
 (use-package windmove
+  :demand
   :bind (("S-<up>"      . windmove-up   )
          ("S-<down>"    . windmove-down )
          ("S-<left>"    . windmove-left )
