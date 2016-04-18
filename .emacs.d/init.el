@@ -376,6 +376,14 @@ Offer to revert from the auto-save file, if it exists."
 (use-package hayoo
   :ensure t)
 
+(use-package helm
+  :ensure t
+  :defines helm-M-x-fuzzy-match
+  :bind (("M-x"   . helm-M-x         )
+         ("C-c b" . helm-buffers-list))
+  :config
+  (setq helm-M-x-fuzzy-match t))
+
 (use-package html-mode
   :mode "\\.mustache$")
 
