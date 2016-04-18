@@ -424,16 +424,6 @@ Offer to revert from the auto-save file, if it exists."
 (use-package json-mode
   :ensure t)
 
-(use-package linum
-  :config
-  (global-linum-mode)
-  ;; Right-aligned followed by vertical line
-  (setq linum-format
-        (lambda (line)
-          (let ((w (length (number-to-string (count-lines (point-min)
-                                                          (point-max))))))
-            (propertize (format (format "%%%dd\u2502" w) line) 'face 'linum)))))
-
 (use-package lisp-mode
   :config
   (add-hook 'lisp-mode-hook #'fix-electric-indent))
@@ -480,6 +470,19 @@ Offer to revert from the auto-save file, if it exists."
   (set-face-attribute 'minimap-font-face nil
                       :height 8
                       :family "DejaVu Sans Mono"))
+
+(use-package nlinum
+  :ensure t
+  :config
+  (global-nlinum-mode)
+  (set-face-attribute 'linum nil :foreground "dim grey")
+  (add-hook 'nlinum-mode-hook
+            (lambda ()
+              (when nlinum-mode
+                (setq nlinum--width
+                      (length (number-to-string
+                               (count-lines (point-min) (point-max)))))
+                (nlinum--flush)))))
 
 (use-package org-mode
   :preface
