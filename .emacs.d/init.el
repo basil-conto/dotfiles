@@ -334,7 +334,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :config
   (setq fci-rule-column 80
-        fci-rule-color "DimGrey")
+        fci-rule-color "dim grey")
   (mapc (lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
 
 (use-package flex-mode
@@ -437,7 +437,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :config
   (set-face-attribute 'magit-blame-heading nil
-                      :background "brightblack"
+                      :background "dim grey"
                       :foreground "white"))
 
 (use-package markdown-mode
