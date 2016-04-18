@@ -602,3 +602,14 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package wrap-region
   :ensure t)
+
+(use-package wttrin
+  :ensure t
+  :config
+  (setq wttrin-default-cities
+        '(athens-greece
+          avoca-ireland
+          dublin-ireland
+          tel-aviv-israel
+          harare-zimbabwe
+          moon)))
