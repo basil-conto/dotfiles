@@ -73,7 +73,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (defun fix-trailing-enter (enter-key)
   "Advise given enter key function to first delete trailing whitespace."
-  (advice-add enter-key :before (lambda () (delete-trailing-whitespace
+  (advice-add enter-key :before #'(lambda () (delete-trailing-whitespace
                                               (line-beginning-position)
                                               (line-end-position)))))
 
@@ -118,10 +118,10 @@ Offer to revert from the auto-save file, if it exists."
  ;; Movement
  ("M-[ 1 ; 5 C" . right-word        )
  ("M-[ 1 ; 5 D" . left-word         )
- ("M-P"         . (lambda () (interactive) (scroll-down 8)))
- ("M-p"         . (lambda () (interactive) (scroll-down 4)))
- ("M-n"         . (lambda () (interactive) (scroll-up   4)))
- ("M-N"         . (lambda () (interactive) (scroll-up   8))))
+ ("M-P"         . #'(lambda () (interactive) (scroll-down 8)))
+ ("M-p"         . #'(lambda () (interactive) (scroll-down 4)))
+ ("M-n"         . #'(lambda () (interactive) (scroll-up   4)))
+ ("M-N"         . #'(lambda () (interactive) (scroll-up   8))))
 
 ;;; ========
 ;;; Settings
@@ -171,8 +171,8 @@ Offer to revert from the auto-save file, if it exists."
 
 (setq indent-line-function #'insert-tab)
 
-(add-hook 'text-mode-hook (lambda () (setq fill-column 80
-                                           sentence-end-double-space nil)))
+(add-hook 'text-mode-hook #'(lambda () (setq fill-column 80
+                                             sentence-end-double-space nil)))
 
 ;; Backup
 
@@ -216,7 +216,7 @@ Offer to revert from the auto-save file, if it exists."
          ("C-c d" . byte-recompile-directory))
   :config
   (add-hook 'kill-emacs-hook
-            (lambda () (byte-recompile-file init-file-src nil 0))))
+            #'(lambda () (byte-recompile-file init-file-src nil 0))))
 
 (use-package cc-mode
   :config
@@ -224,8 +224,8 @@ Offer to revert from the auto-save file, if it exists."
         c-basic-offset  2)
   (font-lock-add-keywords 'c++-mode '(("constexpr" . font-lock-keyword-face)
                                       ("nullptr"   . font-lock-keyword-face)))
-  (add-hook 'c-mode-common-hook (lambda () (setq comment-start "//"
-                                                 comment-end   "")))
+  (add-hook 'c-mode-common-hook #'(lambda () (setq comment-start "//"
+                                                   comment-end   "")))
 
   (cl-loop
    for (k . v)
@@ -270,7 +270,7 @@ Offer to revert from the auto-save file, if it exists."
   :mode "\\.cs$"
   :config
   (add-hook 'csharp-mode-hook
-            (lambda () (local-set-key (kbd "{") #'c-electric-brace))))
+            #'(lambda () (local-set-key (kbd "{") #'c-electric-brace))))
 
 (use-package crontab-mode
   :ensure t
@@ -279,10 +279,10 @@ Offer to revert from the auto-save file, if it exists."
 (use-package dafny-mode
   :ensure boogie-friends
   :config
-  (add-hook 'dafny-mode-hook (lambda ()
-                               (fix-electric-indent)
-                               (prettify-symbols-mode 0)
-                               (flycheck-mode 0))))
+  (add-hook 'dafny-mode-hook #'(lambda ()
+                                 (fix-electric-indent)
+                                 (prettify-symbols-mode 0)
+                                 (flycheck-mode 0))))
 
 (use-package dash
   :ensure t)
@@ -312,18 +312,18 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (add-hook
    'find-file-hook
-   (lambda ()
-     (if (> (buffer-size) (* 1024 1024))
-         ;; Strip down emacs
-         (progn (setq buffer-read-only t)
-                (buffer-disable-undo)
-                (fundamental-mode))
-       ;; Detect conflicts
-       (save-excursion
-         (goto-char (point-min))
-         (when (re-search-forward "^<<<<<<< " nil t)
-           (message "Merge conflict detected. Enabling smerge-mode.")
-           (smerge-mode 1)))))))
+   #'(lambda ()
+       (if (> (buffer-size) (* 1024 1024))
+           ;; Strip down emacs
+           (progn (setq buffer-read-only t)
+                  (buffer-disable-undo)
+                  (fundamental-mode))
+         ;; Detect conflicts
+         (save-excursion
+           (goto-char (point-min))
+           (when (re-search-forward "^<<<<<<< " nil t)
+             (message "Merge conflict detected. Enabling smerge-mode.")
+             (smerge-mode 1)))))))
 
 (use-package ido
   :config
@@ -335,7 +335,7 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (setq fci-rule-column 80
         fci-rule-color "dim grey")
-  (mapc (lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
+  (mapc #'(lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
 
 (use-package flex-mode
   :no-require t
@@ -369,9 +369,12 @@ Offer to revert from the auto-save file, if it exists."
   :config
   ;; Pretty lambda
   ;; (setq haskell-font-lock-symbols t)
-  (add-hook 'haskell-mode-hook (lambda ()
-                                 (turn-on-haskell-simple-indent)
-                                 (fix-electric-indent))))
+  (add-hook 'haskell-mode-hook
+            #'(lambda ()
+                ;; ;; Eventual non-backwards compatibility
+                ;; (haskell-indentation-mode)
+                (turn-on-haskell-simple-indent)
+                (fix-electric-indent))))
 
 (use-package hayoo
   :ensure t)
@@ -445,7 +448,7 @@ Offer to revert from the auto-save file, if it exists."
   :mode ("\\.md$" "\\.markdown$")
   :config
   (add-hook 'markdown-mode-hook
-            (lambda () (local-set-key (kbd "TAB") #'markdown-cycle)))
+            #'(lambda () (local-set-key (kbd "TAB") #'markdown-cycle)))
   (fix-trailing-enter #'markdown-enter-key))
 
 (use-package minibuffer
@@ -455,9 +458,9 @@ Offer to revert from the auto-save file, if it exists."
 2016/01/18/why-are-you-changing-gc-cons-threshold/")
   :config
   (add-hook 'minibuffer-setup-hook
-            (lambda () (setq gc-cons-threshold most-positive-fixnum)))
+            #'(lambda () (setq gc-cons-threshold most-positive-fixnum)))
   (add-hook 'minibuffer-exit-hook
-            (lambda () (setq gc-cons-threshold gc-orig-thresh))))
+            #'(lambda () (setq gc-cons-threshold gc-orig-thresh))))
 
 (use-package minimap
   :ensure t
@@ -478,12 +481,12 @@ Offer to revert from the auto-save file, if it exists."
   (global-nlinum-mode)
   (set-face-attribute 'linum nil :foreground "dim grey")
   (add-hook 'nlinum-mode-hook
-            (lambda ()
-              (when nlinum-mode
-                (setq nlinum--width
-                      (length (number-to-string
-                               (count-lines (point-min) (point-max)))))
-                (nlinum--flush)))))
+            #'(lambda ()
+                (when nlinum-mode
+                  (setq nlinum--width
+                        (length (number-to-string
+                                 (count-lines (point-min) (point-max)))))
+                  (nlinum--flush)))))
 
 (use-package org-mode
   :preface
@@ -504,8 +507,8 @@ Offer to revert from the auto-save file, if it exists."
   :no-require t
   :disabled t
   :config
-  (add-hook 'pascal-mode-hook (lambda () (setq comment-start "//"
-                                               comment-end   ""))))
+  (add-hook 'pascal-mode-hook #'(lambda () (setq comment-start "//"
+                                                 comment-end   ""))))
 
 (use-package perl-mode
   :mode "\\latexmkrc$")
@@ -574,7 +577,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package wc-mode
   :ensure t
   :config
-  (mapc (lambda (hook) (add-hook hook #'wc-mode)) all-hooks))
+  (mapc #'(lambda (hook) (add-hook hook #'wc-mode)) all-hooks))
 
 (use-package whitespace
   :config
