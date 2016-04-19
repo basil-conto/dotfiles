@@ -23,20 +23,6 @@
 ;;; Definitions
 ;;; ===========
 
-(defun transpose-split ()
-  "If the frame is split vertically, split it horizontally or vice versa.
-Assumes that the frame is split only in two. Adapted from Wilfred's
-function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
-  (interactive)
-  (unless (= (length (window-list)) 2)
-    (error "Can only toggle a frame split in two"))
-  (let ((split-vertically-p (window-combined-p)))
-    (delete-window)
-    (if split-vertically-p
-        (split-window-horizontally)
-      (split-window-vertically))
-    (switch-to-buffer nil)))
-
 (defun refresh-buffer ()
   "Reconcile the current buffer with what lives in the real world (the disk).
 Offer to revert from the auto-save file, if it exists."
@@ -109,8 +95,6 @@ Offer to revert from the auto-save file, if it exists."
  ("C-x C-SPC"   . mark-line         )
  ;; Mutatis mutandis within tmux
  ("C-x C-@"     . mark-line         )
- ;; Windows
- ("C-x 4"       . transpose-split   )
  ;; Buffers
  ("<f5>"        . refresh-buffer    )
  ;; Other
@@ -601,11 +585,26 @@ Offer to revert from the auto-save file, if it exists."
          ("M-[ 1 ; 2 C" . windmove-right)))
 
 (use-package window
-  :bind (("S-<prior>"   . previous-buffer)
-         ("S-<next>"    .     next-buffer)
+  :preface
+  (defun transpose-split ()
+    "If the frame is split vertically, split it horizontally or vice versa.
+Assumes that the frame is split only in two. Adapted from Wilfred's
+function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
+    (interactive)
+    (unless (= (length (window-list)) 2)
+      (error "Can only toggle a frame split in two"))
+    (let ((split-vertically-p (window-combined-p)))
+      (delete-window)
+      (if split-vertically-p
+          (split-window-horizontally)
+        (split-window-vertically))
+      (switch-to-buffer nil)))
+  :bind (("S-<home>"    . previous-buffer)
+         ("S-<end>"     .     next-buffer)
          ;; Mutatis mutandis within tmux
          ("M-[ 5 ; 2 ~" . previous-buffer)
-         ("M-[ 6 ; 2 ~" .     next-buffer)))
+         ("M-[ 6 ; 2 ~" .     next-buffer)
+         ("C-x 4"       . transpose-split)))
 
 (use-package wrap-region
   :ensure t)
