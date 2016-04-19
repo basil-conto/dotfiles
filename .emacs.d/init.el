@@ -15,6 +15,7 @@
     (package-install 'use-package)))
 
 (eval-when-compile
+  (defvar use-package-verbose t)
   (require 'use-package))
 (require 'bind-key)
 
@@ -195,6 +196,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t)
 
 (use-package ag
+  :ensure t
   :config
   (setq ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
@@ -366,6 +368,7 @@ Offer to revert from the auto-save file, if it exists."
   (add-hook 'haskell-cabal-mode-hook #'fix-electric-indent))
 
 (use-package haskell-mode
+  :ensure t
   :config
   ;; Pretty lambda
   ;; (setq haskell-font-lock-symbols t)
