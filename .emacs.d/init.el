@@ -339,6 +339,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package git-rebase
   :ensure magit
+  :bind ("C-x g" . magit-status)
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
 
