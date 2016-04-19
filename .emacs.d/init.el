@@ -430,6 +430,11 @@ Offer to revert from the auto-save file, if it exists."
                       :background "dim grey"
                       :foreground "white"))
 
+(use-package magit-gh-pulls
+  :ensure t
+  :config
+  (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
+
 (use-package markdown-mode
   :ensure t
   :functions markdown-cycle markdown-enter-key
