@@ -48,16 +48,16 @@ Offer to revert from the auto-save file, if it exists."
   (beginning-of-line)
   (set-mark (line-end-position)))
 
-(defun open--line (displacement)
-  "Elicit line `displacement' from point before opening an empty line."
+(defun open--line (forward)
+  "Move forward `forward' - 1 lines before opening an empty line."
   (save-excursion
-    (forward-line displacement)
+    (end-of-line forward)
     (open-line 1)))
 
 (defun open-previous-line ()
   "Open empty line above point without affecting the current line."
   (interactive)
-  (open--line -1))
+  (open--line 0))
 
 (defun open-next-line ()
   "Open empty line below point without affecting the current line."
