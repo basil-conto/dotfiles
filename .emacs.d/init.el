@@ -115,7 +115,6 @@ Offer to revert from the auto-save file, if it exists."
 ;; General
 
 (load-theme 'tango-dark)
-(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 9"))
 
 (setq
  inhibit-startup-screen       1
@@ -129,7 +128,8 @@ Offer to revert from the auto-save file, if it exists."
 (      show-paren-mode  )
 
 (when window-system
-  (tool-bar-mode 0))
+  (tool-bar-mode 0)
+  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 8")))
 
 (put   #'upcase-region 'disabled nil)
 (put #'downcase-region 'disabled nil)
