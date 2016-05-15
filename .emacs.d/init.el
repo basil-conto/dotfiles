@@ -349,20 +349,12 @@ Offer to revert from the auto-save file, if it exists."
          ("M-." . golden-ratio-scroll-screen-up)))
 
 (use-package haskell-cabal
+  :ensure haskell-mode
   :config
   (add-hook 'haskell-cabal-mode-hook #'fix-electric-indent))
 
 (use-package haskell-mode
-  :ensure t
-  :config
-  ;; Pretty lambda
-  ;; (setq haskell-font-lock-symbols t)
-  (add-hook 'haskell-mode-hook
-            #'(lambda ()
-                ;; ;; Eventual non-backwards compatibility
-                ;; (haskell-indentation-mode)
-                (turn-on-haskell-simple-indent)
-                (fix-electric-indent))))
+  :ensure t)
 
 (use-package hayoo
   :ensure t)
