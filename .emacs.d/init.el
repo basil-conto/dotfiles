@@ -605,8 +605,8 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
           (split-window-horizontally)
         (split-window-vertically))
       (switch-to-buffer nil)))
-  :bind (("S-<home>"    . previous-buffer)
-         ("S-<end>"     .     next-buffer)
+  :bind (("S-<prior>"   . previous-buffer)
+         ("S-<next>"    .     next-buffer)
          ;; Mutatis mutandis within tmux
          ("M-[ 5 ; 2 ~" . previous-buffer)
          ("M-[ 6 ; 2 ~" .     next-buffer)
