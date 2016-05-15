@@ -504,7 +504,7 @@ Offer to revert from the auto-save file, if it exists."
                                                  comment-end   ""))))
 
 (use-package perl-mode
-  :mode "\\latexmkrc$")
+  :mode "\\.latexmkrc$")
 
 (use-package prolog
   :mode ("\\.pl$" . prolog-mode)
