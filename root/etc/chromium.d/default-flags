@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+# A set of command line flags that we want to set by default.
+
+# Do not hide any extensions in the about:extensions dialog
+flags='--show-component-extension-options'
+
+# Don't use the GPU blacklist (bug #802933)
+flags="${flags} --ignore-gpu-blacklist"
+
+# Use the Flash plugin that comes with Chrome
+path=/opt/google/chrome/PepperFlash
+
+if [ -d "${path}" ]; then
+  flags="${flags} --ppapi-flash-path=${path}/libpepflashplayer.so"
+  if command -v jq >/dev/null; then
+    flags="${flags} --ppapi-flash-version=$(jq .version ${path}/manifest.json)"
+  elif command -v notify-send >/dev/null; then
+    notify-send 'jq not installed'
+  else
+    printf '\n%s\n\n' 'WARN: jq not installed' >&2
+  fi
+fi
+
+export CHROMIUM_FLAGS="${flags}"
+unset flags path
