@@ -32,3 +32,4 @@
 	mnff   = merge --no-ff
 	rb     = rebase
 	st     = status
+	wip    = commit --edit --message='[WIP]'
