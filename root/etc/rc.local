@@ -12,11 +12,14 @@
 # By default this script does nothing.
 
 # Disable bluetooth on startup
-# Added blc 31/05/15
+# Added blc 2015/05/31
 rfkill block bluetooth
 
 # Dim screen to half brightness
-# Added blc 31/05/15
-echo 2219 >> /sys/class/backlight/intel_backlight/brightness
+# Added blc 2016/05/05
+light_path=/sys/class/backlight/intel_backlight
+read  max_brightness          < "${light_path}/max_brightness"
+echo  $((max_brightness / 2)) > "${light_path}/brightness"
+unset light_path max_brightness
 
 exit 0
