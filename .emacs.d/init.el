@@ -370,6 +370,9 @@ Offer to revert from the auto-save file, if it exists."
 (use-package html-mode
   :mode "\\.mustache$")
 
+(use-package indent
+  :bind ("C-c i" . indent-relative))
+
 (use-package js
   :config
   (setq js-enabled-frameworks   '(javascript prototype dojo)
