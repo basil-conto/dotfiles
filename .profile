@@ -21,6 +21,14 @@ N_PREFIX="${HOME}/.local"       # https://github.com/tj/n
 
 export PATH EDITOR N_PREFIX
 
+# Pyenv
+if [ -d "${HOME}/.pyenv" ]; then
+  PYENV_ROOT="${HOME}/.pyenv"
+  PATH="${PYENV_ROOT}/bin:${PATH}"
+  export PYENV_ROOT PATH
+  eval "$(pyenv init -)"
+fi
+
 # Limit number of user processes
 ulimit -u 1024
 
