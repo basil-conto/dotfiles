@@ -29,12 +29,6 @@ Offer to revert from the auto-save file, if it exists."
   (interactive)
   (revert-buffer nil t))
 
-(defun mark-line ()
-  "Move to the beginning and mark until the end of the current line."
-  (interactive)
-  (beginning-of-line)
-  (set-mark (line-end-position)))
-
 (defun open--line (forward)
   "Move forward `forward' - 1 lines before opening an empty line."
   (save-excursion
@@ -74,6 +68,20 @@ Offer to revert from the auto-save file, if it exists."
   (indent-region (point-min) (point-max) nil)
   (untabify (point-min) (point-max)))
 
+(defun transpose-split ()
+  "If the frame is split vertically, split it horizontally or vice versa.
+Assumes that the frame is split only in two. Adapted from Wilfred's
+function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
+  (interactive)
+  (unless (= (length (window-list)) 2)
+    (error "Can only toggle a frame split in two"))
+  (let ((split-vertically-p (window-combined-p)))
+    (delete-window)
+    (if split-vertically-p
+        (split-window-horizontally)
+      (split-window-vertically))
+    (switch-to-buffer nil)))
+
 (defconst all-hooks
   '(haskell-cabal-mode-hook
         gitconfig-mode-hook
@@ -91,22 +99,22 @@ Offer to revert from the auto-save file, if it exists."
 ;;; ========
 
 (bind-keys
- ;; Region
- ("C-x C-SPC"   . mark-line         )
- ;; Mutatis mutandis within tmux
- ("C-x C-@"     . mark-line         )
- ;; Buffers
- ("<f5>"        . refresh-buffer    )
- ;; Other
+ ;; Line
  ("C-x C-p"     . open-previous-line)
  ("C-x C-n"     . open-next-line    )
+ ;; Window / Buffer
+ ("<f5>"        . refresh-buffer    )
+ ("C-x 4"       . transpose-split   )
+ ("S-<prior>"   . previous-buffer   )
+ ("S-<next>"    .     next-buffer   )
+ ;; Mutatis mutandis within tmux
+ ("M-[ 5 ; 2 ~" . previous-buffer   )
+ ("M-[ 6 ; 2 ~" .     next-buffer   )
  ;; Movement
- ("M-[ 1 ; 5 C" . right-word        )
- ("M-[ 1 ; 5 D" . left-word         )
- ("M-P"         . #'(lambda () (interactive) (scroll-down 8)))
- ("M-p"         . #'(lambda () (interactive) (scroll-down 4)))
- ("M-n"         . #'(lambda () (interactive) (scroll-up   4)))
- ("M-N"         . #'(lambda () (interactive) (scroll-up   8))))
+ ("M-P"         . (lambda () (interactive) (scroll-down 8)))
+ ("M-p"         . (lambda () (interactive) (scroll-down 4)))
+ ("M-n"         . (lambda () (interactive) (scroll-up   4)))
+ ("M-N"         . (lambda () (interactive) (scroll-up   8))))
 
 ;;; ========
 ;;; Settings
@@ -114,21 +122,9 @@ Offer to revert from the auto-save file, if it exists."
 
 ;; General
 
-(load-theme 'tango-dark)
-
-(setq
- inhibit-startup-screen       1
- font-lock-maximum-decoration 2
- jit-lock-stealth-time        4
- uniquify-buffer-name-style   'forward)
-
-(    blink-cursor-mode 0)
-(   column-number-mode  )
-(delete-selection-mode  )
-(      show-paren-mode  )
+(setq inhibit-startup-screen t)
 
 (when window-system
-  (tool-bar-mode 0)
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 8")))
 
 (put   #'upcase-region 'disabled nil)
@@ -139,8 +135,6 @@ Offer to revert from the auto-save file, if it exists."
 ;; Scrolling
 
 (setq
- ;; One line at a time
- mouse-wheel-scroll-amount       '(1 ((shift) . 1))
  scroll-conservatively           most-positive-fixnum
  scroll-error-top-bottom         t
  scroll-preserve-screen-position t
@@ -150,27 +144,11 @@ Offer to revert from the auto-save file, if it exists."
 ;; Spacing
 
 (setq-default
- indent-tabs-mode  nil
- tab-always-indent t
- tab-width         2)
-
-(setq indent-line-function #'insert-tab)
+ tab-width        2
+ indent-tabs-mode nil)
 
 (add-hook 'text-mode-hook #'(lambda () (setq fill-column 80
                                              sentence-end-double-space nil)))
-
-;; Backup
-
-(setq
- ;; Don't clobber symlinks
- backup-by-copying      t
- ;; Backup directory
- backup-directory-alist '(("." . "~/.backup/"))
- delete-old-versions    t
- kept-new-versions      6
- kept-old-versions      2
- ;; Versioned backups
- version-control        t)
 
 ;;; ========
 ;;; Packages
@@ -193,6 +171,10 @@ Offer to revert from the auto-save file, if it exists."
 (use-package apt-sources
   :config
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
+
+(use-package bindings
+  :bind (("M-[ 1 ; 5 C" . right-word)
+         ("M-[ 1 ; 5 D" .  left-word)))
 
 (use-package bytecomp
   :preface
@@ -262,6 +244,10 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
 
+(use-package custom
+  :config
+  (load-theme 'tango-dark))
+
 (use-package dafny-mode
   :ensure boogie-friends
   :config
@@ -272,6 +258,10 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package dash
   :ensure t)
+
+(use-package delsel
+  :config
+  (delete-selection-mode))
 
 (use-package ess
   :ensure t
@@ -293,6 +283,17 @@ Offer to revert from the auto-save file, if it exists."
                    prog-mode-hook
                     js3-mode-hook))
     (add-hook hook #'fic-mode)))
+
+(use-package files
+  :config
+  (setq
+   kept-old-versions    2
+   kept-new-versions    4
+   delete-old-versions  t
+   version-control      t               ; Versioned backups
+   backup-by-copying    t               ; Don't clobber symlinks
+   backup-directory-alist               ; Backup directory
+   '(("." . "~/backup/"))))
 
 (use-package find-file
   :config
@@ -327,6 +328,14 @@ Offer to revert from the auto-save file, if it exists."
   :no-require t
   :disabled t
   :load-path "lisp")
+
+(use-package font-lock
+  :config
+  (setq font-lock-maximum-decoration 2))
+
+(use-package frame
+  :config
+  (blink-cursor-mode 0))
 
 (use-package git-commit
   :ensure t)
@@ -371,7 +380,15 @@ Offer to revert from the auto-save file, if it exists."
   :mode "\\.mustache$")
 
 (use-package indent
-  :bind ("C-c i" . indent-relative))
+  :bind ("C-c i" . indent-relative)
+  :functions insert-tab
+  :config
+  (setq-default tab-always-indent t)
+  (setq indent-line-function #'insert-tab))
+
+(use-package jit-lock
+  :config
+  (setq jit-lock-stealth-time 4))
 
 (use-package js
   :config
@@ -463,6 +480,11 @@ Offer to revert from the auto-save file, if it exists."
                       :height 8
                       :family "DejaVu Sans Mono"))
 
+(use-package mwheel
+  :config
+  ;; One line at a time
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))))
+
 (use-package nlinum
   :ensure t
   :config
@@ -490,6 +512,10 @@ Offer to revert from the auto-save file, if it exists."
          ("<f12>" . toggle-org))
   :init
   (setq org-special-ctrl-a/e 'reversed))
+
+(use-package paren
+  :config
+  (show-paren-mode))
 
 (use-package pascal
   :no-require t
@@ -526,7 +552,9 @@ Offer to revert from the auto-save file, if it exists."
 (use-package simple
   :demand
   :bind (("C-x C-k" . kill-whole-line)
-         ("M-\\"    .   cycle-spacing)))
+         ("M-\\"    .   cycle-spacing))
+  :config
+  (column-number-mode))
 
 (use-package speedbar
   :config
@@ -552,6 +580,15 @@ Offer to revert from the auto-save file, if it exists."
   (defun latexmk-pvc ()
     (interactive)
     (shell-command "latexmk -pvc &")))
+
+(use-package tool-bar
+  :config
+  (when window-system
+    (tool-bar-mode 0)))
+
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'forward))
 
 (use-package visual-regexp-steroids
   :ensure visual-regexp
@@ -585,28 +622,6 @@ Offer to revert from the auto-save file, if it exists."
          ("M-[ 1 ; 2 D" . windmove-left )
          ("M-[ 1 ; 2 C" . windmove-right)))
 
-(use-package window
-  :preface
-  (defun transpose-split ()
-    "If the frame is split vertically, split it horizontally or vice versa.
-Assumes that the frame is split only in two. Adapted from Wilfred's
-function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
-    (interactive)
-    (unless (= (length (window-list)) 2)
-      (error "Can only toggle a frame split in two"))
-    (let ((split-vertically-p (window-combined-p)))
-      (delete-window)
-      (if split-vertically-p
-          (split-window-horizontally)
-        (split-window-vertically))
-      (switch-to-buffer nil)))
-  :bind (("S-<prior>"   . previous-buffer)
-         ("S-<next>"    .     next-buffer)
-         ;; Mutatis mutandis within tmux
-         ("M-[ 5 ; 2 ~" . previous-buffer)
-         ("M-[ 6 ; 2 ~" .     next-buffer)
-         ("C-x 4"       . transpose-split)))
-
 (use-package wrap-region
   :ensure t)
 
@@ -620,3 +635,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
           tel-aviv-israel
           harare-zimbabwe
           moon)))
+
+(use-package xt-mouse
+  :config
+  (xterm-mouse-mode))
