@@ -9,20 +9,15 @@
 #umask 022
 
 # When running bash
-if [ -n "${BASH_VERSION}" ] && [ -f "${HOME}/.bashrc" ]; then
-  . "${HOME}/.bashrc"
-fi
+[ -n "${BASH_VERSION}" ] && [ -f "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 
-# Rubbish
+# Rubbish (bin)
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
 [ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
 
-# Used, for example, by crontab
-EDITOR='emacs -nw'
-
-# https://github.com/tj/n
-N_PREFIX="${HOME}/.local"
+EDITOR='emacs -nw'              # Used, for example, by crontab
+N_PREFIX="${HOME}/.local"       # https://github.com/tj/n
 
 export PATH EDITOR N_PREFIX
 
