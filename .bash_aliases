@@ -4,9 +4,6 @@
 # Fly, good Fleance, fly, fly, fly!
 alias hide='pmset displaysleepnow'
 
-# ps search
-alias psgrep='ps aux | grep'
-
 # safety
 alias cp='cp -i'
 alias mv='mv -i'
@@ -20,8 +17,10 @@ alias la='ll -A'
 
 # grep
 alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
+alias egrep='grep -E'
+alias fgrep='grep -F'
+alias rgrep='grep -r'
+alias psgrep='ps aux | grep'
 
 # brew
 alias uu='brew update && brew upgrade $(brew outdated)'
@@ -64,6 +63,9 @@ alias nvlc='vlc -I ncurses --browse-dir .'
 
 # gcal
 alias gcal='gcal -s 1'
+
+# ag
+alias agq='ag -Q'
 
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'

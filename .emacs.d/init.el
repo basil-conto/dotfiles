@@ -15,25 +15,13 @@
     (package-install 'use-package)))
 
 (eval-when-compile
+  (defvar use-package-verbose t)
   (require 'use-package))
 (require 'bind-key)
 
-;;; ============
-;;; Key bindings
-;;; ============
-
-(defun transpose-split ()
-  "If the frame is split vertically, split it horizontally or vice versa.
-Assumes that the frame is split only in two."
-  (interactive)
-  (unless (= (length (window-list)) 2)
-    (error "Can only toggle a frame split in two"))
-  (let ((split-vertically-p (window-combined-p)))
-    (delete-window)
-    (if split-vertically-p
-        (split-window-horizontally)
-      (split-window-vertically))
-    (switch-to-buffer nil)))
+;;; ===========
+;;; Definitions
+;;; ===========
 
 (defun refresh-buffer ()
   "Reconcile the current buffer with what lives in the real world (the disk).
@@ -41,63 +29,99 @@ Offer to revert from the auto-save file, if it exists."
   (interactive)
   (revert-buffer nil t))
 
-(defun kill-whole-paragraph ()
-    "Similar to `kill-paragraph`, but kills from the start of the paragraph
-instead of the current point, i.e. the region defined by `mark-paragraph`."
-  (interactive)
-  (mark-paragraph)
-  (kill-region (region-beginning) (region-end) t))
-
 (defun mark-line ()
   "Move to the beginning and mark until the end of the current line."
   (interactive)
   (beginning-of-line)
   (set-mark (line-end-position)))
 
+(defun open--line (forward)
+  "Move forward `forward' - 1 lines before opening an empty line."
+  (save-excursion
+    (end-of-line forward)
+    (open-line 1)))
+
+(defun open-previous-line ()
+  "Open empty line above point without affecting the current line."
+  (interactive)
+  (open--line 0))
+
+(defun open-next-line ()
+  "Open empty line below point without affecting the current line."
+  (interactive)
+  (open--line 1))
+
+(defun what-face (pos)
+  "Describe face at current point."
+  (interactive "d")
+  (let ((face (or (get-char-property (point) #'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
+(defun fix-trailing-enter (enter-key)
+  "Advise given enter key function to first delete trailing whitespace."
+  (advice-add enter-key :before #'(lambda () (delete-trailing-whitespace
+                                              (line-beginning-position)
+                                              (line-end-position)))))
+
+(defun fix-electric-indent ()
+  (electric-indent-local-mode 0))
+
+(defun iwb ()
+  "Indent Whole Buffer and delete trailing whitespace."
+  (interactive)
+  (delete-trailing-whitespace)
+  (indent-region (point-min) (point-max) nil)
+  (untabify (point-min) (point-max)))
+
+(defconst all-hooks
+  '(haskell-cabal-mode-hook
+        gitconfig-mode-hook
+           prolog-mode-hook
+           csharp-mode-hook
+             text-mode-hook
+             prog-mode-hook
+             conf-mode-hook
+              ess-mode-hook
+              js3-mode-hook)
+  "Individual hooks to hang from for global effect.")
+
+;;; ========
+;;; Bindings
+;;; ========
+
 (bind-keys
- ;; Murder
- ("C-x C-k"     . kill-line)
- ("C-k"         . kill-whole-line)
- ("M-k"         . kill-whole-paragraph)
  ;; Region
- ("C-x C-SPC"   .       mark-line)
+ ("C-x C-SPC"   . mark-line         )
  ;; Mutatis mutandis within tmux
- ("C-x C-@"     .       mark-line)
- ;; Windows
- ("C-x 4"       . transpose-split)
+ ("C-x C-@"     . mark-line         )
  ;; Buffers
- ("<f5>"        .  refresh-buffer)
- ("S-<home>"    . previous-buffer)
- ("S-<end>"     .     next-buffer)
- ;; Mutatis mutandis within tmux
- ("M-[ 1 ; 2 h" . previous-buffer)
- ("M-[ 1 ; 2 f" .     next-buffer)
- ;; Prop line file variables
- ("C-c a"       . add-file-local-variable-prop-line))
+ ("<f5>"        . refresh-buffer    )
+ ;; Other
+ ("C-x C-p"     . open-previous-line)
+ ("C-x C-n"     . open-next-line    )
+ ;; Movement
+ ("M-[ 1 ; 5 C" . right-word        )
+ ("M-[ 1 ; 5 D" . left-word         )
+ ("M-P"         . (lambda () (interactive) (scroll-down 8)))
+ ("M-p"         . (lambda () (interactive) (scroll-down 4)))
+ ("<mouse-4>"   . (lambda () (interactive) (scroll-down 1)))
+ ("<mouse-5>"   . (lambda () (interactive) (scroll-up   1)))
+ ("M-n"         . (lambda () (interactive) (scroll-up   4)))
+ ("M-N"         . (lambda () (interactive) (scroll-up   8))))
 
-;;; =========
-;;; Scrolling
-;;; =========
+;;; ========
+;;; Settings
+;;; ========
 
-(setq
- ;; One line at a time
- mouse-wheel-scroll-amount       '(1 ((shift) . 1))
- scroll-conservatively           most-positive-fixnum
- scroll-error-top-bottom         t
- scroll-preserve-screen-position t
- scroll-step                     1
- scroll-margin                   1)
-
-;;; =======
-;;; General
-;;; =======
+;; General
 
 (load-theme 'tango-dark)
 
 (setq
+ inhibit-startup-screen       1
  font-lock-maximum-decoration 2
  jit-lock-stealth-time        4
- inhibit-startup-screen       1
  uniquify-buffer-name-style   'forward)
 
 (    blink-cursor-mode 0)
@@ -111,32 +135,20 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (put   #'upcase-region 'disabled nil)
 (put #'downcase-region 'disabled nil)
 
-(defun what-face (pos)
-  "Describe face at current point."
-  (interactive "d")
-  (let ((face (or (get-char-property (point) #'read-face-name)
-                  (get-char-property (point) 'face))))
-    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+(defalias #'yes-or-no-p #'y-or-n-p)
 
-(add-hook 'text-mode-hook (lambda () (setq fill-column 80
-                                           sentence-end-double-space nil)))
+;; Scrolling
 
-(defconst all-hooks
-  '(haskell-cabal-mode-hook
-        gitconfig-mode-hook
-           prolog-mode-hook
-           csharp-mode-hook
-            todoo-mode-hook
-             text-mode-hook
-             prog-mode-hook
-             conf-mode-hook
-              ess-mode-hook
-              js3-mode-hook)
-  "Individual hooks to hang from for global effect.")
+(setq
+ ;; One line at a time
+ mouse-wheel-scroll-amount       '(1 ((shift) . 1))
+ scroll-conservatively           most-positive-fixnum
+ scroll-error-top-bottom         t
+ scroll-preserve-screen-position t
+ scroll-step                     1
+ scroll-margin                   1)
 
-;;; ===========
-;;; Indentation
-;;; ===========
+;; Spacing
 
 (setq-default
  indent-tabs-mode  nil
@@ -145,19 +157,10 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (setq indent-line-function #'insert-tab)
 
-(defun fix-electric-indent ()
-  (electric-indent-local-mode 0))
+(add-hook 'text-mode-hook #'(lambda () (setq fill-column 80
+                                             sentence-end-double-space nil)))
 
-(defun iwb ()
-  "Indent Whole Buffer and delete trailing whitespace."
-  (interactive)
-  (delete-trailing-whitespace)
-  (indent-region (point-min) (point-max) nil)
-  (untabify (point-min) (point-max)))
-
-;;; ======
-;;; Backup
-;;; ======
+;; Backup
 
 (setq
  ;; Don't clobber symlinks
@@ -170,9 +173,9 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
  ;; Versioned backups
  version-control        t)
 
-;;; ================
-;;; Package settings
-;;; ================
+;;; ========
+;;; Packages
+;;; ========
 
 (use-package 2048-game
   :ensure t)
@@ -180,21 +183,14 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (use-package ag
   :ensure t
   :config
-  (setq ag-highlight-search t)
+  (setq ag-reuse-window      t
+        ag-highlight-search  t)
   (add-to-list 'ag-arguments "-C 5"))
 
 (use-package annoying-arrows-mode
   :ensure t
   :config
   (global-annoying-arrows-mode))
-
-(use-package tex
-  :ensure auctex
-  :config
-  (setq TeX-PDF-mode t)
-  (defun latexmk-pvc ()
-    (interactive)
-    (shell-command "latexmk -pvc &")))
 
 (use-package bytecomp
   :preface
@@ -204,7 +200,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
          ("C-c d" . byte-recompile-directory))
   :config
   (add-hook 'kill-emacs-hook
-            (lambda () (byte-recompile-file init-file-src nil 0))))
+            #'(lambda () (byte-recompile-file init-file-src nil 0))))
 
 (use-package cc-mode
   :config
@@ -212,8 +208,8 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
         c-basic-offset  2)
   (font-lock-add-keywords 'c++-mode '(("constexpr" . font-lock-keyword-face)
                                       ("nullptr"   . font-lock-keyword-face)))
-  (add-hook 'c-mode-common-hook (lambda () (setq comment-start "//"
-                                                 comment-end   "")))
+  (add-hook 'c-mode-common-hook #'(lambda () (setq comment-start "//"
+                                                   comment-end   "")))
 
   (cl-loop
    for (k . v)
@@ -276,24 +272,24 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   (dolist (hook '(LaTeX-mode-hook
                    prog-mode-hook
                     js3-mode-hook))
-    (add-hook hook #'turn-on-fic-mode)))
+    (add-hook hook #'fic-mode)))
 
 (use-package find-file
   :config
   (add-hook
    'find-file-hook
-   (lambda ()
-     (if (> (buffer-size) (* 1024 1024))
-         ;; Strip down emacs
-         (progn (setq buffer-read-only t)
-                (buffer-disable-undo)
-                (fundamental-mode))
-       ;; Detect conflicts
-       (save-excursion
-         (goto-char (point-min))
-         (when (re-search-forward "^<<<<<<< " nil t)
-           (message "Merge conflict detected. Enabling smerge-mode.")
-           (smerge-mode 1)))))))
+   #'(lambda ()
+       (if (> (buffer-size) (* 1024 1024))
+           ;; Strip down emacs
+           (progn (setq buffer-read-only t)
+                  (buffer-disable-undo)
+                  (fundamental-mode))
+         ;; Detect conflicts
+         (save-excursion
+           (goto-char (point-min))
+           (when (re-search-forward "^<<<<<<< " nil t)
+             (message "Merge conflict detected. Enabling smerge-mode.")
+             (smerge-mode 1)))))))
 
 (use-package ido
   :config
@@ -304,8 +300,8 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :ensure t
   :config
   (setq fci-rule-column 80
-        fci-rule-color "DimGrey")
-  (mapc (lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
+        fci-rule-color "#696969")
+  (mapc #'(lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
 
 (use-package git-commit
   :ensure t)
@@ -318,6 +314,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package git-rebase
   :ensure magit
+  :bind ("C-x g" . magit-status)
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
 
@@ -335,9 +332,24 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   :config
   ;; Pretty lambda
   ;; (setq haskell-font-lock-symbols t)
-  (add-hook 'haskell-mode-hook (lambda ()
-                                 (haskell-indentation-mode)
-                                 (fix-electric-indent))))
+  (add-hook 'haskell-mode-hook
+            #'(lambda ()
+                (haskell-indentation-mode)
+                (fix-electric-indent))))
+
+(use-package hayoo
+  :ensure t)
+
+(use-package helm
+  :ensure t
+  :defines helm-M-x-fuzzy-match
+  :bind (("M-x"   . helm-M-x         )
+         ("C-c b" . helm-buffers-list))
+  :config
+  (setq helm-M-x-fuzzy-match t))
+
+(use-package html-mode
+  :mode "\\.mustache$")
 
 (use-package js
   :config
@@ -347,34 +359,39 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package js3-mode
   :ensure t
-  ;; :preface
-  ;; (defconst i18next-wrap "i18next._(\\&)")
-  ;; (defconst ignore-escapes ".*?\\(?:\\s\\[^\\2]\\|\\S\\??\\).*?")
-  ;; (defconst i18next-re "\\(\\s\"\\).*?\\1")
-  ;; (defconst i18next-re
-  ;;   (concat "\\S\\\\(\\(\\s\"\\)"
-  ;;           ignore-escapes
-  ;;           "[[:upper:]]+?"
-  ;;           ignore-escapes
-  ;;           "\\2\\)"))
-  ;; (defun i18nextify-buffer ()
-  ;;   "Interactively i18next-wrap JS string literals in the current buffer."
-  ;;   (interactive)
-  ;;   ;; Don't forget to set case sensitivity!
-  ;;   (defvar old-case-fold-search case-fold-search)
-  ;;   (setq case-fold-search nil)
-  ;;   (query-replace-regexp i18next-re i18next-wrap)
-  ;;   (setq case-fold-search old-case-fold-search))
-;;   (defun i18nextify-buffer ()
-;;     "Interactively i18next-wrap JS string literals in the current buffer.
-;; The first pass ignores strings lacking upper-case letters.
-;; An optional double-check pass iterates over said ignored strings."
-;;     (query-replace-regexp "\\(\\s\"\\).*?[[:upper:]]+.*?\\1" i18next-wrap)
-;;     (when (y-or-n-p "Double-check strings lacking upper-case letters?")
-;;       (goto-char (point-min))
-;;       (query-replace-regexp "\\(\\s\"\\)[^\n[:upper:]]+?\\1" i18next-wrap)))
-  ;; :bind ("C-c i" . i18nextify-buffer)
   :config
+  (defvar i18next-re
+    (concat "\\(\\s\"\\)"               ; Opening quote
+            "\.\*\?"                    ; Can't handle escaped quotes
+            "\\(\\1\\|\\\\\$\\)")       ; Closing quote or escaped newline
+    "Emacs RE partially matching ES5 string literals.")
+  (defvar i18next-call "i18next[.]_("
+    "Emacs RE matching i18next function calls.")
+  (defvar i18next-wrap "i18next._(\\&\)"
+    "Replacement string for ES5 string literals matching `i18next-re'.")
+  (defvar i18next-module "CMN\\([/.]\\)localisation\\1i18n"
+    "Emacs RE matching i18next module path.")
+  (defun i18next-query-replace ()
+    "Interactively query JS string literals to be i18next-wrapped."
+    (interactive)
+    (query-replace-regexp i18next-re i18next-wrap)
+    (save-excursion
+      (let ((i18next-loaded             ; Whether i18next module is loaded
+             (progn (goto-char (point-min))
+                    (re-search-forward i18next-module nil t 1)))
+            (i18next-wrapped            ; Whether string(s) were wrapped
+             (progn (goto-char (point-min))
+                    (re-search-forward i18next-call nil t 1))))
+        (cond ((and i18next-loaded (not i18next-wrapped))
+               (error "i18next module loaded but no strings wrapped"))
+              ((and i18next-wrapped (not i18next-loaded))
+               (error "i18next module not loaded"))))))
+
+  (bind-key   "C-c i"   #'i18next-query-replace)
+  (unbind-key "C-c C-g" js3-mode-map)   ; Why...
+
+  (fix-trailing-enter #'js3-enter-key)
+
   (setq-default
    js3-auto-indent-p                         t
    js3-enter-indents-newline                 t
@@ -382,29 +399,23 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
    js3-indent-level                          4
    js3-indent-on-enter-key                   t
    js3-consistent-level-indent-inner-bracket t)
+
   (setq
    js3-include-browser-externs      nil
    js3-include-gears-externs        nil
    js3-include-rhino-externs        nil
    js3-skip-preprocessor-directives t)
+
   (setq js3-global-externs
-        (mapcar 'symbol-name '(window document console define require)))
-  (set-face-attribute 'js3-function-param-face    nil :foreground "white")
-  (set-face-attribute 'js3-external-variable-face nil :foreground "brightred")
-  (set-face-attribute 'js3-error-face             nil :foreground "brightred"))
+        (mapcar 'symbol-name
+                '(window document location console define require)))
+
+  (set-face-attribute 'js3-function-param-face    nil :foreground "#ffffff")
+  (set-face-attribute 'js3-external-variable-face nil :foreground "#ff0000")
+  (set-face-attribute 'js3-error-face             nil :foreground "#ff0000"))
 
 (use-package json-mode
   :ensure t)
-
-(use-package linum
-  :config
-  (global-linum-mode)
-  ;; Right-aligned followed by vertical line
-  (setq linum-format
-        (lambda (line)
-          (let ((w (length (number-to-string (count-lines (point-min)
-                                                          (point-max))))))
-            (propertize (format (format "%%%dd\u2502" w) line) 'face 'linum)))))
 
 (use-package lisp-mode
   :config
@@ -415,18 +426,25 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package magit
   :ensure t
+  :bind ("C-x g" . magit-status)
   :config
   (set-face-attribute 'magit-blame-heading nil
-                      :background "brightblack"
-                      :foreground "white"))
+                      :background "#696969"
+                      :foreground "#ffffff"))
+
+(use-package magit-gh-pulls
+  :ensure t
+  :config
+  (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
 
 (use-package markdown-mode
   :ensure t
-  :functions markdown-cycle
+  :functions markdown-cycle markdown-enter-key
   :mode ("\\.md$" "\\.markdown$")
   :config
   (add-hook 'markdown-mode-hook
-            (lambda () (local-set-key (kbd "TAB") #'markdown-cycle))))
+            #'(lambda () (local-set-key (kbd "TAB") #'markdown-cycle)))
+  (fix-trailing-enter #'markdown-enter-key))
 
 (use-package minibuffer
   :preface
@@ -435,13 +453,11 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 2016/01/18/why-are-you-changing-gc-cons-threshold/")
   :config
   (add-hook 'minibuffer-setup-hook
-            (lambda () (setq gc-cons-threshold most-positive-fixnum)))
+            #'(lambda () (setq gc-cons-threshold most-positive-fixnum)))
   (add-hook 'minibuffer-exit-hook
-            (lambda () (setq gc-cons-threshold gc-orig-thresh))))
+            #'(lambda () (setq gc-cons-threshold gc-orig-thresh))))
 
 (use-package minimap
-  :no-require t
-  :disabled t
   :ensure t
   :config
   (setq minimap-highlight-line  nil
@@ -449,16 +465,37 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
         minimap-width-fraction  0.05
         minimap-window-location 'right)
   (set-face-attribute 'minimap-active-region-background nil
-    :background "dim grey")
+                      :background "#696969")
   (set-face-attribute 'minimap-font-face nil
-    :height 8))
+                      :height 8))
 
-(use-package pascal
-  :no-require t
-  :disabled t
+(use-package nlinum
+  :ensure t
   :config
-  (add-hook 'pascal-mode-hook (lambda () (setq comment-start "//"
-                                               comment-end   ""))))
+  (global-nlinum-mode)
+  (set-face-attribute 'linum nil :foreground "#696969")
+  (add-hook 'nlinum-mode-hook
+            #'(lambda ()
+                (when nlinum-mode
+                  (setq nlinum--width
+                        (length (number-to-string
+                                 (count-lines (point-min) (point-max)))))
+                  (nlinum--flush)))))
+
+(use-package org-mode
+  :preface
+  (defvar org-file "~/.notes")
+  (defun toggle-org ()
+    (interactive)
+    (if (not (eq major-mode 'org-mode))
+        (find-file-other-window org-file)
+      (basic-save-buffer)
+      (delete-window)))
+  :defines org-special-ctrl-a/e
+  :bind (("C-c l" . org-store-link)
+         ("<f12>" . toggle-org))
+  :init
+  (setq org-special-ctrl-a/e 'reversed))
 
 (use-package perl-mode
   :mode "\\latexmkrc$")
@@ -485,6 +522,11 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
   (setq sh-basic-offset 2
         sh-indentation  2))
 
+(use-package simple
+  :demand
+  :bind (("C-x C-k" . kill-whole-line)
+         ("M-\\"    .   cycle-spacing)))
+
 (use-package speedbar
   :config
   (setq speedbar-show-unknown-files 1
@@ -494,42 +536,43 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 
 (use-package sr-speedbar
   :ensure t
-  :defines helm-alive-p
+  :functions (sr-speedbar-window-exist-p
+              sr-speedbar-remember-window-width
+              sr-speedbar-window-dedicated-only-one-p
+              sr-speedbar-window-p)
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq sr-speedbar-auto-refresh nil))
 
-(use-package todoo
-  :load-path "lisp"
-  :functions todoo todoo-save-and-exit
-  :mode ("TODO"  .  todoo-mode )
-  :bind ("<f12>" . toggle-todoo)
+(use-package tex
+  :ensure auctex
   :config
-  (defun toggle-todoo ()
+  (setq TeX-PDF-mode t)
+  (defun latexmk-pvc ()
     (interactive)
-    (if (eq major-mode 'todoo-mode)
-        (call-interactively #'todoo-save-and-exit)
-      (call-interactively #'todoo)))
-  (add-hook 'todoo-mode-hook #'fix-electric-indent)
-  (setq todoo-indent-column 2))
+    (shell-command "latexmk -pvc &")))
 
 (use-package visual-regexp-steroids
   :ensure visual-regexp
   :ensure t
-  :preface
-  (defconst i18next-re "((?<!\\\\)([\"']).*?(?<!\\\\)\\2)"
-    "Perl RE matching ES5 string literals")
-  (defconst i18next-wrap "i18next._(\\1)"
-    "Replacement string for ES5 string literals matching `i18next-re`.")
   :config
-  (defun i18nextify-buffer ()
-    "Interactively i18next-wrap JS string literals in the current buffer."
-    (interactive)
-    (let ((old-dotall-modifier (plist-get vr--regexp-modifiers :S)))
-      (plist-put vr--regexp-modifiers :S t)
-      (vr/query-replace i18next-re i18next-wrap (point) (point-max))
-      (plist-put vr--regexp-modifiers :S old-dotall-modifier)))
-  :bind ("C-c i" . i18nextify-buffer))
+  ;; (defvar i18next-re "(?m)((?<!\\\\)([\"']).*?(?:\\\\$\\n.*?)*?(?<!\\\\)\\2)"
+  ;;   "Perl RE matching ES5 string literals.")
+  ;; (defvar i18next-wrap "i18next._(\\1)"
+  ;;   "Replacement string for ES5 string literals matching `i18next-re`.")
+  ;; (defvar i18next-module "CMN\\([/.]\\)localisation\\1i18n"
+  ;;   "Emacs RE matching i18next module path.")
+  ;; (defun i18next-query-replace ()
+  ;;   "Interactively query JS string literals to be i18next-wrapped."
+  ;;   (interactive)
+  ;;   (vr/query-replace i18next-re i18next-wrap (point) (point-max))
+  ;;   (unless (string= (current-message) "Replaced 0 occurrences")
+  ;;     (save-excursion
+  ;;       (goto-char (point-min))
+  ;;       (unless (re-search-forward i18next-module nil t 1)
+  ;;         (error "i18next module not loaded")))))
+  ;; (bind-key "C-c i" #'i18next-query-replace)
+  (setq-default vr/match-separator-use-custom-face t))
 
 (use-package vlf
   :ensure t)
@@ -537,7 +580,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
 (use-package wc-mode
   :ensure t
   :config
-  (mapc (lambda (hook) (add-hook hook #'wc-mode)) all-hooks))
+  (mapc #'(lambda (hook) (add-hook hook #'wc-mode)) all-hooks))
 
 (use-package whitespace
   :config
@@ -546,6 +589,7 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
         '(face tabs trailing empty tab-mark)))
 
 (use-package windmove
+  :demand
   :bind (("S-<up>"      . windmove-up   )
          ("S-<down>"    . windmove-down )
          ("S-<left>"    . windmove-left )
@@ -556,5 +600,42 @@ instead of the current point, i.e. the region defined by `mark-paragraph`."
          ("M-[ 1 ; 2 D" . windmove-left )
          ("M-[ 1 ; 2 C" . windmove-right)))
 
+(use-package window
+  :preface
+  (defun transpose-split ()
+    "If the frame is split vertically, split it horizontally or vice versa.
+Assumes that the frame is split only in two. Adapted from Wilfred's
+function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
+    (interactive)
+    (unless (= (length (window-list)) 2)
+      (error "Can only toggle a frame split in two"))
+    (let ((split-vertically-p (window-combined-p)))
+      (delete-window)
+      (if split-vertically-p
+          (split-window-horizontally)
+        (split-window-vertically))
+      (switch-to-buffer nil)))
+  :bind (("S-<home>"    . previous-buffer)
+         ("S-<end>"     .     next-buffer)
+         ;; Mutatis mutandis within tmux
+         ("M-[ 1 ; 2 h" . previous-buffer)
+         ("M-[ 1 ; 2 f" .     next-buffer)
+         ("C-x 4"       . transpose-split)))
+
 (use-package wrap-region
   :ensure t)
+
+(use-package wttrin
+  :ensure t
+  :config
+  (setq wttrin-default-cities
+        '(athens-greece
+          avoca-ireland
+          dublin-ireland
+          tel-aviv-israel
+          harare-zimbabwe
+          moon)))
+
+(use-package xt-mouse
+  :config
+  (xterm-mouse-mode))

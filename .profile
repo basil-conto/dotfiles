@@ -11,8 +11,12 @@ for formula in coreutils findutils gnu-sed gnu-tar; do
   MANPATH="${BREW_PREFIX}/opt/${formula}/libexec/gnuman:${MANPATH}"
 done
 
-# Rubbish
-PATH="${HOME}/.pyenv/versions/2.7.8/bin:${PATH}"
+# # Rubbish
+# PATH="${HOME}/.pyenv/versions/2.7.8/bin:${PATH}"
+
+if which pyenv >/dev/null; then
+  eval "$(pyenv init -)"
+fi
 
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
 [ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
