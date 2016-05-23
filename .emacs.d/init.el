@@ -317,6 +317,9 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (ido-mode)
   (setq ido-enable-flex-matching 1))
 
+(use-package idris-mode
+  :ensure t)
+
 (use-package fill-column-indicator
   :ensure t
   :config
