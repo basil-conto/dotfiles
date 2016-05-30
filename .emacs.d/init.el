@@ -540,6 +540,11 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (show-paren-mode))
 
+(use-package paren-face
+  :ensure t
+  :config
+  (global-paren-face-mode))
+
 (use-package pascal
   :no-require t
   :disabled t
