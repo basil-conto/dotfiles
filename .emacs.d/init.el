@@ -175,14 +175,9 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
          ("M-[ 1 ; 5 D" .  left-word)))
 
 (use-package bytecomp
-  :preface
-  (defconst init-file-src (concat user-emacs-directory "init.el"))
   :bind (("C-c c" . byte-compile-file)
          ("C-c f" . byte-recompile-file)
-         ("C-c d" . byte-recompile-directory))
-  :config
-  (add-hook 'kill-emacs-hook
-            #'(lambda () (byte-recompile-file init-file-src nil 0))))
+         ("C-c d" . byte-recompile-directory)))
 
 (use-package cc-mode
   :defer
