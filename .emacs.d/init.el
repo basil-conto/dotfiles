@@ -347,7 +347,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package font-lock
   :config
-  (setq font-lock-maximum-decoration 2))
+  (setq font-lock-maximum-decoration t))
 
 (use-package frame
   :config
