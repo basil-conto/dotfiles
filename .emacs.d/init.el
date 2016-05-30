@@ -170,6 +170,9 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :defer
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
 
+(use-package bison-mode
+  :ensure t
+  :defer)
 
 (use-package bytecomp
   :bind (("C-c c" . byte-compile-file)
@@ -340,9 +343,8 @@ Offer to revert from the auto-save file, if it exists."
   (mapc #'(lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
 
 (use-package flex-mode
-  :no-require t
-  :disabled t
-  :load-path "lisp")
+  :load-path "lisp"
+  :mode "\\.lex$")
 
 (use-package font-lock
   :config
