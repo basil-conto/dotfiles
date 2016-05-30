@@ -231,6 +231,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 (use-package csharp-mode
   :ensure t
   :mode "\\.cs$"
+  :functions c-electric-brace
   :config
   (add-hook 'csharp-mode-hook
             #'(lambda () (local-set-key (kbd "{") #'c-electric-brace))))
@@ -372,8 +373,8 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package git-rebase
   :ensure magit
-  :bind ("C-x g" . magit-status)
   :defer
+  :after magit
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
 
@@ -398,7 +399,6 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package helm
   :ensure t
-  :defines helm-M-x-fuzzy-match
   :bind (("M-x"   . helm-M-x         )
          ("C-c b" . helm-buffers-list))
   :config
@@ -420,6 +420,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package js3-mode
   :ensure t
+  :commands js3-enter-key
   :config
   (unbind-key "C-c C-g" js3-mode-map)   ; Why...
   (fix-trailing-enter #'js3-enter-key)
@@ -461,6 +462,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package magit
   :ensure t
   :defer
+  :after exec-path-from-shell
   :bind ("C-x g" . magit-status)
   :config
   (set-face-attribute 'magit-blame-heading nil
@@ -470,24 +472,23 @@ Offer to revert from the auto-save file, if it exists."
 (use-package magit-gh-pulls
   :ensure t
   :defer
-  :config
+  :commands turn-on-magit-gh-pulls
+  :init
   (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
 
 (use-package markdown-mode
   :ensure t
-  :functions markdown-cycle markdown-enter-key
+  :functions markdown-enter-key
   :mode ("\\.md$" "\\.markdown$")
+  :bind ("TAB" . markdown-cycle)
   :config
-  (add-hook 'markdown-mode-hook
-            #'(lambda () (local-set-key (kbd "TAB") #'markdown-cycle)))
   (fix-trailing-enter #'markdown-enter-key))
 
 (use-package minibuffer
-  :preface
+  :config
   (defconst gc-orig-thresh gc-cons-threshold
     "http://bling.github.io/blog/\
 2016/01/18/why-are-you-changing-gc-cons-threshold/")
-  :config
   (add-hook 'minibuffer-setup-hook
             #'(lambda () (setq gc-cons-threshold most-positive-fixnum)))
   (add-hook 'minibuffer-exit-hook
@@ -564,12 +565,12 @@ Offer to revert from the auto-save file, if it exists."
   (setq prolog-system 'swi))
 
 (use-package rx
-  :preface
+  :bind ("C-c r" . rx-to-string-bold)
+  :config
   (defun rx-to-string-bold (form)
     "Interactively wrap `rx-to-string` and remove shy groups around result."
     (interactive "sRegExp: ")
-    (message "String: \"%s\"" (rx-to-string form t)))
-  :bind ("C-c r" . rx-to-string-bold))
+    (message "String: \"%s\"" (rx-to-string form t))))
 
 (use-package server
   :config
@@ -616,11 +617,8 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package sr-speedbar
   :ensure t
-  :functions (sr-speedbar-window-exist-p
-              sr-speedbar-remember-window-width
-              sr-speedbar-window-dedicated-only-one-p
-              sr-speedbar-window-p)
   :bind ("C-x t" . sr-speedbar-toggle)
+  :after speedbar
   :config
   (setq sr-speedbar-auto-refresh nil))
 
@@ -634,9 +632,9 @@ Offer to revert from the auto-save file, if it exists."
     (shell-command "latexmk -pvc &")))
 
 (use-package tool-bar
+  :if window-system
   :config
-  (when window-system
-    (tool-bar-mode 0)))
+  (tool-bar-mode 0))
 
 (use-package uniquify
   :config
@@ -644,7 +642,9 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package visual-regexp-steroids
   :ensure visual-regexp
+  :ensure pcre2el
   :ensure t
+  :after pcre2el
   :defer
   :config
   (setq-default vr/match-separator-use-custom-face t))
@@ -665,7 +665,6 @@ Offer to revert from the auto-save file, if it exists."
         '(face tabs trailing empty tab-mark)))
 
 (use-package windmove
-  :demand
   :bind (("S-<up>"      . windmove-up   )
          ("S-<down>"    . windmove-down )
          ("S-<left>"    . windmove-left )
@@ -693,6 +692,7 @@ Offer to revert from the auto-save file, if it exists."
           moon)))
 
 (use-package xt-mouse
+  :if (not window-system)
   :config
   (xterm-mouse-mode))
 
