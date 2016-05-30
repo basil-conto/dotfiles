@@ -270,6 +270,11 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (setq-default ess-default-style 'DEFAULT)
   (setq ess-indent-from-lhs nil))
 
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (setq-default exec-path-from-shell-variables
+                '("PATH" "MANPATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK")))
 
 (use-package expand-region
   :ensure t
