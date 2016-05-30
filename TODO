@@ -2,14 +2,3 @@
 * Fix tmux bash completion
 * Backup etckeeper
 * Moar automation
-
-Emacs
-
-* Fix OS X undo, # and buffer/window switching bindings
-* Incorporate more dwim commenting
-* Fix c++-mode memer-init-intro indentation
-* Improve haskell-mode indentation
-* Add abbreviations?
-* http://www.emacswiki.org/emacs/ThreeWindows
-* Look into use-package :commands keyword
-* Look into ERC/ZNC
