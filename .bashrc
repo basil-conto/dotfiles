@@ -79,7 +79,7 @@ PS1+="\[${YLW_BF}\]\$(git_ps1)"
 PS1+="\[${BLU_BF}\] \w "
 PS1+="\[${PRP}\]${debian_chroot:+($debian_chroot)}"
 PS1+="\[${RED}\]\$(RC=\$?; [ \$RC -ne 0 ] && printf [\$RC])\n"
-PS1+="\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\$ \[${RESET}\]"
+PS1+="\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\\$ \[${RESET}\]"
 
 # Don't pollute the environment
 bash_colours_unset
