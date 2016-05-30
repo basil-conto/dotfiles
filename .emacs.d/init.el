@@ -45,35 +45,6 @@
 ;;; Definitions
 ;;; ===========
 
-(defun refresh-buffer ()
-  "Reconcile the current buffer with what lives in the real world (the disk).
-Offer to revert from the auto-save file, if it exists."
-  (interactive)
-  (revert-buffer nil t))
-
-(defun open--line (forward)
-  "Move forward `forward' - 1 lines before opening an empty line."
-  (save-excursion
-    (end-of-line forward)
-    (open-line 1)))
-
-(defun open-previous-line ()
-  "Open empty line above point without affecting the current line."
-  (interactive)
-  (open--line 0))
-
-(defun open-next-line ()
-  "Open empty line below point without affecting the current line."
-  (interactive)
-  (open--line 1))
-
-(defun what-face (pos)
-  "Describe face at current point."
-  (interactive "d")
-  (let ((face (or (get-char-property (point) #'read-face-name)
-                  (get-char-property (point) 'face))))
-    (if face (message "Face: %s" face) (message "No face at %d" pos))))
-
 (defun fix-trailing-enter (enter-key)
   "Advise given enter key function to first delete trailing whitespace."
   (advice-add enter-key :before #'(lambda () (delete-trailing-whitespace
@@ -122,16 +93,14 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (bind-keys
  ;; Line
- ("C-x C-p"     . open-previous-line)
- ("C-x C-n"     . open-next-line    )
+ ("C-c i"       . indent-relative)
  ;; Window / Buffer
- ("<f5>"        . refresh-buffer    )
- ("C-x 4"       . transpose-split   )
- ("S-<prior>"   . previous-buffer   )
- ("S-<next>"    .     next-buffer   )
+ ("C-x 4"       . transpose-split)
+ ("S-<prior>"   . previous-buffer)
+ ("S-<next>"    .     next-buffer)
  ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" . previous-buffer   )
- ("M-[ 6 ; 2 ~" .     next-buffer   )
+ ("M-[ 5 ; 2 ~" . previous-buffer)
+ ("M-[ 6 ; 2 ~" .     next-buffer)
  ;; Movement
  ("M-P"         . (lambda () (interactive) (scroll-down 8)))
  ("M-p"         . (lambda () (interactive) (scroll-down 4)))
@@ -298,6 +267,15 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :ensure t
   :bind ("M-+" . er/expand-region))
 
+(use-package faces
+  :config
+  (defun what-face (pos)
+    "Describe face at current point."
+    (interactive "d")
+    (let ((face (or (get-char-property (point) #'read-face-name)
+                    (get-char-property (point) 'face))))
+      (if face (message "Face: %s" face) (message "No face at %d" pos)))))
+
 (use-package fic-mode
   :ensure t
   :config
@@ -307,6 +285,13 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
     (add-hook hook #'fic-mode)))
 
 (use-package files
+  :bind ("<f5>" . refresh-buffer)
+  :init
+  (defun refresh-buffer ()
+    "Reconcile the current buffer with what lives in the real world (the disk).
+Offer to revert from the auto-save file, if it exists."
+    (interactive)
+    (revert-buffer nil t))
   :config
   (setq
    kept-old-versions    2
@@ -576,9 +561,27 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (use-package simple
   :demand
-  :bind (("C-x C-k" . kill-whole-line)
-         ("M-\\"    .   cycle-spacing))
+  :bind (("M-\\"    . cycle-spacing     )
+         ("C-x C-k" . kill-whole-line   )
+         ("C-x C-p" . open-previous-line)
+         ("C-x C-n" . open-next-line    ))
   :config
+  (defun open--line (forward)
+    "Move forward `forward' - 1 lines before opening an empty line."
+    (save-excursion
+      (end-of-line forward)
+      (open-line 1)))
+
+  (defun open-previous-line ()
+    "Open empty line above point without affecting the current line."
+    (interactive)
+    (open--line 0))
+
+  (defun open-next-line ()
+    "Open empty line below point without affecting the current line."
+    (interactive)
+    (open--line 1))
+
   (column-number-mode))
 
 (use-package speedbar
