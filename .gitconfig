@@ -3,6 +3,9 @@
 	email  = contovob@tcd.ie
 [core]
 	editor = emacs -nw
+	attributesfile = ~/.gitattributes
+[diff "gpg"]
+	textconv = gpg --decrypt
 [color]
 	ui     = auto
 [alias]
