@@ -532,17 +532,7 @@ Offer to revert from the auto-save file, if it exists."
                   (nlinum--flush)))))
 
 (use-package org-mode
-  :preface
-  (defvar org-file "~/.notes")
-  (defun toggle-org ()
-    (interactive)
-    (if (not (eq major-mode 'org-mode))
-        (find-file-other-window org-file)
-      (basic-save-buffer)
-      (delete-window)))
-  :defines org-special-ctrl-a/e
-  :bind (("C-c l" . org-store-link)
-         ("<f12>" . toggle-org))
+  :bind ("C-c l" . org-store-link)
   :init
   (setq org-special-ctrl-a/e 'reversed))
 
@@ -568,6 +558,12 @@ Offer to revert from the auto-save file, if it exists."
   :mode ("\\.pl$" . prolog-mode)
   :config
   (setq prolog-system 'swi))
+
+(use-package remember
+  :bind (("<f7>" . remember-notes)
+         ("<f8>" . remember-notes-save-and-bury-buffer))
+  :config
+  (setq-default remember-notes-initial-major-mode 'org-mode))
 
 (use-package rx
   :bind ("C-c r" . rx-to-string-bold)
