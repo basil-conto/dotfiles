@@ -338,7 +338,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :config
   (setq fci-rule-column 80
-        fci-rule-color "dim grey")
+        fci-rule-color "#696969")
   (mapc #'(lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
 
 (use-package flex-mode
@@ -445,9 +445,9 @@ Offer to revert from the auto-save file, if it exists."
         (mapcar 'symbol-name
                 '(window document location console define require)))
 
-  (set-face-attribute 'js3-function-param-face    nil :foreground "white")
-  (set-face-attribute 'js3-external-variable-face nil :foreground "brightred")
-  (set-face-attribute 'js3-error-face             nil :foreground "brightred"))
+  (set-face-attribute 'js3-function-param-face    nil :foreground "#ffffff")
+  (set-face-attribute 'js3-external-variable-face nil :foreground "#ff0000")
+  (set-face-attribute 'js3-error-face             nil :foreground "#ff0000"))
 
 (use-package json-mode
   :ensure t
@@ -468,8 +468,8 @@ Offer to revert from the auto-save file, if it exists."
   :bind ("C-x g" . magit-status)
   :config
   (set-face-attribute 'magit-blame-heading nil
-                      :background "dim grey"
-                      :foreground "white"))
+                      :background "#696969"
+                      :foreground "#ffffff"))
 
 (use-package magit-gh-pulls
   :ensure t
@@ -505,7 +505,7 @@ Offer to revert from the auto-save file, if it exists."
         minimap-width-fraction  0.05
         minimap-window-location 'right)
   (set-face-attribute 'minimap-active-region-background nil
-                      :background "dim grey")
+                      :background "#696969")
   (set-face-attribute 'minimap-font-face nil
                       :height 8
                       :family "DejaVu Sans Mono"))
@@ -519,7 +519,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :config
   (global-nlinum-mode)
-  (set-face-attribute 'linum nil :foreground "dim grey")
+  (set-face-attribute 'linum nil :foreground "#696969")
   (add-hook 'nlinum-mode-hook
             #'(lambda ()
                 (when nlinum-mode
