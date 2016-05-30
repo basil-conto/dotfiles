@@ -160,6 +160,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (add-to-list 'ag-arguments "-C 5"))
 
 (use-package annoying-arrows-mode
+  :disabled
   :ensure t
   :config
   (global-annoying-arrows-mode))
