@@ -703,6 +703,10 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (xterm-mouse-mode))
 
+(use-package yaml-mode
+  :ensure t
+  :defer)
+
 (add-hook 'after-init-hook
           #'(lambda ()
               "https://github.com/jwiegley/dot-emacs"
