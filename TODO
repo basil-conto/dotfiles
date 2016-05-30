@@ -1,4 +1,6 @@
-* Do not call non-existent functions (e.g. bash_colours_unset)
+# -*- markdown -*-
+
+* Do not call non-existent functions (e.g. `bash_colours_unset`)
 * Fix tmux bash completion
 * Backup etckeeper
 * Moar automation
