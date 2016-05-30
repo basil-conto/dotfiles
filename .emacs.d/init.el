@@ -248,10 +248,11 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :ensure boogie-friends
   :defer
   :config
-  (add-hook 'dafny-mode-hook #'(lambda ()
-                                 (fix-electric-indent)
-                                 (prettify-symbols-mode 0)
-                                 (flycheck-mode 0))))
+  (add-hook 'dafny-mode-hook
+            #'(lambda ()
+                (fix-electric-indent)
+                (prettify-symbols-mode 0)
+                (flycheck-mode 0))))
 
 (use-package dash
   :ensure t
