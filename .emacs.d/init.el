@@ -135,8 +135,11 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 ;; Spacing
 
 (setq-default
- tab-width        2
- indent-tabs-mode nil)
+ tab-width         2
+ tab-always-indent t
+ indent-tabs-mode  nil)
+
+(setq indent-line-function #'insert-tab)
 
 (add-hook 'text-mode-hook #'(lambda () (setq fill-column 80
                                              sentence-end-double-space nil)))
@@ -388,13 +391,6 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package html-mode
   :mode "\\.mustache$")
-
-(use-package indent
-  :bind ("C-c i" . indent-relative)
-  :functions insert-tab
-  :config
-  (setq-default tab-always-indent t)
-  (setq indent-line-function #'insert-tab))
 
 (use-package jit-lock
   :config
