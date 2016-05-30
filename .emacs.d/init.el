@@ -334,14 +334,6 @@ Offer to revert from the auto-save file, if it exists."
              (message "Merge conflict detected. Enabling smerge-mode.")
              (smerge-mode 1)))))))
 
-(use-package ido
-  :config
-  (ido-mode)
-  (setq ido-enable-flex-matching 1))
-
-(use-package idris-mode
-  :ensure t)
-
 (use-package fill-column-indicator
   :ensure t
   :config
@@ -407,6 +399,15 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package html-mode
   :mode "\\.mustache$")
+
+(use-package ido
+  :config
+  (ido-mode)
+  (setq ido-enable-flex-matching 1))
+
+(use-package idris-mode
+  :ensure t
+  :defer)
 
 (use-package jit-lock
   :config
