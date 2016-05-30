@@ -20,6 +20,10 @@
 ;;; Bootstrapping
 ;;; =============
 
+;;; Profiling
+(defconst emacs-start-time (current-time)
+  "Time before loading user initialisation file.")
+
 ;;; MELPA
 (require 'package)
 (setq package-enable-at-startup nil)
@@ -660,3 +664,11 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 (use-package xt-mouse
   :config
   (xterm-mouse-mode))
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              "https://github.com/jwiegley/dot-emacs"
+              (let ((elapsed (float-time (time-subtract (current-time)
+                                                        emacs-start-time))))
+                (message "Loading %s...done (%.3fs)" load-file-name elapsed)))
+          t)
