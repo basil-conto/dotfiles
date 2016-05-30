@@ -551,6 +551,10 @@ Offer to revert from the auto-save file, if it exists."
   (add-hook 'pascal-mode-hook #'(lambda () (setq comment-start "//"
                                                  comment-end   ""))))
 
+(use-package pcre2el
+  :ensure t
+  :defer)
+
 (use-package perl-mode
   :mode "\\.latexmkrc$")
 
