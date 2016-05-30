@@ -170,9 +170,6 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :defer
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
 
-(use-package bindings
-  :bind (("M-[ 1 ; 5 C" . right-word)
-         ("M-[ 1 ; 5 D" .  left-word)))
 
 (use-package bytecomp
   :bind (("C-c c" . byte-compile-file)
