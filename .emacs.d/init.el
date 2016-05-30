@@ -149,10 +149,12 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 ;;; ========
 
 (use-package 2048-game
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package ag
   :ensure t
+  :defer
   :config
   (setq ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
@@ -164,6 +166,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (use-package apt-sources
   :config
+  :defer
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
 
 (use-package bindings
@@ -181,6 +184,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
             #'(lambda () (byte-recompile-file init-file-src nil 0))))
 
 (use-package cc-mode
+  :defer
   :config
   (setq c-default-style "linux"
         c-basic-offset  2)
@@ -225,6 +229,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (use-package conf-mode
   :config
+  :defer
   (add-hook 'conf-mode-hook #'fix-electric-indent))
 
 (use-package csharp-mode
@@ -244,6 +249,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (use-package dafny-mode
   :ensure boogie-friends
+  :defer
   :config
   (add-hook 'dafny-mode-hook #'(lambda ()
                                  (fix-electric-indent)
@@ -251,7 +257,8 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
                                  (flycheck-mode 0))))
 
 (use-package dash
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package delsel
   :config
@@ -259,12 +266,14 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (use-package ess
   :ensure t
+  :defer
+  :preface
+  (when (get-buffer "*ESS*")
+    (kill-buffer "*ESS*"))
   :config
   (setq-default ess-default-style 'DEFAULT)
   (setq ess-indent-from-lhs nil))
 
-(when (get-buffer "*ESS*")
-  (kill-buffer "*ESS*"))
 
 (use-package expand-region
   :ensure t
@@ -354,14 +363,17 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t)
 
 (use-package gitconfig-mode
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package gitignore-mode
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package git-rebase
   :ensure magit
   :bind ("C-x g" . magit-status)
+  :defer
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
 
@@ -372,14 +384,17 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package haskell-cabal
   :ensure haskell-mode
+  :defer
   :config
   (add-hook 'haskell-cabal-mode-hook #'fix-electric-indent))
 
 (use-package haskell-mode
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package hayoo
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package helm
   :ensure t
@@ -397,6 +412,7 @@ Offer to revert from the auto-save file, if it exists."
   (setq jit-lock-stealth-time 4))
 
 (use-package js
+  :defer
   :config
   (setq js-enabled-frameworks   '(javascript prototype dojo)
         js-indent-level         4
@@ -431,17 +447,20 @@ Offer to revert from the auto-save file, if it exists."
   (set-face-attribute 'js3-error-face             nil :foreground "brightred"))
 
 (use-package json-mode
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package lisp-mode
   :config
   (add-hook 'lisp-mode-hook #'fix-electric-indent))
 
 (use-package list-unicode-display
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package magit
   :ensure t
+  :defer
   :bind ("C-x g" . magit-status)
   :config
   (set-face-attribute 'magit-blame-heading nil
@@ -450,6 +469,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package magit-gh-pulls
   :ensure t
+  :defer
   :config
   (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
 
@@ -475,6 +495,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package minimap
   :ensure t
+  :defer
   :config
   (setq minimap-highlight-line  nil
         minimap-recenter-type   'relative
@@ -551,6 +572,7 @@ Offer to revert from the auto-save file, if it exists."
   (setq server-kill-new-buffers nil))
 
 (use-package sh-script
+  :defer
   :config
   (setq sh-basic-offset 2
         sh-indentation  2))
@@ -581,6 +603,7 @@ Offer to revert from the auto-save file, if it exists."
   (column-number-mode))
 
 (use-package speedbar
+  :defer
   :config
   (setq speedbar-show-unknown-files 1
         speedbar-update-flag        nil
@@ -599,6 +622,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package tex
   :ensure auctex
+  :defer
   :config
   (setq TeX-PDF-mode t)
   (defun latexmk-pvc ()
@@ -617,11 +641,13 @@ Offer to revert from the auto-save file, if it exists."
 (use-package visual-regexp-steroids
   :ensure visual-regexp
   :ensure t
+  :defer
   :config
   (setq-default vr/match-separator-use-custom-face t))
 
 (use-package vlf
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package wc-mode
   :ensure t
@@ -647,10 +673,12 @@ Offer to revert from the auto-save file, if it exists."
          ("M-[ 1 ; 2 C" . windmove-right)))
 
 (use-package wrap-region
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package wttrin
   :ensure t
+  :defer
   :config
   (setq wttrin-default-cities
         '(athens-greece
