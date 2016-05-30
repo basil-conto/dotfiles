@@ -354,7 +354,10 @@ Offer to revert from the auto-save file, if it exists."
   (blink-cursor-mode 0))
 
 (use-package git-commit
-  :ensure t)
+  :ensure t
+  :mode "COMMIT_EDITMSG"
+  :config
+  (setq-default git-commit-major-mode 'markdown-mode))
 
 (use-package gitconfig-mode
   :ensure t
