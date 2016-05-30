@@ -585,8 +585,8 @@ Offer to revert from the auto-save file, if it exists."
 (use-package sh-script
   :defer
   :config
-  (setq sh-basic-offset 2
-        sh-indentation  2))
+  (setq-default sh-basic-offset 2
+                sh-indentation  2))
 
 (use-package simple
   :demand
@@ -616,23 +616,23 @@ Offer to revert from the auto-save file, if it exists."
 (use-package speedbar
   :defer
   :config
-  (setq speedbar-show-unknown-files 1
-        speedbar-update-flag        nil
-        speedbar-use-images         1
-        speedbar-vc-do-check        nil))
+  (setq-default speedbar-show-unknown-files t
+                speedbar-update-flag        nil
+                speedbar-use-images         t
+                speedbar-vc-do-check        nil))
 
 (use-package sr-speedbar
   :ensure t
   :bind ("C-x t" . sr-speedbar-toggle)
   :after speedbar
   :config
-  (setq sr-speedbar-auto-refresh nil))
+  (setq-default sr-speedbar-auto-refresh nil))
 
 (use-package tex
   :ensure auctex
   :defer
   :config
-  (setq TeX-PDF-mode t)
+  (setq-default TeX-PDF-mode t)
   (defun latexmk-pvc ()
     (interactive)
     (shell-command "latexmk -pvc &")))
@@ -644,7 +644,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package uniquify
   :config
-  (setq uniquify-buffer-name-style 'forward))
+  (setq-default uniquify-buffer-name-style 'forward))
 
 (use-package visual-regexp-steroids
   :ensure visual-regexp
@@ -667,8 +667,8 @@ Offer to revert from the auto-save file, if it exists."
 (use-package whitespace
   :config
   (global-whitespace-mode)
-  (setq whitespace-style
-        '(face tabs trailing empty tab-mark)))
+  (setq-default whitespace-style
+                '(face tabs trailing empty tab-mark)))
 
 (use-package windmove
   :bind (("S-<up>"      . windmove-up   )
@@ -689,13 +689,13 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer
   :config
-  (setq wttrin-default-cities
-        '(athens-greece
-          avoca-ireland
-          dublin-ireland
-          tel-aviv-israel
-          harare-zimbabwe
-          moon)))
+  (setq-default wttrin-default-cities
+                '(athens-greece
+                  avoca-ireland
+                  dublin-ireland
+                  tel-aviv-israel
+                  harare-zimbabwe
+                  moon)))
 
 (use-package xt-mouse
   :if (not window-system)
