@@ -15,6 +15,10 @@
 ;;   - Helm
 ;;   - ERC/ZNC
 ;;   - http://www.emacswiki.org/emacs/ThreeWindows
+;;   - Themes
+;;     * base16-chalk-dark
+;;     * base16-default-dark
+;;     * zenburn
 
 ;;; =============
 ;;; Bootstrapping
@@ -170,6 +174,10 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :config
   :defer
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
+
+(use-package base16-theme
+  :ensure t
+  :disabled)
 
 (use-package bison-mode
   :ensure t
@@ -707,6 +715,10 @@ Offer to revert from the auto-save file, if it exists."
 (use-package yaml-mode
   :ensure t
   :defer)
+
+(use-package zenburn-theme
+  :ensure t
+  :disabled)
 
 (add-hook 'after-init-hook
           #'(lambda ()
