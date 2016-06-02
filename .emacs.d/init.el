@@ -28,6 +28,7 @@
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(advice-add #'package--save-selected-packages :override #'ignore) ; Sandbox
 (package-initialize)
 
 ;;; use-package
