@@ -238,6 +238,10 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :defer
   (add-hook 'conf-mode-hook #'fix-electric-indent))
 
+(use-package crontab-mode
+  :ensure t
+  :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
+
 (use-package csharp-mode
   :ensure t
   :mode "\\.cs$"
@@ -245,10 +249,6 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :config
   (add-hook 'csharp-mode-hook
             #'(lambda () (local-set-key (kbd "{") #'c-electric-brace))))
-
-(use-package crontab-mode
-  :ensure t
-  :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
 
 (use-package custom
   :config
