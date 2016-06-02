@@ -250,6 +250,10 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (add-hook 'csharp-mode-hook
             #'(lambda () (local-set-key (kbd "{") #'c-electric-brace))))
 
+(use-package cssh
+  :ensure t
+  :defer)
+
 (use-package custom
   :config
   (load-theme 'tango-dark))
