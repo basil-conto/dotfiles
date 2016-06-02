@@ -83,6 +83,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 (defconst all-hooks
   '(haskell-cabal-mode-hook
         gitconfig-mode-hook
+         mustache-mode-hook
            prolog-mode-hook
            csharp-mode-hook
              text-mode-hook
@@ -409,9 +410,6 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (setq helm-M-x-fuzzy-match t))
 
-(use-package html-mode
-  :mode "\\.mustache$")
-
 (use-package ido
   :config
   (ido-mode)
@@ -521,6 +519,10 @@ Offer to revert from the auto-save file, if it exists."
   (set-face-attribute 'minimap-font-face nil
                       :height 8
                       :family "DejaVu Sans Mono"))
+
+(use-package mustache-mode
+  :ensure t
+  :mode "\\.mustache$")
 
 (use-package mwheel
   :config
