@@ -598,6 +598,10 @@ Offer to revert from the auto-save file, if it exists."
     (interactive "sRegExp: ")
     (message "String: \"%s\"" (rx-to-string form t))))
 
+(use-package sass-mode
+  :ensure t
+  :defer)
+
 (use-package server
   :config
   (setq server-kill-new-buffers nil))
