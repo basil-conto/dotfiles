@@ -551,6 +551,11 @@ Offer to revert from the auto-save file, if it exists."
   :init
   (setq org-special-ctrl-a/e 'reversed))
 
+(use-package palette
+  :ensure t
+  :defer
+  :if window-system)
+
 (use-package paren
   :config
   (show-paren-mode))
