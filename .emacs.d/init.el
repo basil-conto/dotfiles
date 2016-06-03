@@ -336,17 +336,18 @@ Offer to revert from the auto-save file, if it exists."
   (add-hook
    'find-file-hook
    #'(lambda ()
-       (if (> (buffer-size) (* 1024 1024))
-           ;; Strip down emacs
-           (progn (setq buffer-read-only t)
-                  (buffer-disable-undo)
-                  (fundamental-mode))
-         ;; Detect conflicts
-         (save-excursion
-           (goto-char (point-min))
-           (when (re-search-forward "^<<<<<<< " nil t)
-             (message "Merge conflict detected. Enabling smerge-mode.")
-             (smerge-mode 1)))))))
+       (if (< (buffer-size) (* 1024 1024))
+           ;; Snoop around for conflicts
+           (save-excursion
+             (goto-char (point-min))
+             (when (re-search-forward "^<<<<<<< " nil t)
+               (message "Merge conflict detected. Enabling `smerge-mode'.")
+               (smerge-mode)))
+         ;; Strip down emacs
+         (setq buffer-read-only t)
+         (buffer-disable-undo)
+         (fundamental-mode)
+         (nlinum-mode 0)))))
 
 (use-package fill-column-indicator
   :ensure t
