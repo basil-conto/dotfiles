@@ -5,7 +5,6 @@
 ;; * `setq' -> `setq-default'
 ;; * Numeric arguments -> nil/t
 ;; * Optimise use-package
-;; * Inhibit `package-selected-packages' creation
 ;; * Magit over ssh
 ;; * Fix c++-mode memer-init-intro indentation
 
