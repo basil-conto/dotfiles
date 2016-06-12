@@ -775,9 +775,9 @@ Offer to revert from the auto-save file, if it exists."
   :disabled)
 
 (add-hook 'after-init-hook
-          #'(lambda ()
-              "https://github.com/jwiegley/dot-emacs"
-              (let ((elapsed (float-time (time-subtract (current-time)
-                                                        emacs-start-time))))
-                (message "Loading %s...done (%.3fs)" load-file-name elapsed)))
+          `(lambda ()
+             "https://github.com/jwiegley/dot-emacs"
+             (let ((elapsed (float-time (time-subtract (current-time)
+                                                       emacs-start-time))))
+               (message "Loading %s...done (%.3fs)" ,load-file-name elapsed)))
           t)
