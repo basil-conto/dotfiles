@@ -742,7 +742,12 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package wrap-region
   :ensure t
-  :defer)
+  :config
+  (wrap-region-global-mode)
+  (setq-default
+   wrap-region-only-with-negative-prefix t
+   wrap-region-tag-active-modes          '(html-mode web-mode mustache-mode))
+  (wrap-region-add-wrapper "{{#i18n}}" "{{/i18n}}" "i"))
 
 (use-package wttrin
   :ensure t
