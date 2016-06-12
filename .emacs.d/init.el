@@ -632,7 +632,9 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package sass-mode
   :ensure t
-  :defer)
+  :defer
+  :config
+  (add-hook 'sass-mode-hook #'(lambda () (setq comment-start "//"))))
 
 (use-package server
   :config
