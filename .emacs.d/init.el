@@ -503,6 +503,10 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer)
 
+(use-package lorem-ipsum
+  :ensure t
+  :defer)
+
 (use-package magit
   :ensure t
   :defer
