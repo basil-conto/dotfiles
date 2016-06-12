@@ -438,6 +438,10 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (setq helm-M-x-fuzzy-match t))
 
+(use-package i18next-wrap
+  :load-path "lisp"
+  :bind ("C-c C-i" . i18next-query-replace))
+
 (use-package ido
   :config
   (ido-mode)
