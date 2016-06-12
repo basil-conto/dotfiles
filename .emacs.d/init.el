@@ -275,6 +275,29 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :config
   (delete-selection-mode))
 
+(use-package engine-mode
+  :ensure t
+  :config
+  (engine-mode)
+  (defengine google-def
+    "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=define+%s"
+    :keybinding "d")
+  (defengine google-enc
+    "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=%s"
+    :keybinding "g")
+  (defengine hoogle
+    "https://www.haskell.org/hoogle/?hoogle=%s"
+    :keybinding "h")
+  (defengine mdn
+    "https://developer.mozilla.org/en-US/search?q=%s"
+    :keybinding "m")
+  (defengine stack-overflow
+    "https://stackoverflow.com/search?q=%s"
+    :keybinding "s")
+  (defengine wikipedia
+    "https://en.wikipedia.org/w/index.php?search=%s"
+    :keybinding "w"))
+
 (use-package ess
   :ensure t
   :defer
