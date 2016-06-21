@@ -17,6 +17,8 @@
 	diff           = diff-highlight | pager
 [interactive]
 	diffFilter     = diff-highlight
+[submodule]
+	fetchJobs      = 0
 [alias]
 	a     = add
 	ae    = add --edit
