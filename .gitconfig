@@ -24,6 +24,9 @@
 	ae    = add --edit
 	ap    = add --patch
 	br    = branch
+	brl   = !git branch --color --all | grep
+	brv   = !git branch --color --verbose --verbose \
+	      | grep --color '^\\|ahead\\|behind\\|gone'
 	ch    = cherry-pick
 	cm    = commit
 	co    = checkout
@@ -46,4 +49,5 @@
 	mnff  = merge --no-ff
 	rb    = rebase
 	st    = status
+	sb    = status --short --branch
 	wip   = commit --edit --message='[WIP]'
