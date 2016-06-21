@@ -4,10 +4,19 @@
 [core]
 	editor         = emacs -nw
 	attributesfile = ~/.gitattributes
+	whitespace     = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 [color]
 	ui             = auto
+[diff]
+	algorithm      = histogram
 [diff "gpg"]
 	textconv       = gpg --decrypt
+[pager]
+	log            = diff-highlight | pager
+	show           = diff-highlight | pager
+	diff           = diff-highlight | pager
+[interactive]
+	diffFilter     = diff-highlight
 [alias]
 	a     = add
 	ae    = add --edit
