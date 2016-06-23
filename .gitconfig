@@ -1,6 +1,9 @@
 [user]
 	name           = Basil L. Contovounesios
 	email          = contovob@tcd.ie
+	signingkey     = 5D5D8CFF
+[commit]
+	gpgsign        = true
 [core]
 	editor         = emacs -nw
 	attributesfile = ~/.gitattributes
