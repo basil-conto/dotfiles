@@ -233,8 +233,8 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :bind ("M-;" . comment-dwim-2))
 
 (use-package conf-mode
-  :config
   :defer
+  :config
   (add-hook 'conf-mode-hook #'fix-electric-indent))
 
 (use-package crontab-mode
@@ -484,7 +484,7 @@ Offer to revert from the auto-save file, if it exists."
    js3-skip-preprocessor-directives t)
 
   (setq js3-global-externs
-        (mapcar 'symbol-name
+        (mapcar #'symbol-name
                 '(window document location console define require)))
 
   (set-face-attribute 'js3-function-param-face    nil :foreground "#ffffff")
@@ -696,7 +696,7 @@ Offer to revert from the auto-save file, if it exists."
     (shell-command "latexmk -pvc &")))
 
 (use-package tool-bar
-  :if window-system
+  :if (display-graphic-p)
   :config
   (tool-bar-mode 0))
 
