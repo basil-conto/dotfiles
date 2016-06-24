@@ -243,11 +243,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (use-package csharp-mode
   :ensure t
-  :mode "\\.cs$"
-  :functions c-electric-brace
-  :config
-  (add-hook 'csharp-mode-hook
-            #'(lambda () (local-set-key (kbd "{") #'c-electric-brace))))
+  :defer)
 
 (use-package cssh
   :ensure t
