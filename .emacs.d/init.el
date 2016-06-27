@@ -475,8 +475,19 @@ Offer to revert from the auto-save file, if it exists."
         js-indent-level         4
         js-switch-indent-offset 4))
 
+(use-package js2-mode
+  :ensure t
+  :mode "\\.js$"
+  :interpreter ("node" "nodejs")
+  :init
+  (setq-default js2-bounce-indent-p t)
+  :config
+  (add-hook 'js2-mode-hook #'fix-electric-indent)
+  (setq-default js2-allow-rhino-new-expr-initializer nil))
+
 (use-package js3-mode
   :ensure t
+  :defer
   :commands js3-enter-key
   :config
   (unbind-key "C-c C-g" js3-mode-map)   ; Why...
