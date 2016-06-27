@@ -2,6 +2,8 @@
 ;;; TODO
 ;;; ====
 
+;; * s/ido/helm/?
+;; * Separate config data from logic, particularly w.r.t. sensitive data
 ;; * :bind local :maps once their autoloading is fixed upstream
 ;; * `setq' -> `setq-default'
 ;; * Numeric arguments -> nil/t
