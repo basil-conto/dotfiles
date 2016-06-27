@@ -9,6 +9,11 @@ _pip_completion()
 }
 complete -o default -F _pip_completion pip
 
+# pyenv
+if [ -f "${HOME}/.pyenv/completions/pyenv.bash" ]; then
+  . "${HOME}/.pyenv/completions/pyenv.bash"
+fi
+
 # tmux
 if [ -f /usr/share/doc/tmux/examples/bash_completion_tmux.sh ]; then
   . /usr/share/doc/tmux/examples/bash_completion_tmux.sh
