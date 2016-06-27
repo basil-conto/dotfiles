@@ -164,6 +164,16 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (setq ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
 
+(use-package align
+  :bind ("C-c p" . align-punctuation)
+  :config
+  (defun align-punctuation ()
+    "Align punctuation as defined by the current mode in the current region."
+    (interactive)
+    (unless (use-region-p)
+      (mark-paragraph))
+    (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)\\s.")))
+
 (use-package annoying-arrows-mode
   :disabled
   :ensure t
