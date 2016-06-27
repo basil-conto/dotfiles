@@ -12,9 +12,9 @@
 [ -n "${BASH_VERSION}" ] && [ -f "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 
 # Rubbish (bin)
-[ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
-[ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
+[ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
+[ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
 
 EDITOR='emacs -nw'              # Used, for example, by crontab
 N_PREFIX="${HOME}/.local"       # https://github.com/tj/n
