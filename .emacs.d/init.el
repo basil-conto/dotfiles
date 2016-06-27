@@ -2,6 +2,7 @@
 ;;; TODO
 ;;; ====
 
+;; * :bind local :maps once their autoloading is fixed upstream
 ;; * `setq' -> `setq-default'
 ;; * Numeric arguments -> nil/t
 ;; * Optimise use-package
@@ -333,6 +334,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :bind ("M-+" . er/expand-region))
 
 (use-package faces
+  :commands what-face
   :config
   (defun what-face (pos)
     "Describe face at current point."
@@ -540,10 +542,10 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package markdown-mode
   :ensure t
-  :functions markdown-enter-key
+  :commands markdown-cycle markdown-enter-key
   :mode ("\\.md$" "\\.markdown$")
-  :bind ("TAB" . markdown-cycle)
   :config
+  (bind-key "TAB" #'markdown-cycle markdown-mode-map)
   (fix-trailing-enter #'markdown-enter-key))
 
 (use-package minibuffer
