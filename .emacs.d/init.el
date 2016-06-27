@@ -444,9 +444,11 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package helm
   :ensure t
+  :defer 1
   :bind (("M-x"   . helm-M-x         )
          ("C-c b" . helm-buffers-list))
   :config
+  (helm-mode)
   (setq helm-M-x-fuzzy-match t))
 
 (use-package i18next-wrap
