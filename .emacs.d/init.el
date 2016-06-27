@@ -395,7 +395,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package flex-mode
   :load-path "lisp"
-  :mode "\\.lex$")
+  :mode "\\.lex\\'")
 
 (use-package font-lock
   :config
@@ -477,7 +477,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package js2-mode
   :ensure t
-  :mode "\\.js$"
+  :mode "\\.js\\'"
   :interpreter ("node" "nodejs")
   :init
   (setq-default js2-bounce-indent-p t)
@@ -555,7 +555,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package markdown-mode
   :ensure t
   :commands markdown-cycle markdown-enter-key
-  :mode ("\\.md$" "\\.markdown$")
+  :mode ("\\.md\\'" "\\.markdown\\'")
   :config
   (bind-key "TAB" #'markdown-cycle markdown-mode-map)
   (fix-trailing-enter #'markdown-enter-key))
@@ -586,7 +586,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package mustache-mode
   :ensure t
-  :mode "\\.mustache$")
+  :mode "\\.mustache\\'")
 
 (use-package mwheel
   :config
@@ -637,10 +637,10 @@ Offer to revert from the auto-save file, if it exists."
   :defer)
 
 (use-package perl-mode
-  :mode "\\.latexmkrc$")
+  :mode "\\.latexmkrc\\'")
 
 (use-package prolog
-  :mode ("\\.pl$" . prolog-mode)
+  :mode ("\\.pl\\'" . prolog-mode)
   :config
   (setq prolog-system 'swi))
 
