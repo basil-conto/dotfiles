@@ -94,6 +94,9 @@ for flag in DIRTYSTATE STASHSTATE UPSTREAM; do
   export "GIT_PS1_SHOW${flag}"=auto
 done
 
+# For gpg-agent
+export GPG_TTY="$(tty)"
+
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
 true
