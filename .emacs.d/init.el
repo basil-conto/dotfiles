@@ -483,7 +483,15 @@ Offer to revert from the auto-save file, if it exists."
   (setq-default js2-bounce-indent-p t)
   :config
   (add-hook 'js2-mode-hook #'fix-electric-indent)
-  (setq-default js2-allow-rhino-new-expr-initializer nil))
+
+  (setq-default
+   js2-allow-rhino-new-expr-initializer nil
+   js2-global-externs                   '("location" "define")
+   js2-include-node-externs             t)
+
+  (set-face-attribute 'js2-error             nil :foreground "#ff0000")
+  (set-face-attribute 'js2-external-variable nil :foreground "#ff0000")
+  (set-face-attribute 'js2-function-param    nil :foreground "#5fd7af"))
 
 (use-package js3-mode
   :ensure t
