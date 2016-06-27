@@ -407,7 +407,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package git-commit
   :ensure t
-  :defer)
+  :mode ("COMMIT_EDITMSG\\'" "MERGE_MSG\\'"))
 
 (use-package gitconfig-mode
   :ensure t
