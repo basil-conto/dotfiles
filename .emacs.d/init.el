@@ -407,9 +407,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package git-commit
   :ensure t
-  :mode "COMMIT_EDITMSG"
-  :config
-  (setq-default git-commit-major-mode 'markdown-mode))
+  :defer)
 
 (use-package gitconfig-mode
   :ensure t
@@ -420,11 +418,10 @@ Offer to revert from the auto-save file, if it exists."
   :defer)
 
 (use-package git-rebase
-  :ensure magit
   :defer
-  :after magit
   :config
-  (add-hook 'git-rebase-mode-hook #'hl-line-mode))
+  (add-hook 'git-rebase-mode-hook #'hl-line-mode)
+  (set-face-attribute 'git-rebase-hash nil :foreground "#808080"))
 
 (use-package golden-ratio-scroll-screen
   :ensure t
@@ -524,15 +521,19 @@ Offer to revert from the auto-save file, if it exists."
 (use-package magit
   :ensure t
   :defer
-  :after exec-path-from-shell
-  :bind ("C-x g" . magit-status)
   :config
+  (global-magit-file-mode)
+  (magit-wip-after-apply-mode)
+  (magit-wip-after-save-mode)
+  (magit-wip-before-change-mode)
+  (setq-default magit-log-arguments '("-n32" "--graph" "--decorate"))
   (set-face-attribute 'magit-blame-heading nil
                       :background "#696969"
                       :foreground "#ffffff"))
 
 (use-package magit-gh-pulls
   :ensure t
+  :disabled                             ; gh.el doesn't speak ssh?
   :defer
   :commands turn-on-magit-gh-pulls
   :init
