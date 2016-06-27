@@ -541,13 +541,17 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package magit
   :ensure t
-  :defer
+  :defer 2
+  :bind ("C-x g" . magit-status)
   :config
   (global-magit-file-mode)
   (magit-wip-after-apply-mode)
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
-  (setq-default magit-log-arguments '("-n32" "--graph" "--decorate"))
+  (setq-default
+   magit-log-arguments            '("-n32" "--graph" "--decorate")
+   magit-rebase-arguments         '("--interactive")
+   magit-refs-local-branch-format "%4c %-32n %u %m\n")
   (set-face-attribute 'magit-blame-heading nil
                       :background "#696969"
                       :foreground "#ffffff"))
