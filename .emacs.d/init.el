@@ -259,6 +259,14 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :ensure t
   :defer)
 
+(use-package csv-mode
+  :ensure t
+  :commands csv-align-fields
+  :config
+  (setq-default csv-align-style 'auto)
+  (add-hook 'csv-mode-hook
+            #'(lambda () (csv-align-fields nil (point-min) (point-max)))))
+
 (use-package custom
   :config
   (load-theme 'tango-dark))
