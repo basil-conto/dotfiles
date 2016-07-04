@@ -358,7 +358,7 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 (use-package fic-mode
   :ensure t
   :config
-  (setq-default fic-highlighted-words '("FIXME" "TODO" "BUG" "HACK"))
+  (setq-default fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE" "HACK"))
   (mapc #'(lambda (hook) (add-hook hook #'fic-mode))
         '(LaTeX-mode-hook prog-mode-hook js3-mode-hook)))
 
