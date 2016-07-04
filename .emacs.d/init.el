@@ -574,20 +574,29 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package magit
   :ensure t
-  :defer 2
   :bind ("C-x g" . magit-status)
   :config
   (global-magit-file-mode)
   (magit-wip-after-apply-mode)
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
+  (add-hook 'magit-process-mode-hook #'(lambda () (nlinum-mode 0)))
+
   (setq-default
-   magit-log-arguments            '("-n32" "--graph" "--decorate")
-   magit-rebase-arguments         '("--interactive")
-   magit-refs-local-branch-format "%4c %-32n %u %m\n")
-  (set-face-attribute 'magit-blame-heading nil
-                      :background "#696969"
-                      :foreground "#ffffff"))
+   magit-log-arguments             '("-n32" "--graph" "--decorate")
+   magit-rebase-arguments          '("--interactive")
+   ;; FIXME
+   magit-refs-local-branch-format  "%4c %-40n %u %m\n"
+   magit-refs-remote-branch-format "%4c %-40n %m\n")
+
+  (set-face-attribute
+   'magit-blame-heading nil
+   :background "#696969"
+   :foreground "#ffffff")
+  (set-face-attribute
+   'magit-header-line nil
+   :inherit    'magit-section-heading
+   :background (internal-get-lisp-face-attribute 'default :background)))
 
 (use-package magit-gh-pulls
   :ensure t
