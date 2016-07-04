@@ -53,9 +53,16 @@
 
 (defun fix-trailing-enter (enter-key)
   "Advise given enter key function to first delete trailing whitespace."
-  (advice-add enter-key :before #'(lambda () (delete-trailing-whitespace
-                                              (line-beginning-position)
-                                              (line-end-position)))))
+  (advice-add
+   enter-key
+   :after
+   #'(lambda ()
+       "Delete trailing whitespace prior to newline insertion."
+       (save-excursion
+         (forward-line -1)
+         (delete-trailing-whitespace
+          (line-beginning-position)
+          (line-end-position))))))
 
 (defun fix-electric-indent ()
   (electric-indent-local-mode 0))
@@ -502,7 +509,7 @@ Offer to revert from the auto-save file, if it exists."
   :commands js3-enter-key
   :config
   (unbind-key "C-c C-g" js3-mode-map)   ; Why...
-  (fix-trailing-enter #'js3-enter-key)
+  (fix-trailing-enter #'js3-enter-key)  ; For comments
 
   (setq-default
    js3-auto-indent-p                         t
