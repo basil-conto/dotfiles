@@ -554,6 +554,12 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer)
 
+(use-package ledger-mode
+  :ensure t
+  :mode "\\.ledger\\'"
+  :config
+  (setq-default ledger-use-iso-dates t))
+
 (use-package lisp-mode
   :config
   (add-hook 'lisp-mode-hook #'fix-electric-indent))
