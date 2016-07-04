@@ -202,6 +202,10 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :ensure t
   :defer)
 
+(use-package bongo
+  :ensure t
+  :defer)
+
 (use-package bytecomp
   :bind (("C-c c" . byte-compile-file)
          ("C-c f" . byte-recompile-file)
