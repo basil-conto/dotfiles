@@ -2,7 +2,6 @@
 ;;; TODO
 ;;; ====
 
-;; * s/ido/helm/?
 ;; * Separate config data from logic, particularly w.r.t. sensitive data
 ;; * :bind local :maps once their autoloading is fixed upstream
 ;; * `setq' -> `setq-default'
@@ -446,12 +445,15 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package helm
   :ensure t
-  :defer 1
-  :bind (("M-x"   . helm-M-x         )
-         ("C-c b" . helm-buffers-list))
+  :bind (("C-x C-f" . helm-find-files    )
+         ("M-x"     . helm-M-x           )
+         ("C-c b"   . helm-mini          )
+         ("M-y"     . helm-show-kill-ring))
   :config
-  (helm-mode)
-  (setq helm-M-x-fuzzy-match t))
+  (setq-default helm-buffers-fuzzy-matching t
+                helm-M-x-fuzzy-match        t
+                helm-split-window-in-side-p t)
+  (helm-mode))
 
 (use-package i18next-wrap
   :load-path "lisp"
@@ -459,7 +461,6 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package ido
   :config
-  (ido-mode)
   (setq ido-enable-flex-matching 1))
 
 (use-package idris-mode
