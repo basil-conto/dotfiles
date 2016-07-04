@@ -496,16 +496,29 @@ Offer to revert from the auto-save file, if it exists."
   :init
   (setq-default js2-bounce-indent-p t)
   :config
-  (add-hook 'js2-mode-hook #'fix-electric-indent)
+  (bind-key "RET" #'js2-line-break js2-mode-map)
 
   (setq-default
    js2-allow-rhino-new-expr-initializer nil
+   js2-mode-assume-strict               t
+   js2-concat-multiline-strings         'eol
    js2-global-externs                   '("location" "define")
+   js2-highlight-level                  3
    js2-include-node-externs             t)
 
-  (set-face-attribute 'js2-error             nil :foreground "#ff0000")
-  (set-face-attribute 'js2-external-variable nil :foreground "#ff0000")
-  (set-face-attribute 'js2-function-param    nil :foreground "#5fd7af"))
+  (add-hook 'js2-mode-hook
+            #'(lambda ()
+                (fix-electric-indent)
+                (js2-highlight-unused-variables-mode)))
+
+  (mapc #'(lambda (face)
+            (set-face-attribute (car face) nil :foreground (cdr face)))
+        '((js2-error             . "#ff0000")
+          (js2-external-variable . "#ff0000")
+          ;; (js2-function-call     . "#fce94f")
+          (js2-function-param    . "#5fd7af")
+          ;; (js2-object-property   . "#fcaf3e")
+          )))
 
 (use-package js3-mode
   :ensure t
