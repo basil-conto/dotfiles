@@ -15,6 +15,7 @@
 ;;   - Magit
 ;;   - Helm
 ;;   - ERC/ZNC
+;;   - Company
 ;;   - http://www.emacswiki.org/emacs/ThreeWindows
 ;;   - Themes
 ;;     * base16-chalk-dark
