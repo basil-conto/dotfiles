@@ -605,7 +605,7 @@ Offer to revert from the auto-save file, if it exists."
    magit-log-arguments             '("-n32" "--graph" "--decorate")
    magit-rebase-arguments          '("--interactive")
    ;; FIXME
-   magit-refs-local-branch-format  "%4c %-40n %u %m\n"
+   magit-refs-local-branch-format  "%4c %-40n %-40u %m\n"
    magit-refs-remote-branch-format "%4c %-40n %m\n")
 
   (set-face-attribute
