@@ -475,6 +475,11 @@ Offer to revert from the auto-save file, if it exists."
                 helm-split-window-in-side-p t)
   (helm-mode))
 
+(use-package highlight-escape-sequences
+  :ensure t
+  :config
+  (hes-mode))
+
 (use-package i18next-wrap
   :load-path "lisp"
   :bind ("C-c C-i" . i18next-query-replace))
