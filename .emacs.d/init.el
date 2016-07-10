@@ -499,6 +499,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :mode "\\.js\\'"
   :interpreter ("node" "nodejs")
+  :functions js2-line-break
   :init
   (setq-default js2-bounce-indent-p t)
   :config
@@ -510,7 +511,8 @@ Offer to revert from the auto-save file, if it exists."
    js2-concat-multiline-strings         'eol
    js2-global-externs                   '("location" "define")
    js2-highlight-level                  3
-   js2-include-node-externs             t)
+   js2-include-node-externs             t
+   js2-skip-preprocessor-directives     t)
 
   (add-hook 'js2-mode-hook
             #'(lambda ()
