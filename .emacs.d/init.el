@@ -679,6 +679,10 @@ Offer to revert from the auto-save file, if it exists."
                                  (count-lines (point-min) (point-max)))))
                   (nlinum--flush)))))
 
+(use-package nodejs-repl
+  :ensure t
+  :defer)
+
 (use-package org-mode
   :bind ("C-c l" . org-store-link)
   :init
