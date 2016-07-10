@@ -329,6 +329,11 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
     "https://en.wikipedia.org/w/index.php?search=%s"
     :keybinding "w"))
 
+(use-package eshell
+  :defer
+  :config
+  (add-hook 'eshell-mode-hook #'(lambda () (nlinum-mode 0))))
+
 (use-package ess
   :ensure t
   :defer
