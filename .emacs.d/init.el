@@ -89,6 +89,11 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
       (split-window-vertically))
     (switch-to-buffer nil)))
 
+(defun set-face-foregrounds (foregrounds)
+  "Apply `set-face-foreground' to a list of argument lists."
+  (dolist (foreground foregrounds)
+    (apply #'set-face-foreground foreground)))
+
 (defconst all-hooks
   '(haskell-cabal-mode-hook
         gitconfig-mode-hook
@@ -434,7 +439,7 @@ Offer to revert from the auto-save file, if it exists."
   :defer
   :config
   (add-hook 'git-rebase-mode-hook #'hl-line-mode)
-  (set-face-attribute 'git-rebase-hash nil :foreground "#808080"))
+  (set-face-foreground 'git-rebase-hash "#808080"))
 
 (use-package golden-ratio-scroll-screen
   :ensure t
@@ -512,14 +517,16 @@ Offer to revert from the auto-save file, if it exists."
                 (fix-electric-indent)
                 (js2-highlight-unused-variables-mode)))
 
-  (mapc #'(lambda (face)
-            (set-face-attribute (car face) nil :foreground (cdr face)))
-        '((js2-error             . "#ff0000")
-          (js2-external-variable . "#ff0000")
-          ;; (js2-function-call     . "#fce94f")
-          (js2-function-param    . "#5fd7af")
-          ;; (js2-object-property   . "#fcaf3e")
-          )))
+  (set-face-foregrounds
+   '((js2-error             "#ff0000")
+     (js2-external-variable "#ff0000")
+     (js2-function-param    "#5fd7af")))
+
+  (defun js2-moar-colour ()
+    "Further customise `js2-mode' faces."
+    (set-face-foregrounds
+     '((js2-function-call   "#fce94f")
+       (js2-object-property "#fcaf3e")))))
 
 (use-package js3-mode
   :ensure t
@@ -547,9 +554,10 @@ Offer to revert from the auto-save file, if it exists."
         (mapcar #'symbol-name
                 '(window document location console define require)))
 
-  (set-face-attribute 'js3-function-param-face    nil :foreground "#ffffff")
-  (set-face-attribute 'js3-external-variable-face nil :foreground "#ff0000")
-  (set-face-attribute 'js3-error-face             nil :foreground "#ff0000"))
+  (set-face-foregrounds
+   '((js3-function-param-face    "#ffffff")
+     (js3-external-variable-face "#ff0000")
+     (js3-error-face             "#ff0000"))))
 
 (use-package json-mode
   :ensure t
@@ -652,7 +660,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :config
   (global-nlinum-mode)
-  (set-face-attribute 'linum nil :foreground "#696969")
+  (set-face-foreground 'linum "#696969")
   (add-hook 'nlinum-mode-hook
             #'(lambda ()
                 (when nlinum-mode
