@@ -122,10 +122,8 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
  ("M-[ 5 ; 2 ~" . previous-buffer)
  ("M-[ 6 ; 2 ~" .     next-buffer)
  ;; Movement
- ("M-P"         . (lambda () (interactive) (scroll-down 8)))
- ("M-p"         . (lambda () (interactive) (scroll-down 4)))
- ("M-n"         . (lambda () (interactive) (scroll-up   4)))
- ("M-N"         . (lambda () (interactive) (scroll-up   8))))
+ ("M-{"         . (lambda () (interactive) (scroll-down 6)))
+ ("M-}"         . (lambda () (interactive) (scroll-up   6))))
 
 ;;; ========
 ;;; Settings
