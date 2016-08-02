@@ -817,6 +817,10 @@ Offer to revert from the auto-save file, if it exists."
 
   (column-number-mode))
 
+(use-package sl
+  :ensure t
+  :defer)
+
 (use-package speedbar
   :defer
   :config
