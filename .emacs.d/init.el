@@ -902,6 +902,10 @@ Offer to revert from the auto-save file, if it exists."
          ("M-[ 1 ; 2 D" . windmove-left )
          ("M-[ 1 ; 2 C" . windmove-right)))
 
+(use-package winner
+  :config
+  (winner-mode))
+
 (use-package wrap-region
   :ensure t
   :config
