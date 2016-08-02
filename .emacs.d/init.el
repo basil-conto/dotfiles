@@ -854,6 +854,10 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (tool-bar-mode 0))
 
+(use-package top-mode
+  :ensure t
+  :defer)
+
 (use-package uniquify
   :config
   (setq-default uniquify-buffer-name-style 'forward))
