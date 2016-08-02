@@ -567,6 +567,7 @@ Offer to revert from the auto-save file, if it exists."
 
   (defun js2-moar-colour ()
     "Further customise `js2-mode' faces."
+    (interactive)
     (set-face-foregrounds
      '((js2-function-call   "#fce94f")
        (js2-object-property "#fcaf3e")))))
