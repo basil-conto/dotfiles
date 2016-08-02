@@ -696,7 +696,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package mustache-mode
   :ensure t
-  :mode "\\.mustache\\'")
+  :defer)
 
 (use-package mwheel
   :config
