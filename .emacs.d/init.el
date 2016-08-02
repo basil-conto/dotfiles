@@ -513,6 +513,7 @@ Offer to revert from the auto-save file, if it exists."
   :bind ("C-c C-i" . i18next-query-replace))
 
 (use-package ido
+  :defer
   :config
   (setq ido-enable-flex-matching 1))
 
