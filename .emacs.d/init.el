@@ -929,6 +929,19 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (winner-mode))
 
+(use-package with-editor
+  :ensure t
+  :defer
+  :config
+  (add-hook
+   'with-editor-post-finish-hook
+   #'(lambda ()
+       "Ensure message buffer is killed post-git-commit."
+       (and git-commit-mode
+            buffer-file-name
+            (string-match-p git-commit-filename-regexp buffer-file-name)
+            (kill-buffer)))))
+
 (use-package wrap-region
   :ensure t
   :config
