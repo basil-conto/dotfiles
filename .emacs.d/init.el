@@ -633,7 +633,8 @@ Offer to revert from the auto-save file, if it exists."
   (magit-wip-after-apply-mode)
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
-  (add-hook 'magit-process-mode-hook #'(lambda () (nlinum-mode 0)))
+
+  (add-hook 'magit-mode-hook #'(lambda () (nlinum-mode 0)))
 
   (setq-default
    magit-log-arguments             '("-n32" "--graph" "--decorate")
