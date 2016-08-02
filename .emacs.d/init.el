@@ -179,6 +179,10 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :ensure t
   :defer)
 
+(use-package ac-js2
+  :ensure t
+  :disabled)
+
 (use-package ag
   :ensure t
   :defer
