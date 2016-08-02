@@ -875,7 +875,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package vlf
   :ensure t
-  :defer)
+  :disabled)
 
 (use-package wc-mode
   :ensure t
