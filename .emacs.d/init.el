@@ -374,6 +374,10 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :ensure t
   :bind ("M-+" . er/expand-region))
 
+(use-package eyebrowse
+  :ensure t
+  :defer)
+
 (use-package faces
   :commands what-face
   :config
