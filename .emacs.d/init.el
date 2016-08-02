@@ -272,6 +272,13 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :ensure t
   :bind ("M-;" . comment-dwim-2))
 
+(use-package company
+  :ensure t
+  :bind ("M-#" . company-manual-begin)
+  :config
+  (setq-default company-idle-delay nil)
+  (global-company-mode))
+
 (use-package conf-mode
   :defer
   :config
