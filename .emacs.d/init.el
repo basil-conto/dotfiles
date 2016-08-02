@@ -662,7 +662,10 @@ Offer to revert from the auto-save file, if it exists."
   (set-face-attribute
    'magit-header-line nil
    :inherit    'magit-section-heading
-   :background (internal-get-lisp-face-attribute 'default :background)))
+   :background (internal-get-lisp-face-attribute 'default :background))
+  (set-face-foregrounds
+   '((magit-dimmed "#808080")
+     (magit-hash   "#808080"))))
 
 (use-package magit-gh-pulls
   :ensure t
