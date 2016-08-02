@@ -864,6 +864,11 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (setq-default uniquify-buffer-name-style 'forward))
 
+(use-package vc-hooks
+  :defer
+  :config
+  (setq-default vc-handled-backends nil))
+
 (use-package visual-regexp-steroids
   :ensure visual-regexp
   :ensure pcre2el
