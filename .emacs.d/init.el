@@ -638,10 +638,22 @@ Offer to revert from the auto-save file, if it exists."
 
   (setq-default
    magit-log-arguments             '("-n32" "--graph" "--decorate")
-   magit-rebase-arguments          '("--interactive")
-   ;; FIXME
-   magit-refs-local-branch-format  "%4c %-40n %-40u %m\n"
-   magit-refs-remote-branch-format "%4c %-40n %m\n")
+   magit-rebase-arguments          '("--interactive"))
+
+  ;; Align refs with wider columns
+  (let* ((case-fold-search nil)
+         (ctrl             '(?n ?U))
+         (re               (concat "%\\(?:[+-]??[[:digit:]]*?\\)??"
+                                   "\\([" (apply #'string ctrl) "]\\)"))
+         (width            "-40")
+         (subst            (concat "%" width "\\1")))
+    (mapc #'(lambda (fmt)
+              (set-default fmt (replace-regexp-in-string
+                                re subst (symbol-value fmt) t)))
+          '(magit-refs-local-branch-format
+            magit-refs-remote-branch-format
+            magit-refs-symref-format
+            magit-refs-tags-format)))
 
   (set-face-attribute
    'magit-blame-heading nil
