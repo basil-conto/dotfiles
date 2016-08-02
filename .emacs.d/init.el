@@ -520,6 +520,10 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer)
 
+(use-package isearch-prop
+  :ensure t
+  :defer)
+
 (use-package jit-lock
   :config
   (setq jit-lock-stealth-time 4))
