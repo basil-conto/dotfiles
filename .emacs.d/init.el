@@ -499,6 +499,10 @@ Offer to revert from the auto-save file, if it exists."
                 helm-split-window-in-side-p t)
   (helm-mode))
 
+(use-package helm-proc
+  :ensure t
+  :defer)
+
 (use-package highlight-escape-sequences
   :ensure t
   :config
