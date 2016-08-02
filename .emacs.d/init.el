@@ -832,6 +832,10 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (setq-default sr-speedbar-auto-refresh nil))
 
+(use-package subword
+  :config
+  (global-subword-mode))
+
 (use-package tex
   :ensure auctex
   :defer
