@@ -881,6 +881,10 @@ Offer to revert from the auto-save file, if it exists."
   (setq-default wc-modeline-format "[%tll]")
   (mapc #'(lambda (hook) (add-hook hook #'wc-mode)) all-hooks))
 
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'" "\\.mustache\\'"))
+
 (use-package whitespace
   :config
   (global-whitespace-mode)
