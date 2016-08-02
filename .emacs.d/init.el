@@ -657,6 +657,11 @@ Offer to revert from the auto-save file, if it exists."
   :init
   (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
 
+(use-package make-mode
+  :defer
+  :config
+  (setq-default makefile-macro-assign " := "))
+
 (use-package markdown-mode
   :ensure t
   :commands markdown-cycle markdown-enter-key
