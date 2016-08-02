@@ -753,6 +753,10 @@ Offer to revert from the auto-save file, if it exists."
 (use-package perl-mode
   :mode "\\.latexmkrc\\'")
 
+(use-package perspective
+  :ensure t
+  :defer)
+
 (use-package prolog
   :mode ("\\.pl\\'" . prolog-mode)
   :config
