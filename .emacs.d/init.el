@@ -131,7 +131,16 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 ;; General
 
-(setq inhibit-startup-screen t)
+(setq inhibit-startup-screen  t
+      split-window-keep-point nil)
+
+(advice-add
+ #'split-window-sensibly :around
+ #'(lambda (old-split &rest args)
+     "Ensure the larger window dimension is sacrificed when splitting."
+     (let ((split-width-threshold       (window-height))
+           (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
+       (apply old-split args))))
 
 (when window-system
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 8")))
