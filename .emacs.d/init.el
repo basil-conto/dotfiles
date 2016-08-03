@@ -2,6 +2,7 @@
 ;;; TODO
 ;;; ====
 
+;; * Improve git-commit/magit/with-editor logic segregation + hooks
 ;; * Separate config data from logic, particularly w.r.t. sensitive data
 ;; * :bind local :maps once their autoloading is fixed upstream
 ;; * `setq' -> `setq-default'
