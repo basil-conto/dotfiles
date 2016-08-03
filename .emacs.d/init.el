@@ -452,7 +452,12 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package git-commit
   :ensure t
-  :mode ("COMMIT_EDITMSG\\'" "MERGE_MSG\\'"))
+  ;; Need to load package to know when to load package :(
+  :mode ("/\\(\
+\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
+\\|BRANCH_DESCRIPTION\\)\\'" . git-commit-mode)
+  :config
+  (global-git-commit-mode))
 
 (use-package gitconfig-mode
   :ensure t
