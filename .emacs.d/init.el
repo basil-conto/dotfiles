@@ -908,6 +908,8 @@ Offer to revert from the auto-save file, if it exists."
   (setq-default uniquify-buffer-name-style 'forward))
 
 (use-package vc-hooks
+  ;; FIXME: VC needed for xref-js2 as long as projectile not used
+  :disabled
   :defer
   :config
   (setq-default vc-handled-backends nil))
@@ -989,6 +991,16 @@ Offer to revert from the auto-save file, if it exists."
                   tel-aviv-israel
                   harare-zimbabwe
                   moon)))
+
+(use-package xref-js2
+  :ensure t
+  :defer
+  :init
+  (add-hook 'js2-mode-hook
+            #'(lambda ()
+                (unbind-key "M-." js2-mode-map)
+                (add-hook 'xref-backend-functions
+                          #'xref-js2-xref-backend nil t))))
 
 (use-package xt-mouse
   :unless window-system
