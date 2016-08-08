@@ -468,7 +468,16 @@ Offer to revert from the auto-save file, if it exists."
 \\(\\(COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
 \\|BRANCH_DESCRIPTION\\)\\'" . git-commit-mode)
   :config
-  (global-git-commit-mode))
+  (global-git-commit-mode)
+
+  (add-hook
+   'with-editor-post-finish-hook
+   #'(lambda ()
+       "Ensure message buffer is killed post-git-commit."
+       (and git-commit-mode
+            buffer-file-name
+            (string-match-p git-commit-filename-regexp buffer-file-name)
+            (kill-buffer)))))
 
 (use-package gitconfig-mode
   :ensure t
@@ -653,6 +662,7 @@ Offer to revert from the auto-save file, if it exists."
   :bind ("C-x g" . magit-status)
   :config
   (global-magit-file-mode)
+
   (magit-wip-after-apply-mode)
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
@@ -660,8 +670,8 @@ Offer to revert from the auto-save file, if it exists."
   (add-hook 'magit-mode-hook #'(lambda () (nlinum-mode 0)))
 
   (setq-default
-   magit-log-arguments             '("-n32" "--graph" "--decorate")
-   magit-rebase-arguments          '("--interactive"))
+   magit-log-arguments    '("-n32" "--graph" "--decorate")
+   magit-rebase-arguments '("--interactive"))
 
   ;; Align refs with wider columns
   (let* ((case-fold-search nil)
@@ -957,19 +967,6 @@ Offer to revert from the auto-save file, if it exists."
 (use-package winner
   :config
   (winner-mode))
-
-(use-package with-editor
-  :ensure t
-  :defer
-  :config
-  (add-hook
-   'with-editor-post-finish-hook
-   #'(lambda ()
-       "Ensure message buffer is killed post-git-commit."
-       (and git-commit-mode
-            buffer-file-name
-            (string-match-p git-commit-filename-regexp buffer-file-name)
-            (kill-buffer)))))
 
 (use-package wrap-region
   :ensure t
