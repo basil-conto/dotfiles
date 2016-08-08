@@ -823,6 +823,10 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (add-hook 'sass-mode-hook #'(lambda () (setq comment-start "//"))))
 
+(use-package saveplace
+  :config
+  (save-place-mode))
+
 (use-package server
   :config
   (setq server-kill-new-buffers nil))
