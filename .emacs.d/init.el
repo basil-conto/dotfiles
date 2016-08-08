@@ -327,6 +327,16 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   :config
   (delete-selection-mode))
 
+(use-package disaster
+  :ensure t
+  :defer
+  :init
+  (add-hook 'c-mode-common-hook
+            #'(lambda ()
+                (bind-key "C-c d" #'disaster c-mode-base-map)))
+  :config
+  (setq-default disaster-objdump "objdump -D -M att -Sl --no-show-raw-insn"))
+
 (use-package engine-mode
   :ensure t
   :config
