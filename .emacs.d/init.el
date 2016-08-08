@@ -752,7 +752,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package palette
   :ensure t
   :defer
-  :if window-system)
+  :when window-system)
 
 (use-package paren
   :config
@@ -874,7 +874,7 @@ Offer to revert from the auto-save file, if it exists."
     (shell-command "latexmk -pvc &")))
 
 (use-package tool-bar
-  :if (display-graphic-p)
+  :when (display-graphic-p)
   :config
   (tool-bar-mode 0))
 
@@ -970,7 +970,7 @@ Offer to revert from the auto-save file, if it exists."
                   moon)))
 
 (use-package xt-mouse
-  :if (not window-system)
+  :unless window-system
   :config
   (xterm-mouse-mode))
 
