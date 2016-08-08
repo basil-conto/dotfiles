@@ -541,6 +541,13 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer)
 
+(use-package jade
+  :disabled
+  :ensure t
+  :commands jade-interaction-mode
+  :init
+  (add-hook 'js2-mode-hook #'jade-interaction-mode))
+
 (use-package jit-lock
   :config
   (setq jit-lock-stealth-time 4))
