@@ -208,8 +208,8 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (global-annoying-arrows-mode))
 
 (use-package apt-sources
-  :config
   :defer
+  :config
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
 
 (use-package base16-theme
