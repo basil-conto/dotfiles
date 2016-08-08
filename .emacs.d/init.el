@@ -402,10 +402,12 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
 
 (use-package fic-mode
   :ensure t
-  :config
-  (setq-default fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE" "HACK"))
+  :defer
+  :init
   (mapc #'(lambda (hook) (add-hook hook #'fic-mode))
-        '(LaTeX-mode-hook prog-mode-hook js3-mode-hook)))
+        '(LaTeX-mode-hook prog-mode-hook js3-mode-hook))
+  :config
+  (setq-default fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE" "HACK")))
 
 (use-package files
   :bind ("<f5>" . refresh-buffer)
@@ -426,6 +428,7 @@ Offer to revert from the auto-save file, if it exists."
    '(("." . "~/backup/"))))
 
 (use-package find-file
+  :defer
   :config
   (add-hook
    'find-file-hook
@@ -445,20 +448,24 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package fill-column-indicator
   :ensure t
+  :defer
+  :init
+  (mapc #'(lambda (hook) (add-hook hook #'fci-mode)) all-hooks)
   :config
-  (setq fci-rule-column 80
-        fci-rule-color "#696969")
-  (mapc #'(lambda (hook) (add-hook hook #'fci-mode)) all-hooks))
+  (setq-default fci-rule-column 80
+                fci-rule-color "#696969"))
 
 (use-package flex-mode
   :load-path "lisp"
   :mode "\\.lex\\'")
 
 (use-package font-lock
+  :defer
   :config
-  (setq font-lock-maximum-decoration t))
+  (setq-default font-lock-maximum-decoration t))
 
 (use-package frame
+  :defer
   :config
   (blink-cursor-mode 0))
 
@@ -541,7 +548,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package ido
   :defer
   :config
-  (setq ido-enable-flex-matching 1))
+  (setq-default ido-enable-flex-matching 1))
 
 (use-package idris-mode
   :ensure t
@@ -559,15 +566,17 @@ Offer to revert from the auto-save file, if it exists."
   (add-hook 'js2-mode-hook #'jade-interaction-mode))
 
 (use-package jit-lock
+  :defer
   :config
-  (setq jit-lock-stealth-time 4))
+  (setq-default jit-lock-stealth-time 4))
 
 (use-package js
   :defer
   :config
-  (setq js-enabled-frameworks   '(javascript prototype dojo)
-        js-indent-level         4
-        js-switch-indent-offset 4))
+  (setq-default
+   js-enabled-frameworks   '(javascript prototype dojo)
+   js-indent-level         4
+   js-switch-indent-offset 4))
 
 (use-package js2-mode
   :ensure t
@@ -647,6 +656,7 @@ Offer to revert from the auto-save file, if it exists."
   (setq-default ledger-use-iso-dates t))
 
 (use-package lisp-mode
+  :defer
   :config
   (add-hook 'lisp-mode-hook #'fix-electric-indent))
 
@@ -723,7 +733,8 @@ Offer to revert from the auto-save file, if it exists."
   (fix-trailing-enter #'markdown-enter-key))
 
 (use-package minibuffer
-  :config
+  :defer
+  :init
   (defconst gc-orig-thresh gc-cons-threshold
     "http://bling.github.io/blog/\
 2016/01/18/why-are-you-changing-gc-cons-threshold/")
@@ -736,10 +747,11 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer
   :config
-  (setq minimap-highlight-line  nil
-        minimap-recenter-type   'relative
-        minimap-width-fraction  0.05
-        minimap-window-location 'right)
+  (setq-default
+   minimap-highlight-line  nil
+   minimap-recenter-type   'relative
+   minimap-width-fraction  0.05
+   minimap-window-location 'right)
   (set-face-attribute 'minimap-active-region-background nil
                       :background "#696969")
   (set-face-attribute 'minimap-font-face nil
@@ -751,9 +763,10 @@ Offer to revert from the auto-save file, if it exists."
   :defer)
 
 (use-package mwheel
+  :defer
   :config
   ;; One line at a time
-  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))))
+  (setq-default mouse-wheel-scroll-amount '(1 ((shift) . 1))))
 
 (use-package nlinum
   :ensure t
@@ -839,8 +852,9 @@ Offer to revert from the auto-save file, if it exists."
   (save-place-mode))
 
 (use-package server
+  :defer
   :config
-  (setq server-kill-new-buffers nil))
+  (setq-default server-kill-new-buffers nil))
 
 (use-package sh-script
   :defer
@@ -880,10 +894,11 @@ Offer to revert from the auto-save file, if it exists."
 (use-package speedbar
   :defer
   :config
-  (setq-default speedbar-show-unknown-files t
-                speedbar-update-flag        nil
-                speedbar-use-images         t
-                speedbar-vc-do-check        nil))
+  (setq-default
+   speedbar-show-unknown-files t
+   speedbar-update-flag        nil
+   speedbar-use-images         t
+   speedbar-vc-do-check        nil))
 
 (use-package sr-speedbar
   :ensure t
@@ -940,9 +955,10 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package wc-mode
   :ensure t
+  :init
+  (mapc #'(lambda (hook) (add-hook hook #'wc-mode)) all-hooks)
   :config
-  (setq-default wc-modeline-format "[%tll]")
-  (mapc #'(lambda (hook) (add-hook hook #'wc-mode)) all-hooks))
+  (setq-default wc-modeline-format "[%tll]"))
 
 (use-package web-mode
   :ensure t
@@ -951,8 +967,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package whitespace
   :config
   (global-whitespace-mode)
-  (setq-default whitespace-style
-                '(face tabs trailing empty tab-mark)))
+  (setq-default whitespace-style '(face tabs trailing empty tab-mark)))
 
 (use-package windmove
   :bind (("S-<up>"      . windmove-up   )
@@ -982,13 +997,14 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer
   :config
-  (setq-default wttrin-default-cities
-                '(athens-greece
-                  avoca-ireland
-                  dublin-ireland
-                  tel-aviv-israel
-                  harare-zimbabwe
-                  moon)))
+  (setq-default
+   wttrin-default-cities
+   '(athens-greece
+     avoca-ireland
+     dublin-ireland
+     tel-aviv-israel
+     harare-zimbabwe
+     moon)))
 
 (use-package xref-js2
   :ensure t
