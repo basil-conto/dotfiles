@@ -223,7 +223,8 @@ both now and with every subsequently created frame."
   (global-annoying-arrows-mode))
 
 (use-package apt-sources
-  :defer
+  :load-path "/usr/share/emacs24/site-lisp/debian-el"
+  :mode ("\\.sources\\'" . apt-sources-mode)
   :config
   (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
 
