@@ -639,6 +639,14 @@ Offer to revert from the auto-save file, if it exists."
      '((js2-function-call   "#fce94f")
        (js2-object-property "#fcaf3e")))))
 
+(use-package js2-refactor
+  :ensure t
+  :defer
+  :init
+  (add-hook 'js2-mode-hook #'js2-refactor-mode)
+  :config
+  (js2r-add-keybindings-with-prefix "C-c C-m"))
+
 (use-package js3-mode
   :ensure t
   :defer
