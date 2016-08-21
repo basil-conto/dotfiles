@@ -304,7 +304,7 @@ both now and with every subsequently created frame."
 
 (use-package crontab-mode
   :ensure t
-  :mode ("\\.cron\\(tab\\)?\\'" "cron\\(tab\\)?\\."))
+  :mode ("\\.cron\\(?:tab\\)??\\'" "cron\\(?:tab\\)??\\."))
 
 (use-package csharp-mode
   :ensure t
@@ -488,8 +488,8 @@ Offer to revert from the auto-save file, if it exists."
 (use-package git-commit
   :ensure t
   ;; Need to load package to know when to load package :(
-  :mode ("/\\(\
-\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
+  :mode ("/\\(?:\
+\\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
 \\|BRANCH_DESCRIPTION\\)\\'" . git-commit-mode)
   :config
   (global-git-commit-mode)
@@ -667,7 +667,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (use-package ledger-mode
   :ensure t
-  :mode "\\.ledger\\'"
+  :mode ("\\.ledger\\'" "\\.journal\\'")
   :config
   (setq-default ledger-use-iso-dates t))
 
