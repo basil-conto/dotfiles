@@ -283,7 +283,8 @@ both now and with every subsequently created frame."
             ad-do-it))))                ; default behavior
 
 (use-package color-moccur
-  :ensure t)
+  :ensure t
+  :disabled)
 
 (use-package comment-dwim-2
   :ensure t
