@@ -548,6 +548,9 @@ Offer to revert from the auto-save file, if it exists."
   (setq-default helm-buffers-fuzzy-matching t
                 helm-M-x-fuzzy-match        t
                 helm-split-window-in-side-p t)
+
+  ;; (set-face-foreground 'helm-selection "#ffffff")
+
   (helm-mode))
 
 (use-package helm-proc
