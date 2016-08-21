@@ -493,6 +493,8 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (global-git-commit-mode)
 
+  (setq-default git-commit-fill-column 68)
+
   (add-hook
    'with-editor-post-finish-hook
    #'(lambda ()
