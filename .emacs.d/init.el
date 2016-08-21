@@ -444,8 +444,7 @@ Offer to revert from the auto-save file, if it exists."
    '(("." . "~/backup/"))))
 
 (use-package find-file
-  :defer
-  :config
+  :init
   (add-hook
    'find-file-hook
    #'(lambda ()
