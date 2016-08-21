@@ -519,6 +519,7 @@ Offer to revert from the auto-save file, if it exists."
   (set-face-foreground 'git-rebase-hash "#808080"))
 
 (use-package golden-ratio-scroll-screen
+  :disabled
   :ensure t
   :bind (("M-," . golden-ratio-scroll-screen-down)
          ("M-." . golden-ratio-scroll-screen-up)))
