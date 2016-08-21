@@ -2,6 +2,7 @@
 ;;; TODO
 ;;; ====
 
+;; * `with-graphical-frame' -> macro
 ;; * Diminish/delight
 ;; * Improve git-commit/magit/with-editor logic segregation + hooks
 ;; * Separate config data from logic, particularly w.r.t. sensitive data
@@ -13,6 +14,7 @@
 ;; * Fix c++-mode memer-init-intro indentation
 
 ;; * Explore:
+;;   - Macros
 ;;   - Org
 ;;   - Magit
 ;;   - Helm
@@ -96,6 +98,17 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (dolist (foreground foregrounds)
     (apply #'set-face-foreground foreground)))
 
+(defun with-graphical-frame (fun)
+  "Run abnormal hook with currently selected frame
+both now and with every subsequently created frame."
+  (let ((frame (selected-frame)))
+    (when (display-graphic-p frame)
+      (funcall fun frame)))
+  (add-hook 'after-make-frame-functions
+            `(lambda (frame)
+               (when (display-graphic-p frame)
+                 (funcall ,fun frame)))))
+
 (defconst all-hooks
   '(haskell-cabal-mode-hook
         gitconfig-mode-hook
@@ -144,8 +157,9 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
            (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
        (apply old-split args))))
 
-(when window-system
-  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 8")))
+(with-graphical-frame
+ #'(lambda (frame)
+     (set-face-attribute 'default frame :family "DejaVu Sans Mono" :height 80)))
 
 (put   #'upcase-region 'disabled nil)
 (put #'downcase-region 'disabled nil)
@@ -793,7 +807,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package palette
   :ensure t
   :defer
-  :when window-system)
+  :when (display-graphic-p))
 
 (use-package paren
   :config
@@ -921,9 +935,11 @@ Offer to revert from the auto-save file, if it exists."
     (shell-command "latexmk -pvc &")))
 
 (use-package tool-bar
-  :when (display-graphic-p)
-  :config
-  (tool-bar-mode 0))
+  :defer
+  :preface
+  (with-graphical-frame
+   #'(lambda (frame)
+       (tool-bar-mode 0))))
 
 (use-package top-mode
   :ensure t
@@ -1017,7 +1033,7 @@ Offer to revert from the auto-save file, if it exists."
                           #'xref-js2-xref-backend nil t))))
 
 (use-package xt-mouse
-  :unless window-system
+  :unless (display-graphic-p)
   :config
   (xterm-mouse-mode))
 
