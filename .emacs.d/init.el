@@ -553,6 +553,10 @@ Offer to revert from the auto-save file, if it exists."
 
   (helm-mode))
 
+(use-package helm-pass
+  :ensure t
+  :defer)
+
 (use-package helm-proc
   :ensure t
   :defer)
