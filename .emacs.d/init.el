@@ -2,6 +2,8 @@
 ;;; TODO
 ;;; ====
 
+;; * Window splitting - add minimum
+;;   or customise `magit-display-buffer-function' use-case
 ;; * `with-graphical-frame' -> macro
 ;; * Diminish/delight
 ;; * Improve git-commit/magit/with-editor logic segregation + hooks
