@@ -720,6 +720,11 @@ Offer to revert from the auto-save file, if it exists."
    magit-log-arguments    '("-n32" "--graph" "--decorate")
    magit-rebase-arguments '("--interactive"))
 
+  (let* ((repos-base "repos")
+         (repos-file (expand-file-name repos-base user-emacs-directory))
+         (repos-dir  (file-name-as-directory repos-file)))
+    (setq-default magit-repository-directories `((,repos-dir . 2))))
+
   ;; Align refs with wider columns
   (let* ((case-fold-search nil)
          (ctrl             '(?n ?U))
