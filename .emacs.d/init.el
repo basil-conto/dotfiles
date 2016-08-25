@@ -171,11 +171,12 @@ both now and with every subsequently created frame."
 ;; Scrolling
 
 (setq
+ isearch-allow-scroll            t
  scroll-conservatively           most-positive-fixnum
  scroll-error-top-bottom         t
+ scroll-margin                   1
  scroll-preserve-screen-position t
- scroll-step                     1
- scroll-margin                   1)
+ scroll-step                     1)
 
 ;; Spacing
 
