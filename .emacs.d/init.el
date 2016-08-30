@@ -2,6 +2,7 @@
 ;;; TODO
 ;;; ====
 
+;; * Modify custom option lists in place instead of redefining them
 ;; * Window splitting - add minimum
 ;;   or customise `magit-display-buffer-function' use-case
 ;; * `with-graphical-frame' -> macro
@@ -957,6 +958,10 @@ Offer to revert from the auto-save file, if it exists."
   :defer
   :config
   (setq-default TeX-PDF-mode t)
+
+  (let ((view-program (assq 'output-pdf TeX-view-program-selection)))
+    (setf (cadr view-program) "Zathura"))
+
   (defun latexmk-pvc ()
     (interactive)
     (shell-command "latexmk -pvc &")))
