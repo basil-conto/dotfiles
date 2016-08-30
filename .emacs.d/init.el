@@ -555,6 +555,9 @@ Offer to revert from the auto-save file, if it exists."
 
   ;; (set-face-foreground 'helm-selection "#ffffff")
 
+  (add-hook 'helm-major-mode-hook
+            #'(lambda () (nlinum-mode 0)))
+
   (helm-mode))
 
 (use-package helm-pass
