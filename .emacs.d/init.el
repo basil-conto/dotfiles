@@ -73,7 +73,12 @@
           (line-end-position))))))
 
 (defun fix-electric-indent ()
+  "Locally disable electric indentation."
   (electric-indent-local-mode 0))
+
+(defun disable-line-numbers ()
+  "Locally disable display of line numbers."
+  (nlinum-mode 0))
 
 (defun iwb ()
   "Indent Whole Buffer and delete trailing whitespace."
@@ -384,7 +389,7 @@ both now and with every subsequently created frame."
 (use-package eshell
   :defer
   :config
-  (add-hook 'eshell-mode-hook #'(lambda () (nlinum-mode 0))))
+  (add-hook 'eshell-mode-hook #'disable-line-numbers))
 
 (use-package ess
   :ensure t
@@ -463,7 +468,7 @@ Offer to revert from the auto-save file, if it exists."
          (setq buffer-read-only t)
          (buffer-disable-undo)
          (fundamental-mode)
-         (nlinum-mode 0)))))
+         (disable-line-numbers)))))
 
 (use-package fill-column-indicator
   :ensure t
@@ -555,8 +560,7 @@ Offer to revert from the auto-save file, if it exists."
 
   ;; (set-face-foreground 'helm-selection "#ffffff")
 
-  (add-hook 'helm-major-mode-hook
-            #'(lambda () (nlinum-mode 0)))
+  (add-hook 'helm-major-mode-hook #'disable-line-numbers)
 
   (helm-mode))
 
@@ -718,7 +722,7 @@ Offer to revert from the auto-save file, if it exists."
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
 
-  (add-hook 'magit-mode-hook #'(lambda () (nlinum-mode 0)))
+  (add-hook 'magit-mode-hook #'disable-line-numbers)
 
   (setq-default
    magit-log-arguments    '("-n32" "--graph" "--decorate")
