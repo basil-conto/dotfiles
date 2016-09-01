@@ -704,6 +704,12 @@ Offer to revert from the auto-save file, if it exists."
   :config
   (add-hook 'lisp-mode-hook #'fix-electric-indent))
 
+(use-package list-processes+
+  :ensure t
+  :defer
+  :config
+  (defalias #'list-processes #'list-processes+))
+
 (use-package list-unicode-display
   :ensure t
   :defer)
