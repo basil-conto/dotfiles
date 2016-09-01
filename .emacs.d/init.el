@@ -2,6 +2,10 @@
 ;;; TODO
 ;;; ====
 
+;; Fix
+;; * Disable nlinum in `*Messages*', `*Help*', etc. or by default?
+;; * Moar `defun's, not `lambda's
+;; * Tidy hooks
 ;; * Modify custom option lists in place instead of redefining them
 ;; * Window splitting - add minimum
 ;;   or customise `magit-display-buffer-function' use-case
@@ -10,24 +14,24 @@
 ;; * Improve git-commit/magit/with-editor logic segregation + hooks
 ;; * Separate config data from logic, particularly w.r.t. sensitive data
 ;; * :bind local :maps once their autoloading is fixed upstream
-;; * `setq' -> `setq-default'
-;; * Numeric arguments -> nil/t
+;; * Make apt use of `setq'/`setq-default'/`setq-local'
+;; * Numeric arguments -> `nil'/t
 ;; * Optimise use-package
-;; * Magit over ssh
-;; * Fix c++-mode memer-init-intro indentation
+;; * GitHub pulls over SSH
+;; * Fix `c++-mode' `memer-init-intro' indentation
 
-;; * Explore:
-;;   - Macros
-;;   - Org
-;;   - Magit
-;;   - Helm
-;;   - ERC/ZNC
-;;   - Company
-;;   - http://www.emacswiki.org/emacs/ThreeWindows
-;;   - Themes
-;;     * base16-chalk-dark
-;;     * base16-default-dark
-;;     * zenburn
+;; Explore
+;; * Macros
+;; * Org
+;; * Magit
+;; * Helm
+;; * ERC/ZNC
+;; * Company
+;; * URL `http://www.emacswiki.org/emacs/ThreeWindows'
+;; * Themes
+;;   - `base16-chalk-dark'
+;;   - `base16-default-dark'
+;;   - `zenburn'
 
 ;;; =============
 ;;; Bootstrapping
@@ -46,12 +50,13 @@
 
 ;;; use-package
 (unless (package-installed-p 'use-package)
-  (when (y-or-n-p "use-package not installed, would you like to install it?")
+  (when (y-or-n-p "use-package not installed; would you like to install it?")
     (package-refresh-contents)
     (package-install 'use-package)))
 
 (eval-when-compile
-  (defvar use-package-verbose t)
+  (defvar use-package-verbose 'debug
+    "Report package compilation, loading and configuration details.")
   (require 'use-package))
 (require 'bind-key)
 
@@ -59,38 +64,39 @@
 ;;; Definitions
 ;;; ===========
 
-(defun fix-trailing-enter (enter-key)
-  "Advise given enter key function to first delete trailing whitespace."
-  (advice-add
-   enter-key
-   :after
-   #'(lambda ()
-       "Delete trailing whitespace prior to newline insertion."
-       (save-excursion
-         (forward-line -1)
-         (delete-trailing-whitespace
-          (line-beginning-position)
-          (line-end-position))))))
+;; TODO: define no-arg macro?
+(defun no-trailing-enter--advice (&rest _)
+  "Delete trailing whitespace prior to newline insertion."
+  (save-excursion
+    (forward-line -1)
+    (delete-trailing-whitespace
+     (line-beginning-position)
+     (line-end-position))))
 
-(defun fix-electric-indent ()
+(defun no-trailing-enter (enter-key)
+  "Advise enter key function to first delete trailing whitespace."
+  (advice-add enter-key :after #'no-trailing-enter--advice))
+
+(defun no-electric-indent (&rest _)
   "Locally disable electric indentation."
   (electric-indent-local-mode 0))
 
-(defun disable-line-numbers ()
+(defun no-line-numbers (&rest _)
   "Locally disable display of line numbers."
   (nlinum-mode 0))
 
 (defun iwb ()
-  "Indent Whole Buffer and delete trailing whitespace."
+  "Indent Whole Buffer and delete trailing whitespace.
+See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
   (interactive)
   (delete-trailing-whitespace)
   (indent-region (point-min) (point-max) nil)
   (untabify (point-min) (point-max)))
 
 (defun transpose-split ()
-  "If the frame is split vertically, split it horizontally or vice versa.
+  "Alternate between vertical and horizontal frame split.
 Assumes that the frame is split only in two. Adapted from Wilfred's
-function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
+function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (interactive)
   (unless (= (length (window-list)) 2)
     (error "Can only toggle a frame split in two"))
@@ -106,9 +112,14 @@ function at https://www.emacswiki.org/emacs/ToggleWindowSplit."
   (dolist (foreground foregrounds)
     (apply #'set-face-foreground foreground)))
 
+(defun use-c++-comments ()
+  "Default to single-line C++-style comments."
+  (setq-local comment-start "//")
+  (setq-local comment-end     ""))
+
+;; TODO: rewrite as macro?
 (defun with-graphical-frame (fun)
-  "Run abnormal hook with currently selected frame
-both now and with every subsequently created frame."
+  "Run abnormal hook now, in current frame, and with every new frame."
   (let ((frame (selected-frame)))
     (when (display-graphic-p frame)
       (funcall fun frame)))
@@ -219,7 +230,7 @@ both now and with every subsequently created frame."
   :bind ("C-c p" . align-punctuation)
   :config
   (defun align-punctuation ()
-    "Align punctuation as defined by the current mode in the current region."
+    "Horizontally align mode-specific punctuation in region."
     (interactive)
     (unless (use-region-p)
       (mark-paragraph))
@@ -235,7 +246,7 @@ both now and with every subsequently created frame."
   :load-path "/usr/share/emacs24/site-lisp/debian-el"
   :mode ("\\.sources\\'" . apt-sources-mode)
   :config
-  (add-hook 'apt-sources-mode-hook #'fix-electric-indent))
+  (add-hook 'apt-sources-mode-hook #'no-electric-indent))
 
 (use-package base16-theme
   :ensure t
@@ -256,40 +267,45 @@ both now and with every subsequently created frame."
 
 (use-package cc-mode
   :defer
+  :functions (c-lineup-arglist c++-lambda-indent)
   :config
-  (setq c-default-style "linux"
-        c-basic-offset  2)
-  (font-lock-add-keywords 'c++-mode '(("constexpr" . font-lock-keyword-face)
-                                      ("nullptr"   . font-lock-keyword-face)))
-  (add-hook 'c-mode-common-hook #'(lambda () (setq comment-start "//"
-                                                   comment-end   "")))
+  (let ((name    "blc")
+        (base    "linux")
+        (default (assq 'other c-default-style))
+        (offsets '((     access-label . / )
+                   (       case-label . + )
+                   (      innamespace . 0 )
+                   (      inline-open . 0 )
+                   (    arglist-close . 0 )
+                   ;; ;; Doesn't distinguish between
+                   ;; ;; function declarations and calls
+                   ;; (    arglist-intro . ++)
+                   (      inher-intro . ++)
+                   (member-init-intro . ++))))
 
-  (cl-loop
-   for (k . v)
-   in '((     access-label . / )
-        (       case-label . + )
-        (      innamespace . 0 )
-        (      inline-open . 0 )
-        (    arglist-close . 0 )
-        ;; ;; Doesn't distinguish between function declarations and calls
-        ;; (    arglist-intro . ++)
-        (      inher-intro . ++)
-        (member-init-intro . ++))
-   do (c-set-offset k v))
+    (c-add-style name `(,base
+                        (c-basic-offset  . 2)
+                        (c-offsets-alist . ,offsets)))
 
-  ;; Verbatim from http://stackoverflow.com/a/23553882
-  (defadvice c-lineup-arglist (around my activate)
-    "Improve indentation of continued C++11 lambda function opened as argument."
-    (setq ad-return-value
-          (if (and (equal major-mode 'c++-mode)
-                   (ignore-errors
-                     (save-excursion
-                       (goto-char (c-langelem-pos langelem))
-                       ;; Detect "[...](" or "[...]{". preceded by "," or "(",
-                       ;;   and with unclosed brace.
-                       (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$"))))
-              0                         ; no additional indent
-            ad-do-it))))                ; default behavior
+    (setf (cdr default) name))
+
+  (add-hook 'c-mode-common-hook #'use-c++-comments)
+
+  (defun c++-lambda-indent (langelem)
+    "Return indentation offset for C++11 lambda function arguments.
+Currently keeps offset unchanged by returning 0 for lambda functions
+opened as arguments and `nil' for everything else.
+Adapted from URL `http://stackoverflow.com/a/23553882'."
+    (and (eq major-mode 'c++-mode)
+         (ignore-errors
+           (save-excursion
+             (goto-char (c-langelem-pos langelem))
+             ;; Detect "[...](" or "[...]{",
+             ;; preceded by "," or "(" and with unclosed brace
+             (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
+         0))
+
+  (advice-add #'c-lineup-arglist :before-until #'c++-lambda-indent))
 
 (use-package color-moccur
   :ensure t
@@ -309,7 +325,7 @@ both now and with every subsequently created frame."
 (use-package conf-mode
   :defer
   :config
-  (add-hook 'conf-mode-hook #'fix-electric-indent))
+  (add-hook 'conf-mode-hook #'no-electric-indent))
 
 (use-package crontab-mode
   :ensure t
@@ -341,7 +357,7 @@ both now and with every subsequently created frame."
   :config
   (add-hook 'dafny-mode-hook
             #'(lambda ()
-                (fix-electric-indent)
+                (no-electric-indent)
                 (prettify-symbols-mode 0)
                 (flycheck-mode 0))))
 
@@ -389,7 +405,7 @@ both now and with every subsequently created frame."
 (use-package eshell
   :defer
   :config
-  (add-hook 'eshell-mode-hook #'disable-line-numbers))
+  (add-hook 'eshell-mode-hook #'no-line-numbers))
 
 (use-package ess
   :ensure t
@@ -398,14 +414,14 @@ both now and with every subsequently created frame."
   (when (get-buffer "*ESS*")
     (kill-buffer "*ESS*"))
   :config
-  (setq-default ess-default-style 'DEFAULT)
-  (setq ess-indent-from-lhs nil))
+  (setq-default ess-default-style   'DEFAULT
+                ess-indent-from-lhs nil))
 
 (use-package exec-path-from-shell
   :ensure t
   :config
-  (setq-default exec-path-from-shell-variables
-                '("PATH" "MANPATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK")))
+  (dolist (var '("SSH_AGENT_PID" "SSH_AUTH_SOCK"))
+    (add-to-list 'exec-path-from-shell-variables var)))
 
 (use-package expand-region
   :ensure t
@@ -438,8 +454,8 @@ both now and with every subsequently created frame."
   :bind ("<f5>" . refresh-buffer)
   :init
   (defun refresh-buffer ()
-    "Reconcile the current buffer with what lives in the real world (the disk).
-Offer to revert from the auto-save file, if it exists."
+    "Reconcile current buffer with what lives on the disk.
+Offer to revert from the auto-save file, if that exists."
     (interactive)
     (revert-buffer nil t))
   :config
@@ -468,7 +484,7 @@ Offer to revert from the auto-save file, if it exists."
          (setq buffer-read-only t)
          (buffer-disable-undo)
          (fundamental-mode)
-         (disable-line-numbers)))))
+         (no-line-numbers)))))
 
 (use-package fill-column-indicator
   :ensure t
@@ -537,7 +553,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure haskell-mode
   :defer
   :config
-  (add-hook 'haskell-cabal-mode-hook #'fix-electric-indent))
+  (add-hook 'haskell-cabal-mode-hook #'no-electric-indent))
 
 (use-package haskell-mode
   :ensure t
@@ -560,7 +576,7 @@ Offer to revert from the auto-save file, if it exists."
 
   ;; (set-face-foreground 'helm-selection "#ffffff")
 
-  (add-hook 'helm-major-mode-hook #'disable-line-numbers)
+  (add-hook 'helm-major-mode-hook #'no-line-numbers)
 
   (helm-mode))
 
@@ -635,7 +651,7 @@ Offer to revert from the auto-save file, if it exists."
 
   (add-hook 'js2-mode-hook
             #'(lambda ()
-                (fix-electric-indent)
+                (no-electric-indent)
                 (js2-highlight-unused-variables-mode)))
 
   (set-face-foregrounds
@@ -664,7 +680,7 @@ Offer to revert from the auto-save file, if it exists."
   :commands js3-enter-key
   :config
   (unbind-key "C-c C-g" js3-mode-map)   ; Why...
-  (fix-trailing-enter #'js3-enter-key)  ; For comments
+  (no-trailing-enter #'js3-enter-key)   ; For comments
 
   (setq-default
    js3-auto-indent-p                         t
@@ -702,7 +718,7 @@ Offer to revert from the auto-save file, if it exists."
 (use-package lisp-mode
   :defer
   :config
-  (add-hook 'lisp-mode-hook #'fix-electric-indent))
+  (add-hook 'lisp-mode-hook #'no-electric-indent))
 
 (use-package list-processes+
   :ensure t
@@ -728,7 +744,7 @@ Offer to revert from the auto-save file, if it exists."
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
 
-  (add-hook 'magit-mode-hook #'disable-line-numbers)
+  (add-hook 'magit-mode-hook #'no-line-numbers)
 
   (setq-default
    magit-log-arguments    '("-n32" "--graph" "--decorate")
@@ -785,14 +801,14 @@ Offer to revert from the auto-save file, if it exists."
   :mode ("\\.md\\'" "\\.markdown\\'")
   :config
   (bind-key "TAB" #'markdown-cycle markdown-mode-map)
-  (fix-trailing-enter #'markdown-enter-key))
+  (no-trailing-enter #'markdown-enter-key))
 
 (use-package minibuffer
   :defer
   :init
   (defconst gc-orig-thresh gc-cons-threshold
-    "http://bling.github.io/blog/\
-2016/01/18/why-are-you-changing-gc-cons-threshold/")
+    "See URL `http://bling.github.io/blog/2016/01/18/\
+why-are-you-changing-gc-cons-threshold/'")
   (add-hook 'minibuffer-setup-hook
             #'(lambda () (setq gc-cons-threshold most-positive-fixnum)))
   (add-hook 'minibuffer-exit-hook
@@ -840,7 +856,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer)
 
-(use-package org-mode
+(use-package org
   :bind ("C-c l" . org-store-link)
   :init
   (setq org-special-ctrl-a/e 'reversed))
@@ -863,8 +879,7 @@ Offer to revert from the auto-save file, if it exists."
   :no-require t
   :disabled t
   :config
-  (add-hook 'pascal-mode-hook #'(lambda () (setq comment-start "//"
-                                                 comment-end   ""))))
+  (add-hook 'pascal-mode-hook #'use-c++-comments))
 
 (use-package pcre2el
   :ensure t
@@ -892,7 +907,7 @@ Offer to revert from the auto-save file, if it exists."
   :bind ("C-c r" . rx-to-string-bold)
   :config
   (defun rx-to-string-bold (form)
-    "Interactively wrap `rx-to-string` and remove shy groups around result."
+    "Interactively wrap `rx-to-string' and remove shy groups around result."
     (interactive "sRegExp: ")
     (message "String: \"%s\"" (rx-to-string form t))))
 
@@ -900,7 +915,7 @@ Offer to revert from the auto-save file, if it exists."
   :ensure t
   :defer
   :config
-  (add-hook 'sass-mode-hook #'(lambda () (setq comment-start "//"))))
+  (add-hook 'sass-mode-hook #'use-c++-comments))
 
 (use-package saveplace
   :config
@@ -976,8 +991,10 @@ Offer to revert from the auto-save file, if it exists."
     (setf (cadr view-program) "Zathura"))
 
   (defun latexmk-pvc ()
+    "Continuously preview LaTeX document with `latexmk'."
     (interactive)
-    (shell-command "latexmk -pvc &")))
+    ;; TODO: `start-process' instead?
+    (async-shell-command "latexmk -pvc")))
 
 (use-package tool-bar
   :defer
@@ -1092,7 +1109,7 @@ Offer to revert from the auto-save file, if it exists."
 
 (add-hook 'after-init-hook
           `(lambda ()
-             "https://github.com/jwiegley/dot-emacs"
+             "See URL `https://github.com/jwiegley/dot-emacs'."
              (let ((elapsed (float-time (time-subtract (current-time)
                                                        emacs-start-time))))
                (message "Loading %s...done (%.3fs)" ,load-file-name elapsed)))
