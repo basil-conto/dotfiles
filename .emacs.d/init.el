@@ -995,10 +995,17 @@ why-are-you-changing-gc-cons-threshold/'")
     (setf (cadr view-program) "Zathura"))
 
   (defun latexmk-pvc ()
-    "Continuously preview LaTeX document with `latexmk'."
+    "Continuously preview current LaTeX document with `latexmk'."
     (interactive)
-    ;; TODO: `start-process' instead?
-    (async-shell-command "latexmk -pvc")))
+    ;; TODO:
+    ;; * `start-process' instead?
+    ;; * Accept overriding file name?
+    (unless buffer-file-name
+      (error "Current buffer is not visiting a file."))
+    (let ((command (combine-and-quote-strings
+                    `("latexmk" "-pvc" ,(file-name-base))
+                    " ")))
+      (async-shell-command command))))
 
 (use-package tool-bar
   :defer
