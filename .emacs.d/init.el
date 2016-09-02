@@ -252,6 +252,10 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   :ensure t
   :disabled)
 
+(use-package better-shell
+  :ensure t
+  :defer)
+
 (use-package bison-mode
   :ensure t
   :defer)
