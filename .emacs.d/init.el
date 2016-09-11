@@ -1035,19 +1035,19 @@ why-are-you-changing-gc-cons-threshold/'")
 
 (use-package tex
   :ensure auctex
-  :defer
+  :commands latexmk-pvc
   :config
   (setq-default TeX-PDF-mode t)
 
   (let ((view-program (assq 'output-pdf TeX-view-program-selection)))
     (setf (cadr view-program) "Zathura"))
 
+  ;; TODO:
+  ;; * `start-process' instead?
+  ;; * Accept overriding file name?
   (defun latexmk-pvc ()
     "Continuously preview current LaTeX document with `latexmk'."
     (interactive)
-    ;; TODO:
-    ;; * `start-process' instead?
-    ;; * Accept overriding file name?
     (unless buffer-file-name
       (error "Current buffer is not visiting a file."))
     (let ((command (combine-and-quote-strings
