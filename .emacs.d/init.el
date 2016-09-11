@@ -975,6 +975,11 @@ why-are-you-changing-gc-cons-threshold/'")
   (setq-default sh-basic-offset 2
                 sh-indentation  2))
 
+(use-package shell
+  :defer
+  :init
+  (add-hook 'shell-mode-hook #'no-line-numbers))
+
 (use-package simple
   :demand
   :bind (("M-\\"    . cycle-spacing     )
