@@ -415,6 +415,10 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :config
   (setq-default disaster-objdump "objdump -D -M att -Sl --no-show-raw-insn"))
 
+(use-package ebib
+  :ensure t
+  :bind ("C-c e" . ebib))
+
 (use-package engine-mode
   :ensure t
   :config
