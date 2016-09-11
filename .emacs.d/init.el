@@ -1037,11 +1037,6 @@ why-are-you-changing-gc-cons-threshold/'")
   :ensure auctex
   :commands latexmk-pvc
   :config
-  (setq-default TeX-PDF-mode t)
-
-  (let ((view-program (assq 'output-pdf TeX-view-program-selection)))
-    (setf (cadr view-program) "Zathura"))
-
   ;; TODO:
   ;; * `start-process' instead?
   ;; * Accept overriding file name?
@@ -1053,7 +1048,15 @@ why-are-you-changing-gc-cons-threshold/'")
     (let ((command (combine-and-quote-strings
                     `("latexmk" "-pvc" ,(file-name-base))
                     " ")))
-      (async-shell-command command))))
+      (async-shell-command command)))
+
+  (setq-default
+   LaTeX-csquotes-open-quote  "\\enquote{"
+   LaTeX-csquotes-close-quote "}"
+   TeX-PDF-mode               t)
+
+  (let ((view-program (assq 'output-pdf TeX-view-program-selection)))
+    (setf (cadr view-program) "Zathura")))
 
 (use-package tool-bar
   :defer
