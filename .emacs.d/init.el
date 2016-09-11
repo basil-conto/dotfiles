@@ -762,9 +762,7 @@ Offer to revert from the auto-save file, if that exists."
 
 (use-package list-processes+
   :ensure t
-  :defer
-  :config
-  (defalias #'list-processes #'list-processes+))
+  :defer)
 
 (use-package list-unicode-display
   :ensure t
