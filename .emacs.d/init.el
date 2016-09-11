@@ -484,7 +484,8 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   (dolist (hook '(text-mode-hook prog-mode-hook))
     (add-hook hook #'fic-mode))
   :config
-  (setq-default fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE" "HACK")))
+  (dolist (word '("KLUDGE" "HACK"))
+    (add-to-list 'fic-highlighted-words word)))
 
 (use-package files
   :bind ("<f5>" . refresh-buffer)
@@ -734,9 +735,9 @@ Offer to revert from the auto-save file, if that exists."
    js3-include-rhino-externs        nil
    js3-skip-preprocessor-directives t)
 
-  (setq js3-global-externs
-        (mapcar #'symbol-name
-                '(window document location console define require)))
+  (setq-default
+   js3-global-externs
+   '("window" "document" "location" "console" "define" "require"))
 
   (set-foregrounds
    '((js3-function-param-face    "#ffffff")
