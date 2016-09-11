@@ -135,6 +135,20 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   "Apply `set-face-foreground' to a list of argument lists."
   (mapc-unpack #'set-face-foreground foregrounds))
 
+(defun remap-faces (map)
+  "Remap given face keys to values."
+  (mapc-unpack #'face-remap-add-relative map))
+
+(defun remap-man-faces (&rest _)
+  "Customise `Man-mode' faces."
+  (remap-faces '((Man-overstrike man-header)
+                 (Man-underline  man-emph  ))))
+
+(defun remap-woman-faces (&rest _)
+  "Customise `woman-mode' faces."
+  (remap-faces '((woman-bold   man-header)
+                 (woman-italic man-emph  ))))
+
 (defconst all-hooks
   '(haskell-cabal-mode-hook
         gitconfig-mode-hook
@@ -147,6 +161,16 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
               ess-mode-hook
               js3-mode-hook)
   "Individual hooks to hang from for global effect.")
+
+(defface man-header
+  '((t :foreground "#b4fa70" :weight bold))
+  "Man page heading face."
+  :group 'man)
+
+(defface man-emph
+  '((t :foreground "#e9b96e" :underline t))
+  "Man page emphasis/underline face."
+  :group 'man)
 
 ;;; ========
 ;;; Bindings
@@ -806,6 +830,11 @@ Offer to revert from the auto-save file, if that exists."
   :config
   (setq-default makefile-macro-assign " := "))
 
+(use-package man
+  :defer
+  :config
+  (add-hook 'Man-mode-hook #'remap-man-faces))
+
 (use-package markdown-mode
   :ensure t
   :commands markdown-cycle markdown-enter-key
@@ -1079,6 +1108,11 @@ why-are-you-changing-gc-cons-threshold/'")
 (use-package winner
   :config
   (winner-mode))
+
+(use-package woman
+  :defer
+  :config
+  (add-hook 'woman-mode-hook #'remap-woman-faces))
 
 (use-package wrap-region
   :ensure t
