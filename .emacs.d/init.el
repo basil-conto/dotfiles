@@ -611,7 +611,8 @@ Offer to revert from the auto-save file, if that exists."
                 helm-M-x-fuzzy-match        t
                 helm-split-window-in-side-p t)
 
-  ;; (set-face-foreground 'helm-selection "#ffffff")
+  (when (bound-and-true-p helm-white-selection)
+    (set-face-foreground 'helm-selection "#ffffff"))
 
   (add-hook 'helm-major-mode-hook #'no-line-numbers)
 
