@@ -107,11 +107,6 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
       (split-window-vertically))
     (switch-to-buffer nil)))
 
-(defun set-face-foregrounds (foregrounds)
-  "Apply `set-face-foreground' to a list of argument lists."
-  (dolist (foreground foregrounds)
-    (apply #'set-face-foreground foreground)))
-
 (defun use-c++-comments ()
   "Default to single-line C++-style comments."
   (setq-local comment-start "//")
@@ -127,6 +122,18 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
             `(lambda (frame)
                (when (display-graphic-p frame)
                  (funcall ,fun frame)))))
+
+(defun unpack (fun)
+  "Return a function which packs its arguments into `fun'."
+  (apply-partially #'apply fun))
+
+(defun mapc-unpack (fun &rest args)
+  "Apply function `fun' to a sequence of packed arguments."
+  (apply #'mapc (unpack fun) args))
+
+(defun set-foregrounds (foregrounds)
+  "Apply `set-face-foreground' to a list of argument lists."
+  (mapc-unpack #'set-face-foreground foregrounds))
 
 (defconst all-hooks
   '(haskell-cabal-mode-hook
@@ -658,7 +665,7 @@ Offer to revert from the auto-save file, if that exists."
                 (no-electric-indent)
                 (js2-highlight-unused-variables-mode)))
 
-  (set-face-foregrounds
+  (set-foregrounds
    '((js2-error             "#ff0000")
      (js2-external-variable "#ff0000")
      (js2-function-param    "#5fd7af")))
@@ -666,7 +673,7 @@ Offer to revert from the auto-save file, if that exists."
   (defun js2-moar-colour ()
     "Further customise `js2-mode' faces."
     (interactive)
-    (set-face-foregrounds
+    (set-foregrounds
      '((js2-function-call   "#fce94f")
        (js2-object-property "#fcaf3e")))))
 
@@ -704,7 +711,7 @@ Offer to revert from the auto-save file, if that exists."
         (mapcar #'symbol-name
                 '(window document location console define require)))
 
-  (set-face-foregrounds
+  (set-foregrounds
    '((js3-function-param-face    "#ffffff")
      (js3-external-variable-face "#ff0000")
      (js3-error-face             "#ff0000"))))
@@ -782,7 +789,7 @@ Offer to revert from the auto-save file, if that exists."
    'magit-header-line nil
    :inherit    'magit-section-heading
    :background (internal-get-lisp-face-attribute 'default :background))
-  (set-face-foregrounds
+  (set-foregrounds
    '((magit-dimmed "#808080")
      (magit-hash   "#808080"))))
 
