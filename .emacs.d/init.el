@@ -160,7 +160,8 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
              conf-mode-hook
               ess-mode-hook
               js3-mode-hook)
-  "Individual hooks to hang from for global effect.")
+  "Individual hooks to hang from for global effect.
+FIXME: This should not be necessary.")
 
 (defface man-header
   '((t :foreground "#b4fa70" :weight bold))
@@ -480,8 +481,8 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure t
   :defer
   :init
-  (mapc #'(lambda (hook) (add-hook hook #'fic-mode))
-        '(LaTeX-mode-hook prog-mode-hook js3-mode-hook))
+  (dolist (hook '(text-mode-hook prog-mode-hook))
+    (add-hook hook #'fic-mode))
   :config
   (setq-default fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE" "HACK")))
 
@@ -716,6 +717,8 @@ Offer to revert from the auto-save file, if that exists."
   :config
   (unbind-key "C-c C-g" js3-mode-map)   ; Why...
   (no-trailing-enter #'js3-enter-key)   ; For comments
+
+  (add-hook 'js3-mode-hook #'fic-mode)
 
   (setq-default
    js3-auto-indent-p                         t
