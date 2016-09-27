@@ -347,6 +347,11 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure t
   :disabled)
 
+(use-package comint
+  :defer
+  :init
+  (add-hook 'comint-mode-hook #'no-line-numbers))
+
 (use-package comment-dwim-2
   :ensure t
   :bind ("M-;" . comment-dwim-2))
@@ -978,11 +983,6 @@ why-are-you-changing-gc-cons-threshold/'")
   :config
   (setq-default sh-basic-offset 2
                 sh-indentation  2))
-
-(use-package shell
-  :defer
-  :init
-  (add-hook 'shell-mode-hook #'no-line-numbers))
 
 (use-package simple
   :demand
