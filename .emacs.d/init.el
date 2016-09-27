@@ -954,6 +954,17 @@ why-are-you-changing-gc-cons-threshold/'")
   :config
   (setq prolog-system 'swi))
 
+(use-package python
+  :defer
+  :config
+  (setq-default
+   python-check-command
+   (or (executable-find "epylint3")
+       (executable-find "epylint" )
+       (executable-find "pyflakes")
+       python-check-command)
+   python-shell-interpreter "ipython3"))
+
 (use-package remember
   :bind (("<f7>" . remember-notes)
          ("<f8>" . remember-notes-save-and-bury-buffer))
