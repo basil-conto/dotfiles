@@ -3,6 +3,7 @@
 ;;; ====
 
 ;; Fix
+;; * Add current project to `ebib-bib-search-dirs'
 ;; * Disable nlinum in `*Messages*', `*Help*', etc. or by default?
 ;; * Moar `defun's, not `lambda's
 ;; * Tidy hooks
@@ -422,7 +423,11 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package ebib
   :ensure t
-  :bind ("C-c e" . ebib))
+  :bind ("C-c e" . ebib)
+  :config
+  (setq-default
+   ebib-bibtex-dialect 'biblatex
+   ebib-use-timestamp  t))
 
 (use-package engine-mode
   :ensure t
