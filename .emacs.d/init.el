@@ -150,6 +150,9 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (remap-faces '((woman-bold   man-header)
                  (woman-italic man-emph  ))))
 
+(defconst emacs-25+ (>= emacs-major-version 25)
+  "Whether the current major version number of Emacs is 25 or higher.")
+
 (defconst all-hooks
   '(haskell-cabal-mode-hook
         gitconfig-mode-hook
@@ -987,7 +990,9 @@ why-are-you-changing-gc-cons-threshold/'")
 
 (use-package saveplace
   :config
-  (save-place-mode))
+  (if emacs-25+
+      (save-place-mode)
+    (setq-default save-place t)))
 
 (use-package server
   :defer
@@ -1167,15 +1172,16 @@ why-are-you-changing-gc-cons-threshold/'")
      harare-zimbabwe
      moon)))
 
-(use-package xref-js2
-  :ensure t
-  :defer
-  :init
-  (add-hook 'js2-mode-hook
-            #'(lambda ()
-                (unbind-key "M-." js2-mode-map)
-                (add-hook 'xref-backend-functions
-                          #'xref-js2-xref-backend nil t))))
+`(use-package xref-js2
+   :if     ,emacs-25+
+   :ensure ,emacs-25+
+   :defer
+   :init
+   (add-hook 'js2-mode-hook
+             #'(lambda ()
+                 (unbind-key "M-." js2-mode-map)
+                 (add-hook 'xref-backend-functions
+                           #'xref-js2-xref-backend nil t))))
 
 (use-package xt-mouse
   :unless (display-graphic-p)
