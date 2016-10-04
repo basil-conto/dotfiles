@@ -662,6 +662,10 @@ Offer to revert from the auto-save file, if that exists."
   :ensure t
   :defer)
 
+(use-package isearch+
+  :ensure t
+  :disabled)
+
 (use-package isearch-prop
   :ensure t
   :defer)
