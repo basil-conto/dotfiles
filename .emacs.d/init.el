@@ -3,6 +3,7 @@
 ;;; ====
 
 ;; Fix
+;; * Look into use-package :require
 ;; * Add current project to `ebib-bib-search-dirs'
 ;; * Disable nlinum in `*Messages*', `*Help*', etc. or by default?
 ;; * Moar `defun's, not `lambda's
