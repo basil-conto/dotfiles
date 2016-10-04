@@ -505,6 +505,10 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   (dolist (word '("KLUDGE" "HACK"))
     (add-to-list 'fic-highlighted-words word)))
 
+(use-package figlet
+  :ensure t
+  :defer)
+
 (use-package files
   :bind ("<f5>" . refresh-buffer)
   :init
