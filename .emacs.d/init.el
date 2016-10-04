@@ -1066,7 +1066,7 @@ why-are-you-changing-gc-cons-threshold/'")
     "Continuously preview current LaTeX document with `latexmk'."
     (interactive)
     (unless buffer-file-name
-      (error "Current buffer is not visiting a file."))
+      (error "Current buffer is not visiting a file"))
     (let ((command (combine-and-quote-strings
                     `("latexmk" "-pvc" ,(file-name-base))
                     " ")))
