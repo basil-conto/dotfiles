@@ -204,7 +204,7 @@ FIXME: This should not be necessary.")
  ;; Line
  ("C-c i"       . indent-relative)
  ;; Window / Buffer
- ("C-x 4"       . transpose-split)
+ ("C-x 7"       . transpose-split)
  ("S-<prior>"   . previous-buffer)
  ("S-<next>"    .     next-buffer)
  ;; Mutatis mutandis within tmux
