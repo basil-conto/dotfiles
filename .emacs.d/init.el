@@ -4,6 +4,7 @@
 
 ;; Fix
 ;; * Issue `add-hooks' errors at compile-time
+;; * Improve autoloading of pdf-tools
 ;; * Look into use-package :require
 ;; * Add current project to `ebib-bib-search-dirs'
 ;; * Disable nlinum in `*Messages*', `*Help*', etc. or by default?
@@ -1009,6 +1010,17 @@ why-are-you-changing-gc-cons-threshold/'")
 (use-package pcre2el
   :ensure t
   :defer)
+
+(use-package pdf-tools
+  :if (display-graphic-p)
+  :ensure t
+  :preface
+  (defun pdf-tools--install ()
+    "Force-install PDF-Tools without errors, skipping dependencies."
+    (pdf-tools-install t t t))
+  :mode ("\\.pdf\\'" . pdf-tools--install)
+  :config
+  (setq-default pdf-view-display-size 'fit-page))
 
 (use-package perl-mode
   :mode "\\.latexmkrc\\'")
