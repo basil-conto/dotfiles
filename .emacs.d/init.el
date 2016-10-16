@@ -437,6 +437,19 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :config
   (delete-selection-mode))
 
+(use-package dired
+  :defer
+  :config
+  (setq-default
+   dired-listing-switches "--group-directories-first -AFhl"))
+
+(use-package dired-x
+  :defer
+  :config
+  (mapc #'(lambda (cell) (push cell dired-guess-shell-alist-user))
+        '(("\\.pdf\\'"   "pdf"     )
+          ("\\.docx?\\'" "lowriter"))))
+
 (use-package disaster
   :ensure t
   :defer
@@ -533,13 +546,16 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package files
   :bind ("<f5>" . refresh-buffer)
-  :init
+  :config
   (defun refresh-buffer ()
     "Reconcile current buffer with what lives on the disk.
 Offer to revert from the auto-save file, if that exists."
     (interactive)
     (revert-buffer nil t))
-  :config
+
+  (setq-default
+   directory-free-space-args "-hP")
+
   (setq
    kept-old-versions    2
    kept-new-versions    4
