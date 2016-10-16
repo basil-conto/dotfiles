@@ -553,6 +553,17 @@ Offer to revert from the auto-save file, if that exists."
     (interactive)
     (revert-buffer nil t))
 
+  (defun switch-to-temp-file (&optional prefix suffix)
+    "Create and switch to a temporary file.
+A non-empty filename PREFIX can help identify the file or its purpose,
+whereas a non-empty SUFFIX will help determine the relevant major-mode."
+    (interactive "sfile prefix: \nsfile extension: ")
+    (let ((pre (or prefix ""))
+          (suf (concat (unless (zerop (length suffix))
+                         ".")           ; Prefix non-empty suffix with full-stop
+                       suffix)))
+      (find-file (make-temp-file pre nil suf))))
+
   (setq-default
    directory-free-space-args "-hP")
 
