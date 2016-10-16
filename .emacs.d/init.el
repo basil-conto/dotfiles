@@ -564,17 +564,24 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
                        suffix)))
       (find-file (make-temp-file pre nil suf))))
 
+  (defconst auto-save-backup-dir "~/.backup/"
+    "Directory for auto-save and backup files.")
+
   (setq-default
    directory-free-space-args "-hP")
 
   (setq
-   kept-old-versions    2
-   kept-new-versions    4
-   delete-old-versions  t
-   version-control      t               ; Versioned backups
-   backup-by-copying    t               ; Don't clobber symlinks
-   backup-directory-alist               ; Backup directory
-   '(("." . "~/backup/"))))
+   kept-old-versions          2
+   kept-new-versions          4
+   delete-old-versions        t
+   ;; Versioned backups
+   version-control            t
+   ;; Do not clobber symlinks
+   backup-by-copying          t
+   ;; Do not silently append EOF NL
+   mode-require-final-newline nil
+   ;; Backup/auto-save directory
+   backup-directory-alist     `(("." . ,auto-save-backup-dir))))
 
 (use-package find-file
   :init
