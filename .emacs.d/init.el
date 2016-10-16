@@ -4,6 +4,7 @@
 
 ;; Fix
 ;; * Issue `add-hooks' errors at compile-time
+;; * Order of custom/frame/theme loading
 ;; * Improve autoloading of pdf-tools
 ;; * Look into use-package :require
 ;; * Add current project to `ebib-bib-search-dirs'
@@ -987,6 +988,7 @@ why-are-you-changing-gc-cons-threshold/'")
   :init
   (setq org-special-ctrl-a/e 'reversed))
 
+;; FIXME: require when creating graphical frame from terminal
 (use-package palette
   :ensure t
   :defer
