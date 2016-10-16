@@ -3,6 +3,7 @@
 ;;; ====
 
 ;; Fix
+;; * Issue `add-hooks' errors at compile-time
 ;; * Look into use-package :require
 ;; * Add current project to `ebib-bib-search-dirs'
 ;; * Disable nlinum in `*Messages*', `*Help*', etc. or by default?
@@ -79,13 +80,21 @@
   "Advise enter key function to first delete trailing whitespace."
   (advice-add enter-key :after #'no-trailing-enter--advice))
 
-(defun no-electric-indent (&rest _)
+(defun turn-off-electric-indent (&rest _)
   "Locally disable electric indentation."
   (electric-indent-local-mode 0))
 
-(defun no-line-numbers (&rest _)
+(defun turn-off-line-numbers (&rest _)
   "Locally disable display of line numbers."
   (nlinum-mode 0))
+
+(defun turn-off-prettify-symbols-mode (&rest _)
+  "Disable `prettify-symbols-mode'."
+  (prettify-symbols-mode 0))
+
+(defun turn-off-flycheck-mode (&rest _)
+  "Disable `flycheck-mode'."
+  (prettify-symbols-mode 0))
 
 (defun iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
@@ -132,6 +141,15 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 (defun mapc-unpack (fun &rest args)
   "Apply function `fun' to a sequence of packed arguments."
   (apply #'mapc (unpack fun) args))
+
+;; FIXME: transform '(foo bar) -> `(,#'foo ,#'bar)
+(defun add-hooks-1 (hook &rest functions)
+  "Add multiple FUNCTIONS to the value of HOOK."
+  (mapc (apply-partially #'add-hook hook) functions))
+
+(defun add-hooks-n (hooks)
+  "Apply `add-hook-1' to a list of argument lists."
+  (mapc-unpack #'add-hooks-1 hooks))
 
 (defun set-foregrounds (foregrounds)
   "Apply `set-face-foreground' to a list of argument lists."
@@ -283,7 +301,7 @@ FIXME: This should not be necessary.")
   :load-path "/usr/share/emacs24/site-lisp/debian-el"
   :mode ("\\.sources\\'" . apt-sources-mode)
   :config
-  (add-hook 'apt-sources-mode-hook #'no-electric-indent))
+  (add-hook 'apt-sources-mode-hook #'turn-off-electric-indent))
 
 (use-package base16-theme
   :ensure t
@@ -355,7 +373,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package comint
   :defer
   :init
-  (add-hook 'comint-mode-hook #'no-line-numbers))
+  (add-hook 'comint-mode-hook #'turn-off-line-numbers))
 
 (use-package comment-dwim-2
   :ensure t
@@ -371,7 +389,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package conf-mode
   :defer
   :config
-  (add-hook 'conf-mode-hook #'no-electric-indent))
+  (add-hook 'conf-mode-hook #'turn-off-electric-indent))
 
 (use-package crontab-mode
   :ensure t
@@ -401,11 +419,10 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure boogie-friends
   :defer
   :config
-  (add-hook 'dafny-mode-hook
-            #'(lambda ()
-                (no-electric-indent)
-                (prettify-symbols-mode 0)
-                (flycheck-mode 0))))
+  (add-hooks-1 'dafny-mode-hook
+               #'turn-off-electric-indent
+               #'turn-off-flycheck-mode
+               #'turn-off-prettify-symbols-mode))
 
 (use-package dash
   :ensure t
@@ -459,7 +476,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package eshell
   :defer
   :config
-  (add-hook 'eshell-mode-hook #'no-line-numbers))
+  (add-hook 'eshell-mode-hook #'turn-off-line-numbers))
 
 (use-package ess
   :ensure t
@@ -543,7 +560,8 @@ Offer to revert from the auto-save file, if that exists."
          (setq buffer-read-only t)
          (buffer-disable-undo)
          (fundamental-mode)
-         (no-line-numbers)))))
+         (turn-off-line-numbers)
+         (font-lock-mode 0)))))
 
 (use-package fill-column-indicator
   :ensure t
@@ -612,7 +630,7 @@ Offer to revert from the auto-save file, if that exists."
   :ensure haskell-mode
   :defer
   :config
-  (add-hook 'haskell-cabal-mode-hook #'no-electric-indent))
+  (add-hook 'haskell-cabal-mode-hook #'turn-off-electric-indent))
 
 (use-package haskell-mode
   :ensure t
@@ -636,7 +654,7 @@ Offer to revert from the auto-save file, if that exists."
   (when (bound-and-true-p helm-white-selection)
     (set-face-foreground 'helm-selection "#ffffff"))
 
-  (add-hook 'helm-major-mode-hook #'no-line-numbers)
+  (add-hook 'helm-major-mode-hook #'turn-off-line-numbers)
 
   (helm-mode))
 
@@ -706,17 +724,16 @@ Offer to revert from the auto-save file, if that exists."
 
   (setq-default
    js2-allow-rhino-new-expr-initializer nil
-   js2-mode-assume-strict               t
    js2-concat-multiline-strings         'eol
    js2-global-externs                   '("location" "define")
    js2-highlight-level                  3
    js2-include-node-externs             t
+   js2-mode-assume-strict               t
    js2-skip-preprocessor-directives     t)
 
-  (add-hook 'js2-mode-hook
-            #'(lambda ()
-                (no-electric-indent)
-                (js2-highlight-unused-variables-mode)))
+  (add-hooks-1 'js2-mode-hook
+               #'js2-highlight-unused-variables-mode
+               #'turn-off-electric-indent)
 
   (set-foregrounds
    '((js2-error             "#ff0000")
@@ -784,7 +801,7 @@ Offer to revert from the auto-save file, if that exists."
 (use-package lisp-mode
   :defer
   :config
-  (add-hook 'lisp-mode-hook #'no-electric-indent))
+  (add-hook 'lisp-mode-hook #'turn-off-electric-indent))
 
 (use-package list-processes+
   :ensure t
@@ -808,7 +825,7 @@ Offer to revert from the auto-save file, if that exists."
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
 
-  (add-hook 'magit-mode-hook #'no-line-numbers)
+  (add-hook 'magit-mode-hook #'turn-off-line-numbers)
 
   (setq-default
    magit-log-arguments    '("-n32" "--graph" "--decorate")
