@@ -303,6 +303,11 @@ FIXME: This should not be necessary.")
   :config
   (add-hook 'apt-sources-mode-hook #'turn-off-electric-indent))
 
+(use-package asm-mode
+  :defer
+  :config
+  (setq-default asm-comment-char ?#))
+
 (use-package base16-theme
   :ensure t
   :disabled)
