@@ -144,6 +144,10 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   "Apply function `fun' to a sequence of packed arguments."
   (apply #'mapc (unpack fun) args))
 
+(defun add-to-lists (lists)
+  "Apply `add-to-list' to a list of argument lists."
+  (mapc-unpack #'add-to-list lists))
+
 ;; FIXME: transform '(foo bar) -> `(,#'foo ,#'bar)
 (defun add-hooks-1 (hook &rest functions)
   "Add multiple FUNCTIONS to the value of HOOK."
@@ -1135,28 +1139,43 @@ why-are-you-changing-gc-cons-threshold/'")
 
 (use-package tex
   :ensure auctex
-  :commands latexmk-pvc
+  :defer
+  :defines   LaTeX-clean-intermediate-suffixes
+  :functions TeX-revert-document-buffer
   :config
-  ;; TODO:
-  ;; * `start-process' instead?
-  ;; * Accept overriding file name?
-  (defun latexmk-pvc ()
-    "Continuously preview current LaTeX document with `latexmk'."
-    (interactive)
-    (unless buffer-file-name
-      (error "Current buffer is not visiting a file"))
-    (let ((command (combine-and-quote-strings
-                    `("latexmk" "-pvc" ,(file-name-base))
-                    " ")))
-      (async-shell-command command)))
-
   (setq-default
    LaTeX-csquotes-open-quote  "\\enquote{"
    LaTeX-csquotes-close-quote "}"
+   TeX-auto-save              t
+   TeX-parse-self             t
    TeX-PDF-mode               t)
 
-  (let ((view-program (assq 'output-pdf TeX-view-program-selection)))
-    (setf (cadr view-program) "Zathura")))
+  (defun setup-latexmk ()
+    "Define Latexmk continuous preview command and intermediate suffixes."
+    (add-to-lists
+     '((TeX-command-list
+        ("Latexmk"                        ; Command name
+         "latexmk -pvc -view=none %t"     ; Non-expanded shell command
+         TeX-run-command                  ; Process handler
+         t                                ; Confirm expanded shell command
+         (LaTeX-mode)                     ; Applicable modes
+         :help "Run Latexmk"))            ; Command description
+       (LaTeX-clean-intermediate-suffixes
+        "\\.fdb_latexmk")))
+    (setq TeX-command-default "Latexmk"))
+
+  (add-hooks-n
+   `((LaTeX-mode-hook                          ,#'turn-on-auto-fill
+                                               ,#'setup-latexmk             )
+     (TeX-output-mode-hook                     ,#'turn-off-line-numbers     )
+     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer)))
+      ;; ,#'find-file-other-window)))
+
+  ;; Set priority of pre-configured PDF viewers to PDF Tools, then Zathura
+  (let ((program-list TeX-view-program-list-builtin))
+    (push `(output-pdf ,(car (or (assoc "PDF Tools" program-list)
+                                 (assoc "Zathura"   program-list))))
+          TeX-view-program-selection)))
 
 (use-package tool-bar
   :defer
