@@ -656,7 +656,8 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :config
   (global-git-commit-mode)
 
-  (setq-default git-commit-fill-column 68)
+  (setq-default git-commit-summary-max-length 50
+                git-commit-fill-column        68)
 
   (add-hook
    'with-editor-post-finish-hook
