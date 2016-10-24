@@ -1047,7 +1047,11 @@ why-are-you-changing-gc-cons-threshold/'")
     (pdf-tools-install t t t))
   :mode ("\\.pdf\\'" . pdf-tools--install)
   :config
-  (setq-default pdf-view-display-size 'fit-page))
+  (setq-default pdf-view-display-size 'fit-page)
+
+  (add-hooks-1 'pdf-view-mode-hook
+               ;; #'turn-on-auto-revert-mode
+               #'turn-off-line-numbers))
 
 (use-package perl-mode
   :mode "\\.latexmkrc\\'")
