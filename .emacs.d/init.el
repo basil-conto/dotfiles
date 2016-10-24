@@ -1199,11 +1199,10 @@ why-are-you-changing-gc-cons-threshold/'")
     (setq TeX-command-default "Latexmk"))
 
   (add-hooks-n
-   `((LaTeX-mode-hook                          ,#'turn-on-auto-fill
-                                               ,#'setup-latexmk             )
-     (TeX-output-mode-hook                     ,#'turn-off-line-numbers     )
-     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer)))
-      ;; ,#'find-file-other-window)))
+   `((LaTeX-mode-hook                          ,#'setup-latexmk
+                                               ,#'turn-on-auto-fill         )
+     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer)
+     (TeX-output-mode-hook                     ,#'turn-off-line-numbers     )))
 
   ;; Set priority of pre-configured PDF viewers to PDF Tools, then Zathura
   (let ((program-list TeX-view-program-list-builtin))
