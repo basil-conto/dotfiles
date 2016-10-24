@@ -890,8 +890,11 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   (add-hook 'magit-mode-hook #'turn-off-line-numbers)
 
   (setq-default
-   magit-log-arguments    '("-n32" "--graph" "--decorate")
-   magit-rebase-arguments '("--interactive"))
+   ;; FIXME: search/replace original value instead of redefining
+   ;; Define ref alignment below as a function and reuse here
+   magit-log-arguments    '("-n32" "--graph" "--decorate"))
+
+  (add-to-list 'magit-rebase-arguments "--interactive")
 
   (let* ((repos-base "repos")
          (repos-file (expand-file-name repos-base user-emacs-directory))
