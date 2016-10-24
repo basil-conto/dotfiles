@@ -317,6 +317,10 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   :config
   (setq-default asm-comment-char ?#))
 
+(use-package auctex-latexmk
+  :ensure t
+  :defer)
+
 (use-package base16-theme
   :ensure t
   :disabled)
