@@ -1060,6 +1060,16 @@ why-are-you-changing-gc-cons-threshold/'")
   :ensure t
   :defer)
 
+(use-package projectile
+  :ensure t
+  :defer
+  :init
+  (projectile-mode)
+  :config
+  (setq-default
+   projectile-completion-system           'helm
+   projectile-find-dir-includes-top-level t))
+
 (use-package prolog
   :mode ("\\.pl\\'" . prolog-mode)
   :config
@@ -1226,8 +1236,6 @@ why-are-you-changing-gc-cons-threshold/'")
   (setq-default uniquify-buffer-name-style 'forward))
 
 (use-package vc-hooks
-  ;; FIXME: VC needed for xref-js2 as long as projectile not used
-  :disabled
   :defer
   :config
   (setq-default vc-handled-backends nil))
