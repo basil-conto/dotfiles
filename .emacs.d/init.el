@@ -64,6 +64,7 @@
     "Report package compilation, loading and configuration details.")
   (require 'use-package))
 (require 'bind-key)
+(require 'subr-x)
 
 ;;; ===========
 ;;; Definitions
@@ -153,9 +154,15 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   "Add multiple FUNCTIONS to the value of HOOK."
   (mapc (apply-partially #'add-hook hook) functions))
 
+;; FIXME: macros?
 (defun add-hooks-n (hooks)
   "Apply `add-hook-1' to a list of argument lists."
   (mapc-unpack #'add-hooks-1 hooks))
+
+;; FIXME: thread-first/last?
+(defun add-hooks-t (func &rest hooks)
+  "Add FUNC to the value of HOOKS."
+  (mapc #'(lambda (hook) (add-hook hook func)) hooks))
 
 (defun set-foregrounds (foregrounds)
   "Apply `set-face-foreground' to a list of argument lists."
@@ -178,19 +185,15 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 (defconst emacs-25+ (>= emacs-major-version 25)
   "Whether the current major version number of Emacs is 25 or higher.")
 
-(defconst all-hooks
+(defvar fundamental-hooks
   '(haskell-cabal-mode-hook
-        gitconfig-mode-hook
          mustache-mode-hook
-           prolog-mode-hook
-           csharp-mode-hook
-             text-mode-hook
-             prog-mode-hook
              conf-mode-hook
+             prog-mode-hook
+             text-mode-hook
               ess-mode-hook
               js3-mode-hook)
-  "Individual hooks to hang from for global effect.
-FIXME: This should not be necessary.")
+  "Hooks whose modes derive from `fundamental-mode' or nothing.")
 
 (defface man-header
   '((t . (:inherit font-lock-keyword-face :weight bold)))
@@ -540,16 +543,16 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   (defun what-face (pos)
     "Describe face at current point."
     (interactive "d")
-    (let ((face (or (get-char-property (point) #'read-face-name)
-                    (get-char-property (point) 'face))))
-      (if face (message "Face: %s" face) (message "No face at %d" pos)))))
+    (if-let ((face (or (get-char-property (point) #'read-face-name)
+                       (get-char-property (point) 'face))))
+      (message "Face: %s" face)
+      (message "No face at %d" pos))))
 
 (use-package fic-mode
   :ensure t
   :defer
   :init
-  (dolist (hook '(text-mode-hook prog-mode-hook))
-    (add-hook hook #'fic-mode))
+  (apply #'add-hooks-t #'fic-mode fundamental-hooks)
   :config
   (dolist (word '("KLUDGE" "HACK"))
     (add-to-list 'fic-highlighted-words word)))
@@ -620,7 +623,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :defer
   :init
-  (mapc #'(lambda (hook) (add-hook hook #'fci-mode)) all-hooks)
+  (apply #'add-hooks-t #'fci-mode fundamental-hooks)
   :config
   (setq-default fci-rule-column 80
                 fci-rule-color "#696969"))
@@ -683,7 +686,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure haskell-mode
   :defer
   :config
-  (add-hook 'haskell-cabal-mode-hook #'turn-off-electric-indent))
+  (add-hooks-1 'haskell-cabal-mode-hook #'turn-off-electric-indent))
 
 (use-package haskell-mode
   :ensure t
@@ -815,8 +818,6 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :config
   (unbind-key "C-c C-g" js3-mode-map)   ; Why...
   (no-trailing-enter #'js3-enter-key)   ; For comments
-
-  (add-hook 'js3-mode-hook #'fic-mode)
 
   (setq-default
    js3-auto-indent-p                         t
@@ -1233,7 +1234,7 @@ why-are-you-changing-gc-cons-threshold/'")
 (use-package wc-mode
   :ensure t
   :init
-  (mapc #'(lambda (hook) (add-hook hook #'wc-mode)) all-hooks)
+  (apply #'add-hooks-t #'wc-mode fundamental-hooks)
   :config
   (setq-default wc-modeline-format "[%tll]"))
 
