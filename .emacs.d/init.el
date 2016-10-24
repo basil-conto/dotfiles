@@ -1321,16 +1321,20 @@ why-are-you-changing-gc-cons-threshold/'")
      harare-zimbabwe
      moon)))
 
-`(use-package xref-js2
-   :if     ,emacs-25+
-   :ensure ,emacs-25+
-   :defer
-   :init
-   (add-hook 'js2-mode-hook
-             #'(lambda ()
-                 (unbind-key "M-." js2-mode-map)
-                 (add-hook 'xref-backend-functions
-                           #'xref-js2-xref-backend nil t))))
+(use-package xref-js2
+  :if     emacs-25+
+  ;; FIXME: use value of emacs-25+
+  :ensure t
+  :defer
+  :functions turn-on-xref-js2
+  :init
+  (defun turn-on-xref-js2 ()
+    "Add xref-js2 backend and sanitise keymap."
+    (unbind-key "M-." js2-mode-map)     ; Reused by xref
+    (add-hook 'xref-backend-functions
+              #'xref-js2-xref-backend nil t))
+
+  (add-hook 'js2-mode-hook #'turn-on-xref-js2))
 
 (use-package xt-mouse
   :unless (display-graphic-p)
