@@ -728,6 +728,13 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :defer)
 
+(use-package helm-projectile
+  :ensure t
+  :after helm projectile
+  :defer
+  :init
+  (add-hook 'projectile-mode-hook #'helm-projectile-on))
+
 (use-package highlight-escape-sequences
   :ensure t
   :config
@@ -1074,7 +1081,7 @@ why-are-you-changing-gc-cons-threshold/'")
   :ensure t
   :defer
   :init
-  (projectile-mode)
+  (add-hook 'helm-mode-hook #'projectile-mode)
   :config
   (setq-default
    projectile-completion-system           'helm
