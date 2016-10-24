@@ -193,12 +193,12 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 FIXME: This should not be necessary.")
 
 (defface man-header
-  '((t :foreground "#b4fa70" :weight bold))
+  '((t . (:inherit font-lock-keyword-face :weight bold)))
   "Man page heading face."
   :group 'man)
 
 (defface man-emph
-  '((t :foreground "#e9b96e" :underline t))
+  '((t . (:inherit font-lock-string-face :underline t)))
   "Man page emphasis/underline face."
   :group 'man)
 
@@ -381,6 +381,18 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure t
   :disabled)
 
+(use-package color-theme-sanityinc-solarized
+  :ensure t
+  :disabled)
+
+(use-package color-theme-solarized
+  :ensure t
+  :defer
+  :config
+  (setq-default solarized-italic     nil
+                solarized-termcolors 256)
+  (load-theme 'solarized t))
+
 (use-package comint
   :defer
   :init
@@ -421,10 +433,6 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   (setq-default csv-align-style 'auto)
   (add-hook 'csv-mode-hook
             #'(lambda () (csv-align-fields nil (point-min) (point-max)))))
-
-(use-package custom
-  :config
-  (load-theme 'tango-dark))
 
 (use-package dafny-mode
   :ensure boogie-friends
@@ -894,19 +902,20 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
           '(magit-refs-local-branch-format
             magit-refs-remote-branch-format
             magit-refs-symref-format
-            magit-refs-tags-format)))
+            magit-refs-tags-format))))
 
-  (set-face-attribute
-   'magit-blame-heading nil
-   :background "#696969"
-   :foreground "#ffffff")
-  (set-face-attribute
-   'magit-header-line nil
-   :inherit    'magit-section-heading
-   :background (internal-get-lisp-face-attribute 'default :background))
-  (set-foregrounds
-   '((magit-dimmed "#808080")
-     (magit-hash   "#808080"))))
+  ;; FIXME: modify tango-dark
+  ;; (set-face-attribute
+  ;;  'magit-blame-heading nil
+  ;;  :background "#696969"
+  ;;  :foreground "#ffffff")
+  ;; (set-face-attribute
+  ;;  'magit-header-line nil
+  ;;  :inherit    'magit-section-heading
+  ;;  :background (internal-get-lisp-face-attribute 'default :background))
+  ;; (set-foregrounds
+  ;;  '((magit-dimmed "#808080")
+  ;;    (magit-hash   "#808080"))))
 
 (use-package magit-gh-pulls
   :ensure t
@@ -1117,6 +1126,10 @@ why-are-you-changing-gc-cons-threshold/'")
   :ensure t
   :defer)
 
+(use-package solarized-theme
+  :ensure t
+  :disabled)
+
 (use-package speedbar
   :defer
   :config
@@ -1136,6 +1149,11 @@ why-are-you-changing-gc-cons-threshold/'")
 (use-package subword
   :config
   (global-subword-mode))
+
+(use-package tango-dark-theme
+  :defer
+  :config
+  (load-theme 'tango-dark))
 
 (use-package tex
   :ensure auctex
@@ -1290,9 +1308,12 @@ why-are-you-changing-gc-cons-threshold/'")
   :ensure t
   :defer)
 
+;; FIXME: make isearch lazy highlights stand out
 (use-package zenburn-theme
   :ensure t
-  :disabled)
+  :defer
+  :init
+  (load-theme 'zenburn t))
 
 (add-hook 'after-init-hook
           `(lambda ()
