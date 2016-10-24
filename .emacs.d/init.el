@@ -1175,7 +1175,7 @@ why-are-you-changing-gc-cons-threshold/'")
   :ensure auctex
   :defer
   :defines   LaTeX-clean-intermediate-suffixes
-  :functions TeX-revert-document-buffer
+  :functions (setup-latexmk TeX-revert-document-buffer)
   :config
   (setq-default
    LaTeX-csquotes-open-quote  "\\enquote{"
