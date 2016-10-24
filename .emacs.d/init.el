@@ -731,6 +731,10 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :config
   (hes-mode))
 
+(use-package hledger-mode
+  :ensure t
+  :defer)
+
 (use-package i18next-wrap
   :load-path "lisp"
   :bind ("C-c C-i" . i18next-query-replace))
