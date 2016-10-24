@@ -188,6 +188,7 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 (defvar fundamental-hooks
   '(haskell-cabal-mode-hook
          mustache-mode-hook
+          hledger-mode-hook
              conf-mode-hook
              prog-mode-hook
              text-mode-hook
@@ -733,7 +734,15 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package hledger-mode
   :ensure t
-  :defer)
+  :mode "\\.journal\\'"
+  :config
+  (setq-default
+   hledger-currency-string "€"
+   hledger-jfile           "~/.hledger.journal"
+   hledger-ratios-essential-expense-accounts
+   "expenses:housing expenses:groceries"
+   hledger-ratios-liquid-asset-accounts
+   "assets:boi assets:cash"))
 
 (use-package i18next-wrap
   :load-path "lisp"
@@ -856,7 +865,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package ledger-mode
   :ensure t
-  :mode ("\\.ledger\\'" "\\.journal\\'")
+  :mode "\\.ledger\\'"
   :config
   (setq-default ledger-use-iso-dates t))
 
