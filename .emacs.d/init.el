@@ -345,7 +345,7 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 (use-package cc-mode
   :defer
-  :functions (c-lineup-arglist c++-lambda-indent)
+  :functions c-lineup-arglist c++-lambda-indent
   :config
   (let ((name    "blc")
         (base    "linux")
@@ -1202,7 +1202,7 @@ why-are-you-changing-gc-cons-threshold/'")
   :ensure auctex
   :defer
   :defines   LaTeX-clean-intermediate-suffixes
-  :functions (setup-latexmk TeX-revert-document-buffer)
+  :functions setup-latexmk TeX-doc TeX-revert-document-buffer
   :config
   (setq-default
    LaTeX-csquotes-open-quote  "\\enquote{"
