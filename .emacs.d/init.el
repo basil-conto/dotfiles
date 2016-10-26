@@ -765,6 +765,11 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :defer)
 
+(use-package info
+  :defer
+  :init
+  (add-hook 'Info-mode-hook #'turn-off-line-numbers))
+
 (use-package isearch+
   :ensure t
   :disabled)
@@ -903,8 +908,6 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   (magit-wip-after-apply-mode)
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
-
-  (add-hook 'magit-mode-hook #'turn-off-line-numbers)
 
   (setq-default
    ;; FIXME: search/replace original value instead of redefining
@@ -1064,11 +1067,8 @@ why-are-you-changing-gc-cons-threshold/'")
     (pdf-tools-install t t t))
   :mode ("\\.pdf\\'" . pdf-tools--install)
   :config
-  (setq-default pdf-view-display-size 'fit-page)
-
-  (add-hooks-1 'pdf-view-mode-hook
-               ;; #'turn-on-auto-revert-mode
-               #'turn-off-line-numbers))
+  ;; (add-hook'pdf-view-mode-hook #'turn-on-auto-revert-mode)
+  (setq-default pdf-view-display-size 'fit-page))
 
 (use-package perl-mode
   :mode "\\.latexmkrc\\'")
@@ -1141,11 +1141,18 @@ why-are-you-changing-gc-cons-threshold/'")
                 sh-indentation  2))
 
 (use-package simple
-  :demand
   :bind (("M-\\"    . cycle-spacing     )
          ("C-x C-k" . kill-whole-line   )
          ("C-x C-p" . open-previous-line)
          ("C-x C-n" . open-next-line    ))
+
+  :init
+  (add-hook 'special-mode-hook #'turn-off-line-numbers)
+  (with-current-buffer (messages-buffer)
+    (turn-off-line-numbers))
+
+  (column-number-mode)
+
   :config
   (defun open--line (forward)
     "Move forward `forward' - 1 lines before opening an empty line."
@@ -1161,9 +1168,7 @@ why-are-you-changing-gc-cons-threshold/'")
   (defun open-next-line ()
     "Open empty line below point without affecting the current line."
     (interactive)
-    (open--line 1))
-
-  (column-number-mode))
+    (open--line 1)))
 
 (use-package sl
   :ensure t
@@ -1228,8 +1233,7 @@ why-are-you-changing-gc-cons-threshold/'")
   (add-hooks-n
    `((LaTeX-mode-hook                          ,#'setup-latexmk
                                                ,#'turn-on-auto-fill         )
-     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer)
-     (TeX-output-mode-hook                     ,#'turn-off-line-numbers     )))
+     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer)))
 
   ;; Set priority of pre-configured PDF viewers to PDF Tools, then Zathura
   (let ((program-list TeX-view-program-list-builtin))
