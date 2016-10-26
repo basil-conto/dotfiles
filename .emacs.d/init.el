@@ -1054,6 +1054,10 @@ why-are-you-changing-gc-cons-threshold/'")
   :config
   (add-hook 'pascal-mode-hook #'use-c++-comments))
 
+(use-package pass
+  :ensure t
+  :defer)
+
 (use-package pcre2el
   :ensure t
   :defer)
