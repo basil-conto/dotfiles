@@ -1245,6 +1245,21 @@ why-are-you-changing-gc-cons-threshold/'")
                                  (assoc "Zathura"   program-list))))
           TeX-view-program-selection)))
 
+(use-package time
+  :defer
+  :init
+  (display-time)
+  :config
+  (let ((fmt "%a %d %b, %R %z"))
+    (setq-default
+     display-time-format            fmt
+     display-time-mail-string       "✉"
+     display-time-world-list        '(("Europe/Dublin" "Dublin"  )
+                                      ("Africa/Harare" "Harare"  )
+                                      ("Europe/Athens" "Athens"  )
+                                      ("Asia/Tel_Aviv" "Tel Aviv"))
+     display-time-world-time-format fmt)))
+
 (use-package tool-bar
   :defer
   :preface
