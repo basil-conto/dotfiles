@@ -1220,6 +1220,8 @@ why-are-you-changing-gc-cons-threshold/'")
    TeX-parse-self             t
    TeX-PDF-mode               t)
 
+  (bind-key "C-c ?" #'TeX-doc TeX-mode-map)
+
   (defun setup-latexmk ()
     "Define Latexmk continuous preview command and intermediate suffixes."
     (add-to-lists
