@@ -99,6 +99,26 @@
   "Disable `flycheck-mode'."
   (flycheck-mode 0))
 
+(defun large-buffer-p ()
+  "Determine whether buffer classifies as being large.
+Return `t' if buffer size falls under
+`large-file-warning-threshold', else `nil'."
+  (> (buffer-size) large-file-warning-threshold))
+
+(defun strip-down-buffer ()
+  "Try to make the current buffer as responsive as possible."
+  (interactive)
+  (setq buffer-read-only t)
+  (buffer-disable-undo)
+  (fundamental-mode)
+  (turn-off-line-numbers)
+  (font-lock-mode 0))
+
+(defun strip-down-large-buffer ()
+  "Call `strip-down-buffer' if current buffer is large."
+  (when (large-buffer-p)
+    (strip-down-buffer)))
+
 (defun iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
 See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
@@ -606,23 +626,9 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
    backup-directory-alist     `(("." . ,auto-save-backup-dir))))
 
 (use-package find-file
+  :defer
   :init
-  (add-hook
-   'find-file-hook
-   #'(lambda ()
-       (if (< (buffer-size) (* 1024 1024))
-           ;; Snoop around for conflicts
-           (save-excursion
-             (goto-char (point-min))
-             (when (re-search-forward "^<<<<<<< " nil t)
-               (message "Merge conflict detected. Enabling `smerge-mode'.")
-               (smerge-mode)))
-         ;; Strip down emacs
-         (setq buffer-read-only t)
-         (buffer-disable-undo)
-         (fundamental-mode)
-         (turn-off-line-numbers)
-         (font-lock-mode 0)))))
+  (add-hook 'find-file-hook #'strip-down-large-buffer))
 
 (use-package fill-column-indicator
   :ensure t
@@ -1177,6 +1183,23 @@ why-are-you-changing-gc-cons-threshold/'")
 (use-package sl
   :ensure t
   :defer)
+
+(use-package smerge-mode
+  :defer
+  :init
+  (defun sniff-smerge-session ()
+    "Conditionally enable `smerge-mode'.
+Enable `smerge-mode' only if the buffer is reasonably sized and
+contains conflict markers."
+    (when (and (not (large-buffer-p))
+               (save-excursion
+                 (goto-char (point-min))
+                 (re-search-forward "^<<<<<<< " nil t)))
+      (smerge-start-session)
+      (when smerge-mode
+        (message "Merge conflict detected. Enabled `smerge-mode'."))))
+
+  (add-hook 'find-file-hook #'sniff-smerge-session t))
 
 (use-package solarized-theme
   :ensure t
