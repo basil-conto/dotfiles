@@ -97,7 +97,7 @@
 
 (defun turn-off-flycheck-mode (&rest _)
   "Disable `flycheck-mode'."
-  (prettify-symbols-mode 0))
+  (flycheck-mode 0))
 
 (defun iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
