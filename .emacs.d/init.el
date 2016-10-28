@@ -1250,17 +1250,18 @@ why-are-you-changing-gc-cons-threshold/'")
 (use-package time
   :defer
   :init
-  (display-time)
-  :config
-  (let ((fmt "%a %d %b, %R %z"))
+  (let ((fmt "%a %d %b %R %z"))
     (setq-default
-     display-time-format            fmt
-     display-time-mail-string       "✉"
-     display-time-world-list        '(("Europe/Dublin" "Dublin"  )
-                                      ("Africa/Harare" "Harare"  )
-                                      ("Europe/Athens" "Athens"  )
-                                      ("Asia/Tel_Aviv" "Tel Aviv"))
-     display-time-world-time-format fmt)))
+     display-time-format                 fmt
+     display-time-load-average-threshold 0
+     display-time-mail-string            "✉"
+     display-time-world-list             '(("Europe/Dublin" "Dublin"  )
+                                           ("Africa/Harare" "Harare"  )
+                                           ("Europe/Athens" "Athens"  )
+                                           ("Asia/Tel_Aviv" "Tel Aviv"))
+     display-time-world-time-format      fmt))
+
+  (display-time))
 
 (use-package tool-bar
   :defer
