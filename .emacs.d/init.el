@@ -688,6 +688,11 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   (add-hook 'git-rebase-mode-hook #'hl-line-mode)
   (set-face-foreground 'git-rebase-hash "#808080"))
 
+(use-package gnus
+  :defer
+  :config
+  (setq-default gnus-check-new-newsgroups nil))
+
 (use-package golden-ratio-scroll-screen
   :disabled
   :ensure t
