@@ -523,9 +523,6 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   (defengine hoogle
     "https://www.haskell.org/hoogle/?hoogle=%s"
     :keybinding "h")
-  (defengine mdn
-    "https://developer.mozilla.org/en-US/search?q=%s"
-    :keybinding "m")
   (defengine stack-overflow
     "https://stackoverflow.com/search?q=%s"
     :keybinding "s")
