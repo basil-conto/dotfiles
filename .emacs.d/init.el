@@ -487,7 +487,8 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :defer)
 
 (use-package delsel
-  :config
+  :defer
+  :init
   (delete-selection-mode))
 
 (use-package dired
