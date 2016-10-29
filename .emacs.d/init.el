@@ -3,6 +3,7 @@
 ;;; ====
 
 ;; Fix
+;; * Write setter creator macro
 ;; * Issue `add-hooks' errors at compile-time
 ;; * Order of custom/frame/theme loading
 ;; * Improve autoloading of pdf-tools
@@ -669,19 +670,19 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 \\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
 \\|BRANCH_DESCRIPTION\\)\\'" . git-commit-mode)
   :config
-  (global-git-commit-mode)
+  (defun kill-git-commit-buffer ()
+    "Ensure message buffer is killed post-git-commit."
+    (and git-commit-mode
+         buffer-file-name
+         (string-match-p git-commit-filename-regexp buffer-file-name)
+         (kill-buffer)))
+
+  (add-hook 'with-editor-post-finish-hook #'kill-git-commit-buffer)
 
   (setq-default git-commit-summary-max-length 50
                 git-commit-fill-column        68)
 
-  (add-hook
-   'with-editor-post-finish-hook
-   #'(lambda ()
-       "Ensure message buffer is killed post-git-commit."
-       (and git-commit-mode
-            buffer-file-name
-            (string-match-p git-commit-filename-regexp buffer-file-name)
-            (kill-buffer)))))
+  (global-git-commit-mode))
 
 (use-package gitconfig-mode
   :ensure t
@@ -998,13 +999,12 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 (use-package minibuffer
   :defer
   :init
-  (defconst gc-orig-thresh gc-cons-threshold
-    "See URL `http://bling.github.io/blog/2016/01/18/\
-why-are-you-changing-gc-cons-threshold/'")
+  ;; See URL `http://bling.github.io/blog/2016/01/18/\
+  ;; why-are-you-changing-gc-cons-threshold/'
   (add-hook 'minibuffer-setup-hook
-            #'(lambda () (setq gc-cons-threshold most-positive-fixnum)))
+            `(lambda () (setq gc-cons-threshold most-positive-fixnum)))
   (add-hook 'minibuffer-exit-hook
-            #'(lambda () (setq gc-cons-threshold gc-orig-thresh))))
+            `(lambda () (setq gc-cons-threshold ,gc-cons-threshold))))
 
 (use-package minimap
   :ensure t
