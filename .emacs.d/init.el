@@ -134,11 +134,11 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (interactive)
   (unless (= (length (window-list)) 2)
     (error "Can only toggle a frame split in two"))
-  (let ((split-vertically-p (window-combined-p)))
+  (let ((split (if (window-combined-p)
+                   #'split-window-horizontally
+                 #'split-window-vertically)))
     (delete-window)
-    (if split-vertically-p
-        (split-window-horizontally)
-      (split-window-vertically))
+    (funcall split)
     (switch-to-buffer nil)))
 
 (defun use-c++-comments ()
