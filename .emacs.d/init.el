@@ -342,6 +342,17 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   :ensure t
   :defer)
 
+(use-package auth-source
+  :defer
+  :config
+  (setq-default auth-source-debug t)
+
+  ;; Add SMTPS port 465
+  (when-let ((port  "465")
+             (proto 'smtp)
+             (names (assq proto auth-source-protocols)))
+    (setf (cdr names) (add-to-list 'names port t))))
+
 (use-package base16-theme
   :ensure t
   :disabled)
