@@ -3,6 +3,11 @@
 ;;; ====
 
 ;; Fix
+;; * Displace colour codes with relative faces
+;; * Break `defun's from existing packages out of `use-package' declarations?
+;;   - Benefit: byte compilation
+;;   - Alternative: force compilation?
+;; * Hard-coded load paths
 ;; * Write setter creator macro
 ;; * Issue `add-hooks' errors at compile-time
 ;; * Order of custom/frame/theme loading
@@ -27,6 +32,7 @@
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
+;; * Ivy
 ;; * Macros
 ;; * Org
 ;; * Magit
@@ -60,7 +66,7 @@
 (advice-add #'package--save-selected-packages :override #'ignore) ; Sandbox
 (package-initialize)
 
-;;; use-package
+;;; `use-package'
 (unless (package-installed-p 'use-package)
   (when (y-or-n-p "use-package not installed; would you like to install it?")
     (package-refresh-contents)
@@ -326,12 +332,12 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   :ensure t
   :defer
   :config
-  (setq ag-highlight-search t)
+  (setq-default ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
 
 (use-package align
   :bind ("C-c p" . align-punctuation)
-  :config
+  :init
   (defun align-punctuation ()
     "Horizontally align mode-specific punctuation in region."
     (interactive)
@@ -346,9 +352,10 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (global-annoying-arrows-mode))
 
 (use-package apt-sources
+  ;; FIXME
   :load-path "/usr/share/emacs24/site-lisp/debian-el"
   :mode ("\\.sources\\'" . apt-sources-mode)
-  :config
+  :init
   (add-hook 'apt-sources-mode-hook #'turn-off-electric-indent))
 
 (use-package asm-mode
@@ -435,17 +442,17 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   (advice-add #'c-lineup-arglist :before-until #'c++-lambda-indent))
 
 (use-package color-moccur
-  :ensure t
-  :disabled)
+  :disabled
+  :ensure t)
 
 (use-package color-theme-sanityinc-solarized
-  :ensure t
-  :disabled)
+  :disabled
+  :ensure t)
 
 (use-package color-theme-solarized
+  :disabled
   :ensure t
-  :defer
-  :config
+  :init
   (setq-default solarized-italic     nil
                 solarized-termcolors 256)
   (load-theme 'solarized t))
@@ -468,12 +475,12 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package conf-mode
   :defer
-  :config
+  :init
   (add-hook 'conf-mode-hook #'turn-off-electric-indent))
 
 (use-package crontab-mode
   :ensure t
-  :mode ("\\.cron\\(?:tab\\)??\\'" "cron\\(?:tab\\)??\\."))
+  :mode "\\.cron\\(?:tab\\)??\\'" "cron\\(?:tab\\)??\\.")
 
 (use-package csharp-mode
   :ensure t
@@ -497,7 +504,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package dafny-mode
   :ensure boogie-friends
   :defer
-  :config
+  :init
   (add-hooks-1 'dafny-mode-hook
                #'turn-off-electric-indent
                #'turn-off-flycheck-mode
@@ -514,7 +521,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package dired
   :defer
-  :config
+  :init
   (setq-default
    dired-listing-switches "--group-directories-first -AFhl"))
 
@@ -566,7 +573,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package eshell
   :defer
-  :config
+  :init
   (add-hook 'eshell-mode-hook #'turn-off-line-numbers))
 
 (use-package ess
@@ -618,13 +625,15 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :defer)
 
 (use-package files
-  :bind ("<f5>" . refresh-buffer)
-  :config
+  :defer
+  :init
   (defun refresh-buffer ()
     "Reconcile current buffer with what lives on the disk.
 Offer to revert from the auto-save file, if that exists."
     (interactive)
     (revert-buffer nil t))
+
+  (bind-key "<f5>" #'refresh-buffer)
 
   (defun switch-to-temp-file (&optional prefix suffix)
     "Create and switch to a temporary file.
@@ -675,12 +684,13 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package font-lock
   :defer
-  :config
+  :init
   (setq-default font-lock-maximum-decoration t))
 
 (use-package frame
+  :when (display-graphic-p)
   :defer
-  :config
+  :init
   (blink-cursor-mode 0))
 
 (use-package git-commit
@@ -778,8 +788,9 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package highlight-escape-sequences
   :ensure t
-  :config
-  (hes-mode))
+  :defer
+  :init
+  (turn-on-hes-mode))
 
 (use-package hl-line
   :defer
@@ -804,7 +815,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package ido
   :defer
-  :config
+  :init
   (setq-default ido-enable-flex-matching 1))
 
 (use-package idris-mode
@@ -817,8 +828,8 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   (add-hook 'Info-mode-hook #'turn-off-line-numbers))
 
 (use-package isearch+
-  :ensure t
-  :disabled)
+  :disabled
+  :ensure t)
 
 (use-package isearch-prop
   :ensure t
@@ -833,8 +844,11 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package jit-lock
   :defer
-  :config
-  (setq-default jit-lock-stealth-time 4))
+  :init
+  (setq-default
+   jit-lock-stealth-load    60
+   jit-lock-stealth-time     4
+   jit-lock-stealth-verbose  t))
 
 (use-package js
   :defer
@@ -847,13 +861,15 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 (use-package js2-mode
   :ensure t
   :mode "\\.js\\'"
-  :interpreter ("node" "nodejs")
-  :functions js2-line-break
+  :interpreter "node" "nodejs"
+  :commands js2-line-break
   :init
   (setq-default js2-bounce-indent-p t)
-  :config
-  (bind-key "RET" #'js2-line-break js2-mode-map)
 
+  (add-hooks-1 'js2-mode-hook
+               #'js2-highlight-unused-variables-mode
+               #'turn-off-electric-indent)
+  :config
   (setq-default
    js2-allow-rhino-new-expr-initializer nil
    js2-concat-multiline-strings         'eol
@@ -863,9 +879,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
    js2-mode-assume-strict               t
    js2-skip-preprocessor-directives     t)
 
-  (add-hooks-1 'js2-mode-hook
-               #'js2-highlight-unused-variables-mode
-               #'turn-off-electric-indent)
+  (bind-key "RET" #'js2-line-break js2-mode-map)
 
   (set-foregrounds
    '((js2-error             "#ff0000")
@@ -889,7 +903,6 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package js3-mode
   :ensure t
-  :defer
   :commands js3-enter-key
   :config
   (unbind-key "C-c C-g" js3-mode-map)   ; Why...
@@ -930,7 +943,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package lisp-mode
   :defer
-  :config
+  :init
   (add-hook 'lisp-mode-hook #'turn-off-electric-indent))
 
 (use-package list-processes+
@@ -958,7 +971,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   (setq-default
    ;; FIXME: search/replace original value instead of redefining
    ;; Define ref alignment below as a function and reuse here
-   magit-log-arguments    '("-n32" "--graph" "--decorate"))
+   magit-log-arguments '("-n32" "--graph" "--decorate"))
 
   (add-to-list 'magit-rebase-arguments "--interactive")
 
@@ -996,9 +1009,8 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   ;;    (magit-hash   "#808080"))))
 
 (use-package magit-gh-pulls
-  :ensure t
-  :disabled                             ; gh.el doesn't speak ssh?
-  :defer
+  :disabled
+  :ensure t                             ; gh.el doesn't speak ssh?
   :commands turn-on-magit-gh-pulls
   :init
   (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
@@ -1010,13 +1022,13 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package man
   :defer
-  :config
+  :init
   (add-hook 'Man-mode-hook #'remap-man-faces))
 
 (use-package markdown-mode
   :ensure t
+  :mode "\\.md\\'" "\\.markdown\\'"
   :commands markdown-cycle markdown-enter-key
-  :mode ("\\.md\\'" "\\.markdown\\'")
   :config
   (bind-key "TAB" #'markdown-cycle markdown-mode-map)
   (no-trailing-enter #'markdown-enter-key))
@@ -1052,7 +1064,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package mwheel
   :defer
-  :config
+  :init
   ;; One line at a time
   (setq-default mouse-wheel-scroll-amount '(1 ((shift) . 1))))
 
@@ -1074,22 +1086,23 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 ;; FIXME: require when creating graphical frame from terminal
 (use-package palette
   :ensure t
-  :defer
-  :when (display-graphic-p))
+  :defer)
 
 (use-package paren
-  :config
+  :defer
+  :init
   (show-paren-mode))
 
 (use-package paren-face
+  :disabled
   :ensure t
-  :config
+  :defer
+  :init
   (global-paren-face-mode))
 
 (use-package pascal
-  :no-require t
-  :disabled t
-  :config
+  :defer
+  :init
   (add-hook 'pascal-mode-hook #'use-c++-comments))
 
 (use-package pass
@@ -1100,15 +1113,12 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :defer)
 
+;; FIXME: require when creating graphical frame from terminal
 (use-package pdf-tools
-  :if (display-graphic-p)
   :ensure t
-  :preface
-  (defun pdf-tools--install ()
-    "Force-install PDF-Tools without errors, skipping dependencies."
-    (pdf-tools-install t t t))
-  :mode ("\\.pdf\\'" . pdf-tools--install)
-  :config
+  :when (display-graphic-p)
+  :init
+  (pdf-tools-install t t t)
   ;; (add-hook'pdf-view-mode-hook #'turn-on-auto-revert-mode)
   (setq-default pdf-view-display-size 'fit-page))
 
@@ -1124,7 +1134,6 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :defer
   :init
   (add-hook 'helm-mode-hook #'projectile-mode)
-  :config
   (setq-default
    projectile-completion-system           'helm
    projectile-find-dir-includes-top-level t))
@@ -1132,7 +1141,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 (use-package prolog
   :mode ("\\.pl\\'" . prolog-mode)
   :config
-  (setq prolog-system 'swi))
+  (setq-default prolog-system 'swi))
 
 (use-package python
   :defer
@@ -1149,11 +1158,11 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :bind (("<f7>" . remember-notes)
          ("<f8>" . remember-notes-save-and-bury-buffer))
   :config
-  (setq-default remember-notes-initial-major-mode 'org-mode))
+  (setq-default remember-notes-initial-major-mode #'org-mode))
 
 (use-package rx
   :bind ("C-c r" . rx-to-string-bold)
-  :config
+  :init
   (defun rx-to-string-bold (form)
     "Interactively wrap `rx-to-string' and remove shy groups around result."
     (interactive "sRegExp: ")
@@ -1162,18 +1171,21 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 (use-package sass-mode
   :ensure t
   :defer
-  :config
+  :init
   (add-hook 'sass-mode-hook #'use-c++-comments))
 
-(use-package saveplace
-  :config
-  (if emacs-25+
-      (save-place-mode)
+(if emacs-25+
+    (use-package saveplace
+      :defer
+      :init
+      (save-place-mode))
+  (use-package saveplace
+    :init
     (setq-default save-place t)))
 
 (use-package server
   :defer
-  :config
+  :init
   (setq-default server-kill-new-buffers nil))
 
 (use-package sh-script
@@ -1187,15 +1199,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
          ("C-x C-k" . kill-whole-line   )
          ("C-x C-p" . open-previous-line)
          ("C-x C-n" . open-next-line    ))
-
   :init
-  (add-hook 'special-mode-hook #'turn-off-line-numbers)
-  (with-current-buffer (messages-buffer)
-    (turn-off-line-numbers))
-
-  (column-number-mode)
-
-  :config
   (defun open--line (forward)
     "Move forward `forward' - 1 lines before opening an empty line."
     (save-excursion
@@ -1210,7 +1214,13 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   (defun open-next-line ()
     "Open empty line below point without affecting the current line."
     (interactive)
-    (open--line 1)))
+    (open--line 1))
+
+  (add-hook 'special-mode-hook #'turn-off-line-numbers)
+  (with-current-buffer (messages-buffer)
+    (turn-off-line-numbers))
+
+  (column-number-mode))
 
 (use-package sl
   :ensure t
@@ -1234,8 +1244,8 @@ contains conflict markers."
   (add-hook 'find-file-hook #'sniff-smerge-session t))
 
 (use-package solarized-theme
-  :ensure t
-  :disabled)
+  :disabled
+  :ensure t)
 
 (use-package speedbar
   :defer
@@ -1248,24 +1258,20 @@ contains conflict markers."
 
 (use-package sr-speedbar
   :ensure t
-  :bind ("C-x t" . sr-speedbar-toggle)
   :after speedbar
+  :bind ("C-x t" . sr-speedbar-toggle)
   :config
   (setq-default sr-speedbar-auto-refresh nil))
 
 (use-package subword
-  :config
-  (global-subword-mode))
-
-(use-package tango-dark-theme
   :defer
-  :config
-  (load-theme 'tango-dark))
+  :init
+  (global-subword-mode))
 
 (use-package tex
   :ensure auctex
   :defer
-  :defines   LaTeX-clean-intermediate-suffixes
+  :defines LaTeX-clean-intermediate-suffixes
   :functions setup-latexmk TeX-doc TeX-revert-document-buffer
   :config
   (setq-default
@@ -1330,12 +1336,13 @@ contains conflict markers."
   :defer)
 
 (use-package uniquify
-  :config
+  :defer
+  :init
   (setq-default uniquify-buffer-name-style 'forward))
 
 (use-package vc-hooks
   :defer
-  :config
+  :init
   (setq-default vc-handled-backends nil))
 
 (use-package visual-regexp-steroids
@@ -1363,9 +1370,10 @@ contains conflict markers."
   :mode ("\\.html\\'" "\\.mustache\\'"))
 
 (use-package whitespace
-  :config
-  (global-whitespace-mode)
-  (setq-default whitespace-style '(face tabs trailing empty tab-mark)))
+  :defer
+  :init
+  (setq-default whitespace-style '(face tabs trailing empty tab-mark))
+  (global-whitespace-mode))
 
 (use-package windmove
   :bind (("S-<up>"      . windmove-up   )
@@ -1379,21 +1387,23 @@ contains conflict markers."
          ("M-[ 1 ; 2 C" . windmove-right)))
 
 (use-package winner
-  :config
+  :defer
+  :init
   (winner-mode))
 
 (use-package woman
   :defer
-  :config
+  :init
   (add-hook 'woman-mode-hook #'remap-woman-faces))
 
 (use-package wrap-region
   :ensure t
-  :config
+  :defer
+  :init
   (wrap-region-global-mode)
   (setq-default
    wrap-region-only-with-negative-prefix t
-   wrap-region-tag-active-modes          '(html-mode web-mode mustache-mode))
+   wrap-region-tag-active-modes          '(html-mode mustache-mode web-mode))
   (wrap-region-add-wrapper "{{#i18n}}" "{{/i18n}}" "i"))
 
 (use-package wttrin
@@ -1426,7 +1436,8 @@ contains conflict markers."
 
 (use-package xt-mouse
   :unless (display-graphic-p)
-  :config
+  :defer
+  :init
   (xterm-mouse-mode))
 
 (use-package yaml-mode
