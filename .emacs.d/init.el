@@ -1476,5 +1476,38 @@ contains conflict markers."
   :ensure t
   :defer
   :init
-  (load-theme 'zenburn t))
+  (load-theme 'zenburn t)
 
+  (defun zenburn-assoc-default (colour &optional default)
+    "Return COLOUR from `zenburn-default-colors-alist' or  DEFAULT."
+    (or (cdr (assoc-string colour zenburn-default-colors-alist))
+        default))
+
+  (defun zenburn-brighten-fci ()
+    "Brighten `fci-rule-color' under `zenburn-theme'.
+For the colour change to take effect when `fci-mode' is already
+enabled, the mode must be re-enabled by force. To avoid recursion
+ad infinitum, the current function is temporarily removed as a
+hook for `fci-mode' before a forced activation.
+TODO: Define FCI face?"
+    (when-let ((face 'fci-rule-color)
+               (fg   (zenburn-assoc-default 'zenburn-bg+1 face)))
+      (set-default face fg)
+      (when (bound-and-true-p fci-mode)
+        (let* ((hook   'fci-mode-hook)
+               (func   #'zenburn-brighten-fci)
+               (hooked `(memq ,func ,hook)))
+          (when hooked (remove-hook hook func))
+          (turn-on-fci-mode)
+          (when hooked (add-hook hook func))))))
+
+  (defun zenburn-darken-linum ()
+    "Darken foreground of face `linum' under `zenburn-theme'."
+    (when-let ((face 'linum)
+               (_    (internal-lisp-face-p face))
+               (fg   (zenburn-assoc-default 'zenburn-bg+3)))
+      (set-face-foreground face fg)))
+
+  (add-hooks-n
+   `((   fci-mode-hook ,#'zenburn-brighten-fci)
+     (nlinum-mode-hook ,#'zenburn-darken-linum))))
