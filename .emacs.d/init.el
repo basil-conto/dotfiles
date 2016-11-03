@@ -106,6 +106,29 @@
   "Man page emphasis/underline face."
   :group 'man)
 
+;; FIXME: set `line-number-display-limit-width' appropriately
+(defun fast-line-number (&optional as-string)
+  "Return line number of point within accessible portion of buffer.
+If AS-STRING is non-`nil', return line number as string. See URL
+`http://emacs.stackexchange.com/a/3822' for limitations."
+  (let ((conv (if as-string #'identity #'string-to-number)))
+    (funcall conv (format-mode-line "%l"))))
+
+(defun fast-line-count ()
+  "Return number of lines in buffer.
+See `fast-line-number'."
+  (save-excursion
+    (goto-char (point-max))
+    (1- (fast-line-number))))
+
+(defun echo-fast-line-count ()
+  "Emulate `count-lines-page' using `fast-line-count'."
+  (interactive)
+  (let* ((before (fast-line-number))
+         (total  (fast-line-count ))
+         (after  (- total before  )))
+    (message "Page has %d lines (%d + %d)" total before after)))
+
 (defun debug-use-package ()
   "Enable `use-package' debugging."
   (interactive)
@@ -267,17 +290,18 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 (bind-keys
  ;; Line
- ("C-c i"       .   indent-relative)
+ ("C-x l"       . echo-fast-line-count)
+ ("C-c i"       .      indent-relative)
  ;; Window / Buffer
- ("C-x 7"       .   transpose-split)
- ("S-<prior>"   .   previous-buffer)
- ("S-<next>"    .       next-buffer)
+ ("C-x 7"       .      transpose-split)
+ ("S-<prior>"   .      previous-buffer)
+ ("S-<next>"    .          next-buffer)
  ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" .   previous-buffer)
- ("M-[ 6 ; 2 ~" .       next-buffer)
+ ("M-[ 5 ; 2 ~" .      previous-buffer)
+ ("M-[ 6 ; 2 ~" .          next-buffer)
  ;; Movement
- ("M-{"         . small-scroll-down)
- ("M-}"         . small-scroll-up  ))
+ ("M-{"         .    small-scroll-down)
+ ("M-}"         .    small-scroll-up  ))
 
 ;;; ========
 ;;; Settings
