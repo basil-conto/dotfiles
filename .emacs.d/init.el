@@ -1397,15 +1397,20 @@ contains conflict markers."
   (global-whitespace-mode))
 
 (use-package windmove
-  :bind (("S-<up>"      . windmove-up   )
-         ("S-<down>"    . windmove-down )
-         ("S-<left>"    . windmove-left )
-         ("S-<right>"   . windmove-right)
-         ;; Mutatis mutandis within tmux
-         ("M-[ 1 ; 2 A" . windmove-up   )
-         ("M-[ 1 ; 2 B" . windmove-down )
-         ("M-[ 1 ; 2 D" . windmove-left )
-         ("M-[ 1 ; 2 C" . windmove-right)))
+  :bind
+  (("S-<up>"      . windmove-up   )
+   ("S-<down>"    . windmove-down )
+   ("S-<left>"    . windmove-left )
+   ("S-<right>"   . windmove-right)
+   ;; Mutatis mutandis within tmux
+   ("M-[ 1 ; 2 A" . windmove-up   )
+   ("M-[ 1 ; 2 B" . windmove-down )
+   ("M-[ 1 ; 2 D" . windmove-left )
+   ("M-[ 1 ; 2 C" . windmove-right))
+  :config
+  (setq-default
+   windmove-window-distance-delta 2
+   windmove-wrap-around           t))
 
 (use-package winner
   :defer
