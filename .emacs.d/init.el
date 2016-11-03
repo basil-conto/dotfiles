@@ -1382,8 +1382,7 @@ contains conflict markers."
 
 (use-package wc-mode
   :ensure t
-  :init
-  (apply #'add-hooks-t #'wc-mode fundamental-hooks)
+  :commands wc-mode
   :config
   (setq-default wc-modeline-format "[%tll]"))
 
