@@ -630,6 +630,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
                 ess-indent-from-lhs nil))
 
 (use-package exec-path-from-shell
+  :disabled
   :ensure t
   :config
   (dolist (var '("SSH_AGENT_PID" "SSH_AUTH_SOCK"))
