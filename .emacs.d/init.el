@@ -1322,8 +1322,8 @@ contains conflict markers."
 
   ;; Set priority of pre-configured PDF viewers to PDF Tools, then Zathura
   (let ((program-list TeX-view-program-list-builtin))
-    (push `(output-pdf ,(car (or (assoc "PDF Tools" program-list)
-                                 (assoc "Zathura"   program-list))))
+    (push `(output-pdf ,(car (or (assoc-string "PDF Tools" program-list)
+                                 (assoc-string "Zathura"   program-list))))
           TeX-view-program-selection)))
 
 (use-package time
