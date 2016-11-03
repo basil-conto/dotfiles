@@ -809,13 +809,24 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :mode "\\.journal\\'"
   :config
+  (defun account-concat (category &optional accounts acct-sep list-sep)
+    "Join ACCOUNTS with their account CATEGORY.
+Return a LIST-SEP-delimited (default \" \") string of account
+prefixed by CATEGORY and ACCT-SEP (default \":\")."
+    (let ((list-sep (or list-sep " "))
+          (acct-sep (or acct-sep ":")))
+      (mapconcat #'(lambda (account)
+                     (string-join `(,category ,account) acct-sep))
+                 accounts
+                 list-sep)))
+
   (setq-default
    hledger-currency-string "€"
    hledger-jfile           "~/.hledger.journal"
    hledger-ratios-essential-expense-accounts
-   "expenses:housing expenses:groceries"
+   (account-concat "expenses" '("housing" "groceries"))
    hledger-ratios-liquid-asset-accounts
-   "assets:boi assets:cash"))
+   (account-concat "assets"   '("boi" "cash"))))
 
 (use-package i18next-wrap
   :load-path "lisp"
