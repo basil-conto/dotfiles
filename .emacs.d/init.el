@@ -1438,12 +1438,13 @@ contains conflict markers."
   :config
   (setq-default
    wttrin-default-cities
-   '(athens-greece
-     avoca-ireland
-     dublin-ireland
-     tel-aviv-israel
-     harare-zimbabwe
-     moon)))
+   '("Athens, Greece"
+     "Avoca, Ireland"
+     "Dublin, Ireland"
+     "Tel Aviv, Israel"
+     "Kfar Qasim, Israel"
+     "Harare, Zimbabwe"
+     "Moon")))
 
 (use-package xref-js2
   :if     emacs-25+
