@@ -72,11 +72,10 @@
     (package-refresh-contents)
     (package-install 'use-package)))
 
-(eval-when-compile
-  (defvar use-package-verbose 'debug
-    "Report package compilation, loading and configuration details.")
-  (require 'use-package))
-(require 'bind-key)
+(setq-default use-package-verbose 'debug)
+(require 'use-package)
+
+;; Moar subroutines
 (require 'subr-x)
 
 ;;; ===========
@@ -106,6 +105,11 @@
   '((t . (:inherit font-lock-string-face :underline t)))
   "Man page emphasis/underline face."
   :group 'man)
+
+(defun debug-use-package ()
+  "Enable `use-package' debugging."
+  (interactive)
+  (setq-default use-package-debug t))
 
 ;; TODO: define no-arg macro?
 (defun no-trailing-enter--advice (&rest _)
@@ -553,8 +557,10 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package engine-mode
   :ensure t
+  :commands engine-mode
+  :functions engine/execute-search engine/get-query
+  :bind-keymap ("C-x /" . engine-mode-map)
   :config
-  (engine-mode)
   (defengine google-def
     "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=define+%s"
     :keybinding "d")
@@ -569,7 +575,8 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
     :keybinding "s")
   (defengine wikipedia
     "https://en.wikipedia.org/w/index.php?search=%s"
-    :keybinding "w"))
+    :keybinding "w")
+  (engine-mode))
 
 (use-package eshell
   :defer
