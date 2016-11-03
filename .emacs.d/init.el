@@ -526,6 +526,10 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure t
   :defer)
 
+(use-package define-word
+  :ensure t
+  :bind ("C-c /" . define-word-at-point))
+
 (use-package delsel
   :defer
   :init
