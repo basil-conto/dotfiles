@@ -353,12 +353,6 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
       (mark-paragraph))
     (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)\\s.")))
 
-(use-package annoying-arrows-mode
-  :disabled
-  :ensure t
-  :config
-  (global-annoying-arrows-mode))
-
 (use-package apt-sources
   ;; FIXME
   :load-path "/usr/share/emacs24/site-lisp/debian-el"
