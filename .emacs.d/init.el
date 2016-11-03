@@ -329,8 +329,12 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   :defer)
 
 (use-package ac-js2
+  :disabled
+  :ensure t)
+
+(use-package ace-window
   :ensure t
-  :disabled)
+  :bind ("C-c o" . ace-window))
 
 (use-package ag
   :ensure t
