@@ -619,17 +619,6 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure t
   :defer)
 
-(use-package faces
-  :commands what-face
-  :config
-  (defun what-face (pos)
-    "Describe face at current point."
-    (interactive "d")
-    (if-let ((face (or (get-char-property (point) #'read-face-name)
-                       (get-char-property (point) 'face))))
-      (message "Face: %s" face)
-      (message "No face at %d" pos))))
-
 (use-package fic-mode
   :ensure t
   :defer
