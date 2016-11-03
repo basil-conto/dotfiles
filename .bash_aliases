@@ -6,6 +6,8 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -I'
 
+alias forget='echo RELOADAGENT | gpg-connect-agent'
+
 # ls
 alias ls='ls --color=auto --group-directories-first'
 alias l='ls -F'
