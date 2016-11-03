@@ -1373,8 +1373,12 @@ contains conflict markers."
   (setq-default vr/match-separator-use-custom-face t))
 
 (use-package vlf
+  :disabled
+  :ensure t)
+
+(use-package w3m
   :ensure t
-  :disabled)
+  :defer)
 
 (use-package wc-mode
   :ensure t
