@@ -1165,13 +1165,12 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (use-package python
   :defer
   :config
-  (setq-default
-   python-check-command
-   (or (executable-find "epylint3")
-       (executable-find "epylint" )
-       (executable-find "pyflakes")
-       python-check-command)
-   python-shell-interpreter "ipython3"))
+  (when-let ((cmds '("epylint3" "epylint" "pyflakes"))
+             (find (apply-partially #'list #'executable-find))
+             (cmd  (eval `(or ,@(mapcar find cmds)))))
+    (setq-default python-check-command cmd))
+
+  (setq-default python-shell-interpreter "ipython3"))
 
 (use-package remember
   :bind (("<f7>" . remember-notes)
