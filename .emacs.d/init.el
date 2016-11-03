@@ -44,8 +44,14 @@
 ;;; =============
 
 ;;; Profiling
-(defconst emacs-start-time (current-time)
-  "Time before loading user initialisation file.")
+(let ((start-time (current-time)))
+  (eval
+   `(defun report-init-time ()
+      "See URL `https://github.com/jwiegley/dot-emacs'."
+      (let ((elapsed (float-time (time-subtract (current-time) ',start-time))))
+        (message "Loading %s...done (%.3fs)" ,load-file-name elapsed)))))
+
+(add-hook 'after-init-hook #'report-init-time t)
 
 ;;; MELPA
 (require 'package)
@@ -70,6 +76,30 @@
 ;;; ===========
 ;;; Definitions
 ;;; ===========
+
+(defvar small-scroll-step 6
+  "Number of lines constituting a small scroll.")
+
+(defvar fundamental-hooks
+  '(haskell-cabal-mode-hook
+         mustache-mode-hook
+          hledger-mode-hook
+             conf-mode-hook
+             prog-mode-hook
+             text-mode-hook
+              ess-mode-hook
+              js3-mode-hook)
+  "Hooks whose modes derive from `fundamental-mode' or nothing.")
+
+(defface man-header
+  '((t . (:inherit font-lock-keyword-face :weight bold)))
+  "Man page heading face."
+  :group 'man)
+
+(defface man-emph
+  '((t . (:inherit font-lock-string-face :underline t)))
+  "Man page emphasis/underline face."
+  :group 'man)
 
 ;; TODO: define no-arg macro?
 (defun no-trailing-enter--advice (&rest _)
@@ -147,6 +177,12 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (setq-local comment-start "//")
   (setq-local comment-end     ""))
 
+(defun split-larger-dimension--advice (old-split &rest args)
+  "Ensure the larger window dimension is sacrificed when splitting."
+  (let ((split-width-threshold       (window-height))
+        (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
+    (apply old-split args)))
+
 ;; TODO: rewrite as macro?
 (defun with-graphical-frame (fun)
   "Run abnormal hook now, in current frame, and with every new frame."
@@ -205,27 +241,15 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 (defconst emacs-25+ (>= emacs-major-version 25)
   "Whether the current major version number of Emacs is 25 or higher.")
+(defun small-scroll-up ()
+  "Scroll up `small-scroll-step' lines."
+  (interactive)
+  (scroll-up small-scroll-step))
 
-(defvar fundamental-hooks
-  '(haskell-cabal-mode-hook
-         mustache-mode-hook
-          hledger-mode-hook
-             conf-mode-hook
-             prog-mode-hook
-             text-mode-hook
-              ess-mode-hook
-              js3-mode-hook)
-  "Hooks whose modes derive from `fundamental-mode' or nothing.")
-
-(defface man-header
-  '((t . (:inherit font-lock-keyword-face :weight bold)))
-  "Man page heading face."
-  :group 'man)
-
-(defface man-emph
-  '((t . (:inherit font-lock-string-face :underline t)))
-  "Man page emphasis/underline face."
-  :group 'man)
+(defun small-scroll-down ()
+  "Scroll down `small-scroll-step' lines."
+  (interactive)
+  (scroll-down small-scroll-step))
 
 ;;; ========
 ;;; Bindings
@@ -233,17 +257,17 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 (bind-keys
  ;; Line
- ("C-c i"       . indent-relative)
+ ("C-c i"       .   indent-relative)
  ;; Window / Buffer
- ("C-x 7"       . transpose-split)
- ("S-<prior>"   . previous-buffer)
- ("S-<next>"    .     next-buffer)
+ ("C-x 7"       .   transpose-split)
+ ("S-<prior>"   .   previous-buffer)
+ ("S-<next>"    .       next-buffer)
  ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" . previous-buffer)
- ("M-[ 6 ; 2 ~" .     next-buffer)
+ ("M-[ 5 ; 2 ~" .   previous-buffer)
+ ("M-[ 6 ; 2 ~" .       next-buffer)
  ;; Movement
- ("M-{"         . (lambda () (interactive) (scroll-down 6)))
- ("M-}"         . (lambda () (interactive) (scroll-up   6))))
+ ("M-{"         . small-scroll-down)
+ ("M-}"         . small-scroll-up  ))
 
 ;;; ========
 ;;; Settings
@@ -251,16 +275,11 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 ;; General
 
-(setq inhibit-startup-screen  t
-      split-window-keep-point nil)
+(setq-default
+ inhibit-startup-screen  t
+ split-window-keep-point nil)
 
-(advice-add
- #'split-window-sensibly :around
- #'(lambda (old-split &rest args)
-     "Ensure the larger window dimension is sacrificed when splitting."
-     (let ((split-width-threshold       (window-height))
-           (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
-       (apply old-split args))))
+(advice-add #'split-window-sensibly :around #'split-larger-dimension--advice)
 
 (with-graphical-frame
  #'(lambda (frame)
@@ -273,7 +292,7 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 ;; Scrolling
 
-(setq
+(setq-default
  isearch-allow-scroll            t
  scroll-conservatively           most-positive-fixnum
  scroll-error-top-bottom         t
@@ -284,14 +303,12 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 ;; Spacing
 
 (setq-default
- tab-width         2
- tab-always-indent t
- indent-tabs-mode  nil)
-
-(setq indent-line-function #'insert-tab)
-
-(add-hook 'text-mode-hook #'(lambda () (setq fill-column 80
-                                             sentence-end-double-space nil)))
+ fill-column               80
+ indent-line-function      #'insert-tab
+ indent-tabs-mode          nil
+ tab-always-indent         t
+ tab-width                 2
+ sentence-end-double-space nil)
 
 ;;; ========
 ;;; Packages
@@ -378,6 +395,8 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 (use-package cc-mode
   :defer
   :functions c-lineup-arglist c++-lambda-indent
+  :init
+  (add-hook 'c-mode-common-hook #'use-c++-comments)
   :config
   (let ((name    "blc")
         (base    "linux")
@@ -398,8 +417,6 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
                         (c-offsets-alist . ,offsets)))
 
     (setf (cdr default) name))
-
-  (add-hook 'c-mode-common-hook #'use-c++-comments)
 
   (defun c++-lambda-indent (langelem)
     "Return indentation offset for C++11 lambda function arguments.
@@ -469,10 +486,13 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package csv-mode
   :ensure t
   :commands csv-align-fields
+  :init
+  (defun align-all-csv-fields ()
+    "Align all fields in the current CSV buffer."
+    (csv-align-fields nil (point-min) (point-max)))
+  (add-hook 'csv-mode-hook #'align-all-csv-fields)
   :config
-  (setq-default csv-align-style 'auto)
-  (add-hook 'csv-mode-hook
-            #'(lambda () (csv-align-fields nil (point-min) (point-max)))))
+  (setq-default csv-align-style 'auto))
 
 (use-package dafny-mode
   :ensure boogie-friends
@@ -507,11 +527,12 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package disaster
   :ensure t
-  :defer
+  :commands disaster
   :init
-  (add-hook 'c-mode-common-hook
-            #'(lambda ()
-                (bind-key "C-c d" #'disaster c-mode-base-map)))
+  (defun enable-disaster ()
+    "Enable `disaster' in `c-mode' derivatives."
+    (bind-key "C-c d" #'disaster c-mode-base-map))
+  (add-hook 'c-mode-common-hook #'enable-disaster)
   :config
   (setq-default disaster-objdump "objdump -D -M att -Sl --no-show-raw-insn"))
 
@@ -644,10 +665,9 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :defer
   :init
-  (apply #'add-hooks-t #'fci-mode fundamental-hooks)
-  :config
-  (setq-default fci-rule-column 80
-                fci-rule-color "#696969"))
+  (apply #'add-hooks-t #'turn-on-fci-mode fundamental-hooks)
+  (setq-default fci-rule-color  "#696969"
+                fci-rule-column 80))
 
 (use-package flex-mode
   :load-path "lisp"
@@ -695,7 +715,6 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 (use-package git-rebase
   :defer
   :config
-  (add-hook 'git-rebase-mode-hook #'hl-line-mode)
   (set-face-foreground 'git-rebase-hash "#808080"))
 
 (use-package gnus
@@ -712,8 +731,8 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 (use-package haskell-cabal
   :ensure haskell-mode
   :defer
-  :config
-  (add-hooks-1 'haskell-cabal-mode-hook #'turn-off-electric-indent))
+  :init
+  (add-hook 'haskell-cabal-mode-hook #'turn-off-electric-indent))
 
 (use-package haskell-mode
   :ensure t
@@ -729,15 +748,16 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
          ("M-x"     . helm-M-x           )
          ("C-c b"   . helm-mini          )
          ("M-y"     . helm-show-kill-ring))
+  :init
+  (add-hook 'helm-major-mode-hook #'turn-off-line-numbers)
   :config
   (setq-default helm-buffers-fuzzy-matching t
                 helm-M-x-fuzzy-match        t
                 helm-split-window-in-side-p t)
 
+  ;; FIXME: create toggling mechanism
   (when (bound-and-true-p helm-white-selection)
     (set-face-foreground 'helm-selection "#ffffff"))
-
-  (add-hook 'helm-major-mode-hook #'turn-off-line-numbers)
 
   (helm-mode))
 
@@ -760,6 +780,11 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :config
   (hes-mode))
+
+(use-package hl-line
+  :defer
+  :init
+  (add-hook 'git-rebase-mode-hook #'hl-line-mode))
 
 (use-package hledger-mode
   :ensure t
@@ -1033,16 +1058,9 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
 
 (use-package nlinum
   :ensure t
-  :config
-  (global-nlinum-mode)
-  (set-face-foreground 'linum "#696969")
-  (add-hook 'nlinum-mode-hook
-            #'(lambda ()
-                (when nlinum-mode
-                  (setq nlinum--width
-                        (length (number-to-string
-                                 (count-lines (point-min) (point-max)))))
-                  (nlinum--flush)))))
+  :defer
+  :init
+  (global-nlinum-mode))
 
 (use-package nodejs-repl
   :ensure t
@@ -1422,10 +1440,3 @@ contains conflict markers."
   :init
   (load-theme 'zenburn t))
 
-(add-hook 'after-init-hook
-          `(lambda ()
-             "See URL `https://github.com/jwiegley/dot-emacs'."
-             (let ((elapsed (float-time (time-subtract (current-time)
-                                                       emacs-start-time))))
-               (message "Loading %s...done (%.3fs)" ,load-file-name elapsed)))
-          t)
