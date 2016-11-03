@@ -380,9 +380,19 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
              (names (assq proto auth-source-protocols)))
     (setf (cdr names) (add-to-list 'names port t))))
 
-(use-package base16-theme
+(use-package avy
   :ensure t
-  :disabled)
+  :bind (("C-c '" . avy-goto-char-timer)
+         ("M-g f" . avy-goto-line      ))
+  :init
+  (defun enable-avy-isearch ()
+    "Enable `avy' during `isearch'."
+    (bind-key "C-c '" #'avy-isearch isearch-mode-map))
+  (add-hook 'isearch-mode-hook #'enable-avy-isearch))
+
+(use-package base16-theme
+  :disabled
+  :ensure t)
 
 (use-package better-shell
   :ensure t
