@@ -996,6 +996,15 @@ in `zenburn-default-colors-alist'."
   :bind (("M-," . golden-ratio-scroll-screen-down)
          ("M-." . golden-ratio-scroll-screen-up)))
 
+(use-package ggtags
+  :ensure t
+  :commands ggtags-find-reference
+  :config
+  (unbind-key "M-<" ggtags-navigation-map) ; Such rude ;_;
+  (unbind-key "M->" ggtags-navigation-map)
+  (unbind-key "M-]" ggtags-mode-map)
+  (bind-key "M-F" #'ggtags-find-reference ggtags-mode-map))
+
 (use-package haskell-cabal
   :ensure haskell-mode
   :defer
