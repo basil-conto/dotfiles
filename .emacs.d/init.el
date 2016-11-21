@@ -572,6 +572,13 @@ in `zenburn-default-colors-alist'."
   :init
   (add-hook 'apt-sources-mode-hook #'blc-turn-off-electric-indent-local-mode))
 
+(use-package ascii
+  :ensure t
+  :defer)
+
+(use-package ascii-art-to-unicode
+  :ensure t
+  :defer)
 
 (use-package asm-mode
   :defer
