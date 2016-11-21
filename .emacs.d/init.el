@@ -956,6 +956,10 @@ in `zenburn-default-colors-alist'."
   :init
   (blc-turn-off-modes #'blink-cursor-mode))
 
+(use-package free-keys
+  :ensure t
+  :defer)
+
 (use-package git-commit
   :ensure magit
   ;; Need to load package to know when to load package :(
