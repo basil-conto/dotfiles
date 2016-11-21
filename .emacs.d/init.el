@@ -1,34 +1,20 @@
-;;; ====
-;;; TODO
-;;; ====
+;;; init.el --- init file for blc -*- lexical-binding: t -*-
 
-;; Fix
+;;; Commentary:
+
+;; TODO
+;; * Create macro & special form mapper
+;; * `electric-indent-inhibit' vs `blc-turn-off-electric-indent-local-mode'
 ;; * Displace colour codes with relative faces
-;; * Break `defun's from existing packages out of `use-package' declarations?
-;;   - Benefit: byte compilation
-;;   - Alternative: force compilation?
-;; * Hard-coded load paths
+;; * Fix hard-coded load paths
 ;; * Write setter creator macro
-;; * Issue `add-hooks' errors at compile-time
-;; * Order of custom/frame/theme loading
 ;; * Improve autoloading of pdf-tools
-;; * Look into use-package :require
-;; * Add current project to `ebib-bib-search-dirs'
-;; * Disable nlinum in `*Messages*', `*Help*', etc. or by default?
-;; * Moar `defun's, not `lambda's
-;; * Tidy hooks
-;; * Modify custom option lists in place instead of redefining them
+;; * Sniff features and explit `use-package' :requires
 ;; * Window splitting - add minimum
 ;;   or customise `magit-display-buffer-function' use-case
-;; * `with-graphical-frame' -> macro
-;; * Diminish/delight
-;; * Improve git-commit/magit/with-editor logic segregation + hooks
+;; * Delight modes
 ;; * Separate config data from logic, particularly w.r.t. sensitive data
 ;; * :bind local :maps once their autoloading is fixed upstream
-;; * Make apt use of `setq'/`setq-default'/`setq-local'
-;; * Numeric arguments -> `nil'/t
-;; * Optimise use-package
-;; * GitHub pulls over SSH
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
@@ -43,161 +29,361 @@
 ;; * Themes
 ;;   - `base16-chalk-dark'
 ;;   - `base16-default-dark'
-;;   - `zenburn'
 
-;;; =============
-;;; Bootstrapping
-;;; =============
+;;; Code:
 
-;;; Profiling
-(let ((start-time (current-time)))
-  (eval
-   `(defun report-init-time ()
-      "See URL `https://github.com/jwiegley/dot-emacs'."
-      (let ((elapsed (float-time (time-subtract (current-time) ',start-time))))
-        (message "Loading %s...done (%.3fs)" ,load-file-name elapsed)))))
+
+;;;; BOOTSTRAPPING
 
-(add-hook 'after-init-hook #'report-init-time t)
+;;; Performance
 
-;;; MELPA
+;; Lexically capture start time and original GC threshold
+(let ((start     (current-time))
+      (file      load-file-name)
+      (oldthresh gc-cons-threshold)
+      (maxthresh (lsh gc-cons-threshold 4)))
+
+  (defun blc-report-init-time ()
+    "Report total user initialisation time.
+See URL `https://github.com/jwiegley/dot-emacs'."
+    (let ((delta (float-time (time-subtract (current-time) start))))
+      (message "Loading %s...done (%.3fs)" file delta)))
+
+  (defun blc-increase-gc-thresh ()
+    "Increase number of cons bytes between GCs.
+See URL `http://bling.github.io/blog/2016/01/18/\
+why-are-you-changing-gc-cons-threshold/'."
+    (setq-default gc-cons-threshold maxthresh))
+
+  (defun blc-restore-gc-thresh ()
+    "Restore original number of cons bytes between GCs.
+See URL `http://bling.github.io/blog/2016/01/18/\
+why-are-you-changing-gc-cons-threshold/'."
+    (setq-default gc-cons-threshold oldthresh)))
+
+;; Increase GC threshold to reduce number of GCs during initialisation
+(blc-increase-gc-thresh)
+
+;;; Packaging
+
+;; Built-in dependencies
 (require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(require 'seq)
+(require 'subr-x)
+
+;; Package system
+(setq-default
+ package-enable-at-startup nil          ; Activate packages manually
+ package-archives                       ; HTTPS only
+ (mapcar #'(lambda (cell)
+             `(,(car cell) .
+               ,(replace-regexp-in-string
+                 "^\\(http\\):" "https" (cdr cell) nil t 1)))
+         package-archives))
+(push '("melpa" . "https://melpa.org/packages/") package-archives)
 (advice-add #'package--save-selected-packages :override #'ignore) ; Sandbox
 (package-initialize)
 
-;;; `use-package'
-(unless (package-installed-p 'use-package)
-  (when (y-or-n-p "use-package not installed; would you like to install it?")
+;; Third-party dependencies
+(when-let ((deps    '(dash dash-functional f s use-package zenburn-theme))
+           (missing (seq-remove #'package-installed-p deps)))
+  (when (y-or-n-p (format "Install missing packages %s?" missing))
     (package-refresh-contents)
-    (package-install 'use-package)))
+    (mapc #'package-install missing)))
 
-(setq-default use-package-verbose 'debug)
-(require 'use-package)
+(eval-when-compile
+  (setq-default use-package-verbose 'debug)
+  (require 'use-package))
+(require 'bind-key)
+(require 'dash)
+(require 'dash-functional)
+(require 'f)
 
-;; Moar subroutines
-(require 'subr-x)
+
+;;;; DEFINITIONS
 
-;;; ===========
-;;; Definitions
-;;; ===========
+;;; Malformed types
 
-(defvar small-scroll-step 6
-  "Number of lines constituting a small scroll.")
+(defun blc-as-symbol (string-or-symbol)
+  "Return the canonical symbol named STRING-OR-SYMBOL."
+  (intern-soft string-or-symbol))
 
-(defvar fundamental-hooks
-  '(haskell-cabal-mode-hook
-         mustache-mode-hook
-          hledger-mode-hook
-             conf-mode-hook
-             prog-mode-hook
-             text-mode-hook
-              ess-mode-hook
-              js3-mode-hook)
-  "Hooks whose modes derive from `fundamental-mode' or nothing.")
+(defun blc-as-string (object)
+  "Convert OBJECT to a string."
+  (pcase object
+    ((pred symbolp)
+     (symbol-name object))
+    ((pred numberp)
+     (number-to-string object))
+    ((pred sequencep)
+     (seq-into object 'string))
+    (_ "")))
 
-(defface man-header
-  '((t . (:inherit font-lock-keyword-face :weight bold)))
-  "Man page heading face."
-  :group 'man)
+(defun blc-boolean-to-natnum (boolean)
+  "Return 0 if BOOLEAN is `nil' and 1 otherwise."
+  (if boolean 1 0))
 
-(defface man-emph
-  '((t . (:inherit font-lock-string-face :underline t)))
-  "Man page emphasis/underline face."
-  :group 'man)
+(defun blc-symcat (&rest objects)
+  "Concatenate all OBJECTS under `blc-as-string' as a symbol."
+  (intern (mapconcat #'blc-as-string objects "")))
 
-;; FIXME: set `line-number-display-limit-width' appropriately
-(defun fast-line-number (&optional as-string)
+(defun blc-tree-sed (regexp rep tree &rest args)
+  "Replace all matches for REGEXP with REP in TREE.
+Recursively perform `replace-regexp-in-string' on TREE. REGEXP,
+REP and the optional ARGS are passed unchanged to
+`replace-regexp-in-string', which see.
+
+Note: Cons pairs are considered leaf nodes."
+  (-tree-map-nodes #'stringp
+                   (-cut apply #'replace-regexp-in-string regexp rep <> args)
+                   tree))
+
+(defun blc-apply-safe (fun &rest args)
+  "Apply FUN to ARGS only if symbol FUN has a function definition.
+Issue a warning otherwise."
+  (if (fboundp fun)
+      (apply fun args)
+    (lwarn 'blc :error "Invalid function: %S" fun)))
+
+
+;;; Byte-compiler declarations
+
+(eval-when-compile
+  (declare-function c-langelem-pos   "cc-defs")
+  (declare-function csv-align-fields "csv-mode")
+  (defvar c-mode-base-map)
+  (defvar git-commit-filename-regexp)
+  (defvar git-commit-mode)
+  (defvar ivy-minibuffer-faces)
+  (defvar js2-mode-map)
+  (defvar recentf-list)
+  (defvar smerge-mode)
+  (defvar TeX-command-default)
+  (defvar zenburn-default-colors-alist))
+
+;;; Advice
+
+(defun blc-split-larger-dimension--advice (split &rest args)
+  "Sacrifice the larger window dimension when splitting."
+  (let ((split-width-threshold       (window-height))
+        (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
+    (apply split args)))
+
+;; TODO: Define no-arg macro?
+(defun blc-trim-before-newline--advice (&rest _)
+  "Delete trailing whitespace prior to newline insertion."
+  (delete-trailing-whitespace (line-beginning-position) (line-end-position)))
+
+(defun blc-c++-lambda-indent--advice (langelem)
+  "Return indentation offset for C++11 lambda function arguments.
+Currently keeps offset unchanged by returning 0 for lambda
+functions opened as arguments and `nil' for everything else.
+Adapted from URL `http://stackoverflow.com/a/23553882'."
+  (and (eq major-mode 'c++-mode)
+       (ignore-errors
+         (save-excursion
+           (goto-char (c-langelem-pos langelem))
+           ;; Detect "[...](" or "[...]{",
+           ;; preceded by "," or "(" and with unclosed brace
+           (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
+       0))
+
+
+;;; Modes
+
+(defun blc-turn-off-modes (&rest modes)
+  "Attempt to pass 0 to all MODES."
+  (mapc (-rpartial #'blc-apply-safe 0) modes))
+
+;; TODO:
+;; * Make less verbose and more practical and general
+;; * It would be nice to be able to mix & match hook lists and functions
+(defmacro blc-defuse (name docstring &rest modes)
+  "Define mode-disabling function `blc-turn-off-NAME'."
+  (declare (doc-string 2) (indent defun))
+  `(defun ,(blc-symcat "blc-turn-off-" name) (&rest _)
+     ,docstring
+     (interactive)
+     (blc-turn-off-modes ,@modes)))
+
+;; TODO: Disable globally?
+(blc-defuse electric-indent-local-mode
+  "Disable `electric-indent-local-mode'."
+  #'electric-indent-local-mode)
+
+(blc-defuse line-numbers
+  "Locally disable display of line numbers."
+  #'nlinum-mode
+  #'linum-mode)
+
+(blc-defuse prettify-symbols-mode
+  "Disable `prettify-symbols-mode'."
+  #'prettify-symbols-mode)
+
+(blc-defuse flycheck-mode
+  "Disable `flycheck-mode'."
+  #'flycheck-mode)
+
+(defun blc-use-c++-comments ()
+  "Default to single-line C++-style comments."
+  (setq comment-start "//"
+        comment-end     ""))
+
+(defun blc-enable-disaster ()
+  "Enable `disaster' in `c-mode' derivatives."
+  (bind-key "C-c d" #'disaster c-mode-base-map))
+
+(defun blc-some-recentf (&optional count)
+  "Return first COUNT or 5 items in `recentf-list'."
+  (-take (or count 5) recentf-list))
+
+(defun blc-align-all-csv-fields ()
+  "Align all fields in the current CSV buffer."
+  (csv-align-fields nil (point-min) (point-max)))
+
+(defun blc-kill-git-commit-buffer ()
+  "Ensure message buffer is killed post-git-commit."
+  (and git-commit-mode
+       buffer-file-name
+       (string-match-p git-commit-filename-regexp buffer-file-name)
+       (kill-buffer)))
+
+(defun blc-account-concat (category &optional accounts acct-sep list-sep)
+  "Join ACCOUNTS with their account CATEGORY.
+Return a LIST-SEP-delimited (default \" \") string of account
+prefixed by CATEGORY and ACCT-SEP (default \":\")."
+  (let ((list-sep (or list-sep " "))
+        (acct-sep (or acct-sep ":")))
+    (mapconcat #'(lambda (account)
+                   (string-join `(,category ,account) acct-sep))
+               accounts
+               list-sep)))
+
+(defun blc-delight-isearch ()
+  "Shorten lighter of `isearch-mode'."
+  (setq isearch-mode " 🔍"))
+
+(defun blc-sniff-smerge ()
+  "Conditionally enable `smerge-mode'.
+Enable `smerge-mode' only if buffer is reasonably sized and
+contains conflict markers."
+  (when (and (not (blc-large-buffer-p))
+             (save-excursion
+               (goto-char (point-min))
+               (re-search-forward "^<<<<<<< " nil t)))
+    (smerge-start-session)
+    (when smerge-mode
+      (message "Merge conflict detected. Enabled `smerge-mode'."))))
+
+(defun blc-setup-latexmk ()
+  "Define Latexmk continuous preview and intermediate suffixes."
+  (mapc (-applify #'add-to-list)
+   '((TeX-command-list
+      ("Latexmk"                        ; Command name
+       "latexmk -pvc -view=none %t"     ; Non-expanded shell command
+       TeX-run-command                  ; Process handler
+       t                                ; Confirm expanded shell command
+       (LaTeX-mode)                     ; Applicable modes
+       :help "Run Latexmk"))            ; Command description
+     (LaTeX-clean-intermediate-suffixes
+      "\\.fdb_latexmk")))
+  (setq TeX-command-default "Latexmk"))
+
+(defun blc-turn-on-xref-js2 ()
+  "Register xref-js2 backend and sanitise keymap."
+  (unbind-key "M-." js2-mode-map)     ; Reused by xref
+  (add-hook 'xref-backend-functions
+            #'xref-js2-xref-backend nil t))
+
+
+;;; Editing
+
+(defun blc-fast-line-number (&optional as-string)
   "Return line number of point within accessible portion of buffer.
 If AS-STRING is non-`nil', return line number as string. See URL
 `http://emacs.stackexchange.com/a/3822' for limitations."
-  (let ((conv (if as-string #'identity #'string-to-number)))
+  (let ((line-number-display-limit-width most-positive-fixnum)
+        (conv (if as-string #'identity #'string-to-number)))
     (funcall conv (format-mode-line "%l"))))
 
-(defun fast-line-count ()
+(defun blc-fast-line-count ()
   "Return number of lines in buffer.
 See `fast-line-number'."
-  (save-excursion
-    (goto-char (point-max))
-    (1- (fast-line-number))))
+  (let ((max (point-max)))
+    (save-excursion
+      (goto-char max)
+      (- (blc-fast-line-number)
+         (blc-boolean-to-natnum
+          (= max (line-beginning-position)))))))
 
-(defun echo-fast-line-count ()
-  "Emulate `count-lines-page' using `fast-line-count'."
+(defun blc-echo-fast-line-count ()
+  "Emulate `count-lines-page' using `blc-fast-line-count'."
   (interactive)
-  (let* ((before (fast-line-number))
-         (total  (fast-line-count ))
-         (after  (- total before  )))
-    (message "Page has %d lines (%d + %d)" total before after)))
+  (let* ((total   (blc-fast-line-count))
+         (current (blc-fast-line-number))
+         (before  (min current total))
+         (after   (- total before)))
+    (message "Buffer has %d lines (%d + %d)" total before after)))
 
-(defun debug-use-package ()
-  "Enable `use-package' debugging."
-  (interactive)
-  (setq-default use-package-debug t))
+(defun blc-trim-before-newline (newline-function)
+  "Advise NEWLINE-FUNCTION to first delete trailing whitespace."
+  (advice-add newline-function :before #'blc-trim-before-newline--advice))
 
-;; TODO: define no-arg macro?
-(defun no-trailing-enter--advice (&rest _)
-  "Delete trailing whitespace prior to newline insertion."
-  (save-excursion
-    (forward-line -1)
-    (delete-trailing-whitespace
-     (line-beginning-position)
-     (line-end-position))))
-
-(defun no-trailing-enter (enter-key)
-  "Advise enter key function to first delete trailing whitespace."
-  (advice-add enter-key :after #'no-trailing-enter--advice))
-
-(defun turn-off-electric-indent (&rest _)
-  "Locally disable electric indentation."
-  (electric-indent-local-mode 0))
-
-(defun turn-off-line-numbers (&rest _)
-  "Locally disable display of line numbers."
-  (nlinum-mode 0))
-
-(defun turn-off-prettify-symbols-mode (&rest _)
-  "Disable `prettify-symbols-mode'."
-  (prettify-symbols-mode 0))
-
-(defun turn-off-flycheck-mode (&rest _)
-  "Disable `flycheck-mode'."
-  (flycheck-mode 0))
-
-(defun large-buffer-p ()
+(defun blc-large-buffer-p ()
   "Determine whether buffer classifies as being large.
 Return `t' if buffer size falls under
 `large-file-warning-threshold', else `nil'."
   (> (buffer-size) large-file-warning-threshold))
 
-(defun strip-down-buffer ()
+(defun blc-strip-buffer ()
   "Try to make the current buffer as responsive as possible."
   (interactive)
   (setq buffer-read-only t)
   (buffer-disable-undo)
   (fundamental-mode)
-  (turn-off-line-numbers)
-  (font-lock-mode 0))
+  (blc-turn-off-line-numbers)
+  (blc-turn-off-modes #'font-lock-mode))
 
-(defun strip-down-large-buffer ()
+(defun blc-strip-large-buffer ()
   "Call `strip-down-buffer' if current buffer is large."
-  (when (large-buffer-p)
-    (strip-down-buffer)))
+  (when (blc-large-buffer-p)
+    (blc-strip-buffer)))
 
-(defun iwb ()
+(defun blc-revert-buffer ()
+  "Reconcile current buffer with what lives on the disk.
+Offer to revert from the auto-save file, if that exists."
+  (interactive)
+  (revert-buffer nil t))
+
+(defun blc-switch-to-temp-file (&optional prefix suffix)
+  "Create and switch to a temporary file.
+A non-empty filename PREFIX can help identify the file or its
+purpose, whereas a non-empty SUFFIX will help determine the
+relevant major-mode."
+  (interactive "sfile prefix: \nsfile extension: ")
+  (let ((pre (or prefix ""))
+        (suf (unless (string-blank-p suffix) (f-swap-ext "" suffix))))
+    (find-file (make-temp-file pre nil suf))))
+
+;; TODO: Operate on region as well?
+(defun blc-iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
 See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
   (interactive)
-  (delete-trailing-whitespace)
-  (indent-region (point-min) (point-max) nil)
-  (untabify (point-min) (point-max)))
+  (let ((min (point-min-marker))
+        (max (point-max-marker)))
+    (delete-trailing-whitespace)
+    (indent-region min max)
+    (untabify      min max)))
 
-(defun transpose-split ()
+(defun blc-transpose-split ()
   "Alternate between vertical and horizontal frame split.
-Assumes that the frame is split only in two. Adapted from Wilfred's
-function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
+Assumes frame is split exactly in two. Adapted from Wilfred's
+function at URL
+`https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (interactive)
   (unless (= (length (window-list)) 2)
-    (error "Can only toggle a frame split in two"))
+    (error "Can only toggle a frame split in twain"))
   (let ((split (if (window-combined-p)
                    #'split-window-horizontally
                  #'split-window-vertically)))
@@ -205,148 +391,160 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
     (funcall split)
     (switch-to-buffer nil)))
 
-(defun use-c++-comments ()
-  "Default to single-line C++-style comments."
-  (setq-local comment-start "//")
-  (setq-local comment-end     ""))
+;; ;; FIXME
+;; ;; * See URL `https://www.emacswiki.org/emacs/ApplesAndOranges'
+;; (defun blc-with-graphical-frame (fun)
+;;   "Run abnormal hook now, in current frame, and with every new frame."
+;;   (let ((frame (selected-frame)))
+;;     (when (display-graphic-p frame)
+;;       (funcall fun frame)))
+;;   (add-hook 'after-make-frame-functions
+;;             `(lambda (frame)
+;;                (when (display-graphic-p frame)
+;;                  (funcall ,fun frame)))))
 
-(defun split-larger-dimension--advice (old-split &rest args)
-  "Ensure the larger window dimension is sacrificed when splitting."
-  (let ((split-width-threshold       (window-height))
-        (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
-    (apply old-split args)))
+(defun blc-open-line (forward)
+  "Open empty line (FORWARD - 1) lines in front of current line."
+  (save-excursion
+    (end-of-line forward)
+    (open-line 1)))
 
-;; TODO: rewrite as macro?
-(defun with-graphical-frame (fun)
-  "Run abnormal hook now, in current frame, and with every new frame."
-  (let ((frame (selected-frame)))
-    (when (display-graphic-p frame)
-      (funcall fun frame)))
-  (add-hook 'after-make-frame-functions
-            `(lambda (frame)
-               (when (display-graphic-p frame)
-                 (funcall ,fun frame)))))
+(defun blc-open-previous-line ()
+  "Open empty line before current line."
+  (interactive)
+  (blc-open-line 0))
 
-(defun unpack (fun)
-  "Return a function which packs its arguments into `fun'."
-  (apply-partially #'apply fun))
+(defun blc-open-next-line ()
+  "Open empty line after current line."
+  (interactive)
+  (blc-open-line 1))
 
-(defun mapc-unpack (fun &rest args)
-  "Apply function `fun' to a sequence of packed arguments."
-  (apply #'mapc (unpack fun) args))
+(defun blc-small-scroll-up ()
+  "Scroll up `blc-small-scroll-step' lines."
+  (interactive)
+  (scroll-up blc-small-scroll-step))
 
-(defun add-to-lists (lists)
-  "Apply `add-to-list' to a list of argument lists."
-  (mapc-unpack #'add-to-list lists))
+(defun blc-small-scroll-down ()
+  "Scroll down `blc-small-scroll-step' lines."
+  (interactive)
+  (scroll-down blc-small-scroll-step))
 
-;; FIXME: transform '(foo bar) -> `(,#'foo ,#'bar)
-(defun add-hooks-1 (hook &rest functions)
-  "Add multiple FUNCTIONS to the value of HOOK."
-  (mapc (apply-partially #'add-hook hook) functions))
+(defun blc-align-punctuation ()
+  "Horizontally align mode-specific punctuation in region."
+  (interactive)
+  (unless (use-region-p)
+    (mark-paragraph))
+  (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)\\s."))
 
-;; FIXME: macros?
-(defun add-hooks-n (hooks)
-  "Apply `add-hook-1' to a list of argument lists."
-  (mapc-unpack #'add-hooks-1 hooks))
+
+;;; Themes
 
-;; FIXME: thread-first/last?
-(defun add-hooks-t (func &rest hooks)
-  "Add FUNC to the value of HOOKS."
-  (mapc #'(lambda (hook) (add-hook hook func)) hooks))
-
-(defun set-foregrounds (foregrounds)
-  "Apply `set-face-foreground' to a list of argument lists."
-  (mapc-unpack #'set-face-foreground foregrounds))
-
-(defun remap-faces (map)
-  "Remap given face keys to values."
-  (mapc-unpack #'face-remap-add-relative map))
-
-(defun remap-man-faces (&rest _)
+(defun blc-man-fontify (&rest _)
   "Customise `Man-mode' faces."
-  (remap-faces '((Man-overstrike man-header)
-                 (Man-underline  man-emph  ))))
+  (mapc (-applify #'face-remap-add-relative)
+        '((Man-overstrike font-lock-keyword-face)
+          (Man-underline  font-lock-string-face ))))
 
-(defun remap-woman-faces (&rest _)
+(defun blc-woman-fontify (&rest _)
   "Customise `woman-mode' faces."
-  (remap-faces '((woman-bold   man-header)
-                 (woman-italic man-emph  ))))
+  (mapc (-applify #'face-remap-add-relative)
+        '((woman-bold   font-lock-keyword-face)
+          (woman-italic font-lock-string-face ))))
 
-(defconst emacs-25+ (>= emacs-major-version 25)
-  "Whether the current major version number of Emacs is 25 or higher.")
-(defun small-scroll-up ()
-  "Scroll up `small-scroll-step' lines."
-  (interactive)
-  (scroll-up small-scroll-step))
+(defun blc-zenburn-assoc (colour)
+  "Return the `zenburn-theme' values associated with COLOURS.
+For each colour name in COLOURS return its corresponding CDR slot
+in `zenburn-default-colors-alist'."
+  (cdr (assoc-string colour zenburn-default-colors-alist)))
 
-(defun small-scroll-down ()
-  "Scroll down `small-scroll-step' lines."
-  (interactive)
-  (scroll-down small-scroll-step))
+(defun blc-zenburn-brighten-fci ()
+  "Distinguish FCI rule from background under 256 colours."
+  (setq-default fci-rule-color (blc-zenburn-assoc 'zenburn-bg+1)))
 
-;;; ========
-;;; Bindings
-;;; ========
+(defun blc-zenburn-darken-ivy ()
+  "Darken background of `ivy' matches under `zenburn-theme'."
+  (-zip-with
+   #'set-face-background
+   (cdr ivy-minibuffer-faces)
+   (-map #'blc-zenburn-assoc '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
 
-(bind-keys
- ;; Line
- ("C-x l"       . echo-fast-line-count)
- ("C-c i"       .      indent-relative)
- ;; Window / Buffer
- ("C-x 7"       .      transpose-split)
- ("S-<prior>"   .      previous-buffer)
- ("S-<next>"    .          next-buffer)
- ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" .      previous-buffer)
- ("M-[ 6 ; 2 ~" .          next-buffer)
- ;; Movement
- ("M-{"         .    small-scroll-down)
- ("M-}"         .    small-scroll-up  ))
+(defun blc-zenburn-darken-linum ()
+  "Darken foreground of face `linum' under `zenburn-theme'."
+  (set-face-foreground 'linum (blc-zenburn-assoc 'zenburn-bg+3)))
 
-;;; ========
-;;; Settings
-;;; ========
+(defun blc-setup-theme-zenburn ()
+  "Customise `zenburn-theme' to taste."
+  (set-face-background 'highlight (blc-zenburn-assoc 'zenburn-bg-1))
 
-;; General
+  (mapc (-applify #'add-hook)
+   `((   fci-mode-hook ,#'blc-zenburn-brighten-fci)
+     (   ivy-mode-hook ,#'blc-zenburn-darken-ivy  )
+     (nlinum-mode-hook ,#'blc-zenburn-darken-linum))))
 
-(setq-default
- inhibit-startup-screen  t
- split-window-keep-point nil)
+;;; Variables
 
-(advice-add #'split-window-sensibly :around #'split-larger-dimension--advice)
+(defvar blc-repos-dir (f-join user-emacs-directory "repos")
+  "Directory containing symlinks to user Git repositories.")
 
-(with-graphical-frame
- #'(lambda (frame)
-     (set-face-attribute 'default frame :family "DejaVu Sans Mono" :height 80)))
+(defvar blc-small-scroll-step 6
+  "Number of lines constituting a small scroll.")
 
-(put   #'upcase-region 'disabled nil)
-(put #'downcase-region 'disabled nil)
+(defvar blc-fundamental-hooks
+  (mapcar (-rpartial #'blc-symcat "-mode-hook")
+          '(conf ess haskell-cabal hledger mustache prog text))
+  "Hooks whose modes derive from `fundamental-mode' or nothing.")
+
+
+;;;; MISCELLANEA
+
+;; FIXME: Make isearch lazy highlights stand out
+(let ((theme 'zenburn))
+  (and (load-theme theme t)
+       (blc-apply-safe (blc-symcat "blc-setup-theme-" theme))))
+
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :font "DejaVu Sans Mono 8"))
 
 (defalias #'yes-or-no-p #'y-or-n-p)
 
-;; Scrolling
-
 (setq-default
- isearch-allow-scroll            t
+ source-directory                (f-join blc-repos-dir "localsrc" "emacs")
+ ;; Movement/drawing
+ recenter-redisplay              nil
  scroll-conservatively           most-positive-fixnum
- scroll-error-top-bottom         t
  scroll-margin                   1
  scroll-preserve-screen-position t
- scroll-step                     1)
+ scroll-step                     1
+ ;; Spacing
+ fill-column                     80
+ indent-tabs-mode                nil
+ tab-width                       2)
 
-;; Spacing
+;;; Bindings
 
-(setq-default
- fill-column               80
- indent-line-function      #'insert-tab
- indent-tabs-mode          nil
- tab-always-indent         t
- tab-width                 2
- sentence-end-double-space nil)
+(bind-keys
+ ;; Alignment
+ ("C-c P"       .    blc-align-punctuation)
+ ;; Line
+ ("C-c i"       .          indent-relative)
+ ("C-x l"       . blc-echo-fast-line-count)
+ ("C-x C-p"     .   blc-open-previous-line)
+ ("C-x C-n"     .   blc-open-next-line    )
+ ;; Window / buffer
+ ("C-x 7"       .      blc-transpose-split)
+ ("S-<prior>"   .          previous-buffer)
+ ("S-<next>"    .              next-buffer)
+ ("<f5>"        .        blc-revert-buffer)
+ ;; Mutatis mutandis within tmux
+ ("M-[ 5 ; 2 ~" .          previous-buffer)
+ ("M-[ 6 ; 2 ~" .              next-buffer)
+ ;; Movement / drawing
+ ("M-R"         .           redraw-display)
+ ("M-{"         .    blc-small-scroll-down)
+ ("M-}"         .    blc-small-scroll-up  ))
 
-;;; ========
-;;; Packages
-;;; ========
+
+;;;; PACKAGES
 
 (use-package 2048-game
   :ensure t
@@ -358,7 +556,7 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 (use-package ace-window
   :ensure t
-  :bind ("C-c o" . ace-window))
+  :bind ("M-]" . ace-window))
 
 (use-package ag
   :ensure t
@@ -367,22 +565,13 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (setq-default ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
 
-(use-package align
-  :bind ("C-c p" . align-punctuation)
-  :init
-  (defun align-punctuation ()
-    "Horizontally align mode-specific punctuation in region."
-    (interactive)
-    (unless (use-region-p)
-      (mark-paragraph))
-    (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)\\s.")))
-
 (use-package apt-sources
   ;; FIXME
-  :load-path "/usr/share/emacs24/site-lisp/debian-el"
+  :load-path "/usr/share/emacs/site-lisp/debian-el"
   :mode ("\\.sources\\'" . apt-sources-mode)
   :init
-  (add-hook 'apt-sources-mode-hook #'turn-off-electric-indent))
+  (add-hook 'apt-sources-mode-hook #'blc-turn-off-electric-indent-local-mode))
+
 
 (use-package asm-mode
   :defer
@@ -396,23 +585,25 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 (use-package auth-source
   :defer
   :config
-  (setq-default auth-source-debug t)
-
-  ;; Add SMTPS port 465
-  (when-let ((port  "465")
-             (proto 'smtp)
-             (names (assq proto auth-source-protocols)))
-    (setf (cdr names) (add-to-list 'names port t))))
+  (setq-default
+   auth-source-debug t
+   ;; Add SMTPS port 465
+   auth-source-protocols
+   (if-let ((protos  auth-source-protocols)
+            (proto   'smtp)
+            (secport "465")
+            (stdport  "25")
+            (defined (memq proto protos)))
+       ;; No lexical `add-to-list' ;_;
+       (-map-first (-lambda ((key)) (eq key proto))
+                   (-rpartial #'-union `(,secport))
+                   protos)
+     (-snoc protos `(,proto ,(blc-as-string proto) ,stdport ,secport)))))
 
 (use-package avy
   :ensure t
-  :bind (("C-c '" . avy-goto-char-timer)
-         ("M-g f" . avy-goto-line      ))
-  :init
-  (defun enable-avy-isearch ()
-    "Enable `avy' during `isearch'."
-    (bind-key "C-c '" #'avy-isearch isearch-mode-map))
-  (add-hook 'isearch-mode-hook #'enable-avy-isearch))
+  :bind (("C-c #" . avy-goto-char-timer)
+         ("M-g f" . avy-goto-line      )))
 
 (use-package base16-theme
   :disabled
@@ -437,13 +628,12 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
 
 (use-package cc-mode
   :defer
-  :functions c-lineup-arglist c++-lambda-indent
+  :functions c-lineup-arglist
   :init
-  (add-hook 'c-mode-common-hook #'use-c++-comments)
+  (add-hook 'c-mode-common-hook #'blc-use-c++-comments)
   :config
   (let ((name    "blc")
         (base    "linux")
-        (default (assq 'other c-default-style))
         (offsets '((     access-label . / )
                    (       case-label . + )
                    (      innamespace . 0 )
@@ -459,23 +649,9 @@ function at URL `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
                         (c-basic-offset  . 2)
                         (c-offsets-alist . ,offsets)))
 
-    (setf (cdr default) name))
+    (setf (alist-get 'other c-default-style) name))
 
-  (defun c++-lambda-indent (langelem)
-    "Return indentation offset for C++11 lambda function arguments.
-Currently keeps offset unchanged by returning 0 for lambda functions
-opened as arguments and `nil' for everything else.
-Adapted from URL `http://stackoverflow.com/a/23553882'."
-    (and (eq major-mode 'c++-mode)
-         (ignore-errors
-           (save-excursion
-             (goto-char (c-langelem-pos langelem))
-             ;; Detect "[...](" or "[...]{",
-             ;; preceded by "," or "(" and with unclosed brace
-             (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
-         0))
-
-  (advice-add #'c-lineup-arglist :before-until #'c++-lambda-indent))
+  (advice-add #'c-lineup-arglist :before-until #'blc-c++-lambda-indent--advice))
 
 (use-package color-moccur
   :disabled
@@ -496,7 +672,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package comint
   :defer
   :init
-  (add-hook 'comint-mode-hook #'turn-off-line-numbers))
+  (add-hook 'comint-mode-hook #'blc-turn-off-line-numbers))
 
 (use-package comment-dwim-2
   :ensure t
@@ -512,7 +688,44 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package conf-mode
   :defer
   :init
-  (add-hook 'conf-mode-hook #'turn-off-electric-indent))
+  (add-hook 'conf-mode-hook #'blc-turn-off-electric-indent-local-mode))
+
+(use-package counsel
+  :ensure t
+  :defer
+  :bind
+  (("M-x"     . counsel-M-x)
+   ("M-y"     . counsel-yank-pop)
+   ("C-s"     . counsel-grep-or-swiper)
+   ("C-c g"   . counsel-ag)
+   ("C-c t"   . counsel-git)
+   ("C-c u"   . counsel-unicode-char)
+   ("C-h f"   . counsel-describe-function)
+   ("C-h v"   . counsel-describe-variable)
+   ("C-h S"   . counsel-info-lookup-symbol)
+   ("C-h C-j" . counsel-describe-face)
+   ("C-x C-f" . counsel-find-file)
+   ("C-x C-l" . counsel-locate)
+   ("C-c j d" . counsel-dired-jump)
+   ("C-c j f" . counsel-file-jump))
+  :config
+  (setq-default
+   ;; Search with smart case and shell expansion
+   counsel-grep-base-command "ag --nocolor \"%s\" %s"
+   ;; Do not match start of input for counsel commands
+   ivy-initial-inputs-alist
+   (-remove #'(lambda (cell)
+                (string-prefix-p "counsel-" (blc-as-string (car cell))))
+            ivy-initial-inputs-alist))
+
+  (ivy-set-sources
+   'counsel-locate
+   '((blc-some-recentf)
+     (original-source))))
+
+(use-package counsel-projectile
+  :ensure t
+  :defer)
 
 (use-package crontab-mode
   :ensure t
@@ -528,12 +741,9 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 (use-package csv-mode
   :ensure t
-  :commands csv-align-fields
+  :defer
   :init
-  (defun align-all-csv-fields ()
-    "Align all fields in the current CSV buffer."
-    (csv-align-fields nil (point-min) (point-max)))
-  (add-hook 'csv-mode-hook #'align-all-csv-fields)
+  (add-hook 'csv-mode-hook #'blc-align-all-csv-fields)
   :config
   (setq-default csv-align-style 'auto))
 
@@ -541,18 +751,26 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure boogie-friends
   :defer
   :init
-  (add-hooks-1 'dafny-mode-hook
-               #'turn-off-electric-indent
-               #'turn-off-flycheck-mode
-               #'turn-off-prettify-symbols-mode))
+  (mapc (-partial #'add-hook 'dafny-mode-hook)
+        `(,#'blc-turn-off-electric-indent-local-mode
+          ,#'blc-turn-off-flycheck-mode
+          ,#'blc-turn-off-prettify-symbols-mode)))
 
 (use-package dash
   :ensure t
+  :defer
+  :config
+  (dash-enable-font-lock))
+
   :defer)
 
 (use-package define-word
   :ensure t
   :bind ("C-c /" . define-word-at-point))
+
+(use-package delight
+  :ensure t
+  :defer)
 
 (use-package delsel
   :defer
@@ -563,12 +781,20 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :defer
   :init
   (setq-default
-   dired-listing-switches "--group-directories-first -AFhl"))
+   dired-listing-switches
+   (string-join '("--almost-all"
+                  "--classify"
+                  "--group-directories-first"
+                  "--human-readable"
+                  "-l")
+                " ")))
 
 (use-package dired-x
-  :defer
+  :after dired
+  :bind (("C-x C-j"   . dired-jump)
+         ("C-x 4 C-j" . dired-jump-other-window))
   :config
-  (mapc #'(lambda (cell) (push cell dired-guess-shell-alist-user))
+  (mapc (-partial #'add-to-list 'dired-guess-shell-alist-user)
         '(("\\.pdf\\'"   "pdf"     )
           ("\\.docx?\\'" "lowriter"))))
 
@@ -576,13 +802,11 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure t
   :commands disaster
   :init
-  (defun enable-disaster ()
-    "Enable `disaster' in `c-mode' derivatives."
-    (bind-key "C-c d" #'disaster c-mode-base-map))
-  (add-hook 'c-mode-common-hook #'enable-disaster)
+  (add-hook 'c-mode-common-hook #'blc-enable-disaster)
   :config
   (setq-default disaster-objdump "objdump -D -M att -Sl --no-show-raw-insn"))
 
+;; FIXME: Add current project to `ebib-bib-search-dirs'
 (use-package ebib
   :ensure t
   :bind ("C-c e" . ebib)
@@ -591,10 +815,15 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
    ebib-bibtex-dialect 'biblatex
    ebib-use-timestamp  t))
 
+(use-package elisp-mode
+  :defer
+  :init
+  (delight '((      emacs-lisp-mode "ελ" :major)
+             (lisp-interaction-mode "λι" :major))))
+
 (use-package engine-mode
   :ensure t
-  :commands engine-mode
-  :functions engine/execute-search engine/get-query
+  :commands engine-mode engine/execute-search engine/get-query
   :bind-keymap ("C-x /" . engine-mode-map)
   :config
   (defengine google-def
@@ -617,24 +846,21 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package eshell
   :defer
   :init
-  (add-hook 'eshell-mode-hook #'turn-off-line-numbers))
+  (add-hook 'eshell-mode-hook #'blc-turn-off-line-numbers))
 
 (use-package ess
   :ensure t
   :defer
-  :preface
-  (when (get-buffer "*ESS*")
-    (kill-buffer "*ESS*"))
   :config
   (setq-default ess-default-style   'DEFAULT
                 ess-indent-from-lhs nil))
 
 (use-package exec-path-from-shell
-  :disabled
   :ensure t
+  :defer
   :config
-  (dolist (var '("SSH_AGENT_PID" "SSH_AUTH_SOCK"))
-    (add-to-list 'exec-path-from-shell-variables var)))
+  (mapc (-partial #'add-to-list 'exec-path-from-shell-variables)
+        '("SSH_AGENT_PID" "SSH_AUTH_SOCK")))
 
 (use-package expand-region
   :ensure t
@@ -648,10 +874,10 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   :ensure t
   :defer
   :init
-  (apply #'add-hooks-t #'fic-mode fundamental-hooks)
+  (mapc (-rpartial #'add-hook #'fic-mode) blc-fundamental-hooks)
   :config
-  (dolist (word '("KLUDGE" "HACK"))
-    (add-to-list 'fic-highlighted-words word)))
+  (mapc (-partial #'add-to-list 'fic-highlighted-words)
+        '("HACK" "KLUDGE" "NOTE" "WARN")))
 
 (use-package figlet
   :ensure t
@@ -660,56 +886,47 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (use-package files
   :defer
   :init
-  (defun refresh-buffer ()
-    "Reconcile current buffer with what lives on the disk.
-Offer to revert from the auto-save file, if that exists."
-    (interactive)
-    (revert-buffer nil t))
+  (add-hook 'after-save-hook
+            #'executable-make-buffer-file-executable-if-script-p))
 
-  (bind-key "<f5>" #'refresh-buffer)
-
-  (defun switch-to-temp-file (&optional prefix suffix)
-    "Create and switch to a temporary file.
-A non-empty filename PREFIX can help identify the file or its purpose,
-whereas a non-empty SUFFIX will help determine the relevant major-mode."
-    (interactive "sfile prefix: \nsfile extension: ")
-    (let ((pre (or prefix ""))
-          (suf (concat (unless (zerop (length suffix))
-                         ".")           ; Prefix non-empty suffix with full-stop
-                       suffix)))
-      (find-file (make-temp-file pre nil suf))))
-
-  (defconst auto-save-backup-dir "~/.backup/"
-    "Directory for auto-save and backup files.")
-
-  (setq-default
-   directory-free-space-args "-hP")
-
-  (setq
-   kept-old-versions          2
-   kept-new-versions          4
-   delete-old-versions        t
-   ;; Versioned backups
-   version-control            t
-   ;; Do not clobber symlinks
-   backup-by-copying          t
-   ;; Do not silently append EOF NL
-   mode-require-final-newline nil
-   ;; Backup/auto-save directory
-   backup-directory-alist     `(("." . ,auto-save-backup-dir))))
-
-(use-package find-file
+(use-package files
   :defer
   :init
-  (add-hook 'find-file-hook #'strip-down-large-buffer))
+  (setq-default
+   backup-by-copying          t         ; Do not clobber symlinks
+   backup-directory-alist               ; Backup/auto-save directory
+   `(("." . "~/.backup/"))
+   delete-old-versions        t
+   directory-free-space-args  "-hP"
+   kept-new-versions          4
+   kept-old-versions          2
+   mode-require-final-newline nil       ; Do not silently append EOF NL
+   version-control            t))       ; Versioned backups
 
 (use-package fill-column-indicator
   :ensure t
   :defer
   :init
-  (apply #'add-hooks-t #'turn-on-fci-mode fundamental-hooks)
+  (mapc (-rpartial #'add-hook #'turn-on-fci-mode) blc-fundamental-hooks)
   (setq-default fci-rule-color  "#696969"
                 fci-rule-column 80))
+
+(use-package find-file
+  :defer
+  :init
+  (add-hook 'find-file-hook #'blc-strip-large-buffer))
+
+(use-package find-func
+  :bind
+  (("C-x F"   . find-function)
+   ("C-x 4 F" . find-function-other-window)
+   ("C-x 5 F" . find-function-other-frame)
+   ("C-x K"   . find-function-on-key)
+   ("C-x 4 K" . find-function-on-key-other-window)
+   ("C-x 5 K" . find-function-on-key-other-frame)
+   ("C-x V"   . find-variable)
+   ("C-x 4 V" . find-variable-other-window)
+   ("C-x 5 V" . find-variable-other-frame)))
 
 (use-package flex-mode
   :load-path "lisp"
@@ -724,26 +941,19 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :when (display-graphic-p)
   :defer
   :init
-  (blink-cursor-mode 0))
+  (blc-turn-off-modes #'blink-cursor-mode))
 
 (use-package git-commit
-  :ensure t
+  :ensure magit
   ;; Need to load package to know when to load package :(
   :mode ("/\\(?:\
 \\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
 \\|BRANCH_DESCRIPTION\\)\\'" . git-commit-mode)
   :config
-  (defun kill-git-commit-buffer ()
-    "Ensure message buffer is killed post-git-commit."
-    (and git-commit-mode
-         buffer-file-name
-         (string-match-p git-commit-filename-regexp buffer-file-name)
-         (kill-buffer)))
-
-  (add-hook 'with-editor-post-finish-hook #'kill-git-commit-buffer)
-
   (setq-default git-commit-summary-max-length 50
                 git-commit-fill-column        68)
+
+  (add-hook 'with-editor-post-finish-hook #'blc-kill-git-commit-buffer)
 
   (global-git-commit-mode))
 
@@ -755,15 +965,13 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :defer)
 
-(use-package git-rebase
-  :defer
-  :config
-  (set-face-foreground 'git-rebase-hash "#808080"))
-
 (use-package gnus
   :defer
   :config
-  (setq-default gnus-check-new-newsgroups nil))
+  (setq-default
+   gnus-check-new-newsgroups nil
+   gnus-select-method
+   '(nnimap "")))
 
 (use-package golden-ratio-scroll-screen
   :disabled
@@ -775,7 +983,7 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure haskell-mode
   :defer
   :init
-  (add-hook 'haskell-cabal-mode-hook #'turn-off-electric-indent))
+  (add-hook 'haskell-cabal-mode-hook #'blc-turn-off-electric-indent-local-mode))
 
 (use-package haskell-mode
   :ensure t
@@ -785,18 +993,18 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :defer)
 
+;; TODO: Delight
 (use-package helm
+  :disabled
   :ensure t
-  :bind (("C-x C-f" . helm-find-files    )
-         ("M-x"     . helm-M-x           )
-         ("C-c b"   . helm-mini          )
-         ("M-y"     . helm-show-kill-ring))
+  :bind ("C-c b" . helm-mini)
   :init
-  (add-hook 'helm-major-mode-hook #'turn-off-line-numbers)
+  (add-hook 'helm-major-mode-hook #'blc-turn-off-line-numbers)
   :config
-  (setq-default helm-buffers-fuzzy-matching t
-                helm-M-x-fuzzy-match        t
-                helm-split-window-in-side-p t)
+  (setq-default
+   helm-buffers-fuzzy-matching t
+   helm-M-x-fuzzy-match        t
+   helm-split-window-in-side-p t)
 
   ;; FIXME: create toggling mechanism
   (when (bound-and-true-p helm-white-selection)
@@ -813,11 +1021,12 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :defer)
 
 (use-package helm-projectile
+  :disabled
   :ensure t
   :after helm projectile
-  :defer
-  :init
-  (add-hook 'projectile-mode-hook #'helm-projectile-on))
+  :commands helm-projectile-on
+  :config
+  (helm-projectile-on))
 
 (use-package highlight-escape-sequences
   :ensure t
@@ -834,24 +1043,13 @@ whereas a non-empty SUFFIX will help determine the relevant major-mode."
   :ensure t
   :mode "\\.journal\\'"
   :config
-  (defun account-concat (category &optional accounts acct-sep list-sep)
-    "Join ACCOUNTS with their account CATEGORY.
-Return a LIST-SEP-delimited (default \" \") string of account
-prefixed by CATEGORY and ACCT-SEP (default \":\")."
-    (let ((list-sep (or list-sep " "))
-          (acct-sep (or acct-sep ":")))
-      (mapconcat #'(lambda (account)
-                     (string-join `(,category ,account) acct-sep))
-                 accounts
-                 list-sep)))
-
   (setq-default
    hledger-currency-string "€"
    hledger-jfile           "~/.hledger.journal"
    hledger-ratios-essential-expense-accounts
-   (account-concat "expenses" '("housing" "groceries"))
+   (blc-account-concat "expenses" '("housing" "groceries"))
    hledger-ratios-liquid-asset-accounts
-   (account-concat "assets"   '("boi" "cash"))))
+   (blc-account-concat "assets"   '("boi" "cash"))))
 
 (use-package i18next-wrap
   :load-path "lisp"
@@ -860,22 +1058,51 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (use-package ido
   :defer
   :init
-  (setq-default ido-enable-flex-matching 1))
+  (setq-default ido-enable-flex-matching t))
 
 (use-package idris-mode
   :ensure t
   :defer)
 
+(use-package "indent"
+  :defer
+  :init
+  (setq-default indent-line-function #'insert-tab))
+
 (use-package info
   :defer
   :init
-  (add-hook 'Info-mode-hook #'turn-off-line-numbers))
+  (add-hook 'Info-mode-hook #'blc-turn-off-line-numbers))
+
+(use-package "isearch"
+  :defer
+  :init
+  (setq-default isearch-allow-scroll t)
+  (add-hook 'isearch-mode-hook #'blc-delight-isearch))
 
 (use-package isearch+
   :disabled
   :ensure t)
 
 (use-package isearch-prop
+  :ensure t
+  :defer)
+
+(use-package ivy
+  :ensure t
+  :delight ivy-mode
+  :commands ivy-set-sources
+  :bind (("C-x b"   . ivy-switch-buffer)
+         ("C-x 4 b" . ivy-switch-buffer-other-window)
+         ("C-c C-r" . ivy-resume))
+  :config
+  (setq-default
+   ivy-format-function     'ivy-format-function-arrow
+   ivy-use-virtual-buffers t)
+
+  (ivy-mode))
+
+(use-package ivy-hydra
   :ensure t
   :defer)
 
@@ -898,7 +1125,8 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :defer
   :config
   (setq-default
-   js-enabled-frameworks   '(javascript prototype dojo)
+   js-enabled-frameworks
+   (-intersection '(dojo javascript prototype) js-enabled-frameworks)
    js-indent-level         4
    js-switch-indent-offset 4))
 
@@ -910,32 +1138,34 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :init
   (setq-default js2-bounce-indent-p t)
 
-  (add-hooks-1 'js2-mode-hook
-               #'js2-highlight-unused-variables-mode
-               #'turn-off-electric-indent)
+  (mapc (-partial #'add-hook 'js2-mode-hook)
+        `(,#'js2-highlight-unused-variables-mode
+          ,#'blc-turn-off-electric-indent-local-mode))
+
   :config
   (setq-default
    js2-allow-rhino-new-expr-initializer nil
    js2-concat-multiline-strings         'eol
-   js2-global-externs                   '("location" "define")
+   js2-global-externs                   '("define" "location")
    js2-highlight-level                  3
    js2-include-node-externs             t
    js2-mode-assume-strict               t
    js2-skip-preprocessor-directives     t)
 
-  (bind-key "RET" #'js2-line-break js2-mode-map)
+  (bind-key "RET" #'js2-line-break js2-mode-map))
 
-  (set-foregrounds
-   '((js2-error             "#ff0000")
-     (js2-external-variable "#ff0000")
-     (js2-function-param    "#5fd7af")))
+  ;; ;; FIXME
+  ;; (mapc (-applify #'set-face-foreground)
+  ;;       '((js2-error             "#ff0000")
+  ;;         (js2-external-variable "#ff0000")
+  ;;         (js2-function-param    "#5fd7af")))
 
-  (defun js2-moar-colour ()
-    "Further customise `js2-mode' faces."
-    (interactive)
-    (set-foregrounds
-     '((js2-function-call   "#fce94f")
-       (js2-object-property "#fcaf3e")))))
+  ;; (defun blc-js2-moar-colour ()
+  ;;   "Further customise `js2-mode' faces."
+  ;;   (interactive)
+  ;;   (mapc (-applify #'set-face-foreground)
+  ;;         '((js2-function-call   "#fce94f")
+  ;;           (js2-object-property "#fcaf3e")))))
 
 (use-package js2-refactor
   :ensure t
@@ -949,31 +1179,28 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :ensure t
   :commands js3-enter-key
   :config
-  (unbind-key "C-c C-g" js3-mode-map)   ; Why...
-  (no-trailing-enter #'js3-enter-key)   ; For comments
+  (unbind-key "C-c C-g" js3-mode-map)        ; Why...
+  (blc-trim-before-newline #'js3-enter-key)  ; For comments
 
   (setq-default
    js3-auto-indent-p                         t
+   js3-consistent-level-indent-inner-bracket t
    js3-enter-indents-newline                 t
+   js3-global-externs
+   '("console" "define" "document" "location" "require" "window")
+   js3-include-browser-externs               nil
+   js3-include-gears-externs                 nil
+   js3-include-rhino-externs                 nil
    js3-indent-dots                           t
    js3-indent-level                          4
    js3-indent-on-enter-key                   t
-   js3-consistent-level-indent-inner-bracket t)
+   js3-skip-preprocessor-directives          t)
 
-  (setq
-   js3-include-browser-externs      nil
-   js3-include-gears-externs        nil
-   js3-include-rhino-externs        nil
-   js3-skip-preprocessor-directives t)
-
-  (setq-default
-   js3-global-externs
-   '("window" "document" "location" "console" "define" "require"))
-
-  (set-foregrounds
-   '((js3-function-param-face    "#ffffff")
-     (js3-external-variable-face "#ff0000")
-     (js3-error-face             "#ff0000"))))
+  ;; FIXME
+  (mapc (-applify #'set-face-foreground)
+        '((js3-function-param-face    "#ffffff")
+          (js3-external-variable-face "#ff0000")
+          (js3-error-face             "#ff0000"))))
 
 (use-package json-mode
   :ensure t
@@ -988,7 +1215,7 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (use-package lisp-mode
   :defer
   :init
-  (add-hook 'lisp-mode-hook #'turn-off-electric-indent))
+  (add-hook 'lisp-mode-hook #'blc-turn-off-electric-indent-local-mode))
 
 (use-package list-processes+
   :ensure t
@@ -1006,40 +1233,57 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :ensure t
   :bind ("C-x g" . magit-status)
   :config
-  (global-magit-file-mode)
+  (delight                              ; Tidy?
+   '((magit-blame-mode-lighter  "± Bl"  magit-blame)
+     (magit-cherry-mode         "± Ch"       :major)
+     (magit-diff-mode           "± Df"       :major)
+     (magit-log-mode            "± Lg"       :major)
+     (magit-log-select-mode     "± Ls"       :major)
+     (magit-merge-preview-mode  "± Mg"       :major)
+     (magit-mode                "±"          :major)
+     (magit-process-mode        "± Pr"       :major)
+     (magit-rebase-mode         "± Rb"       :major)
+     (magit-reflog-mode         "± Rfl"      :major)
+     (magit-refs-mode           "± Rf"       :major)
+     (magit-repolist-mode       "± Rp"       :major)
+     (magit-revision-mode       "± Rv"       :major)
+     (magit-stash-mode          "± St"       :major)
+     (magit-stashes-mode        "± Sts"      :major)
+     (magit-status-mode         "±"          :major)
+     (magit-submodule-list-mode "± Md"       :major)))
 
+  (global-magit-file-mode)
   (magit-wip-after-apply-mode)
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode)
 
-  (setq-default
-   ;; FIXME: search/replace original value instead of redefining
-   ;; Define ref alignment below as a function and reuse here
-   magit-log-arguments '("-n32" "--graph" "--decorate"))
-
   (add-to-list 'magit-rebase-arguments "--interactive")
 
-  (let* ((repos-base "repos")
-         (repos-file (expand-file-name repos-base user-emacs-directory))
-         (repos-dir  (file-name-as-directory repos-file)))
-    (setq-default magit-repository-directories `((,repos-dir . 2))))
+  (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
 
-  ;; Align refs with wider columns
-  (let* ((case-fold-search nil)
-         (ctrl             '(?n ?U))
-         (re               (concat "%\\(?:[+-]??[[:digit:]]*?\\)??"
-                                   "\\([" (apply #'string ctrl) "]\\)"))
-         (width            "-40")
-         (subst            (concat "%" width "\\1")))
+  (let* (;; Limit number of commits in log
+         (logcommits       "32")
+         (logre            "-n\\([[:digit:]]+\\)")
+         (logargs          'magit-log-arguments)
+         ;; Align refs with wider columns
+         (fmtwidth         "-40")
+         (fmtflags         '(?n ?U))
+         (fmtre            (format "%%\\([+-]??[[:digit:]]*?\\)[%s]"
+                                   (apply #'string fmtflags)))
+         (case-fold-search nil))
+
+    (set-default logargs
+                 (blc-tree-sed logre logcommits (symbol-value logargs) t t 1))
+
     (mapc #'(lambda (fmt)
               (set-default fmt (replace-regexp-in-string
-                                re subst (symbol-value fmt) t)))
+                                fmtre fmtwidth (symbol-value fmt) t t 1)))
           '(magit-refs-local-branch-format
             magit-refs-remote-branch-format
             magit-refs-symref-format
             magit-refs-tags-format))))
 
-  ;; FIXME: modify tango-dark
+  ;; ;; FIXME: modify tango-dark
   ;; (set-face-attribute
   ;;  'magit-blame-heading nil
   ;;  :background "#696969"
@@ -1048,9 +1292,9 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   ;;  'magit-header-line nil
   ;;  :inherit    'magit-section-heading
   ;;  :background (internal-get-lisp-face-attribute 'default :background))
-  ;; (set-foregrounds
-  ;;  '((magit-dimmed "#808080")
-  ;;    (magit-hash   "#808080"))))
+  ;; (mapc (-applify #'set-face-foregrounds)
+  ;;       '((magit-dimmed "#808080")
+  ;;         (magit-hash   "#808080"))))
 
 (use-package magit-gh-pulls
   :disabled
@@ -1067,7 +1311,7 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (use-package man
   :defer
   :init
-  (add-hook 'Man-mode-hook #'remap-man-faces))
+  (add-hook 'Man-mode-hook #'blc-man-fontify))
 
 (use-package markdown-mode
   :ensure t
@@ -1075,17 +1319,14 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :commands markdown-cycle markdown-enter-key
   :config
   (bind-key "TAB" #'markdown-cycle markdown-mode-map)
-  (no-trailing-enter #'markdown-enter-key))
+  (blc-trim-before-newline #'markdown-enter-key))
 
 (use-package minibuffer
   :defer
   :init
-  ;; See URL `http://bling.github.io/blog/2016/01/18/\
-  ;; why-are-you-changing-gc-cons-threshold/'
-  (add-hook 'minibuffer-setup-hook
-            `(lambda () (setq gc-cons-threshold most-positive-fixnum)))
-  (add-hook 'minibuffer-exit-hook
-            `(lambda () (setq gc-cons-threshold ,gc-cons-threshold))))
+  (mapc (-applify #'add-hook)
+        `((minibuffer-setup-hook ,#'blc-increase-gc-thresh)
+          (minibuffer-exit-hook  ,#'blc-restore-gc-thresh ))))
 
 (use-package minimap
   :ensure t
@@ -1096,21 +1337,12 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
    minimap-recenter-type   'relative
    minimap-width-fraction  0.05
    minimap-window-location 'right)
-  (set-face-attribute 'minimap-active-region-background nil
-                      :background "#696969")
-  (set-face-attribute 'minimap-font-face nil
-                      :height 8
-                      :family "DejaVu Sans Mono"))
+  (set-face-background 'minimap-active-region-background "#696969")
+  (set-face-attribute  'minimap-font-face nil :font "DejaVu Sans Mono 1"))
 
 (use-package mustache-mode
   :ensure t
   :defer)
-
-(use-package mwheel
-  :defer
-  :init
-  ;; One line at a time
-  (setq-default mouse-wheel-scroll-amount '(1 ((shift) . 1))))
 
 (use-package nlinum
   :ensure t
@@ -1127,10 +1359,15 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :init
   (setq org-special-ctrl-a/e 'reversed))
 
-;; FIXME: require when creating graphical frame from terminal
+;; FIXME: Load with first graphical frame
 (use-package palette
   :ensure t
   :defer)
+
+(use-package "paragraphs"
+  :defer
+  :init
+  (setq-default sentence-end-double-space nil))
 
 (use-package paren
   :defer
@@ -1138,7 +1375,6 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   (show-paren-mode))
 
 (use-package paren-face
-  :disabled
   :ensure t
   :defer
   :init
@@ -1147,7 +1383,7 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (use-package pascal
   :defer
   :init
-  (add-hook 'pascal-mode-hook #'use-c++-comments))
+  (add-hook 'pascal-mode-hook #'blc-use-c++-comments))
 
 (use-package pass
   :ensure t
@@ -1157,7 +1393,7 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :ensure t
   :defer)
 
-;; FIXME: require when creating graphical frame from terminal
+;; FIXME: Load with first graphical display
 (use-package pdf-tools
   :ensure t
   :when (display-graphic-p)
@@ -1173,14 +1409,24 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :ensure t
   :defer)
 
+;; TODO: Delight
 (use-package projectile
   :ensure t
   :defer
+  :bind-keymap ("C-c p" . projectile-command-map)
   :init
-  (add-hook 'helm-mode-hook #'projectile-mode)
+  :config
   (setq-default
-   projectile-completion-system           'helm
-   projectile-find-dir-includes-top-level t))
+   projectile-completion-system           'ivy
+   projectile-find-dir-includes-top-level t)
+
+  ;; Delight mode but not project name
+  (let ((var 'projectile-mode-line)
+        (nom "Projectile")
+        (dim ""))
+    (set-default var (blc-tree-sed nom dim (symbol-value var))))
+
+  (projectile-mode))
 
 (use-package prolog
   :mode ("\\.pl\\'" . prolog-mode)
@@ -1191,11 +1437,15 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :defer
   :config
   (when-let ((cmds '("epylint3" "epylint" "pyflakes"))
-             (find (apply-partially #'list #'executable-find))
-             (cmd  (eval `(or ,@(mapcar find cmds)))))
+             (cmd  (-some #'executable-find cmds)))
     (setq-default python-check-command cmd))
 
   (setq-default python-shell-interpreter "ipython3"))
+
+(use-package recentf
+  :defer
+  :init
+  (add-hook 'ivy-mode-hook #'recentf-mode))
 
 (use-package remember
   :bind (("<f7>" . remember-notes)
@@ -1203,28 +1453,22 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   :config
   (setq-default remember-notes-initial-major-mode #'org-mode))
 
-(use-package rx
-  :bind ("C-c r" . rx-to-string-bold)
-  :init
-  (defun rx-to-string-bold (form)
-    "Interactively wrap `rx-to-string' and remove shy groups around result."
-    (interactive "sRegExp: ")
-    (message "String: \"%s\"" (rx-to-string form t))))
-
 (use-package sass-mode
   :ensure t
   :defer
   :init
-  (add-hook 'sass-mode-hook #'use-c++-comments))
+  (add-hook 'sass-mode-hook #'blc-use-c++-comments))
 
-(if emacs-25+
-    (use-package saveplace
-      :defer
-      :init
-      (save-place-mode))
-  (use-package saveplace
-    :init
-    (setq-default save-place t)))
+(use-package saveplace
+  :defer
+  :init
+  (save-place-mode))
+
+;; FIXME: Disable with every graphical frame
+(use-package scroll-bar
+  :defer
+  :init
+  (blc-turn-off-modes #'toggle-scroll-bar))
 
 (use-package server
   :defer
@@ -1238,30 +1482,17 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
                 sh-indentation  2))
 
 (use-package simple
-  :bind (("M-\\"    . cycle-spacing     )
-         ("C-x C-k" . kill-whole-line   )
-         ("C-x C-p" . open-previous-line)
-         ("C-x C-n" . open-next-line    ))
+  :bind
+  (("M-c"     . capitalize-dwim)
+   ("M-l"     .   downcase-dwim)
+   ("M-u"     .     upcase-dwim)
+   ("M-\\"    .   cycle-spacing)
+   ("C-x C-k" . kill-whole-line))
+
   :init
-  (defun open--line (forward)
-    "Move forward `forward' - 1 lines before opening an empty line."
-    (save-excursion
-      (end-of-line forward)
-      (open-line 1)))
-
-  (defun open-previous-line ()
-    "Open empty line above point without affecting the current line."
-    (interactive)
-    (open--line 0))
-
-  (defun open-next-line ()
-    "Open empty line below point without affecting the current line."
-    (interactive)
-    (open--line 1))
-
-  (add-hook 'special-mode-hook #'turn-off-line-numbers)
+  (add-hook 'special-mode-hook #'blc-turn-off-line-numbers)
   (with-current-buffer (messages-buffer)
-    (turn-off-line-numbers))
+    (blc-turn-off-line-numbers))
 
   (column-number-mode))
 
@@ -1272,19 +1503,8 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (use-package smerge-mode
   :defer
   :init
-  (defun sniff-smerge-session ()
-    "Conditionally enable `smerge-mode'.
-Enable `smerge-mode' only if the buffer is reasonably sized and
-contains conflict markers."
-    (when (and (not (large-buffer-p))
-               (save-excursion
-                 (goto-char (point-min))
-                 (re-search-forward "^<<<<<<< " nil t)))
-      (smerge-start-session)
-      (when smerge-mode
-        (message "Merge conflict detected. Enabled `smerge-mode'."))))
+  (add-hook 'find-file-hook #'blc-sniff-smerge t))
 
-  (add-hook 'find-file-hook #'sniff-smerge-session t))
 
 (use-package solarized-theme
   :disabled
@@ -1306,16 +1526,26 @@ contains conflict markers."
   :config
   (setq-default sr-speedbar-auto-refresh nil))
 
+(use-package "startup"
+  :defer
+  :init
+  (setq-default inhibit-startup-screen t)
+  (add-hook 'after-init-hook #'blc-report-init-time t))
+
 (use-package subword
   :defer
+  :delight subword-mode
   :init
   (global-subword-mode))
 
+(use-package swiper
+  :ensure t
+  :defer)
+
 (use-package tex
   :ensure auctex
-  :defer
+  :commands TeX-doc TeX-revert-document-buffer
   :defines LaTeX-clean-intermediate-suffixes
-  :functions setup-latexmk TeX-doc TeX-revert-document-buffer
   :config
   (setq-default
    LaTeX-csquotes-open-quote  "\\enquote{"
@@ -1326,30 +1556,17 @@ contains conflict markers."
 
   (bind-key "C-c ?" #'TeX-doc TeX-mode-map)
 
-  (defun setup-latexmk ()
-    "Define Latexmk continuous preview command and intermediate suffixes."
-    (add-to-lists
-     '((TeX-command-list
-        ("Latexmk"                        ; Command name
-         "latexmk -pvc -view=none %t"     ; Non-expanded shell command
-         TeX-run-command                  ; Process handler
-         t                                ; Confirm expanded shell command
-         (LaTeX-mode)                     ; Applicable modes
-         :help "Run Latexmk"))            ; Command description
-       (LaTeX-clean-intermediate-suffixes
-        "\\.fdb_latexmk")))
-    (setq TeX-command-default "Latexmk"))
+  ;; Set priority of pre-configured PDF viewers
+  (when-let ((priority '("PDF Tools" "Zathura"))
+             (viewers  TeX-view-program-list-builtin)
+             (viewer   (-first (-rpartial #'assoc-string viewers) priority)))
+    (push `(output-pdf ,viewer) TeX-view-program-selection))
 
-  (add-hooks-n
-   `((LaTeX-mode-hook                          ,#'setup-latexmk
-                                               ,#'turn-on-auto-fill         )
-     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer)))
-
-  ;; Set priority of pre-configured PDF viewers to PDF Tools, then Zathura
-  (let ((program-list TeX-view-program-list-builtin))
-    (push `(output-pdf ,(car (or (assoc-string "PDF Tools" program-list)
-                                 (assoc-string "Zathura"   program-list))))
-          TeX-view-program-selection)))
+  (mapc
+   (-applify #'add-hook)
+   `((LaTeX-mode-hook                          ,#'blc-setup-latexmk         )
+     (LaTeX-mode-hook                          ,#'turn-on-auto-fill         )
+     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer))))
 
 (use-package time
   :defer
@@ -1367,12 +1584,12 @@ contains conflict markers."
 
   (display-time))
 
+;; FIXME: Disable with first graphical frame
 (use-package tool-bar
+  :when (display-graphic-p)
   :defer
-  :preface
-  (with-graphical-frame
-   #'(lambda (frame)
-       (tool-bar-mode 0))))
+  :init
+  (blc-turn-off-modes #'tool-bar-mode))
 
 (use-package top-mode
   :ensure t
@@ -1383,14 +1600,21 @@ contains conflict markers."
   :init
   (setq-default uniquify-buffer-name-style 'forward))
 
+(use-package use-package
+  :commands blc-debug-use-package use-package-autoload-keymap
+  :config
+  (defun blc-debug-use-package ()
+    "Enable `use-package' debugging."
+    (interactive)
+    (setq-default use-package-debug t)))
+
 (use-package vc-hooks
   :defer
   :init
+  ;; Magit-only
   (setq-default vc-handled-backends nil))
 
 (use-package visual-regexp-steroids
-  :ensure visual-regexp
-  :ensure pcre2el
   :ensure t
   :after pcre2el
   :defer
@@ -1398,8 +1622,8 @@ contains conflict markers."
   (setq-default vr/match-separator-use-custom-face t))
 
 (use-package vlf
-  :disabled
-  :ensure t)
+  :ensure t
+  :defer)
 
 (use-package w3m
   :ensure t
@@ -1415,8 +1639,13 @@ contains conflict markers."
   :ensure t
   :mode ("\\.html\\'" "\\.mustache\\'"))
 
+(use-package wgrep
+  :ensure t
+  :defer)
+
 (use-package whitespace
   :defer
+  :delight global-whitespace-mode
   :init
   (setq-default whitespace-style '(face tabs trailing empty tab-mark))
   (global-whitespace-mode))
@@ -1437,6 +1666,15 @@ contains conflict markers."
    windmove-window-distance-delta 2
    windmove-wrap-around           t))
 
+(use-package "window"
+  :defer
+  :init
+  (setq-default
+   scroll-error-top-bottom t
+   split-window-keep-point nil)
+  (advice-add #'split-window-sensibly
+              :around #'blc-split-larger-dimension--advice))
+
 (use-package winner
   :defer
   :init
@@ -1445,13 +1683,15 @@ contains conflict markers."
 (use-package woman
   :defer
   :init
-  (add-hook 'woman-mode-hook #'remap-woman-faces))
+  (add-hook 'woman-mode-hook #'blc-woman-fontify))
 
 (use-package wrap-region
   :ensure t
-  :defer
+  :delight wrap-region-mode
+  :commands wrap-region-add-wrapper
   :init
   (wrap-region-global-mode)
+  :config
   (setq-default
    wrap-region-only-with-negative-prefix t
    wrap-region-tag-active-modes          '(html-mode mustache-mode web-mode))
@@ -1463,29 +1703,21 @@ contains conflict markers."
   :config
   (setq-default
    wttrin-default-cities
-   '("Athens, Greece"
-     "Avoca, Ireland"
-     "Dublin, Ireland"
-     "Tel Aviv, Israel"
-     "Kfar Qasim, Israel"
-     "Harare, Zimbabwe"
-     "Moon")))
+   (-map (-rpartial #'string-join ", ")
+         '(("Athens"     "Greece"  )
+           ("Avoca"      "Ireland" )
+           ("Dublin"     "Ireland" )
+           ("Kfar Qasim" "Israel"  )
+           ("Harare"     "Zimbabwe")
+           (             "Moon"    )))))
 
 (use-package xref-js2
-  :if     emacs-25+
-  ;; FIXME: use value of emacs-25+
   :ensure t
   :defer
-  :functions turn-on-xref-js2
   :init
-  (defun turn-on-xref-js2 ()
-    "Add xref-js2 backend and sanitise keymap."
-    (unbind-key "M-." js2-mode-map)     ; Reused by xref
-    (add-hook 'xref-backend-functions
-              #'xref-js2-xref-backend nil t))
+  (add-hook 'js2-mode-hook #'blc-turn-on-xref-js2))
 
-  (add-hook 'js2-mode-hook #'turn-on-xref-js2))
-
+;; FIXME: Enable with first terminal frame
 (use-package xt-mouse
   :unless (display-graphic-p)
   :defer
@@ -1496,43 +1728,4 @@ contains conflict markers."
   :ensure t
   :defer)
 
-;; FIXME: make isearch lazy highlights stand out
-(use-package zenburn-theme
-  :ensure t
-  :defer
-  :init
-  (load-theme 'zenburn t)
-
-  (defun zenburn-assoc-default (colour &optional default)
-    "Return COLOUR from `zenburn-default-colors-alist' or  DEFAULT."
-    (or (cdr (assoc-string colour zenburn-default-colors-alist))
-        default))
-
-  (defun zenburn-brighten-fci ()
-    "Brighten `fci-rule-color' under `zenburn-theme'.
-For the colour change to take effect when `fci-mode' is already
-enabled, the mode must be re-enabled by force. To avoid recursion
-ad infinitum, the current function is temporarily removed as a
-hook for `fci-mode' before a forced activation.
-TODO: Define FCI face?"
-    (when-let ((face 'fci-rule-color)
-               (fg   (zenburn-assoc-default 'zenburn-bg+1 face)))
-      (set-default face fg)
-      (when (bound-and-true-p fci-mode)
-        (let* ((hook   'fci-mode-hook)
-               (func   #'zenburn-brighten-fci)
-               (hooked `(memq ,func ,hook)))
-          (when hooked (remove-hook hook func))
-          (turn-on-fci-mode)
-          (when hooked (add-hook hook func))))))
-
-  (defun zenburn-darken-linum ()
-    "Darken foreground of face `linum' under `zenburn-theme'."
-    (when-let ((face 'linum)
-               (_    (internal-lisp-face-p face))
-               (fg   (zenburn-assoc-default 'zenburn-bg+3)))
-      (set-face-foreground face fg)))
-
-  (add-hooks-n
-   `((   fci-mode-hook ,#'zenburn-brighten-fci)
-     (nlinum-mode-hook ,#'zenburn-darken-linum))))
+;;; init.el ends here
