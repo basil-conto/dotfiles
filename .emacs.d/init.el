@@ -1564,6 +1564,11 @@ in `zenburn-default-colors-alist'."
   :init
   (global-subword-mode))
 
+(use-package sudoku
+  :ensure t
+  :defer
+  :defines sudoku-builtin-puzzles)
+
 (use-package swiper
   :ensure t
   :defer)
