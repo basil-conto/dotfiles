@@ -941,6 +941,10 @@ in `zenburn-default-colors-alist'."
   :load-path "lisp"
   :mode "\\.lex\\'")
 
+(use-package flx
+  :ensure t
+  :defer)
+
 (use-package font-lock
   :defer
   :init
