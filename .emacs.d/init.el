@@ -125,7 +125,7 @@ why-are-you-changing-gc-cons-threshold/'."
 
 (defun blc-symcat (&rest objects)
   "Concatenate all OBJECTS under `blc-as-string' as a symbol."
-  (intern (mapconcat #'blc-as-string objects "")))
+  (blc-as-symbol (mapconcat #'blc-as-string objects "")))
 
 (defun blc-tree-sed (regexp rep tree &rest args)
   "Replace all matches for REGEXP with REP in TREE.
