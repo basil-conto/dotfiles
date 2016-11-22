@@ -1132,6 +1132,8 @@ in `zenburn-default-colors-alist'."
    ivy-format-function     'ivy-format-function-arrow
    ivy-use-virtual-buffers t)
 
+  (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)
+
   (ivy-mode))
 
 (use-package ivy-bibtex
