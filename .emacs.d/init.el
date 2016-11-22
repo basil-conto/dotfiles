@@ -771,7 +771,6 @@ in `zenburn-default-colors-alist'."
           ,#'blc-turn-off-prettify-symbols-mode)))
 
 (use-package dash
-  :ensure t
   :defer
   :config
   (dash-enable-font-lock))
