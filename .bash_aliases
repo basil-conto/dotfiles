@@ -26,6 +26,9 @@ alias mkdir='mkdir -pv'
 alias cdtemp='cd $(mktemp -d)'
 alias venture='pushd .; cd'
 
+# make
+alias make='make -j$(nproc)'
+
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
 alias uuu='uu && sudo apt-get dist-upgrade'
