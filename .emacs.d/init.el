@@ -603,16 +603,14 @@ in `zenburn-default-colors-alist'."
    auth-source-debug t
    ;; Add SMTPS port 465
    auth-source-protocols
-   (if-let ((protos  auth-source-protocols)
-            (proto   'smtp)
-            (secport "465")
-            (stdport  "25")
-            (defined (memq proto protos)))
-       ;; No lexical `add-to-list' ;_;
-       (-map-first (-lambda ((key)) (eq key proto))
-                   (-rpartial #'-union `(,secport))
-                   protos)
-     (-snoc protos `(,proto ,(blc-as-string proto) ,stdport ,secport)))))
+   (let* ((protos  auth-source-protocols)
+          (proto   'smtp)
+          (stdport  "25")
+          (secport "465")
+          ;; Add secure port or whole entry when not present
+          (names   (-union (alist-get proto protos)
+                           `(,(blc-as-string proto) ,stdport ,secport))))
+     (setf (alist-get proto protos) names))))
 
 (use-package avy
   :ensure t
