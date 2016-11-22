@@ -188,6 +188,13 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
 
+(defun blc-narrow-candidate--advice (args)
+  "Decrease `ivy-bibtex' entry width due to other formatting.
+`ivy-bibtex-default-action' only considers `frame-width', which
+does not, for example, take the effect of `ivy-format-function'
+into account."
+  (-update-at 1 (-partial #'+ -3) args))
+
 
 ;;; Modes
 
@@ -1127,6 +1134,28 @@ in `zenburn-default-colors-alist'."
    ivy-use-virtual-buffers t)
 
   (ivy-mode))
+
+(use-package ivy-bibtex
+  :ensure t
+  :commands bibtex-completion-format-entry
+  :config
+  ;; Fit entries to window
+  (advice-add #'bibtex-completion-format-entry
+              :filter-args #'blc-narrow-candidate--advice)
+
+  (mapc (-applify #'add-to-list)
+        '((bibtex-completion-additional-search-fields "date")
+          (bibtex-completion-bibliography             "~/.bib.bib")))
+
+  (setq-default
+   bibtex-completion-display-formats
+   `((t . ,(string-join
+            '("${author:30}"
+              "${date:4}"
+              "${title:*}"
+              "${=has-pdf=:1}${=has-note=:1}"
+              "${=type=:14}")
+            " ")))))
 
 (use-package ivy-hydra
   :ensure t
