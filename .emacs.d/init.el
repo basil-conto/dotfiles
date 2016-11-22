@@ -316,12 +316,12 @@ If AS-STRING is non-`nil', return line number as string. See URL
 (defun blc-fast-line-count ()
   "Return number of lines in buffer.
 See `fast-line-number'."
-  (let ((max (point-max)))
+  (let ((pmax (point-max)))
     (save-excursion
-      (goto-char max)
+      (goto-char pmax)
       (- (blc-fast-line-number)
          (blc-boolean-to-natnum
-          (= max (line-beginning-position)))))))
+          (= pmax (line-beginning-position)))))))
 
 (defun blc-echo-fast-line-count ()
   "Emulate `count-lines-page' using `blc-fast-line-count'."
@@ -377,11 +377,11 @@ relevant major-mode."
   "Indent Whole Buffer and delete trailing whitespace.
 See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
   (interactive)
-  (let ((min (point-min-marker))
-        (max (point-max-marker)))
+  (let ((pmin (point-min-marker))
+        (pmax (point-max-marker)))
     (delete-trailing-whitespace)
-    (indent-region min max)
-    (untabify      min max)))
+    (indent-region pmin pmax)
+    (untabify      pmin pmax)))
 
 (defun blc-transpose-split ()
   "Alternate between vertical and horizontal frame split.
