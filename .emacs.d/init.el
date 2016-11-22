@@ -1161,6 +1161,10 @@ in `zenburn-default-colors-alist'."
   :ensure t
   :defer)
 
+(use-package ivy-pages
+  :ensure t
+  :defer)
+
 (use-package jade
   :disabled
   :ensure t
