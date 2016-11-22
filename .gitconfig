@@ -1,35 +1,38 @@
 [user]
-	name           = Basil L. Contovounesios
-	email          = contovob@tcd.ie
-	signingkey     = 5D5D8CFF
+	name             = Basil L. Contovounesios
+	email            = contovob@tcd.ie
+	signingkey       = 5D5D8CFF
 [commit]
-	gpgsign        = true
+	gpgsign          = true
 [core]
-	editor         = emacs -nw
-	attributesfile = ~/.gitattributes
-	whitespace     = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
+	editor           = emacs -nw
+	attributesfile   = ~/.gitattributes
+	whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 [color]
-	ui             = auto
+	ui               = auto
 [diff]
-	algorithm      = histogram
+	algorithm        = histogram
+	submodule        = log
 [diff "gpg"]
-	textconv       = gpg --decrypt
+	textconv         = gpg --decrypt
 [pager]
-	log            = diff-highlight | pager
-	show           = diff-highlight | pager
-	diff           = diff-highlight | pager
+	log              = diff-highlight | pager
+	show             = diff-highlight | pager
+	diff             = diff-highlight | pager
 [interactive]
-	diffFilter     = diff-highlight
+	diffFilter       = diff-highlight
+[status]
+	submodulesummary = 1
 [submodule]
-	fetchJobs      = 0
+	fetchJobs        = 0
 [alias]
 	a     = add
 	ae    = add --edit
 	ap    = add --patch
 	br    = branch
-	brl   = !git branch --color --all | grep
-	brv   = !git branch --color --verbose --verbose \
-	      | grep --color '^\\|ahead\\|behind\\|gone'
+	brl   = !git branch --color=always --all | grep
+	brv   = !git branch --color=always --verbose --verbose \
+	      | grep --color=always --extended-regexp '^|ahead|behind|gone'
 	ch    = cherry-pick
 	cm    = commit
 	co    = checkout
