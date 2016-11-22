@@ -15,17 +15,18 @@
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
 [ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
+export PATH
 
-EDITOR='emacs -nw'              # Used, for example, by crontab
-N_PREFIX="${HOME}/.local"       # https://github.com/tj/n
+export LOCAL_DIR="${HOME}/.local" # Local installations
+export N_PREFIX="${LOCAL_DIR}"    # https://github.com/tj/n
 
-export PATH EDITOR N_PREFIX
+export EDITOR='emacs -nw'         # Used by crontab et al.
+export CACA_DRIVER='ncurses'      # libcaca
 
 # Pyenv
 if [ -d "${HOME}/.pyenv" ]; then
-  PYENV_ROOT="${HOME}/.pyenv"
-  PATH="${PYENV_ROOT}/bin:${PATH}"
-  export PYENV_ROOT PATH
+  export PYENV_ROOT="${HOME}/.pyenv"
+  export PATH="${PYENV_ROOT}/bin:${PATH}"
   eval "$(pyenv init -)"
 fi
 
