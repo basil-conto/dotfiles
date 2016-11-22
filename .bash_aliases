@@ -40,6 +40,9 @@ alias list='wajig listinstalled'
 # xdg
 alias dis='xdg-open'
 
+# feh
+alias feh='feh --scale-down --auto-rotate'
+
 # xbacklight
 alias dark='xbacklight -set 0'
 alias half='xbacklight -set 50'
