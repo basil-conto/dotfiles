@@ -1437,7 +1437,7 @@ in `zenburn-default-colors-alist'."
   :ensure t
   :defer
   :init
-  (global-paren-face-mode))
+  (add-hook 'prog-mode-hook #'global-paren-face-mode))
 
 (use-package pascal
   :defer
