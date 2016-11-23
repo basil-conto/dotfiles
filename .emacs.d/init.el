@@ -165,7 +165,6 @@ Issue a warning otherwise."
         (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
     (apply split args)))
 
-;; TODO: Define no-arg macro?
 (defun blc-trim-before-newline--advice (&rest _)
   "Delete trailing whitespace prior to newline insertion."
   (delete-trailing-whitespace (line-beginning-position) (line-end-position)))
