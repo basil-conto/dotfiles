@@ -1123,7 +1123,7 @@ in `zenburn-default-colors-alist'."
 (use-package ivy
   :ensure t
   :delight ivy-mode
-  :commands ivy-set-sources
+  :commands ivy--regex-ignore-order ivy-set-sources
   :bind (("C-x b"   . ivy-switch-buffer)
          ("C-x 4 b" . ivy-switch-buffer-other-window)
          ("C-c C-r" . ivy-resume))
