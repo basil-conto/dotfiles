@@ -4,7 +4,7 @@
 
 ;; TODO
 ;; * Create macro & special form mapper
-;; * `electric-indent-inhibit' vs `blc-turn-off-electric-indent-local-mode'
+;; * `electric-indent-inhibit' vs `blc-turn-off-local-electric-indent'
 ;; * Displace colour codes with relative faces
 ;; * Fix hard-coded load paths
 ;; * Write setter creator macro
@@ -202,34 +202,27 @@ into account."
   "Attempt to pass 0 to all MODES."
   (mapc (-rpartial #'blc-apply-safe 0) modes))
 
-;; TODO:
-;; * Make less verbose and more practical and general
-;; * It would be nice to be able to mix & match hook lists and functions
-(defmacro blc-defuse (name docstring &rest modes)
-  "Define mode-disabling function `blc-turn-off-NAME'."
-  (declare (doc-string 2) (indent defun))
-  `(defun ,(blc-symcat "blc-turn-off-" name) (&rest _)
-     ,docstring
-     (interactive)
-     (blc-turn-off-modes ,@modes)))
-
 ;; TODO: Disable globally?
-(blc-defuse electric-indent-local-mode
+(defun blc-turn-off-local-electric-indent (&rest _)
   "Disable `electric-indent-local-mode'."
-  #'electric-indent-local-mode)
+  (interactive)
+  (blc-turn-off-modes #'electric-indent-local-mode))
 
-(blc-defuse line-numbers
+(defun blc-turn-off-line-numbers (&rest _)
   "Locally disable display of line numbers."
-  #'nlinum-mode
-  #'linum-mode)
+  (interactive)
+  (blc-turn-off-modes #'nlinum-mode
+                      #'linum-mode))
 
-(blc-defuse prettify-symbols-mode
+(defun blc-turn-off-prettify-symbols (&rest _)
   "Disable `prettify-symbols-mode'."
-  #'prettify-symbols-mode)
+  (interactive)
+  (blc-turn-off-modes #'prettify-symbols-mode))
 
-(blc-defuse flycheck-mode
+(defun blc-turn-off-flycheck (&rest _)
   "Disable `flycheck-mode'."
-  #'flycheck-mode)
+  (interactive)
+  (blc-turn-off-modes #'flycheck-mode))
 
 (defun blc-use-c++-comments ()
   "Default to single-line C++-style comments."
@@ -348,8 +341,9 @@ Return `t' if buffer size falls under
   (setq buffer-read-only t)
   (buffer-disable-undo)
   (fundamental-mode)
-  (blc-turn-off-line-numbers)
-  (blc-turn-off-modes #'font-lock-mode))
+  (blc-turn-off-modes
+   #'blc-turn-off-line-numbers
+   #'font-lock-mode))
 
 (defun blc-strip-large-buffer ()
   "Call `strip-down-buffer' if current buffer is large."
@@ -577,7 +571,7 @@ in `zenburn-default-colors-alist'."
   :load-path "/usr/share/emacs/site-lisp/debian-el"
   :mode ("\\.sources\\'" . apt-sources-mode)
   :init
-  (add-hook 'apt-sources-mode-hook #'blc-turn-off-electric-indent-local-mode))
+  (add-hook 'apt-sources-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package ascii
   :ensure t
@@ -700,7 +694,7 @@ in `zenburn-default-colors-alist'."
 (use-package conf-mode
   :defer
   :init
-  (add-hook 'conf-mode-hook #'blc-turn-off-electric-indent-local-mode))
+  (add-hook 'conf-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package counsel
   :ensure t
@@ -764,9 +758,9 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (mapc (-partial #'add-hook 'dafny-mode-hook)
-        `(,#'blc-turn-off-electric-indent-local-mode
-          ,#'blc-turn-off-flycheck-mode
-          ,#'blc-turn-off-prettify-symbols-mode)))
+        `(,#'blc-turn-off-local-electric-indent
+          ,#'blc-turn-off-flycheck
+          ,#'blc-turn-off-prettify-symbols)))
 
 (use-package dash
   :defer
@@ -1013,7 +1007,7 @@ in `zenburn-default-colors-alist'."
   :ensure haskell-mode
   :defer
   :init
-  (add-hook 'haskell-cabal-mode-hook #'blc-turn-off-electric-indent-local-mode))
+  (add-hook 'haskell-cabal-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package haskell-mode
   :ensure t
@@ -1198,7 +1192,7 @@ in `zenburn-default-colors-alist'."
 
   (mapc (-partial #'add-hook 'js2-mode-hook)
         `(,#'js2-highlight-unused-variables-mode
-          ,#'blc-turn-off-electric-indent-local-mode))
+          ,#'blc-turn-off-local-electric-indent))
 
   :config
   (setq-default
@@ -1273,7 +1267,7 @@ in `zenburn-default-colors-alist'."
 (use-package lisp-mode
   :defer
   :init
-  (add-hook 'lisp-mode-hook #'blc-turn-off-electric-indent-local-mode))
+  (add-hook 'lisp-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package list-processes+
   :ensure t
