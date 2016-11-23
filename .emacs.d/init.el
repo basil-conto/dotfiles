@@ -193,6 +193,11 @@ into account."
 
 ;;; Modes
 
+(defun blc-with-every-frame (&rest funs)
+  "Run abnormal hooks in current frame and with every new one."
+  (run-hook-with-args 'funs (selected-frame))
+  (mapc (-partial #'add-hook 'after-make-frame-functions) funs))
+
 (defun blc-turn-off-modes (&rest modes)
   "Attempt to pass 0 to all MODES."
   (mapc (-rpartial #'blc-apply-safe 0) modes))
@@ -236,6 +241,12 @@ into account."
   "Align all fields in the current CSV buffer."
   (csv-align-fields nil (point-min) (point-max)))
 
+(defun blc-turn-off-cursor-blink (&optional frame &rest _)
+  "Disable `blink-cursor-mode'."
+  (and (display-graphic-p frame)
+       blink-cursor-mode
+       (blc-turn-off-modes #'blink-cursor-mode)))
+
 (defun blc-kill-git-commit-buffer ()
   "Ensure message buffer is killed post-git-commit."
   (and git-commit-mode
@@ -257,6 +268,15 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (defun blc-delight-isearch ()
   "Shorten lighter of `isearch-mode'."
   (setq isearch-mode " 🔍"))
+
+(defun blc-turn-on-pdf-tools (&optional frame &rest _)
+  "Install and enable PDF Tools on graphic FRAME."
+  (when (display-graphic-p frame)
+    (pdf-tools-install t t t)))
+
+(defun blc-turn-off-scroll-bar (&rest _)
+  "Disable scroll bar."
+  (blc-turn-off-modes #'toggle-scroll-bar))
 
 (defun blc-sniff-smerge ()
   "Conditionally enable `smerge-mode'.
@@ -289,6 +309,12 @@ contains conflict markers."
   (unbind-key "M-." js2-mode-map)     ; Reused by xref
   (add-hook 'xref-backend-functions
             #'xref-js2-xref-backend nil t))
+
+(defun blc-turn-on-xterm-mouse (&optional frame &rest _)
+  "Enable `xterm-mouse-mode' with first terminal frame created."
+  (or (display-graphic-p frame)
+      xterm-mouse-mode
+      (xterm-mouse-mode)))
 
 
 ;;; Editing
@@ -386,18 +412,6 @@ function at URL
     (delete-window)
     (funcall split)
     (switch-to-buffer nil)))
-
-;; ;; FIXME
-;; ;; * See URL `https://www.emacswiki.org/emacs/ApplesAndOranges'
-;; (defun blc-with-graphical-frame (fun)
-;;   "Run abnormal hook now, in current frame, and with every new frame."
-;;   (let ((frame (selected-frame)))
-;;     (when (display-graphic-p frame)
-;;       (funcall fun frame)))
-;;   (add-hook 'after-make-frame-functions
-;;             `(lambda (frame)
-;;                (when (display-graphic-p frame)
-;;                  (funcall ,fun frame)))))
 
 (defun blc-open-line (forward)
   "Open empty line (FORWARD - 1) lines in front of current line."
@@ -944,10 +958,9 @@ in `zenburn-default-colors-alist'."
   (setq-default font-lock-maximum-decoration t))
 
 (use-package frame
-  :when (display-graphic-p)
   :defer
   :init
-  (blc-turn-off-modes #'blink-cursor-mode))
+  (blc-with-every-frame #'blc-turn-off-cursor-blink))
 
 (use-package free-keys
   :ensure t
@@ -1406,7 +1419,6 @@ in `zenburn-default-colors-alist'."
   :init
   (setq org-special-ctrl-a/e 'reversed))
 
-;; FIXME: Load with first graphical frame
 (use-package palette
   :ensure t
   :defer)
@@ -1440,12 +1452,11 @@ in `zenburn-default-colors-alist'."
   :ensure t
   :defer)
 
-;; FIXME: Load with first graphical display
 (use-package pdf-tools
   :ensure t
-  :when (display-graphic-p)
+  :defer
   :init
-  (pdf-tools-install t t t)
+  (blc-with-every-frame #'blc-turn-on-pdf-tools)
   ;; (add-hook'pdf-view-mode-hook #'turn-on-auto-revert-mode)
   (setq-default pdf-view-display-size 'fit-page))
 
@@ -1511,11 +1522,10 @@ in `zenburn-default-colors-alist'."
   :init
   (save-place-mode))
 
-;; FIXME: Disable with every graphical frame
 (use-package scroll-bar
   :defer
   :init
-  (blc-turn-off-modes #'toggle-scroll-bar))
+  (blc-with-every-frame #'blc-turn-off-scroll-bar))
 
 (use-package server
   :defer
@@ -1636,9 +1646,7 @@ in `zenburn-default-colors-alist'."
 
   (display-time))
 
-;; FIXME: Disable with first graphical frame
 (use-package tool-bar
-  :when (display-graphic-p)
   :defer
   :init
   (blc-turn-off-modes #'tool-bar-mode))
@@ -1769,12 +1777,10 @@ in `zenburn-default-colors-alist'."
   :init
   (add-hook 'js2-mode-hook #'blc-turn-on-xref-js2))
 
-;; FIXME: Enable with first terminal frame
 (use-package xt-mouse
-  :unless (display-graphic-p)
   :defer
   :init
-  (xterm-mouse-mode))
+  (blc-with-every-frame #'blc-turn-on-xterm-mouse))
 
 (use-package yaml-mode
   :ensure t
