@@ -104,10 +104,6 @@ why-are-you-changing-gc-cons-threshold/'."
 
 ;;; Malformed types
 
-(defun blc-as-symbol (string-or-symbol)
-  "Return the canonical symbol named STRING-OR-SYMBOL."
-  (intern-soft string-or-symbol))
-
 (defun blc-as-string (object)
   "Convert OBJECT to a string."
   (pcase object
@@ -125,7 +121,7 @@ why-are-you-changing-gc-cons-threshold/'."
 
 (defun blc-symcat (&rest objects)
   "Concatenate all OBJECTS under `blc-as-string' as a symbol."
-  (blc-as-symbol (mapconcat #'blc-as-string objects "")))
+  (intern (mapconcat #'blc-as-string objects "")))
 
 (defun blc-tree-sed (regexp rep tree &rest args)
   "Replace all matches for REGEXP with REP in TREE.
