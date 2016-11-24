@@ -384,9 +384,8 @@ A non-empty filename PREFIX can help identify the file or its
 purpose, whereas a non-empty SUFFIX will help determine the
 relevant major-mode."
   (interactive "sfile prefix: \nsfile extension: ")
-  (let ((pre (or prefix ""))
-        (suf (unless (string-blank-p suffix) (f-swap-ext "" suffix))))
-    (find-file (make-temp-file pre nil suf))))
+  (let ((suffix (unless (string-blank-p suffix) (f-swap-ext "" suffix))))
+    (find-file (make-temp-file prefix nil suffix))))
 
 ;; TODO: Operate on region as well?
 (defun blc-iwb ()
@@ -506,8 +505,8 @@ in `zenburn-default-colors-alist'."
   "Number of lines constituting a small scroll.")
 
 (defvar blc-fundamental-hooks
-  (mapcar (-rpartial #'blc-symcat "-mode-hook")
-          '(conf ess haskell-cabal hledger mustache prog text))
+  (-map (-rpartial #'blc-symcat "-mode-hook")
+        '(conf ess haskell-cabal hledger mustache prog text))
   "Hooks whose modes derive from `fundamental-mode' or nothing.")
 
 
@@ -734,8 +733,8 @@ in `zenburn-default-colors-alist'."
    counsel-grep-base-command "ag --nocolor \"%s\" %s"
    ;; Do not match start of input for counsel commands
    ivy-initial-inputs-alist
-   (-remove #'(lambda (cell)
-                (string-prefix-p "counsel-" (blc-as-string (car cell))))
+   (-remove (-lambda ((cmd))
+              (string-prefix-p "counsel-" (blc-as-string cmd)))
             ivy-initial-inputs-alist))
 
   (ivy-set-sources
@@ -1337,8 +1336,8 @@ in `zenburn-default-colors-alist'."
                                    (apply #'string fmtflags)))
          (case-fold-search nil))
 
-    (set-default logargs
-                 (blc-tree-sed logre logcommits (symbol-value logargs) t t 1))
+    (set-default logargs (blc-tree-sed logre logcommits
+                                       (symbol-value logargs) t t 1))
 
     (mapc #'(lambda (fmt)
               (set-default fmt (replace-regexp-in-string
