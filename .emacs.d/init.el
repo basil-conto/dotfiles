@@ -980,6 +980,8 @@ in `zenburn-default-colors-alist'."
   (setq-default git-commit-summary-max-length 50
                 git-commit-fill-column        68)
 
+  (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line)
+
   (add-hook 'with-editor-post-finish-hook #'blc-kill-git-commit-buffer)
 
   (global-git-commit-mode))
