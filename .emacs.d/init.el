@@ -274,9 +274,10 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   (when (display-graphic-p frame)
     (pdf-tools-install t t t)))
 
-(defun blc-turn-off-scroll-bar (&rest _)
+(defun blc-turn-off-scroll-bar (&optional frame &rest _)
   "Disable scroll bar."
-  (blc-turn-off-modes #'toggle-scroll-bar))
+  (with-selected-frame frame
+    (blc-turn-off-modes #'toggle-scroll-bar)))
 
 (defun blc-sniff-smerge ()
   "Conditionally enable `smerge-mode'.
@@ -449,6 +450,11 @@ function at URL
 
 ;;; Themes
 
+(defun blc-set-font (&optional frame &rest _)
+  "Set font on graphic FRAME."
+  (when (display-graphic-p frame)
+    (set-face-attribute 'default frame :font "DejaVu Sans Mono 8")))
+
 (defun blc-man-fontify (&rest _)
   "Customise `Man-mode' faces."
   (mapc (-applify #'face-remap-add-relative)
@@ -512,8 +518,7 @@ in `zenburn-default-colors-alist'."
   (and (load-theme theme t)
        (blc-apply-safe (blc-symcat "blc-setup-theme-" theme))))
 
-(when (display-graphic-p)
-  (set-face-attribute 'default nil :font "DejaVu Sans Mono 8"))
+(blc-with-every-frame #'blc-set-font)
 
 (defalias #'yes-or-no-p #'y-or-n-p)
 
