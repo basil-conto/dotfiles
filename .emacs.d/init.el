@@ -501,6 +501,9 @@ in `zenburn-default-colors-alist'."
 (defvar blc-repos-dir (f-join user-emacs-directory "repos")
   "Directory containing symlinks to user Git repositories.")
 
+(defvar blc-bib-file "~/.bib.bib"
+  "Default user BibTeX file.")
+
 (defvar blc-small-scroll-step 6
   "Number of lines constituting a small scroll.")
 
@@ -833,7 +836,9 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default
    ebib-bibtex-dialect 'biblatex
-   ebib-use-timestamp  t))
+   ebib-use-timestamp  t)
+
+  (add-to-list 'ebib-preload-bib-files blc-bib-file))
 
 (use-package elisp-mode
   :defer
@@ -1151,8 +1156,8 @@ in `zenburn-default-colors-alist'."
               :filter-args #'blc-narrow-candidate--advice)
 
   (mapc (-applify #'add-to-list)
-        '((bibtex-completion-additional-search-fields "date")
-          (bibtex-completion-bibliography             "~/.bib.bib")))
+        `((bibtex-completion-additional-search-fields "date")
+          (bibtex-completion-bibliography             ,blc-bib-file)))
 
   (setq-default
    bibtex-completion-display-formats
