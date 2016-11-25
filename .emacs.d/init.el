@@ -18,6 +18,7 @@
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
+;; * Quelpa
 ;; * Ivy
 ;; * Macros
 ;; * Org
