@@ -151,6 +151,7 @@ Issue a warning otherwise."
   (defvar c-mode-base-map)
   (defvar git-commit-filename-regexp)
   (defvar git-commit-mode)
+  (defvar ivy-height)
   (defvar ivy-minibuffer-faces)
   (defvar js2-mode-map)
   (defvar recentf-list)
@@ -236,7 +237,7 @@ into account."
 
 (defun blc-some-recentf (&optional count)
   "Return first COUNT or 5 items in `recentf-list'."
-  (-take (or count 5) recentf-list))
+  (-take (or count (lsh ivy-height -1)) recentf-list))
 
 (defun blc-align-all-csv-fields ()
   "Align all fields in the current CSV buffer."
