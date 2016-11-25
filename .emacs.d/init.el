@@ -233,6 +233,10 @@ into account."
   (setq comment-start "//"
         comment-end     ""))
 
+(defun blc-turn-on-dired-x (&rest _)
+  "Load `dired-x'."
+  (require 'dired-x))
+
 (defun blc-enable-disaster ()
   "Enable `disaster' in `c-mode' derivatives."
   (bind-key "C-c d" #'disaster c-mode-base-map))
@@ -817,9 +821,10 @@ in `zenburn-default-colors-alist'."
                 " ")))
 
 (use-package dired-x
-  :after dired
   :bind (("C-x C-j"   . dired-jump)
          ("C-x 4 C-j" . dired-jump-other-window))
+  :init
+  (add-hook 'dired-mode-hook #'blc-turn-on-dired-x)
   :config
   (mapc (-partial #'add-to-list 'dired-guess-shell-alist-user)
         '(("\\.pdf\\'"   "pdf"     )
