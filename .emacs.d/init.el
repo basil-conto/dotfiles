@@ -197,8 +197,10 @@ into account."
 
 (defun blc-with-every-frame (&rest funs)
   "Run abnormal hooks in current frame and with every new one."
-  (run-hook-with-args 'funs (selected-frame))
-  (mapc (-partial #'add-hook 'after-make-frame-functions) funs))
+  ;; `run-hook-with-args' is not available during initialisation
+  (mapc (-juxt (-rpartial #'funcall  (selected-frame))
+               (-partial  #'add-hook 'after-make-frame-functions))
+        funs))
 
 (defun blc-turn-off-modes (&rest modes)
   "Attempt to pass 0 to all MODES."
