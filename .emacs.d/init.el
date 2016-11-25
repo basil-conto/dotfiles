@@ -1029,7 +1029,7 @@ in `zenburn-default-colors-alist'."
   (unbind-key "M-<" ggtags-navigation-map) ; Such rude ;_;
   (unbind-key "M->" ggtags-navigation-map)
   (unbind-key "M-]" ggtags-mode-map)
-  (bind-key "M-F" #'ggtags-find-reference ggtags-mode-map))
+  (bind-key   "M-F" #'ggtags-find-reference ggtags-mode-map))
 
 (use-package haskell-cabal
   :ensure haskell-mode
