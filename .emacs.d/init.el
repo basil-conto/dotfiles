@@ -753,6 +753,10 @@ in `zenburn-default-colors-alist'."
    '((blc-some-recentf)
      (original-source))))
 
+(use-package counsel-gtags
+  :ensure
+  :defer)
+
 (use-package counsel-projectile
   :ensure
   :defer)
