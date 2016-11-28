@@ -795,6 +795,10 @@ in `zenburn-default-colors-alist'."
   :config
   (dash-enable-font-lock))
 
+(use-package debbugs
+  :ensure
+  :defer)
+
 (use-package debian-changelog-mode
   :ensure
   :defer)
