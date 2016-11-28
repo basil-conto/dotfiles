@@ -14,7 +14,7 @@ prof-el := $(prof-fn)$(suff-el)
 vpath %$(suff-el) $(lispdir)
 
 %$(suff-bc): %$(suff-el)
-	emacs $(ELFLAGS) --batch --user $(shell whoami) \
+	emacs $(ELFLAGS) --batch --funcall package-initialize \
 		--eval '(byte-compile-file "$<")'
 
 .PHONY: all

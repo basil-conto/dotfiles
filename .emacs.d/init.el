@@ -62,6 +62,11 @@ See URL `http://bling.github.io/blog/2016/01/18/\
 why-are-you-changing-gc-cons-threshold/'."
     (setq-default gc-cons-threshold oldthresh)))
 
+;; Silence byte-compiler ;_;
+(declare-function blc-report-init-time   "init")
+(declare-function blc-increase-gc-thresh "init")
+(declare-function blc-restore-gc-thresh  "init")
+
 ;; Increase GC threshold to reduce number of GCs during initialisation
 (blc-increase-gc-thresh)
 
@@ -103,6 +108,23 @@ why-are-you-changing-gc-cons-threshold/'."
 
 ;;;; DEFINITIONS
 
+;;; Byte-compiler declarations
+
+(eval-when-compile
+  (declare-function c-langelem-pos   "cc-defs")
+  (declare-function csv-align-fields "csv-mode")
+  (defvar blc-small-scroll-step)
+  (defvar c-mode-base-map)
+  (defvar git-commit-filename-regexp)
+  (defvar git-commit-mode)
+  (defvar ivy-height)
+  (defvar ivy-minibuffer-faces)
+  (defvar js2-mode-map)
+  (defvar recentf-list)
+  (defvar smerge-mode)
+  (defvar TeX-command-default)
+  (defvar zenburn-default-colors-alist))
+
 ;;; Malformed types
 
 (defun blc-as-string (object)
@@ -137,23 +159,6 @@ Issue a warning otherwise."
   (if (fboundp fun)
       (apply fun args)
     (lwarn 'blc :error "Invalid function: %S" fun)))
-
-
-;;; Byte-compiler declarations
-
-(eval-when-compile
-  (declare-function c-langelem-pos   "cc-defs")
-  (declare-function csv-align-fields "csv-mode")
-  (defvar c-mode-base-map)
-  (defvar git-commit-filename-regexp)
-  (defvar git-commit-mode)
-  (defvar ivy-height)
-  (defvar ivy-minibuffer-faces)
-  (defvar js2-mode-map)
-  (defvar recentf-list)
-  (defvar smerge-mode)
-  (defvar TeX-command-default)
-  (defvar zenburn-default-colors-alist))
 
 ;;; Advice
 
