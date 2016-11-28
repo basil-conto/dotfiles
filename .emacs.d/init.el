@@ -1347,7 +1347,9 @@ in `zenburn-default-colors-alist'."
 
   (add-to-list 'magit-rebase-arguments "--interactive")
 
-  (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
+  (setq-default
+   magit-branch-popup-show-variables t
+   magit-repository-directories      `((,blc-repos-dir . 2)))
 
   (let* (;; Limit number of commits in log
          (logcommits       "32")
