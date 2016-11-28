@@ -1438,9 +1438,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package nlinum
   :ensure
-  :defer
-  :init
-  (global-nlinum-mode))
+  :defer)
 
 (use-package nodejs-repl
   :ensure
