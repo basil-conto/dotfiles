@@ -116,10 +116,6 @@ why-are-you-changing-gc-cons-threshold/'."
      (seq-into object 'string))
     (_ "")))
 
-(defun blc-boolean-to-natnum (boolean)
-  "Return 0 if BOOLEAN is `nil' and 1 otherwise."
-  (if boolean 1 0))
-
 (defun blc-symcat (&rest objects)
   "Concatenate all OBJECTS under `blc-as-string' as a symbol."
   (intern (mapconcat #'blc-as-string objects "")))
@@ -328,23 +324,27 @@ contains conflict markers."
 
 ;;; Editing
 
-(defun blc-fast-line-number (&optional as-string)
-  "Return line number of point within accessible portion of buffer.
-If AS-STRING is non-`nil', return line number as string. See URL
-`http://emacs.stackexchange.com/a/3822' for limitations."
+(defun blc-fast-line-number (&optional pos)
+  "Return line number at POS or current buffer location.
+Should outperform `line-number-at-pos' under normal conditions,
+for some definition of \"normal\".
+
+See URL `http://emacs.stackexchange.com/a/3822' for limitations."
+  (interactive)
   (let ((line-number-display-limit-width most-positive-fixnum)
-        (conv (if as-string #'identity #'string-to-number)))
-    (funcall conv (format-mode-line "%l"))))
+        (line-number-display-limit       nil))
+    (save-excursion
+      (goto-char (or pos (point)))
+      (string-to-number (format-mode-line "%l")))))
 
 (defun blc-fast-line-count ()
-  "Return number of lines in buffer.
-See `fast-line-number'."
+  "Return number of lines within accessible portion of buffer.
+Uses `fast-line-number', which see."
   (let ((pmax (point-max)))
     (save-excursion
       (goto-char pmax)
-      (- (blc-fast-line-number)
-         (blc-boolean-to-natnum
-          (= pmax (line-beginning-position)))))))
+      (funcall (if (= pmax (line-beginning-position)) #'1- #'identity)
+               (blc-fast-line-number pmax)))))
 
 (defun blc-echo-fast-line-count ()
   "Emulate `count-lines-page' using `blc-fast-line-count'."
