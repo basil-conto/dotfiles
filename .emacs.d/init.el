@@ -1018,11 +1018,13 @@ in `zenburn-default-colors-alist'."
 
 (use-package gnus
   :defer
-  :config
+  :init
   (setq-default
    gnus-check-new-newsgroups nil
-   gnus-select-method
-   '(nnimap "")))
+   gnus-home-directory       user-emacs-directory
+   gnus-save-killed-list     nil
+   gnus-save-newsrc-file     nil
+   gnus-read-newsrc-file     nil))
 
 (use-package golden-ratio-scroll-screen
   :disabled

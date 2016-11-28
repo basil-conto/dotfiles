@@ -1,4 +1,5 @@
 init-el := init
+gnus-el := .gnus
 prof-fn := profile-dotemacs
 
 lispdir := lisp/
@@ -7,7 +8,7 @@ elpadir := elpa/
 suff-el := .el
 suff-bc := .elc
 
-init-bc := $(init-el)$(suff-bc)
+list-bc := $(addsuffix $(suff-bc), $(init-el) $(gnus-el))
 prof-el := $(prof-fn)$(suff-el)
 
 vpath %$(suff-el) $(lispdir)
@@ -17,10 +18,13 @@ vpath %$(suff-el) $(lispdir)
 		--eval '(byte-compile-file "$<")'
 
 .PHONY: all
-all: init
+all: init gnus
 
 .PHONY: init
-init: $(init-bc)
+init: $(filter $(init-el)%, $(list-bc))
+
+.PHONY: gnus
+gnus: $(filter $(gnus-el)%, $(list-bc))
 
 .PHONY: profile
 profile: ELFLAGS := -nw
@@ -29,7 +33,7 @@ profile: $(prof-el)
 
 .PHONY: clean
 clean:
-	$(RM) $(init-bc)
+	$(RM) $(list-bc)
 
 .PHONY: distclean
 distclean: clean
