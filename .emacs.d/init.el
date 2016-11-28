@@ -572,19 +572,19 @@ in `zenburn-default-colors-alist'."
 ;;;; PACKAGES
 
 (use-package 2048-game
-  :ensure t
+  :ensure
   :defer)
 
 (use-package ac-js2
   :disabled
-  :ensure t)
+  :ensure)
 
 (use-package ace-window
-  :ensure t
+  :ensure
   :bind ("M-]" . ace-window))
 
 (use-package ag
-  :ensure t
+  :ensure
   :defer
   :config
   (setq-default ag-highlight-search t)
@@ -598,11 +598,11 @@ in `zenburn-default-colors-alist'."
   (add-hook 'apt-sources-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package ascii
-  :ensure t
+  :ensure
   :defer)
 
 (use-package ascii-art-to-unicode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package asm-mode
@@ -611,7 +611,7 @@ in `zenburn-default-colors-alist'."
   (setq-default asm-comment-char ?#))
 
 (use-package auctex-latexmk
-  :ensure t
+  :ensure
   :defer)
 
 (use-package auth-source
@@ -631,24 +631,24 @@ in `zenburn-default-colors-alist'."
      (setf (alist-get proto protos) names))))
 
 (use-package avy
-  :ensure t
+  :ensure
   :bind (("C-c #" . avy-goto-char-timer)
          ("M-g f" . avy-goto-line      )))
 
 (use-package base16-theme
   :disabled
-  :ensure t)
+  :ensure)
 
 (use-package better-shell
-  :ensure t
+  :ensure
   :defer)
 
 (use-package bison-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package bongo
-  :ensure t
+  :ensure
   :defer)
 
 (use-package bytecomp
@@ -685,15 +685,15 @@ in `zenburn-default-colors-alist'."
 
 (use-package color-moccur
   :disabled
-  :ensure t)
+  :ensure)
 
 (use-package color-theme-sanityinc-solarized
   :disabled
-  :ensure t)
+  :ensure)
 
 (use-package color-theme-solarized
   :disabled
-  :ensure t
+  :ensure
   :init
   (setq-default solarized-italic     nil
                 solarized-termcolors 256)
@@ -705,11 +705,11 @@ in `zenburn-default-colors-alist'."
   (add-hook 'comint-mode-hook #'blc-turn-off-line-numbers))
 
 (use-package comment-dwim-2
-  :ensure t
+  :ensure
   :bind ("M-;" . comment-dwim-2))
 
 (use-package company
-  :ensure t
+  :ensure
   :bind ("M-#" . company-manual-begin)
   :config
   (setq-default company-idle-delay nil)
@@ -721,7 +721,7 @@ in `zenburn-default-colors-alist'."
   (add-hook 'conf-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package counsel
-  :ensure t
+  :ensure
   :defer
   :bind
   (("M-x"     . counsel-M-x)
@@ -754,23 +754,23 @@ in `zenburn-default-colors-alist'."
      (original-source))))
 
 (use-package counsel-projectile
-  :ensure t
+  :ensure
   :defer)
 
 (use-package crontab-mode
-  :ensure t
+  :ensure
   :mode "\\.cron\\(?:tab\\)??\\'" "cron\\(?:tab\\)??\\.")
 
 (use-package csharp-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package cssh
-  :ensure t
+  :ensure
   :defer)
 
 (use-package csv-mode
-  :ensure t
+  :ensure
   :defer
   :init
   (add-hook 'csv-mode-hook #'blc-align-all-csv-fields)
@@ -792,15 +792,15 @@ in `zenburn-default-colors-alist'."
   (dash-enable-font-lock))
 
 (use-package debian-changelog-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package define-word
-  :ensure t
+  :ensure
   :bind ("C-c /" . define-word-at-point))
 
 (use-package delight
-  :ensure t
+  :ensure
   :defer)
 
 (use-package delsel
@@ -831,7 +831,7 @@ in `zenburn-default-colors-alist'."
           ("\\.docx?\\'" "lowriter"))))
 
 (use-package disaster
-  :ensure t
+  :ensure
   :commands disaster
   :init
   (add-hook 'c-mode-common-hook #'blc-enable-disaster)
@@ -840,7 +840,7 @@ in `zenburn-default-colors-alist'."
 
 ;; FIXME: Add current project to `ebib-bib-search-dirs'
 (use-package ebib
-  :ensure t
+  :ensure
   :bind ("C-c e" . ebib)
   :config
   (setq-default
@@ -856,7 +856,7 @@ in `zenburn-default-colors-alist'."
              (lisp-interaction-mode "λι" :major))))
 
 (use-package engine-mode
-  :ensure t
+  :ensure
   :commands engine-mode engine/execute-search engine/get-query
   :bind-keymap ("C-x /" . engine-mode-map)
   :config
@@ -883,29 +883,29 @@ in `zenburn-default-colors-alist'."
   (add-hook 'eshell-mode-hook #'blc-turn-off-line-numbers))
 
 (use-package ess
-  :ensure t
+  :ensure
   :defer
   :config
   (setq-default ess-default-style   'DEFAULT
                 ess-indent-from-lhs nil))
 
 (use-package exec-path-from-shell
-  :ensure t
+  :ensure
   :defer
   :config
   (mapc (-partial #'add-to-list 'exec-path-from-shell-variables)
         '("SSH_AGENT_PID" "SSH_AUTH_SOCK")))
 
 (use-package expand-region
-  :ensure t
+  :ensure
   :bind ("M-+" . er/expand-region))
 
 (use-package eyebrowse
-  :ensure t
+  :ensure
   :defer)
 
 (use-package fic-mode
-  :ensure t
+  :ensure
   :defer
   :init
   (mapc (-rpartial #'add-hook #'fic-mode) blc-fundamental-hooks)
@@ -914,7 +914,7 @@ in `zenburn-default-colors-alist'."
         '("HACK" "KLUDGE" "NOTE" "WARN")))
 
 (use-package figlet
-  :ensure t
+  :ensure
   :defer)
 
 (use-package files
@@ -938,7 +938,7 @@ in `zenburn-default-colors-alist'."
    version-control            t))       ; Versioned backups
 
 (use-package fill-column-indicator
-  :ensure t
+  :ensure
   :defer
   :init
   (mapc (-rpartial #'add-hook #'turn-on-fci-mode) blc-fundamental-hooks)
@@ -967,7 +967,7 @@ in `zenburn-default-colors-alist'."
   :mode "\\.lex\\'")
 
 (use-package flx
-  :ensure t
+  :ensure
   :defer)
 
 (use-package font-lock
@@ -981,7 +981,7 @@ in `zenburn-default-colors-alist'."
   (blc-with-every-frame #'blc-turn-off-cursor-blink))
 
 (use-package free-keys
-  :ensure t
+  :ensure
   :defer)
 
 (use-package git-commit
@@ -1001,11 +1001,11 @@ in `zenburn-default-colors-alist'."
   (global-git-commit-mode))
 
 (use-package gitconfig-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package gitignore-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package gnus
@@ -1018,12 +1018,12 @@ in `zenburn-default-colors-alist'."
 
 (use-package golden-ratio-scroll-screen
   :disabled
-  :ensure t
+  :ensure
   :bind (("M-," . golden-ratio-scroll-screen-down)
          ("M-." . golden-ratio-scroll-screen-up)))
 
 (use-package ggtags
-  :ensure t
+  :ensure
   :commands ggtags-find-reference
   :config
   (unbind-key "M-<" ggtags-navigation-map) ; Such rude ;_;
@@ -1038,17 +1038,17 @@ in `zenburn-default-colors-alist'."
   (add-hook 'haskell-cabal-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package haskell-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package hayoo
-  :ensure t
+  :ensure
   :defer)
 
 ;; TODO: Delight
 (use-package helm
   :disabled
-  :ensure t
+  :ensure
   :bind ("C-c b" . helm-mini)
   :init
   (add-hook 'helm-major-mode-hook #'blc-turn-off-line-numbers)
@@ -1065,23 +1065,23 @@ in `zenburn-default-colors-alist'."
   (helm-mode))
 
 (use-package helm-pass
-  :ensure t
+  :ensure
   :defer)
 
 (use-package helm-proc
-  :ensure t
+  :ensure
   :defer)
 
 (use-package helm-projectile
   :disabled
-  :ensure t
+  :ensure
   :after helm projectile
   :commands helm-projectile-on
   :config
   (helm-projectile-on))
 
 (use-package highlight-escape-sequences
-  :ensure t
+  :ensure
   :defer
   :init
   (turn-on-hes-mode))
@@ -1092,7 +1092,7 @@ in `zenburn-default-colors-alist'."
   (add-hook 'git-rebase-mode-hook #'hl-line-mode))
 
 (use-package hledger-mode
-  :ensure t
+  :ensure
   :mode "\\.journal\\'"
   :config
   (setq-default
@@ -1113,7 +1113,7 @@ in `zenburn-default-colors-alist'."
   (setq-default ido-enable-flex-matching t))
 
 (use-package idris-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package "indent"
@@ -1134,14 +1134,14 @@ in `zenburn-default-colors-alist'."
 
 (use-package isearch+
   :disabled
-  :ensure t)
+  :ensure)
 
 (use-package isearch-prop
-  :ensure t
+  :ensure
   :defer)
 
 (use-package ivy
-  :ensure t
+  :ensure
   :delight ivy-mode
   :commands ivy--regex-ignore-order ivy-set-sources
   :bind (("C-x b"   . ivy-switch-buffer)
@@ -1157,7 +1157,7 @@ in `zenburn-default-colors-alist'."
   (ivy-mode))
 
 (use-package ivy-bibtex
-  :ensure t
+  :ensure
   :commands bibtex-completion-format-entry
   :config
   ;; Fit entries to window
@@ -1179,16 +1179,16 @@ in `zenburn-default-colors-alist'."
             " ")))))
 
 (use-package ivy-hydra
-  :ensure t
+  :ensure
   :defer)
 
 (use-package ivy-pages
-  :ensure t
+  :ensure
   :defer)
 
 (use-package jade
   :disabled
-  :ensure t
+  :ensure
   :commands jade-interaction-mode
   :init
   (add-hook 'js2-mode-hook #'jade-interaction-mode))
@@ -1211,7 +1211,7 @@ in `zenburn-default-colors-alist'."
    js-switch-indent-offset 4))
 
 (use-package js2-mode
-  :ensure t
+  :ensure
   :mode "\\.js\\'"
   :interpreter "node" "nodejs"
   :commands js2-line-break
@@ -1248,7 +1248,7 @@ in `zenburn-default-colors-alist'."
   ;;           (js2-object-property "#fcaf3e")))))
 
 (use-package js2-refactor
-  :ensure t
+  :ensure
   :defer
   :init
   (add-hook 'js2-mode-hook #'js2-refactor-mode)
@@ -1256,7 +1256,7 @@ in `zenburn-default-colors-alist'."
   (js2r-add-keybindings-with-prefix "C-c C-m"))
 
 (use-package js3-mode
-  :ensure t
+  :ensure
   :commands js3-enter-key
   :config
   (unbind-key "C-c C-g" js3-mode-map)        ; Why...
@@ -1283,11 +1283,11 @@ in `zenburn-default-colors-alist'."
           (js3-error-face             "#ff0000"))))
 
 (use-package json-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package ledger-mode
-  :ensure t
+  :ensure
   :mode "\\.ledger\\'"
   :config
   (setq-default ledger-use-iso-dates t))
@@ -1298,19 +1298,19 @@ in `zenburn-default-colors-alist'."
   (add-hook 'lisp-mode-hook #'blc-turn-off-local-electric-indent))
 
 (use-package list-processes+
-  :ensure t
+  :ensure
   :defer)
 
 (use-package list-unicode-display
-  :ensure t
+  :ensure
   :defer)
 
 (use-package lorem-ipsum
-  :ensure t
+  :ensure
   :defer)
 
 (use-package magit
-  :ensure t
+  :ensure
   :bind ("C-x g" . magit-status)
   :config
   (delight                              ; Tidy?
@@ -1378,7 +1378,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package magit-gh-pulls
   :disabled
-  :ensure t                             ; gh.el doesn't speak ssh?
+  :ensure                               ; gh.el doesn't speak ssh?
   :commands turn-on-magit-gh-pulls
   :init
   (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
@@ -1394,7 +1394,7 @@ in `zenburn-default-colors-alist'."
   (add-hook 'Man-mode-hook #'blc-man-fontify))
 
 (use-package markdown-mode
-  :ensure t
+  :ensure
   :mode "\\.md\\'" "\\.markdown\\'"
   :commands markdown-cycle markdown-enter-key
   :config
@@ -1409,7 +1409,7 @@ in `zenburn-default-colors-alist'."
           (minibuffer-exit-hook  ,#'blc-restore-gc-thresh ))))
 
 (use-package minimap
-  :ensure t
+  :ensure
   :defer
   :config
   (setq-default
@@ -1421,17 +1421,17 @@ in `zenburn-default-colors-alist'."
   (set-face-attribute  'minimap-font-face nil :font "DejaVu Sans Mono 1"))
 
 (use-package mustache-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package nlinum
-  :ensure t
+  :ensure
   :defer
   :init
   (global-nlinum-mode))
 
 (use-package nodejs-repl
-  :ensure t
+  :ensure
   :defer)
 
 (use-package org
@@ -1440,7 +1440,7 @@ in `zenburn-default-colors-alist'."
   (setq org-special-ctrl-a/e 'reversed))
 
 (use-package palette
-  :ensure t
+  :ensure
   :defer)
 
 (use-package "paragraphs"
@@ -1454,7 +1454,7 @@ in `zenburn-default-colors-alist'."
   (show-paren-mode))
 
 (use-package paren-face
-  :ensure t
+  :ensure
   :defer
   :init
   (add-hook 'prog-mode-hook #'global-paren-face-mode))
@@ -1465,15 +1465,15 @@ in `zenburn-default-colors-alist'."
   (add-hook 'pascal-mode-hook #'blc-use-c++-comments))
 
 (use-package pass
-  :ensure t
+  :ensure
   :defer)
 
 (use-package pcre2el
-  :ensure t
+  :ensure
   :defer)
 
 (use-package pdf-tools
-  :ensure t
+  :ensure
   :defer
   :init
   (blc-with-every-frame #'blc-turn-on-pdf-tools)
@@ -1484,12 +1484,12 @@ in `zenburn-default-colors-alist'."
   :mode "\\.latexmkrc\\'")
 
 (use-package perspective
-  :ensure t
+  :ensure
   :defer)
 
 ;; TODO: Delight
 (use-package projectile
-  :ensure t
+  :ensure
   :defer
   :bind-keymap ("C-c p" . projectile-command-map)
   :init
@@ -1532,7 +1532,7 @@ in `zenburn-default-colors-alist'."
   (setq-default remember-notes-initial-major-mode #'org-mode))
 
 (use-package sass-mode
-  :ensure t
+  :ensure
   :defer
   :init
   (add-hook 'sass-mode-hook #'blc-use-c++-comments))
@@ -1574,7 +1574,7 @@ in `zenburn-default-colors-alist'."
   (column-number-mode))
 
 (use-package sl
-  :ensure t
+  :ensure
   :defer)
 
 (use-package smerge-mode
@@ -1585,7 +1585,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package solarized-theme
   :disabled
-  :ensure t)
+  :ensure)
 
 (use-package speedbar
   :defer
@@ -1597,7 +1597,7 @@ in `zenburn-default-colors-alist'."
    speedbar-vc-do-check        nil))
 
 (use-package sr-speedbar
-  :ensure t
+  :ensure
   :after speedbar
   :bind ("C-x t" . sr-speedbar-toggle)
   :config
@@ -1616,12 +1616,12 @@ in `zenburn-default-colors-alist'."
   (global-subword-mode))
 
 (use-package sudoku
-  :ensure t
+  :ensure
   :defer
   :defines sudoku-builtin-puzzles)
 
 (use-package swiper
-  :ensure t
+  :ensure
   :defer)
 
 (use-package tex
@@ -1672,7 +1672,7 @@ in `zenburn-default-colors-alist'."
   (blc-turn-off-modes #'tool-bar-mode))
 
 (use-package top-mode
-  :ensure t
+  :ensure
   :defer)
 
 (use-package uniquify
@@ -1695,32 +1695,32 @@ in `zenburn-default-colors-alist'."
   (setq-default vc-handled-backends nil))
 
 (use-package visual-regexp-steroids
-  :ensure t
+  :ensure
   :after pcre2el
   :defer
   :config
   (setq-default vr/match-separator-use-custom-face t))
 
 (use-package vlf
-  :ensure t
+  :ensure
   :defer)
 
 (use-package w3m
-  :ensure t
+  :ensure
   :defer)
 
 (use-package wc-mode
-  :ensure t
+  :ensure
   :commands wc-mode
   :config
   (setq-default wc-modeline-format "[%tll]"))
 
 (use-package web-mode
-  :ensure t
+  :ensure
   :mode ("\\.html\\'" "\\.mustache\\'"))
 
 (use-package wgrep
-  :ensure t
+  :ensure
   :defer)
 
 (use-package whitespace
@@ -1766,7 +1766,7 @@ in `zenburn-default-colors-alist'."
   (add-hook 'woman-mode-hook #'blc-woman-fontify))
 
 (use-package wrap-region
-  :ensure t
+  :ensure
   :delight wrap-region-mode
   :commands wrap-region-add-wrapper
   :init
@@ -1778,7 +1778,7 @@ in `zenburn-default-colors-alist'."
   (wrap-region-add-wrapper "{{#i18n}}" "{{/i18n}}" "i"))
 
 (use-package wttrin
-  :ensure t
+  :ensure
   :defer
   :config
   (setq-default
@@ -1792,7 +1792,7 @@ in `zenburn-default-colors-alist'."
            (             "Moon"    )))))
 
 (use-package xref-js2
-  :ensure t
+  :ensure
   :defer
   :init
   (add-hook 'js2-mode-hook #'blc-turn-on-xref-js2))
@@ -1803,7 +1803,7 @@ in `zenburn-default-colors-alist'."
   (blc-with-every-frame #'blc-turn-on-xterm-mouse))
 
 (use-package yaml-mode
-  :ensure t
+  :ensure
   :defer)
 
 ;;; init.el ends here
