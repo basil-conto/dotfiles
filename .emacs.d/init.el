@@ -19,6 +19,8 @@
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
+;; * OrgMobile
+;; * OrgRef
 ;; * Quelpa
 ;; * Ivy
 ;; * Macros
@@ -87,10 +89,12 @@ why-are-you-changing-gc-cons-threshold/'."
   (setq-default
    package-archive-priorities
    '(("gnu"   . 1)
-     ("melpa" . 2))
+     ("melpa" . 2)
+     ("org"   . 3))
    package-archives
    '(("gnu"   . "https://elpa.gnu.org/packages/")
-     ("melpa" . "https://melpa.org/packages/")))
+     ("melpa" . "https://melpa.org/packages/")
+     ("org"   . "http://orgmode.org/elpa/")))
 
   ;; Locate and activate packages
   (package-initialize)
@@ -1520,10 +1524,27 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+;; KLUDGE: Force installation of newer version of built-in package
+(eval-and-compile
+  (unless (assq 'org package-alist)
+    (setf (alist-get 'org package--builtins t t) t)))
+
 (use-package org
-  :bind ("C-c l" . org-store-link)
+  :ensure
+  :ensure org-plus-contrib
+  :bind (("C-c a" . org-agenda)
+         ("C-c b" . org-iswitchb)
+         ("C-c c" . org-capture)
+         ("C-c l" . org-store-link))
   :init
-  (setq org-special-ctrl-a/e 'reversed))
+  (setq-default
+   org-catch-invisible-edits  'smart
+   org-ctrl-k-protect-subtree t
+   org-cycle-separator-lines  1
+   org-export-coding-system   'utf-8
+   org-goto-interface         'outline-path-completion
+   org-lowest-priority        ?D
+   org-special-ctrl-a/e       'reversed))
 
 (use-package org-ref
   :ensure
