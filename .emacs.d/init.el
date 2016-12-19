@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;; TODO
+;; * Order `use-package' keywords by their definition
 ;; * Create macro & special form mapper
 ;; * `electric-indent-inhibit' vs `blc-turn-off-local-electric-indent'
 ;; * Displace colour codes with relative faces
@@ -63,9 +64,10 @@ why-are-you-changing-gc-cons-threshold/'."
     (setq-default gc-cons-threshold oldthresh)))
 
 ;; Silence byte-compiler ;_;
-(declare-function blc-report-init-time   "init")
-(declare-function blc-increase-gc-thresh "init")
-(declare-function blc-restore-gc-thresh  "init")
+(eval-when-compile
+  (declare-function blc-report-init-time   "init")
+  (declare-function blc-increase-gc-thresh "init")
+  (declare-function blc-restore-gc-thresh  "init"))
 
 ;; Increase GC threshold to reduce number of GCs during initialisation
 (blc-increase-gc-thresh)
@@ -77,33 +79,38 @@ why-are-you-changing-gc-cons-threshold/'."
 (require 'seq)
 (require 'subr-x)
 
-;; Package system
-(setq-default
- package-enable-at-startup nil          ; Activate packages manually
- package-archives                       ; HTTPS only
- (mapcar #'(lambda (cell)
-             `(,(car cell) .
-               ,(replace-regexp-in-string
-                 "^\\(http\\):" "https" (cdr cell) nil t 1)))
-         package-archives))
-(push '("melpa" . "https://melpa.org/packages/") package-archives)
-(advice-add #'package--save-selected-packages :override #'ignore) ; Sandbox
-(package-initialize)
+(eval-and-compile
+  ;; Sandbox this nuisance
+  (advice-add #'package--save-selected-packages :override #'ignore)
 
-;; Third-party dependencies
-(when-let ((deps    '(dash dash-functional f s use-package zenburn-theme))
-           (missing (seq-remove #'package-installed-p deps)))
-  (when (y-or-n-p (format "Install missing packages %s?" missing))
-    (package-refresh-contents)
-    (mapc #'package-install missing)))
+  ;; Archives
+  (setq-default
+   package-archive-priorities
+   '(("gnu"   . 1)
+     ("melpa" . 2))
+   package-archives
+   '(("gnu"   . "https://elpa.gnu.org/packages/")
+     ("melpa" . "https://melpa.org/packages/")))
 
-(eval-when-compile
-  (setq-default use-package-verbose 'debug)
-  (require 'use-package))
+  ;; Locate and activate packages
+  (package-initialize)
+
+  ;; Third-party dependencies
+  (let* ((deps    '(dash dash-functional f use-package zenburn-theme))
+         (missing (seq-remove #'package-installed-p deps)))
+    (when (or noninteractive            ; Byte-compiling
+              (and missing
+                   (y-or-n-p (format "Install missing packages %s?" missing))))
+      (package-refresh-contents)
+      (mapc #'package-install missing))))
+
 (require 'bind-key)
 (require 'dash)
 (require 'dash-functional)
 (require 'f)
+(eval-when-compile
+  (setq-default use-package-verbose 'debug)
+  (require 'use-package))
 
 
 ;;;; DEFINITIONS
