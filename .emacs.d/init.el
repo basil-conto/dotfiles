@@ -1535,6 +1535,10 @@ in `zenburn-default-colors-alist'."
 
   (setq-default python-shell-interpreter "ipython3"))
 
+(use-package rainbow-mode
+  :ensure
+  :defer)
+
 (use-package recentf
   :defer
   :init
