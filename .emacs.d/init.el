@@ -1484,6 +1484,11 @@ in `zenburn-default-colors-alist'."
   (bind-key "TAB" #'markdown-cycle markdown-mode-map)
   (blc-trim-before-newline #'markdown-enter-key))
 
+(use-package menu-bar
+  :defer
+  :init
+  (blc-turn-off-modes #'menu-bar-mode))
+
 (use-package minimap
   :ensure
   :defer
