@@ -859,6 +859,10 @@ in `zenburn-default-colors-alist'."
   :init
   (delete-selection-mode))
 
+(use-package dictionary
+  :ensure
+  :defer)
+
 (use-package dired
   :defer
   :init
