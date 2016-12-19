@@ -1709,6 +1709,12 @@ in `zenburn-default-colors-alist'."
   ;; Magit-only
   (setq-default vc-handled-backends nil))
 
+(use-package visual-fill-column
+  :ensure
+  :defer
+  :init
+  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
+
 (use-package visual-regexp-steroids
   :ensure
   :after pcre2el
