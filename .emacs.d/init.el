@@ -1621,7 +1621,9 @@ in `zenburn-default-colors-alist'."
 (use-package "startup"
   :defer
   :init
-  (setq-default inhibit-startup-screen t)
+  (setq-default
+   inhibit-default-init   t
+   inhibit-startup-screen t)
   (add-hook 'after-init-hook #'blc-report-init-time t))
 
 (use-package subword
