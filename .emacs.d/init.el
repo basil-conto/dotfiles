@@ -1484,13 +1484,6 @@ in `zenburn-default-colors-alist'."
   (bind-key "TAB" #'markdown-cycle markdown-mode-map)
   (blc-trim-before-newline #'markdown-enter-key))
 
-(use-package minibuffer
-  :defer
-  :init
-  (mapc (-applify #'add-hook)
-        `((minibuffer-setup-hook ,#'blc-increase-gc-thresh)
-          (minibuffer-exit-hook  ,#'blc-restore-gc-thresh ))))
-
 (use-package minimap
   :ensure
   :defer
