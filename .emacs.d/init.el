@@ -15,7 +15,6 @@
 ;;   or customise `magit-display-buffer-function' use-case
 ;; * Delight modes
 ;; * Separate config data from logic, particularly w.r.t. sensitive data
-;; * :bind local :maps once their autoloading is fixed upstream
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
@@ -1096,12 +1095,13 @@ in `zenburn-default-colors-alist'."
 
 (use-package ggtags
   :ensure
+  :bind (:map ggtags-mode-map
+              ("M-F" . ggtags-find-reference))
   :commands ggtags-find-reference
   :config
   (unbind-key "M-<" ggtags-navigation-map) ; Such rude ;_;
   (unbind-key "M->" ggtags-navigation-map)
-  (unbind-key "M-]" ggtags-mode-map)
-  (bind-key   "M-F" #'ggtags-find-reference ggtags-mode-map))
+  (unbind-key "M-]" ggtags-mode-map))
 
 (use-package haskell-cabal
   :ensure haskell-mode
@@ -1304,6 +1304,8 @@ in `zenburn-default-colors-alist'."
 
 (use-package js2-mode
   :ensure
+  :bind (:map js2-mode-map
+              ("RET" . js2-line-break))
   :mode "\\.js\\'"
   :interpreter "node" "nodejs"
   :commands js2-line-break
@@ -1322,9 +1324,7 @@ in `zenburn-default-colors-alist'."
    js2-highlight-level                  3
    js2-include-node-externs             t
    js2-mode-assume-strict               t
-   js2-skip-preprocessor-directives     t)
-
-  (bind-key "RET" #'js2-line-break js2-mode-map))
+   js2-skip-preprocessor-directives     t))
 
   ;; ;; FIXME
   ;; (mapc (-applify #'set-face-foreground)
@@ -1489,10 +1489,11 @@ in `zenburn-default-colors-alist'."
 
 (use-package markdown-mode
   :ensure
+  :bind (:map markdown-mode-map
+              ("TAB" . markdown-cycle))
   :mode "\\.md\\'" "\\.markdown\\'"
   :commands markdown-cycle markdown-enter-key
   :config
-  (bind-key "TAB" #'markdown-cycle markdown-mode-map)
   (blc-trim-before-newline #'markdown-enter-key))
 
 (use-package menu-bar
