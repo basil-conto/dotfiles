@@ -212,6 +212,44 @@ into account."
   (interactive)
   (blc-turn-off-modes #'electric-indent-local-mode))
 
+(defvar blc-info-item--cache ()
+  "Cache of Info menu item points.
+(Item name . point) cons pairs are keyed by Info file + node.")
+
+(defvar blc-info-item--file nil
+  "Canonical symbol whose name is the Current Info page.")
+
+(defun blc-info-item--point (item)
+  "Return point right after Info menu ITEM or nil.
+The caller should dynamically bind `blc-info-item--file' to the
+current Info page for ostensible efficiency."
+  (let ((itemkey (intern item))
+        ;; (Item, point) pairs for current Info page
+        (cached (assq blc-info-item--file blc-info-item--cache)))
+    (or (alist-get itemkey (cdr cached)) ; Either already cached
+        (when-let ((point                ; Or searched for from scratch
+                    (save-excursion
+                      (goto-char (point-min))
+                      (re-search-forward (format "^\\* +?%s:" item) nil t))))
+          (if cached
+              (push `(,itemkey . ,point) (cdr cached)) ; Inner alist
+            (push `(,blc-info-item--file               ; Outer alist
+                    . ((,itemkey . ,point))) blc-info-item--cache))
+          point))))
+
+(defun blc-info-item-sort (&rest args)
+  "Sort comparator for Info menu items.
+Sort menu items A and B according to their order of appearance in
+the Info page. This is useful in cases where the candidate list
+of top-level menu items is littered by later detailed node
+listings in lexicographic order."
+  (let ((blc-info-item--file
+         (intern (concat Info-current-file Info-current-node))))
+    (if-let ((indices (-map #'blc-info-item--point args))
+             (found   (-all-p #'numberp indices)))
+        (apply #'< indices)
+      (apply #'string< args))))
+
 (defun blc-turn-off-line-numbers (&rest _)
   "Locally disable display of line numbers."
   (interactive)
@@ -749,7 +787,8 @@ in `zenburn-default-colors-alist'."
    ;; Do not match start of input for counsel commands
    ivy-initial-inputs-alist
    (-remove (-lambda ((cmd))
-              (string-prefix-p "counsel-" (blc-as-string cmd)))
+              (or (memq cmd '(man woman))
+                  (string-prefix-p "counsel-" (blc-as-string cmd))))
             ivy-initial-inputs-alist))
 
   (ivy-set-sources
@@ -1161,12 +1200,23 @@ in `zenburn-default-colors-alist'."
   :bind (("C-x b"   . ivy-switch-buffer)
          ("C-x 4 b" . ivy-switch-buffer-other-window)
          ("C-c C-r" . ivy-resume))
+  :init
+  (setq-default completing-read-function #'ivy-completing-read)
   :config
+  ;; Banish catch-all keys to the tail of the alist
+  (let ((sorts 'ivy-sort-matches-functions-alist))
+    (set-default
+     sorts (apply #'append (-separate (-lambda ((key)) (not (eq t key)))
+                                      (symbol-value sorts)))))
+
+  (add-to-list 'ivy-sort-functions-alist
+               '(Info-complete-menu-item . blc-info-item-sort))
+
+  (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)
+
   (setq-default
    ivy-format-function     'ivy-format-function-arrow
    ivy-use-virtual-buffers t)
-
-  (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)
 
   (ivy-mode))
 
@@ -1199,6 +1249,15 @@ in `zenburn-default-colors-alist'."
 (use-package ivy-pages
   :ensure
   :defer)
+
+(use-package ivy-rich
+  :ensure
+  :after ivy
+  :functions ivy-set-display-transformer
+  :commands ivy-rich-switch-buffer-transformer
+  :config
+  (ivy-set-display-transformer #'ivy-switch-buffer
+                               #'ivy-rich-switch-buffer-transformer))
 
 (use-package jade
   :disabled
