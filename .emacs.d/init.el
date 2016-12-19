@@ -1454,6 +1454,10 @@ in `zenburn-default-colors-alist'."
   :init
   (setq org-special-ctrl-a/e 'reversed))
 
+(use-package org-ref
+  :ensure
+  :defer)
+
 (use-package palette
   :ensure
   :defer)
