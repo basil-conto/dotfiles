@@ -4,6 +4,7 @@
 
 ;; TODO
 ;; * Order `use-package' keywords by their definition
+;; * Use ivy with ID + title from RFC index
 ;; * Create macro & special form mapper
 ;; * `electric-indent-inhibit' vs `blc-turn-off-local-electric-indent'
 ;; * Displace colour codes with relative faces
@@ -260,6 +261,16 @@ listings in lexicographic order."
              (found   (-all-p #'numberp indices)))
         (apply #'< indices)
       (apply #'string< args))))
+
+(defun blc-download-rfc (&optional arg)
+  "Download (write) current RFC buffer into `irfc-directory'."
+  (interactive "P")
+  (if-let ((dir (or (bound-and-true-p irfc-directory)
+                    (f-expand "~")))
+           (arg arg))
+      (let ((default-directory dir))
+        (call-interactively #'write-file))
+    (write-file dir t)))
 
 (defun blc-turn-off-makefile-tab-face ()
   "Disable tab face visualisation in `makefile-mode'."
@@ -1202,6 +1213,10 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (add-hook 'Info-mode-hook #'blc-turn-off-line-numbers))
+
+(use-package irfc
+  :ensure
+  :mode ("rfc[0-9]+\\.txt\\'" . irfc-mode))
 
 (use-package "isearch"
   :defer
