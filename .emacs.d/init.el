@@ -271,10 +271,6 @@ listings in lexicographic order."
   (setq comment-start "//"
         comment-end     ""))
 
-(defun blc-turn-on-dired-x (&rest _)
-  "Load `dired-x'."
-  (require 'dired-x))
-
 (defun blc-enable-disaster ()
   "Enable `disaster' in `c-mode' derivatives."
   (bind-key "C-c d" #'disaster c-mode-base-map))
@@ -878,9 +874,13 @@ in `zenburn-default-colors-alist'."
 (use-package dired-x
   :bind (("C-x C-j"   . dired-jump)
          ("C-x 4 C-j" . dired-jump-other-window))
+  :commands dired-omit-mode
   :init
-  (add-hook 'dired-mode-hook #'blc-turn-on-dired-x)
+  (add-hook 'dired-mode-hook #'dired-omit-mode)
   :config
+  (setq-default dired-omit-files
+                (string-join `("\\`\\.[^.]" ,dired-omit-files) "\\|"))
+
   (mapc (-partial #'add-to-list 'dired-guess-shell-alist-user)
         '(("\\.pdf\\'"   "pdf"     )
           ("\\.docx?\\'" "lowriter"))))
