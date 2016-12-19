@@ -156,9 +156,8 @@ Note: Cons pairs are considered leaf nodes."
 (defun blc-apply-safe (fun &rest args)
   "Apply FUN to ARGS only if symbol FUN has a function definition.
 Issue a warning otherwise."
-  (if (fboundp fun)
-      (apply fun args)
-    (lwarn 'blc :error "Invalid function: %S" fun)))
+  (when (fboundp fun)
+    (apply fun args)))
 
 ;;; Advice
 
