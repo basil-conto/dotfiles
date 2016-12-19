@@ -889,6 +889,10 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default disaster-objdump "objdump -D -M att -Sl --no-show-raw-insn"))
 
+(use-package discover-my-major
+  :ensure
+  :bind ("C-h C-m" . discover-my-major))
+
 ;; FIXME: Add current project to `ebib-bib-search-dirs'
 (use-package ebib
   :ensure
