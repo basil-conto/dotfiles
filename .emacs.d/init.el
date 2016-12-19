@@ -1905,6 +1905,16 @@ in `zenburn-default-colors-alist'."
    wrap-region-tag-active-modes          '(html-mode mustache-mode web-mode))
   (wrap-region-add-wrapper "{{#i18n}}" "{{/i18n}}" "i"))
 
+(use-package writeroom-mode
+  :ensure
+  :bind (:map writeroom-mode-map
+              ("C-M-<" . writeroom-decrease-width)
+              ("C-M->" . writeroom-increase-width)
+              ("C-M-=" . writeroom-adjust-width  ))
+  :init
+  ;; Less jumpy with `auto-fill-mode'
+  (setq-default visual-fill-column-width (+ fill-column 20)))
+
 (use-package wttrin
   :ensure
   :defer
