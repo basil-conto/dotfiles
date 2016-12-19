@@ -131,9 +131,11 @@ why-are-you-changing-gc-cons-threshold/'."
   (defvar ivy-height)
   (defvar ivy-minibuffer-faces)
   (defvar js2-mode-map)
+  (defvar LaTeX-clean-intermediate-suffixes)
   (defvar recentf-list)
   (defvar smerge-mode)
   (defvar TeX-command-default)
+  (defvar TeX-command-list)
   (defvar whitespace-style)
   (defvar zenburn-default-colors-alist))
 
@@ -359,19 +361,30 @@ contains conflict markers."
     (when smerge-mode
       (message "Merge conflict detected. Enabled `smerge-mode'."))))
 
-(defun blc-setup-latexmk ()
-  "Define Latexmk continuous preview and intermediate suffixes."
-  (mapc (-applify #'add-to-list)
-   '((TeX-command-list
-      ("Latexmk"                        ; Command name
-       "latexmk -pvc -view=none %t"     ; Non-expanded shell command
-       TeX-run-command                  ; Process handler
-       t                                ; Confirm expanded shell command
-       (LaTeX-mode)                     ; Applicable modes
-       :help "Run Latexmk"))            ; Command description
-     (LaTeX-clean-intermediate-suffixes
-      "\\.fdb_latexmk")))
-  (setq TeX-command-default "Latexmk"))
+(defun blc-configure-beamer ()
+  "Configure LaTeX Beamer intermediate suffixes."
+  (add-to-list 'LaTeX-clean-intermediate-suffixes "\\.vrb"))
+
+(defun blc-configure-latexmk ()
+  "Configure Latexmk commands and intermediate suffixes."
+  (let* ((exe "latexmk")
+         (nom (capitalize exe)))
+    (dolist (pvc '(nil t))
+      (let* ((nom (format "%s%s"     nom (if pvc " PVC" "")))
+             (cmd (format "%s%s %%t" exe (if pvc "-pvc -view=none" "")))
+             (dsc (format "Run %s"   nom)))
+        (add-to-list
+         'TeX-command-list
+         `(,nom                         ; Command name
+           ,cmd                         ; Non-expanded shell command
+           TeX-run-command              ; Process handler
+           nil                          ; Confirm expanded shell command
+           (latex-mode LaTeX-mode)      ; Applicable modes
+           :help ,dsc))))               ; Command description
+
+    (setq TeX-command-default nom))
+
+  (add-to-list 'LaTeX-clean-intermediate-suffixes "\\.fdb_latexmk"))
 
 (defun blc-turn-on-xref-js2 ()
   "Register xref-js2 backend and sanitise keymap."
@@ -1769,29 +1782,31 @@ in `zenburn-default-colors-alist'."
 
 (use-package tex
   :ensure auctex
-  :commands TeX-doc TeX-revert-document-buffer
-  :defines LaTeX-clean-intermediate-suffixes
+  :bind (:map TeX-mode-map
+              ("C-c ?" . TeX-doc))
+  :commands TeX-revert-document-buffer
+  :init
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer)
+
+  (mapc (-partial #'add-hook 'LaTeX-mode-hook)
+        `(,#'turn-on-auto-fill
+          ,#'blc-configure-beamer
+          ,#'blc-configure-latexmk))
+
   :config
   (setq-default
    LaTeX-csquotes-open-quote  "\\enquote{"
    LaTeX-csquotes-close-quote "}"
    TeX-auto-save              t
+   TeX-engine                 'xetex
    TeX-parse-self             t
    TeX-PDF-mode               t)
 
-  (bind-key "C-c ?" #'TeX-doc TeX-mode-map)
-
   ;; Set priority of pre-configured PDF viewers
-  (when-let ((priority '("PDF Tools" "Zathura"))
-             (viewers  TeX-view-program-list-builtin)
-             (viewer   (-first (-rpartial #'assoc-string viewers) priority)))
-    (push `(output-pdf ,viewer) TeX-view-program-selection))
-
-  (mapc
-   (-applify #'add-hook)
-   `((LaTeX-mode-hook                          ,#'blc-setup-latexmk         )
-     (LaTeX-mode-hook                          ,#'turn-on-auto-fill         )
-     (TeX-after-compilation-finished-functions ,#'TeX-revert-document-buffer))))
+  (mapc (-lambda ((nom)) (push `(output-pdf ,nom) TeX-view-program-selection))
+        (-keep (-rpartial #'assoc-string TeX-view-program-list-builtin)
+               '("Zathura" "PDF Tools"))))
 
 (use-package time
   :defer
