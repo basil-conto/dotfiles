@@ -1592,6 +1592,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package smart-mode-line
+  :ensure
+  :defer)
+
 (use-package smerge-mode
   :defer
   :init
