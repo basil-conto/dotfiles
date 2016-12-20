@@ -769,11 +769,6 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
-(use-package bytecomp
-  :bind (("C-c c" . byte-compile-file)
-         ("C-c f" . byte-recompile-file)
-         ("C-c d" . byte-recompile-directory)))
-
 (use-package calendar
   :defer
   :init
