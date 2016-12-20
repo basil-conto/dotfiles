@@ -1414,9 +1414,8 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (setq-default
-   jit-lock-stealth-load    60
-   jit-lock-stealth-time     4
-   jit-lock-stealth-verbose  t))
+   jit-lock-stealth-load 60
+   jit-lock-stealth-time  4))
 
 (use-package js
   :defer
