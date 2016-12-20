@@ -124,7 +124,8 @@ why-are-you-changing-gc-cons-threshold/'."
 
 (eval-and-compile
   (mapc (-lambda ((file . funcs)) (mapc (-rpartial #'autoload file) funcs))
-        '(("cc-defs"    . (c-langelem-pos))
+        '(("browse-url" . (browse-url-default-browser))
+          ("cc-defs"    . (c-langelem-pos))
           ("csv-mode"   . (csv-align-fields)))))
 
 (eval-when-compile
@@ -237,6 +238,19 @@ into account."
 (defun blc-turn-off-modes (&rest modes)
   "Attempt to pass 0 to all MODES."
   (mapc (-rpartial #'blc-apply-safe 0) modes))
+
+;; TODO: `completing-read' with all available browsers
+(defun blc-browse-url (url &rest args)
+  "Prompt user to load URL in in- or ex-ternal browser.
+The internal browser corresponds to `eww'. See `browse-url' for a
+description of the arguments."
+  (let* ((prompt  "Open URL `%s' in external browser?")
+         (sample  (truncate-string-to-width
+                   url (- fill-column (length prompt)) 0 nil t))
+         (browser (if (y-or-n-p (format prompt sample))
+                      #'browse-url-default-browser
+                    #'eww-browse-url)))
+    (apply browser url args)))
 
 ;; TODO: Disable globally?
 (defun blc-turn-off-local-electric-indent (&rest _)
@@ -768,6 +782,11 @@ in `zenburn-default-colors-alist'."
 (use-package bongo
   :ensure
   :defer)
+
+(use-package browse-url
+  :defer
+  :init
+  (setq-default browse-url-browser-function #'blc-browse-url))
 
 (use-package calendar
   :defer
