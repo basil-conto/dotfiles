@@ -635,6 +635,13 @@ function at URL
   (when (display-graphic-p frame)
     (set-face-attribute 'default frame :font "DejaVu Sans Mono 8")))
 
+(defun blc-google-contacts-fontify ()
+  "Customise `google-contacts-mode' faces."
+  (mapc (-applify #'face-remap-add-relative)
+        '((google-contacts-familyname font-lock-keyword-face)
+          (google-contacts-givenname  font-lock-keyword-face)
+          (google-contacts-header     font-lock-string-face ))))
+
 (defun blc-man-fontify ()
   "Customise `Man-mode' faces."
   (mapc (-applify #'face-remap-add-relative)
@@ -1292,6 +1299,15 @@ in `zenburn-default-colors-alist'."
   :ensure
   :bind (("M-," . golden-ratio-scroll-screen-down)
          ("M-." . golden-ratio-scroll-screen-up)))
+
+(use-package google-contacts-gnus
+  :ensure google-contacts
+  :after gnus
+  :init
+  (add-hook 'google-contacts-mode-hook #'blc-google-contacts-fontify))
+
+(use-package google-contacts-message
+  :after message)
 
 (use-package google-maps
   :ensure
