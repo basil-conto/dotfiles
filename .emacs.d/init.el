@@ -746,7 +746,8 @@ in `zenburn-default-colors-alist'."
   :defer
   :config
   (setq-default
-   auth-source-debug t
+   auth-source-cache-expiry 900
+   auth-source-debug        t
    ;; Add SMTPS port 465
    auth-source-protocols
    (let* ((protos  auth-source-protocols)
