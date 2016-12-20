@@ -1178,6 +1178,10 @@ in `zenburn-default-colors-alist'."
   :bind (("M-," . golden-ratio-scroll-screen-down)
          ("M-." . golden-ratio-scroll-screen-up)))
 
+(use-package google-maps
+  :ensure
+  :defer)
+
 (use-package ggtags
   :ensure
   :bind (:map ggtags-mode-map
