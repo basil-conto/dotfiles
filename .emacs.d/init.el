@@ -494,6 +494,12 @@ relevant major-mode."
   (let ((suffix (unless (string-blank-p suffix) (f-swap-ext "" suffix))))
     (find-file (make-temp-file prefix nil suffix))))
 
+(defun blc-find-file-as-root ()
+  "Open current file as root."
+  (interactive)
+  (when-let ((file (and buffer-read-only buffer-file-name)))
+    (find-alternate-file (format "/sudo::%s" file))))
+
 ;; TODO: Operate on region as well?
 (defun blc-iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
@@ -655,6 +661,7 @@ in `zenburn-default-colors-alist'."
  ("C-x C-p"     .   blc-open-previous-line)
  ("C-x C-n"     .   blc-open-next-line    )
  ;; Window / buffer
+ ("C-c r"       .    blc-find-file-as-root)
  ("C-x 7"       .      blc-transpose-split)
  ("S-<prior>"   .          previous-buffer)
  ("S-<next>"    .              next-buffer)
