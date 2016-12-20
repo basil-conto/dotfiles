@@ -1513,6 +1513,10 @@ in `zenburn-default-colors-alist'."
              (char-to-string (char-from-name (concat name " symbol") t)))
          lunar-phase-names)))
 
+(use-package macrostep
+  :ensure
+  :defer)
+
 (use-package magit
   :ensure
   :bind ("C-x g" . magit-status)
