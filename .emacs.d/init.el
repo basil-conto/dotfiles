@@ -5,20 +5,22 @@
 ;; TODO
 ;; * Order `use-package' keywords by their definition
 ;; * Use ivy with ID + title from RFC index
+;; * Control cmus
 ;; * Create macro & special form mapper
 ;; * `electric-indent-inhibit' vs `blc-turn-off-local-electric-indent'
 ;; * Displace colour codes with relative faces
 ;; * Fix hard-coded load paths
 ;; * Write setter creator macro
 ;; * Improve autoloading of pdf-tools
-;; * Sniff features and explit `use-package' :requires
 ;; * Window splitting - add minimum
 ;;   or customise `magit-display-buffer-function' use-case
 ;; * Delight modes
 ;; * Separate config data from logic, particularly w.r.t. sensitive data
+;;   * Sniff features and explit `use-package' :requires
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
+;; * Emms
 ;; * OrgMobile
 ;; * OrgRef
 ;; * Quelpa
@@ -26,7 +28,6 @@
 ;; * Macros
 ;; * Org
 ;; * Magit
-;; * Helm
 ;; * ERC/ZNC
 ;; * Company
 ;; * URL `http://www.emacswiki.org/emacs/ThreeWindows'
@@ -121,10 +122,12 @@ why-are-you-changing-gc-cons-threshold/'."
 
 ;;; Byte-compiler declarations
 
+(eval-and-compile
+  (mapc (-lambda ((file . funcs)) (mapc (-rpartial #'autoload file) funcs))
+        '(("cc-defs"    . (c-langelem-pos))
+          ("csv-mode"   . (csv-align-fields)))))
+
 (eval-when-compile
-  (declare-function c-langelem-pos   "cc-defs")
-  (declare-function csv-align-fields "csv-mode")
-  (defvar blc-small-scroll-step)
   (defvar c-mode-base-map)
   (defvar git-commit-filename-regexp)
   (defvar git-commit-mode)
@@ -451,6 +454,10 @@ Uses `fast-line-number', which see."
   "Advise NEWLINE-FUNCTION to first delete trailing whitespace."
   (advice-add newline-function :before #'blc-trim-before-newline--advice))
 
+(defun blc-join (&rest paths)
+  "Join PATHS with a trailing slash if applicable."
+  (f-slash (apply #'f-join paths)))
+
 (defun blc-large-buffer-p ()
   "Determine whether buffer classifies as being large.
 Return `t' if buffer size falls under
@@ -529,6 +536,9 @@ function at URL
   (interactive)
   (blc-open-line 1))
 
+(defvar blc-small-scroll-step 6
+  "Number of lines constituting a small scroll.")
+
 (defun blc-small-scroll-up ()
   "Scroll up `blc-small-scroll-step' lines."
   (interactive)
@@ -554,13 +564,13 @@ function at URL
   (when (display-graphic-p frame)
     (set-face-attribute 'default frame :font "DejaVu Sans Mono 8")))
 
-(defun blc-man-fontify (&rest _)
+(defun blc-man-fontify ()
   "Customise `Man-mode' faces."
   (mapc (-applify #'face-remap-add-relative)
         '((Man-overstrike font-lock-keyword-face)
           (Man-underline  font-lock-string-face ))))
 
-(defun blc-woman-fontify (&rest _)
+(defun blc-woman-fontify ()
   "Customise `woman-mode' faces."
   (mapc (-applify #'face-remap-add-relative)
         '((woman-bold   font-lock-keyword-face)
@@ -592,20 +602,17 @@ in `zenburn-default-colors-alist'."
   (set-face-background 'highlight (blc-zenburn-assoc 'zenburn-bg-1))
 
   (mapc (-applify #'add-hook)
-   `((   fci-mode-hook ,#'blc-zenburn-brighten-fci)
-     (   ivy-mode-hook ,#'blc-zenburn-darken-ivy  )
-     (nlinum-mode-hook ,#'blc-zenburn-darken-linum))))
+        `((   fci-mode-hook ,#'blc-zenburn-brighten-fci)
+          (   ivy-mode-hook ,#'blc-zenburn-darken-ivy  )
+          (nlinum-mode-hook ,#'blc-zenburn-darken-linum))))
 
 ;;; Variables
 
-(defvar blc-repos-dir (f-join user-emacs-directory "repos")
+(defvar blc-repos-dir (blc-join user-emacs-directory "repos")
   "Directory containing symlinks to user Git repositories.")
 
 (defvar blc-bib-file "~/.bib.bib"
   "Default user BibTeX file.")
-
-(defvar blc-small-scroll-step 6
-  "Number of lines constituting a small scroll.")
 
 (defvar blc-fundamental-hooks
   (-map (-rpartial #'blc-symcat "-mode-hook")
@@ -625,7 +632,7 @@ in `zenburn-default-colors-alist'."
 (defalias #'yes-or-no-p #'y-or-n-p)
 
 (setq-default
- source-directory                (f-join blc-repos-dir "localsrc" "emacs")
+ source-directory                (blc-join blc-repos-dir "localsrc" "emacs")
  ;; Movement/drawing
  recenter-redisplay              nil
  scroll-conservatively           most-positive-fixnum
@@ -1906,7 +1913,7 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   ;; Magit-only
-  (setq-default vc-handled-backends nil))
+  (setq-default vc-handled-backends ()))
 
 (use-package visual-fill-column
   :ensure
