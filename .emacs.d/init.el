@@ -1042,12 +1042,18 @@ in `zenburn-default-colors-alist'."
   (defengine google-enc
     "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=%s"
     :keybinding "g")
+  (defengine google-sch
+    "https://scholar.google.com/scholar?q=%s"
+    :keybinding "s")
   (defengine hoogle
     "https://www.haskell.org/hoogle/?hoogle=%s"
     :keybinding "h")
+  (defengine imdb
+    "http://www.imdb.com/find?q=%s"
+    :keybinding "i")
   (defengine stack-overflow
     "https://stackoverflow.com/search?q=%s"
-    :keybinding "s")
+    :keybinding "v")
   (defengine wikipedia
     "https://en.wikipedia.org/w/index.php?search=%s"
     :keybinding "w")
