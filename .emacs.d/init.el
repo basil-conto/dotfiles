@@ -962,6 +962,13 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package cus-edit
+  :defer
+  :init
+  (let ((custom (blc-join user-emacs-directory "custom.el")))
+    (when (f-exists-p (setq-default custom-file custom))
+      (lwarn 'blc :warning "Custom file %s exists but is not loaded." custom))))
+
 (use-package csv-mode
   :ensure
   :defer
