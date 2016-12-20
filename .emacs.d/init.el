@@ -654,7 +654,8 @@ in `zenburn-default-colors-alist'."
  ;; Spacing
  fill-column                     80
  indent-tabs-mode                nil
- tab-width                       2)
+ tab-width                       2
+ x-gtk-use-system-tooltips       nil)
 
 ;;; Bindings
 
