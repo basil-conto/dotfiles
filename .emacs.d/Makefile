@@ -9,7 +9,7 @@ suff-el := .el
 suff-bc := .elc
 
 list-bc := $(addsuffix $(suff-bc), $(init-el) $(gnus-el))
-prof-el := $(prof-fn)$(suff-el)
+prof-el := $(addsuffix $(suff-el), $(prof-fn))
 
 vpath %$(suff-el) $(lispdir)
 
