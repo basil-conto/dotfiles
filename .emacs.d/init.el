@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;; TODO
+;; * Add syntax highlighting for netrc files
 ;; * Order `use-package' keywords by their definition
 ;; * Use ivy with ID + title from RFC index
 ;; * Control cmus
@@ -23,6 +24,7 @@
 ;; * Emms
 ;; * OrgMobile
 ;; * OrgRef
+;; * OfflineIMAP
 ;; * Quelpa
 ;; * Ivy
 ;; * Macros
@@ -126,7 +128,9 @@ why-are-you-changing-gc-cons-threshold/'."
   (mapc (-lambda ((file . funcs)) (mapc (-rpartial #'autoload file) funcs))
         '(("browse-url" . (browse-url-default-browser))
           ("cc-defs"    . (c-langelem-pos))
-          ("csv-mode"   . (csv-align-fields)))))
+          ("csv-mode"   . (csv-align-fields))
+          ("shr"        . (shr-copy-url))
+          ("smtpmail"   . (smtpmail-user-mail-address)))))
 
 (eval-when-compile
   (defvar c-mode-base-map)
@@ -138,6 +142,7 @@ why-are-you-changing-gc-cons-threshold/'."
   (defvar LaTeX-clean-intermediate-suffixes)
   (defvar recentf-list)
   (defvar smerge-mode)
+  (defvar smtpmail-smtp-user)
   (defvar TeX-command-default)
   (defvar TeX-command-list)
   (defvar whitespace-style)
@@ -225,6 +230,17 @@ does not, for example, take the effect of `ivy-format-function'
 into account."
   (-update-at 1 (-partial #'+ -3) args))
 
+(defun blc-set-sender--advice (send &rest args)
+  "Change the sender's email address before sending mail."
+  (-if-let* ((user-mail-address (save-restriction
+                                  (message-narrow-to-headers)
+                                  (message-fetch-field "From" t)))
+             (user (-some->> (smtpmail-user-mail-address)
+                             (setq user-mail-address)
+                             (setq smtpmail-smtp-user))))
+      (apply send args)
+    (lwarn 'blc :error "Invalid `From' header")))
+
 
 ;;; Modes
 
@@ -238,6 +254,18 @@ into account."
 (defun blc-turn-off-modes (&rest modes)
   "Attempt to pass 0 to all MODES."
   (mapc (-rpartial #'blc-apply-safe 0) modes))
+
+(defun blc-mail-ids (&optional max)
+  "Return alist of IMAPS identities.
+Each identity has the form (ALIAS . ADDRESS), where both key and
+value are strings. The returned identities are retrieved from
+`auth-sources'."
+  (-map (-lambda ((&plist :host alias :user addr))
+          `(,alias . ,addr))
+        (auth-source-search
+         :require '(:port)
+         :port    "imaps"
+         :max     (or max 8))))
 
 ;; TODO: `completing-read' with all available browsers
 (defun blc-browse-url (url &rest args)
@@ -355,6 +383,23 @@ listings in lexicographic order."
        buffer-file-name
        (string-match-p git-commit-filename-regexp buffer-file-name)
        (kill-buffer)))
+
+(defun blc-download (&optional url file)
+  "Download contents of URL to a file named FILE.
+Wraps `w3m-download' or emulates it when unavailable, working
+with both raw URLs and links."
+  (interactive "i\nF")
+  (if (fboundp 'w3m-download)
+      (w3m-download url file)
+    (url-copy-file (or url
+                       ;; Raw URL
+                       (url-get-url-at-point)
+                       ;; Link
+                       (and (shr-copy-url)
+                            (substring-no-properties (pop kill-ring))))
+                   file
+                   ;; Confirm existing file
+                   0)))
 
 (defun blc-account-concat (category &optional accounts acct-sep list-sep)
   "Join ACCOUNTS with their account CATEGORY.
@@ -745,6 +790,8 @@ in `zenburn-default-colors-alist'."
 (use-package auth-source
   :defer
   :config
+  (add-to-list 'auth-sources (blc-join user-emacs-directory "authinfo.gpg"))
+
   (setq-default
    auth-source-cache-expiry 900
    auth-source-debug        t
@@ -1208,12 +1255,26 @@ in `zenburn-default-colors-alist'."
 (use-package gnus
   :defer
   :init
+  (setq-default gnus-home-directory user-emacs-directory))
+
+(use-package gnus-alias
+  :ensure
+  :bind (:map message-mode-map
+              ("<f6>" . gnus-alias-select-identity))
+  :init
   (setq-default
-   gnus-check-new-newsgroups nil
-   gnus-home-directory       user-emacs-directory
-   gnus-save-killed-list     nil
-   gnus-save-newsrc-file     nil
-   gnus-read-newsrc-file     nil))
+   gnus-alias-allow-forward-as-reply t
+   gnus-alias-verbosity              9)
+
+  (add-hook 'message-load-hook #'gnus-alias-init)
+
+  :config
+  (let ((ids (blc-mail-ids)))
+    (setq-default
+     gnus-alias-default-identity (or (caar ids) "")
+     gnus-alias-identity-alist   (-map (-lambda ((alias . from))
+                                         `(,alias "" ,from "" () "" ""))
+                                       ids))))
 
 (use-package golden-ratio-scroll-screen
   :disabled
@@ -1660,6 +1721,15 @@ in `zenburn-default-colors-alist'."
   :init
   (blc-turn-off-modes #'menu-bar-mode))
 
+(use-package message
+  :defer
+  :init
+  (advice-add #'message-send :around #'blc-set-sender--advice)
+  (setq-default message-directory (blc-join user-emacs-directory "Mail"))
+  :config
+  (setq-default message-alternative-emails
+                (regexp-opt (-map #'cdr (blc-mail-ids)))))
+
 (use-package minimap
   :ensure
   :defer
@@ -1846,7 +1916,11 @@ in `zenburn-default-colors-alist'."
   (with-current-buffer (messages-buffer)
     (blc-turn-off-line-numbers))
 
-  (column-number-mode))
+  (column-number-mode)
+
+  (setq-default
+   read-mail-command 'gnus
+   mail-user-agent   'gnus-user-agent))
 
 (use-package sl
   :ensure
@@ -1860,6 +1934,20 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (add-hook 'find-file-hook #'blc-sniff-smerge t))
+
+(use-package smtpmail
+  :defer
+  :init
+  (setq-default
+   message-send-mail-function            #'smtpmail-send-it
+   smtpmail-debug-info                   t
+   smtpmail-debug-verb                   t
+   smtpmail-queue-dir                    (blc-join message-directory
+                                                   "queued-mail")
+   smtpmail-smtp-server                  "smtp.gmail.com"
+   smtpmail-smtp-service                 "smtps"
+   smtpmail-stream-type                  'ssl
+   smtpmail-warn-about-unknown-extensions t))
 
 (use-package solar
   :defer
