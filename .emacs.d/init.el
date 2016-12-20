@@ -1065,6 +1065,14 @@ in `zenburn-default-colors-alist'."
   (setq-default ess-default-style   'DEFAULT
                 ess-indent-from-lhs nil))
 
+(use-package eww
+  :defer
+  :init
+  (add-hook 'eww-mode-hook #'visual-line-mode)
+  (setq-default
+   eww-search-prefix
+   "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q="))
+
 (use-package exec-path-from-shell
   :ensure
   :defer
