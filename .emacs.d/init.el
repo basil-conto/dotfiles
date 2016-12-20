@@ -133,6 +133,7 @@ why-are-you-changing-gc-cons-threshold/'."
   (defvar recentf-list)
   (defvar smerge-mode)
   (defvar TeX-command-default)
+  (defvar whitespace-style)
   (defvar zenburn-default-colors-alist))
 
 ;;; Malformed types
@@ -259,6 +260,10 @@ listings in lexicographic order."
              (found   (-all-p #'numberp indices)))
         (apply #'< indices)
       (apply #'string< args))))
+
+(defun blc-turn-off-makefile-tab-face ()
+  "Disable tab face visualisation in `makefile-mode'."
+  (setq-local whitespace-style (delq 'tabs whitespace-style)))
 
 (defun blc-turn-off-line-numbers (&rest _)
   "Locally disable display of line numbers."
@@ -1480,7 +1485,8 @@ in `zenburn-default-colors-alist'."
 (use-package make-mode
   :defer
   :config
-  (setq-default makefile-macro-assign " := "))
+  (setq-default makefile-macro-assign " := ")
+  (add-hook 'makefile-mode-hook #'blc-turn-off-makefile-tab-face))
 
 (use-package man
   :defer
