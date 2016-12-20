@@ -199,6 +199,21 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
 
+(defvar blc-holiday-list-lut
+  '(("Christmas"         . "🎄")
+    ("Halloween"         . "👻")
+    ("Hanukkah"          . "🕎")
+    ("St. Patrick's Day" . "☘")
+    ("Valentine's Day"   . "❤"))
+  "Holiday string replacements.")
+
+(defun blc-holiday-list--advice (haystack)
+  "Replace holiday strings according to `blc-holiday-list-lut'."
+  (let ((lut blc-holiday-list-lut))
+    (blc-tree-sed (regexp-opt (-map #'car lut))
+                  (-compose  #'cdr (-rpartial #'assoc-string lut t))
+                  haystack)))
+
 (defun blc-narrow-candidate--advice (args)
   "Decrease `ivy-bibtex' entry width due to other formatting.
 `ivy-bibtex-default-action' only considers `frame-width', which
@@ -733,6 +748,14 @@ in `zenburn-default-colors-alist'."
          ("C-c f" . byte-recompile-file)
          ("C-c d" . byte-recompile-directory)))
 
+(use-package calendar
+  :defer
+  :init
+  (setq-default
+   calendar-date-style                  'iso
+   calendar-christian-all-holidays-flag t
+   calendar-islamic-all-holidays-flag   t))
+
 (use-package cc-mode
   :defer
   :functions c-lineup-arglist
@@ -893,6 +916,13 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (delete-selection-mode))
+
+(use-package diary-lib
+  :defer
+  :init
+  (setq-default
+   diary-comment-start     ";"
+   diary-number-of-entries 3))
 
 (use-package dictionary
   :ensure
@@ -1204,6 +1234,16 @@ in `zenburn-default-colors-alist'."
    hledger-ratios-liquid-asset-accounts
    (blc-account-concat "assets"   '("boi" "cash"))))
 
+(use-package holidays
+  :commands calendar-holiday-list
+  :init
+  (setq-default
+   holiday-bahai-holidays    ()
+   holiday-oriental-holidays ())
+  :config
+  (advice-add #'calendar-holiday-list
+              :filter-return #'blc-holiday-list--advice))
+
 (use-package i18next-wrap
   :load-path "lisp"
   :bind ("C-c C-i" . i18next-query-replace))
@@ -1433,6 +1473,15 @@ in `zenburn-default-colors-alist'."
 (use-package lorem-ipsum
   :ensure
   :defer)
+
+(use-package lunar
+  :defer
+  :config
+  (setq-default
+   lunar-phase-names
+   (-map #'(lambda (name)
+             (char-to-string (char-from-name (concat name " symbol") t)))
+         lunar-phase-names)))
 
 (use-package magit
   :ensure
@@ -1736,6 +1785,13 @@ in `zenburn-default-colors-alist'."
   :init
   (add-hook 'find-file-hook #'blc-sniff-smerge t))
 
+(use-package solar
+  :defer
+  :init
+  (setq-default
+   calendar-latitude      53.3
+   calendar-longitude      6.3
+   calendar-location-name "Dublin, IE"))
 
 (use-package solarized-theme
   :disabled
