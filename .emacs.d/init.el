@@ -1008,6 +1008,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package emms
+  :ensure
+  :defer)
+
 (use-package engine-mode
   :ensure
   :commands engine-mode engine/execute-search engine/get-query
