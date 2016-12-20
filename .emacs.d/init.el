@@ -734,6 +734,10 @@ in `zenburn-default-colors-alist'."
   :bind (("C-c #" . avy-goto-char-timer)
          ("M-g f" . avy-goto-line      )))
 
+(use-package babel
+  :ensure
+  :defer)
+
 (use-package base16-theme
   :disabled
   :ensure)
