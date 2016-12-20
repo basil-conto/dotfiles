@@ -1004,6 +1004,10 @@ in `zenburn-default-colors-alist'."
   (delight '((      emacs-lisp-mode "ελ" :major)
              (lisp-interaction-mode "λι" :major))))
 
+(use-package embrace
+  :ensure
+  :defer)
+
 (use-package engine-mode
   :ensure
   :commands engine-mode engine/execute-search engine/get-query
