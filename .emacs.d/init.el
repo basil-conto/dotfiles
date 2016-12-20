@@ -500,6 +500,12 @@ relevant major-mode."
   (when-let ((file (and buffer-read-only buffer-file-name)))
     (find-alternate-file (format "/sudo::%s" file))))
 
+(defun blc-make-graphic-display ()
+  "Make a graphical frame.
+Display is determined by the environment variable DISPLAY."
+  (interactive)
+  (make-frame-on-display (getenv "DISPLAY")))
+
 ;; TODO: Operate on region as well?
 (defun blc-iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
@@ -660,8 +666,9 @@ in `zenburn-default-colors-alist'."
  ("C-x l"       . blc-echo-fast-line-count)
  ("C-x C-p"     .   blc-open-previous-line)
  ("C-x C-n"     .   blc-open-next-line    )
- ;; Window / buffer
+ ;; Frame / window / buffer
  ("C-c r"       .    blc-find-file-as-root)
+ ("C-x 5 3"     . blc-make-graphic-display)
  ("C-x 7"       .      blc-transpose-split)
  ("S-<prior>"   .          previous-buffer)
  ("S-<next>"    .              next-buffer)
