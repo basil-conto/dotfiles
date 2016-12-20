@@ -1283,6 +1283,10 @@ in `zenburn-default-colors-alist'."
                                          `(,alias "" ,from "" () "" ""))
                                        ids))))
 
+(use-package gnus-desktop-notify
+  :ensure
+  :defer)
+
 (use-package golden-ratio-scroll-screen
   :disabled
   :ensure
