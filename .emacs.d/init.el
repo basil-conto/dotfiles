@@ -1160,6 +1160,12 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package ghc
+  :ensure
+  :defer
+  :init
+  (add-hook 'haskell-mode-hook #'ghc-init))
+
 (use-package git-commit
   :ensure magit
   ;; Need to load package to know when to load package :(
