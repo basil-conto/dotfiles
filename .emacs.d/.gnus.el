@@ -17,7 +17,6 @@
       (gnus-user-date (format-time-string "%a, %d %b %Y %T %z" time))
     ""))
 
-;; FIXME: RSS?
 (defun gnus-user-format-function-dsum (header)
   "User-defined Gnus summary line timestamp format."
   (let ((date (mail-header-parse-date (mail-header-date header))))
@@ -155,3 +154,10 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (setq-default
    mm-html-blocked-images                 nil
    mm-text-html-renderer                  'gnus-w3m))
+
+(use-package nnir
+  :defer
+  :config
+  (let ((key "gmail"))
+    (add-to-list 'nnir-imap-search-arguments `(,key . "X-GM-RAW"))
+    (setq-default nnir-imap-default-search-key key)))
