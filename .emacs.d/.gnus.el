@@ -84,6 +84,16 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    (-union '("^Delivered-To:")
            (-list gnus-visible-headers))))
 
+(use-package gnus-cloud
+  :defer
+  :init
+  (setq-default
+   gnus-cloud-method                      "nnimap:personal"
+   gnus-cloud-storage-method              'epg
+   gnus-cloud-synced-files
+   `(,(f-swap-ext gnus-startup-file "eld")
+     (:directory ,gnus-directory :match ".*.SCORE\\'"))))
+
 (use-package gnus-group
   :defer
   :init
