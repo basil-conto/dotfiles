@@ -41,6 +41,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   :init
   (setq-default
    gnus-extract-address-components        #'mail-extract-address-components
+   gnus-invalid-group-regexp              "[: `'\"]\\|^$"
    gnus-select-method                     '(nnnil)
    gnus-summary-line-format
    (concat "%U"                           ; Read status
