@@ -2091,9 +2091,9 @@ in `zenburn-default-colors-alist'."
   :commands blc-debug-use-package use-package-autoload-keymap
   :config
   (defun blc-debug-use-package ()
-    "Enable `use-package' debugging."
+    "Toggle `use-package' debugging."
     (interactive)
-    (setq-default use-package-debug t)))
+    (setq-default use-package-debug (not use-package-debug))))
 
 (use-package vc-hooks
   :defer
