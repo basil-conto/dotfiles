@@ -11,16 +11,23 @@
 
   (defvar gnus-tmp-group))
 
+(defun blc-user-date--format (date)
+  "Format DATE in a format suitable for `gnus-user-date'."
+  (format-time-string "%a, %d %b %Y %T %z" date))
+
+(defun blc-user-date (date)
+  "Massage DATE before passing it to `gnus-user-date'."
+  (gnus-user-date
+   (funcall (if (stringp date)
+                #'identity
+              #'blc-user-date--format)
+            date)))
+
 (defun gnus-user-format-function-dgroup (&rest _)
   "User-defined Gnus group line timestamp format."
   (if-let ((time (gnus-group-timestamp gnus-tmp-group)))
-      (gnus-user-date (format-time-string "%a, %d %b %Y %T %z" time))
+      (blc-user-date time)
     ""))
-
-(defun gnus-user-format-function-dsum (header)
-  "User-defined Gnus summary line timestamp format."
-  (let ((date (mail-header-parse-date (mail-header-date header))))
-    (format-time-string "%a %d %b %Y %T" date)))
 
 (defun blc-gnus-topic-fold ()
   "Toggle folding of current topic.
@@ -40,9 +47,11 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
            "%R"                           ; Replied status
            "%z"                           ; Article zcore
            "%O "                          ; Download mark
-           "%4{%u&dsum;%} "               ; Full timestamp
            "%B"                           ; Thread tree
-           "%(%2{%-32,32f%} %3{%s%}%)"    ; From/To, Subject
+           "%(%2{%-24,24f%}"              ; From/To
+           "%-29= : "                     ; Colon
+           "%3{%-50,50s%}%)"              ; Subject
+           "%4{%9&user-date;%}"           ; Age-sensitive date
            "\n"))
 
   ;; FIXME: NNTP firewall
@@ -87,13 +96,13 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    (concat "%M"                           ; Marked articles
            "%S"                           ; Subscription
            "%p"                           ; Marked for processing
-           "%16u&dgroup;"                 ; Last read timestamp
+           "%m"                           ; New mail
+           "%B"                           ; Open summary buffer
            "%P"                           ; Topic indentation
            "%5y? %3T!"                    ; Unread and ticked articles
-           "%m"                           ; New mail
-           ":"                            ; Colon
-           "%B"                           ; Open summary buffer
-           "%(%c%)"                       ; Collapsed group name
+           " : "                          ; Colon
+           "%(%-40,40c%)"                 ; Collapsed group name
+           "%9u&dgroup;"                  ; Last read
            "\n")))
 
 (use-package gnus-spec
@@ -128,17 +137,16 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    gnus-summary-gather-subject-limit      'fuzzy
    gnus-summary-next-group-on-exit        nil
    gnus-summary-thread-gathering-function #'gnus-gather-threads-by-references
-   gnus-user-date-format-alist
-   '(((gnus-seconds-today)                . "Today %R")
+   gnus-user-date-format-alist            ; Max. length 10
+   '(((gnus-seconds-today)                . "%R")
      ((float-time
        (time-add
         (days-to-time 1)
-        (gnus-seconds-today)))            . "Yesterday %R")
+        (gnus-seconds-today)))            . "Y %R")
      ((float-time
-       (days-to-time 7))                  . "%a %R")
-     ((gnus-seconds-month)                . "%a %d")
-     ((gnus-seconds-year)                 . "%b %d")
-     (t                                   . "%b %d %Y"))))
+       (days-to-time 7))                  . "%a %d")
+     ((gnus-seconds-year)                 . "%d %b")
+     (t                                   . "%d/%m/%y"))))
 
 (use-package gnus-topic
   :bind (:map gnus-topic-mode-map
