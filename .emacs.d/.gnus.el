@@ -174,6 +174,14 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   :init
   (add-hook 'gnus-group-mode-hook #'gnus-topic-mode))
 
+(use-package gnus-util
+  :defer
+  :init
+  (setq-default
+   gnus-add-timestamp-to-message          'log
+   gnus-verbose                           10
+   gnus-verbose-backends                  10))
+
 (use-package mm-decode
   :defer
   :init
