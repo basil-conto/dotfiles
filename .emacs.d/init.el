@@ -770,6 +770,12 @@ in `zenburn-default-colors-alist'."
   (setq-default ag-highlight-search t)
   (add-to-list 'ag-arguments "-C 5"))
 
+(use-package alert
+  :ensure
+  :defer
+  :init
+  (setq-default alert-default-style 'libnotify))
+
 (use-package apt-sources
   ;; FIXME
   :load-path "/usr/share/emacs/site-lisp/debian-el"
@@ -1289,10 +1295,6 @@ in `zenburn-default-colors-alist'."
      gnus-alias-identity-alist   (-map (-lambda ((alias . from))
                                          `(,alias "" ,from "" () "" ""))
                                        ids))))
-
-(use-package gnus-desktop-notify
-  :ensure
-  :defer)
 
 (use-package golden-ratio-scroll-screen
   :disabled

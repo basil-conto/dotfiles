@@ -94,6 +94,13 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    `(,(f-swap-ext gnus-startup-file "eld")
      (:directory ,gnus-directory :match ".*.SCORE\\'"))))
 
+(use-package gnus-desktop-notify
+  :ensure
+  :defer
+  :init
+  (gnus-desktop-notify-mode)
+  (gnus-demon-add-handler 'gnus-demon-scan-news 2 nil))
+
 (use-package gnus-group
   :defer
   :init
