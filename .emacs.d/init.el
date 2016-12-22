@@ -807,17 +807,10 @@ in `zenburn-default-colors-alist'."
 
   (setq-default
    auth-source-cache-expiry 900
-   auth-source-debug        t
-   ;; Add SMTPS port 465
-   auth-source-protocols
-   (let* ((protos  auth-source-protocols)
-          (proto   'smtp)
-          (stdport  "25")
-          (secport "465")
-          ;; Add secure port or whole entry when not present
-          (names   (-union (alist-get proto protos)
-                           `(,(blc-as-string proto) ,stdport ,secport))))
-     (setf (alist-get proto protos) names))))
+   auth-source-debug        t)
+
+  ;; Add SMTPS
+  (setf (alist-get 'smtp auth-source-protocols) '("smtp" "smtps" "25" "587")))
 
 (use-package avy
   :ensure
@@ -1975,7 +1968,7 @@ in `zenburn-default-colors-alist'."
                                                    "queued-mail")
    smtpmail-smtp-server                  "smtp.gmail.com"
    smtpmail-smtp-service                 "smtps"
-   smtpmail-stream-type                  'ssl
+   smtpmail-stream-type                  'tls
    smtpmail-warn-about-unknown-extensions t))
 
 (use-package solar
