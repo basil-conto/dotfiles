@@ -176,7 +176,12 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
      ((float-time
        (days-to-time 7))                  . "%a %d")
      ((gnus-seconds-year)                 . "%d %b")
-     (t                                   . "%d/%m/%y"))))
+     (t                                   . "%d/%m/%y")))
+
+  :config
+  (mapc (-applify #'add-to-list)
+        `((gnus-article-sort-functions ,#'gnus-article-sort-by-date t)
+          (gnus-thread-sort-functions  ,#'gnus-thread-sort-by-date  t))))
 
 (use-package gnus-topic
   :bind (:map gnus-topic-mode-map
