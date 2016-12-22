@@ -1268,7 +1268,8 @@ in `zenburn-default-colors-alist'."
 (use-package gnus
   :defer
   :init
-  (setq-default gnus-home-directory user-emacs-directory))
+  (setq-default gnus-home-directory user-emacs-directory
+                gnus-init-file      (blc-join gnus-home-directory "gnus")))
 
 (use-package gnus-alias
   :ensure

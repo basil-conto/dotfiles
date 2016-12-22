@@ -1,5 +1,5 @@
 init-el := init
-gnus-el := .gnus
+gnus-el := gnus
 prof-fn := profile-dotemacs
 
 lispdir := lisp/
