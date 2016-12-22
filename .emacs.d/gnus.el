@@ -95,10 +95,15 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 
 (use-package gnus-desktop-notify
   :ensure
+  :commands gnus-desktop-notify-dbus
+  :init
+  (setq-default gnus-desktop-notify-function #'gnus-desktop-notify-dbus)
+  (gnus-desktop-notify-mode))
+
+(use-package gnus-demon
   :defer
   :init
-  (gnus-desktop-notify-mode)
-  (gnus-demon-add-handler 'gnus-demon-scan-news 2 nil))
+  (gnus-demon-add-handler #'gnus-demon-scan-news 2 nil))
 
 (use-package gnus-group
   :defer
@@ -121,6 +126,14 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
            "%(%-40,40c%)"                 ; Collapsed group name
            "%9u&dgroup;"                  ; Last read
            "\n")))
+
+(use-package gnus-notifications
+  :disabled                               ; Notifies of all unread messages ;_;
+  :defer
+  :init
+  (add-hook 'gnus-after-getting-new-news-hook #'gnus-notifications)
+  (setq-default
+   gnus-notifications-minimum-level       3))
 
 (use-package gnus-spec
   :defer

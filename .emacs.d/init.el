@@ -774,7 +774,7 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer
   :init
-  (setq-default alert-default-style 'libnotify))
+  (setq-default alert-default-style 'notifications))
 
 (use-package apt-sources
   ;; FIXME
