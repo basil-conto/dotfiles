@@ -1847,6 +1847,8 @@ in `zenburn-default-colors-alist'."
   :mode "\\.latexmkrc\\'")
 
 (use-package perspective
+  ;; (void-function make-variable-frame-local)
+  :disabled
   :ensure
   :defer)
 
