@@ -1,14 +1,13 @@
-;; FIXME:
-;; * Move custom package initialisation to separate file
-;; * Byte-compile
-(require 'dash)
+;;; .gnus.el --- gnus init file for blc -*- lexical-binding: t -*-
+
+;;; Commentary:
+
+;; TODO:
+;; * Improve byte-compilation
+
+;;; Code:
 
 (eval-when-compile
-  (setq-default use-package-verbose 'debug)
-
-  (require 'nnheader)
-  (require 'use-package)
-
   (defvar gnus-tmp-group))
 
 (defun blc-user-date--format (date)
@@ -195,3 +194,5 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (let ((key "gmail"))
     (add-to-list 'nnir-imap-search-arguments `(,key . "X-GM-RAW"))
     (setq-default nnir-imap-default-search-key key)))
+
+;;; .gnus.el ends here

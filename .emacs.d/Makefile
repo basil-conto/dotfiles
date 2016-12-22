@@ -13,22 +13,33 @@ prof-el := $(addsuffix $(suff-el), $(prof-fn))
 
 vpath %$(suff-el) $(lispdir)
 
+ELTARGET          = --eval '(byte-compile-file "$<")'
+COMPILE$(suff-el) = emacs $(ELFLAGS) $(ELPRE) $(ELTARGET) $(ELPOST)
+
 %$(suff-bc): %$(suff-el)
-	emacs $(ELFLAGS) --batch --eval '(byte-compile-file "$<")'
+	$(COMPILE$(suff-el))
+
+.NOTPARALLEL:
 
 .PHONY: all
 all: init gnus
 
 .PHONY: init
+init: ELFLAGS := --batch
 init: $(filter $(init-el)%, $(list-bc))
 
 .PHONY: gnus
+gnus: ELFLAGS := -nw
+gnus: ELPRE   := --funcall gnus
+gnus: ELPOST  := --funcall gnus-group-save-newsrc --funcall kill-emacs
 gnus: $(filter $(gnus-el)%, $(list-bc))
 
 .PHONY: profile
-profile: ELFLAGS := -nw
+profile: ELFLAGS  := -nw
+profile: ELPRE     = --quick --load '$<' --funcall $(prof-fn)
+profile: ELTARGET :=
 profile: $(prof-el)
-	emacs $(ELFLAGS) --quick --load $< --funcall $(prof-fn)
+	$(COMPILE$(suff-el))
 
 .PHONY: clean
 clean:
