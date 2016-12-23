@@ -1964,14 +1964,14 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (setq-default
-   message-send-mail-function            #'smtpmail-send-it
-   smtpmail-debug-info                   t
-   smtpmail-debug-verb                   t
-   smtpmail-queue-dir                    (blc-join message-directory
-                                                   "queued-mail")
-   smtpmail-smtp-server                  "smtp.gmail.com"
-   smtpmail-smtp-service                 "smtps"
-   smtpmail-stream-type                  'tls
+   message-send-mail-function             #'smtpmail-send-it
+   smtpmail-debug-info                    t
+   smtpmail-debug-verb                    t
+   smtpmail-queue-dir                     (blc-join message-directory
+                                                    "queued-mail")
+   smtpmail-smtp-server                   "smtp.gmail.com"
+   smtpmail-smtp-service                  "smtps"
+   smtpmail-stream-type                   'tls
    smtpmail-warn-about-unknown-extensions t))
 
 (use-package solar
