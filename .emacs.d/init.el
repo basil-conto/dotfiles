@@ -1147,6 +1147,12 @@ in `zenburn-default-colors-alist'."
   (mapc (-partial #'add-to-list 'exec-path-from-shell-variables)
         '("SSH_AGENT_PID" "SSH_AUTH_SOCK")))
 
+(use-package executable
+  :defer
+  :init
+  (add-hook 'after-save-hook
+            #'executable-make-buffer-file-executable-if-script-p))
+
 (use-package expand-region
   :ensure
   :bind ("M-+" . er/expand-region))
@@ -1167,12 +1173,6 @@ in `zenburn-default-colors-alist'."
 (use-package figlet
   :ensure
   :defer)
-
-(use-package files
-  :defer
-  :init
-  (add-hook 'after-save-hook
-            #'executable-make-buffer-file-executable-if-script-p))
 
 (use-package files
   :defer
