@@ -1630,6 +1630,12 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package lpr
+  :defer
+  :init
+  (setq-default lpr-add-switches nil
+                lpr-command      "hp-print"))
+
 (use-package lunar
   :defer
   :config
