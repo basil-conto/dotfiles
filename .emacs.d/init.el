@@ -463,6 +463,10 @@ contains conflict markers."
 
   (add-to-list 'LaTeX-clean-intermediate-suffixes "\\.fdb_latexmk"))
 
+(defun blc-indent-relative-first-indent-point ()
+  "Switch `indent-line-function' to `insert-tab'."
+  (setq-local indent-line-function #'indent-relative-first-indent-point))
+
 (defun blc-turn-on-xref-js2 ()
   "Register xref-js2 backend and sanitise keymap."
   (unbind-key "M-." js2-mode-map)     ; Reused by xref
@@ -2058,6 +2062,13 @@ in `zenburn-default-colors-alist'."
   (mapc (-lambda ((nom)) (push `(output-pdf ,nom) TeX-view-program-selection))
         (-keep (-rpartial #'assoc-string TeX-view-program-list-builtin)
                '("Zathura" "PDF Tools"))))
+
+(use-package text-mode
+  :defer
+  :init
+  (mapc (-partial #'add-hook 'text-mode-hook)
+        `(,#'blc-indent-relative-first-indent-point
+          ,#'blc-turn-off-local-electric-indent)))
 
 (use-package time
   :defer
