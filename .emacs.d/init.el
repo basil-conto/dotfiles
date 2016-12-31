@@ -1784,7 +1784,13 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (advice-add #'message-send :around #'blc-set-sender--advice)
-  (setq-default message-directory (blc-join user-emacs-directory "Mail"))
+
+  (setq-default
+   message-citation-line-format   "On %a, %b %d %Y, at %R, %f wrote:\n"
+   message-citation-line-function #'message-insert-formatted-citation-line
+   message-directory              (blc-join user-emacs-directory "Mail")
+   message-fill-column            66)
+
   :config
   (setq-default message-alternative-emails
                 (regexp-opt (-map #'cdr (blc-mail-ids)))))
