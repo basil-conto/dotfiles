@@ -1957,6 +1957,10 @@ in `zenburn-default-colors-alist'."
    read-mail-command 'gnus
    mail-user-agent   'gnus-user-agent))
 
+(use-package skype
+  :ensure
+  :defer)
+
 (use-package sl
   :ensure
   :defer)
