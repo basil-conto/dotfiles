@@ -21,6 +21,7 @@
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
+;; * Outshine/outline-magic
 ;; * Emms
 ;; * OrgMobile
 ;; * OrgRef
