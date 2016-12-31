@@ -1370,6 +1370,16 @@ in `zenburn-default-colors-alist'."
 
   (helm-mode))
 
+(use-package helm-make
+  :ensure
+  :defer
+  :init
+  (setq-default
+   helm-make-cache-targets      t
+   helm-make-completion-method  'ivy
+   helm-make-list-target-method 'qp
+   helm-make-require-match      nil))
+
 (use-package helm-pass
   :ensure
   :defer)
