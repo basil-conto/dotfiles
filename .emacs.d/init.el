@@ -854,6 +854,10 @@ in `zenburn-default-colors-alist'."
    calendar-christian-all-holidays-flag t
    calendar-islamic-all-holidays-flag   t))
 
+(use-package calfw-cal
+  :ensure calfw
+  :bind ("<f9>" . cfw:open-diary-calendar))
+
 (use-package cc-mode
   :defer
   :functions c-lineup-arglist
