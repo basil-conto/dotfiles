@@ -1492,8 +1492,10 @@ in `zenburn-default-colors-alist'."
   (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)
 
   (setq-default
-   ivy-format-function     'ivy-format-function-arrow
-   ivy-use-virtual-buffers t)
+   ivy-count-format          "(%d/%d) "
+   ivy-format-function       'ivy-format-function-arrow
+   ivy-on-del-error-function #'ignore
+   ivy-use-virtual-buffers   t)
 
   (ivy-mode))
 
