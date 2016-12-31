@@ -1049,6 +1049,12 @@ in `zenburn-default-colors-alist'."
                   "-l")
                 " ")))
 
+(defun blc-regexp-opt (&rest strings)
+  "Remove any shy groups after applying `regexp-opt' to STRINGS."
+  (string-remove-suffix
+   "\\)" (string-remove-prefix
+          "\\(?:" (regexp-opt strings))))
+
 (use-package dired-x
   :bind (("C-x C-j"   . dired-jump)
          ("C-x 4 C-j" . dired-jump-other-window))
@@ -1059,9 +1065,13 @@ in `zenburn-default-colors-alist'."
   (setq-default dired-omit-files
                 (string-join `("\\`\\.[^.]" ,dired-omit-files) "\\|"))
 
-  (mapc (-partial #'add-to-list 'dired-guess-shell-alist-user)
-        '(("\\.pdf\\'"   "pdf"     )
-          ("\\.docx?\\'" "lowriter"))))
+  (mapc (-lambda ((cmd . suffs))
+          (let ((patt (apply #'blc-regexp-opt suffs)))
+            (add-to-list 'dired-guess-shell-alist-user
+                         `(,(format "\\.%s\\'" patt) ,cmd))))
+        '(("lowriter" . ("doc" "docx"))
+          ("mpv"      . ("mp4" "mkv"))
+          ("pdf"      . ("pdf")))))
 
 (use-package disaster
   :ensure
