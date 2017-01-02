@@ -1808,6 +1808,17 @@ in `zenburn-default-colors-alist'."
   (set-face-background 'minimap-active-region-background "#696969")
   (set-face-attribute  'minimap-font-face nil :font "DejaVu Sans Mono 1"))
 
+(use-package mm-decode
+  :defer
+  :init
+  (setq-default
+   mm-decrypt-option            'ask
+   mm-default-directory         "~/Downloads/"
+   mm-external-terminal-program "gnome-terminal"
+   mm-inline-large-images       'resize
+   mm-sign-option               'guided
+   mm-verify-option             'always))
+
 (use-package mustache-mode
   :ensure
   :defer)
