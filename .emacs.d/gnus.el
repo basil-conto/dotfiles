@@ -4,6 +4,7 @@
 
 ;; TODO:
 ;; * Improve byte-compilation
+;; * Asynchronous rescanning
 
 ;;; Code:
 
@@ -28,21 +29,24 @@
       (blc-user-date time)
     ""))
 
-(defun blc-demon-scan-news--advice (scan &rest args)
-  "Daemonically scan for new articles as master.
+(defun blc-demon-scan-mail ()
+  "Daemonically scan for new mail as master.
 After scanning, truncate growing network log buffers to
 `message-log-max' lines."
-  (when-let ((master              (not gnus-slave))
-             (gnus-activate-level (1+ gnus-activate-level)))
-    ;; Master checks news
-    (apply scan args)
-    ;; Truncate network logs
+  (unless gnus-slave
+    (gnus-demon-scan-news)
     (dolist (log '("*imap log*" "*nntp-log*"))
       (with-current-buffer log
         (goto-char (point-max))
         (let ((inhibit-read-only t))
-          (delete-region (point-min) (line-beginning-position
-                                      (- 1 message-log-max))))))))
+          (delete-region (point-min)
+                         (line-beginning-position
+                          (- 1 message-log-max))))))))
+
+(defun blc-demon-scan-news ()
+  "Activate higher news levels before `blc-demon-scan-mail'."
+  (let ((gnus-activate-level (1+ gnus-activate-level)))
+    (blc-demon-scan-mail)))
 
 (defun blc-gnus-topic-fold ()
   "Toggle folding of current topic.
@@ -121,9 +125,9 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   :init
   (setq-default gnus-demon-timestep 1)
 
-  (let ((scan #'gnus-demon-scan-news))
-    (advice-add scan :around #'blc-demon-scan-news--advice)
-    (gnus-demon-add-handler scan 300 5)))
+  (mapc (-applify #'gnus-demon-add-handler)
+        `((,#'blc-demon-scan-mail 300  5)
+          (,#'blc-demon-scan-news 600 30))))
 
 (use-package gnus-group
   :defer
