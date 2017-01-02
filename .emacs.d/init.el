@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;; TODO
+;; * Define personal keymap to reduce conflicts?
 ;; * Add syntax highlighting for netrc files
 ;; * Order `use-package' keywords by their definition
 ;; * Use ivy with ID + title from RFC index
@@ -345,6 +346,13 @@ listings in lexicographic order."
   (blc-turn-off-modes #'nlinum-mode
                       #'linum-mode))
 
+(defun blc-org-cycle ()
+  "Call a prefixed `org-cycle'.
+Without the prefix, visibility cycling in `outline-minor-mode'
+and `orgstruct-mode' never seems to enter the SUBTREE state."
+  (interactive)
+  (org-cycle t))
+
 (defun blc-turn-off-prettify-symbols (&rest _)
   "Disable `prettify-symbols-mode'."
   (interactive)
@@ -558,8 +566,8 @@ relevant major-mode."
   (let ((suffix (unless (string-blank-p suffix) (f-swap-ext "" suffix))))
     (find-file (make-temp-file prefix nil suffix))))
 
-(defun blc-find-file-as-root ()
-  "Open current file as root."
+(defun blc-sudo-find-file ()
+  "Open current file as root via `sudo'."
   (interactive)
   (when-let ((file (and buffer-read-only buffer-file-name)))
     (find-alternate-file (format "/sudo::%s" file))))
@@ -739,7 +747,7 @@ in `zenburn-default-colors-alist'."
  ("C-x C-p"     .   blc-open-previous-line)
  ("C-x C-n"     .   blc-open-next-line    )
  ;; Frame / window / buffer
- ("C-c r"       .    blc-find-file-as-root)
+ ("C-c s"       .       blc-sudo-find-file)
  ("C-x 5 3"     . blc-make-graphic-display)
  ("C-x 7"       .      blc-transpose-split)
  ("S-<prior>"   .          previous-buffer)
@@ -1431,8 +1439,9 @@ in `zenburn-default-colors-alist'."
               :filter-return #'blc-holiday-list--advice))
 
 (use-package i18next-wrap
+  :disabled
   :load-path "lisp"
-  :bind ("C-c C-i" . i18next-query-replace))
+  :bind ("C-c I" . i18next-query-replace))
 
 (use-package ido
   :defer
@@ -1477,7 +1486,7 @@ in `zenburn-default-colors-alist'."
   :commands ivy--regex-ignore-order ivy-set-sources
   :bind (("C-x b"   . ivy-switch-buffer)
          ("C-x 4 b" . ivy-switch-buffer-other-window)
-         ("C-c C-r" . ivy-resume))
+         ("C-c r"   . ivy-resume))
   :init
   (setq-default completing-read-function #'ivy-completing-read)
   :config
@@ -1844,6 +1853,8 @@ in `zenburn-default-colors-alist'."
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link))
   :init
+  (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
+
   (setq-default
    org-catch-invisible-edits  'smart
    org-ctrl-k-protect-subtree t
@@ -1856,6 +1867,9 @@ in `zenburn-default-colors-alist'."
 (use-package org-ref
   :ensure
   :defer)
+
+(use-package outline
+  :bind ("C-c C-i" . blc-org-cycle))
 
 (use-package palette
   :ensure
