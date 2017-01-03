@@ -128,7 +128,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 
   (mapc (-applify #'gnus-demon-add-handler)
         `((,#'blc-demon-scan-mail 300  5)
-          (,#'blc-demon-scan-news 600 30))))
+          (,#'blc-demon-scan-news 900 30))))
 
 (use-package gnus-group
   :defer
