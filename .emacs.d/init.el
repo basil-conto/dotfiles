@@ -1294,6 +1294,10 @@ in `zenburn-default-colors-alist'."
    ("C-h 4 C-v" . find-variable-other-window)
    ("C-h 5 C-v" . find-variable-other-frame)))
 
+(use-package fireplace
+  :ensure
+  :defer)
+
 (use-package flex-mode
   :load-path "lisp"
   :mode "\\.lex\\'")
