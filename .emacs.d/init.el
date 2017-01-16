@@ -2281,6 +2281,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package typit
+  :ensure
+  :defer)
+
 (use-package uniquify
   :defer
   :init
