@@ -22,6 +22,7 @@
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
+;; * HighlightChars
 ;; * Outshine/outline-magic
 ;; * Emms
 ;; * OrgMobile
@@ -131,6 +132,7 @@ why-are-you-changing-gc-cons-threshold/'."
         '(("browse-url" . (browse-url-default-browser))
           ("cc-defs"    . (c-langelem-pos))
           ("csv-mode"   . (csv-align-fields))
+          ("hi-lock"    . (hi-lock-set-pattern))
           ("shr"        . (shr-copy-url))
           ("smtpmail"   . (smtpmail-user-mail-address)))))
 
@@ -210,6 +212,14 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
 
+(defun blc-hi-lock-exclude-derived-modes--advice (&rest _)
+  "Exempt derived modes from hi-lock highlighting.
+Include every major mode derived from the current
+`hi-lock-exclude-modes' in that blacklist."
+  (when-let ((modes   'hi-lock-exclude-modes)
+             (derived (apply #'derived-mode-p (symbol-value modes))))
+    (add-to-list modes major-mode)))
+
 (defvar blc-holiday-list-lut
   '(("Christmas"         . "🎄")
     ("Halloween"         . "👻")
@@ -287,6 +297,10 @@ description of the arguments."
   "Disable `electric-indent-local-mode'."
   (interactive)
   (blc-turn-off-modes #'electric-indent-local-mode))
+
+(defun blc-hi-lock-no-eof-nl ()
+  "Highlight missing trailing EOF newlines."
+  (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
 
 (defvar blc-info-item--cache ()
   "Cache of Info menu item points.
@@ -1404,6 +1418,16 @@ in `zenburn-default-colors-alist'."
   :commands helm-projectile-on
   :config
   (helm-projectile-on))
+
+(use-package hi-lock
+  :commands turn-on-hi-lock-if-enabled
+  :init
+  (add-hook 'hi-lock-mode-hook #'blc-hi-lock-no-eof-nl)
+  (advice-add #'turn-on-hi-lock-if-enabled
+              :before #'blc-hi-lock-exclude-derived-modes--advice)
+  (global-hi-lock-mode)
+  :config
+  (add-to-list 'hi-lock-exclude-modes 'comint-mode))
 
 (use-package highlight-escape-sequences
   :ensure
