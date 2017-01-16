@@ -1141,6 +1141,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :bind ("C-h C-m" . discover-my-major))
 
+(use-package ducpel
+  :ensure
+  :defer)
+
 ;; FIXME: Add current project to `ebib-bib-search-dirs'
 (use-package ebib
   :ensure
