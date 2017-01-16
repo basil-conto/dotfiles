@@ -2056,6 +2056,19 @@ in `zenburn-default-colors-alist'."
   :init
   (add-hook 'ivy-mode-hook #'recentf-mode))
 
+(use-package reftex
+  :defer
+  :init
+  (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
+  :config
+  (add-to-list 'reftex-default-bibliography blc-bib-file)
+
+  (setq-default
+   reftex-cite-format       'biblatex
+   reftex-comment-citations t
+   reftex-plug-into-AUCTeX  t
+   reftex-revisit-to-follow t))
+
 (use-package remember
   :bind (("<f7>" . remember-notes)
          ("<f8>" . remember-notes-save-and-bury-buffer))
