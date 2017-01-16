@@ -132,6 +132,7 @@ why-are-you-changing-gc-cons-threshold/'."
         '(("browse-url" . (browse-url-default-browser))
           ("cc-defs"    . (c-langelem-pos))
           ("csv-mode"   . (csv-align-fields))
+          ("dired-x"    . (dired-omit-mode))
           ("hi-lock"    . (hi-lock-set-pattern))
           ("shr"        . (shr-copy-url))
           ("smtpmail"   . (smtpmail-user-mail-address)))))
@@ -168,6 +169,12 @@ why-are-you-changing-gc-cons-threshold/'."
 (defun blc-symcat (&rest objects)
   "Concatenate all OBJECTS under `blc-as-string' as a symbol."
   (intern (mapconcat #'blc-as-string objects "")))
+
+(defun blc-regexp-opt (&rest strings)
+  "Remove any shy groups after applying `regexp-opt' to STRINGS."
+  (string-remove-suffix
+   "\\)" (string-remove-prefix
+          "\\(?:" (regexp-opt strings))))
 
 (defun blc-tree-sed (regexp rep tree &rest args)
   "Replace all matches for REGEXP with REP in TREE.
@@ -291,6 +298,10 @@ description of the arguments."
                       #'browse-url-default-browser
                     #'eww-browse-url)))
     (apply browser url args)))
+
+(defun blc-turn-off-dired-omit ()
+  "Disable `dired-omit-mode'."
+  (blc-turn-off-modes #'dired-omit-mode))
 
 ;; TODO: Disable globally?
 (defun blc-turn-off-local-electric-indent (&rest _)
@@ -1072,18 +1083,12 @@ in `zenburn-default-colors-alist'."
                   "-l")
                 " ")))
 
-(defun blc-regexp-opt (&rest strings)
-  "Remove any shy groups after applying `regexp-opt' to STRINGS."
-  (string-remove-suffix
-   "\\)" (string-remove-prefix
-          "\\(?:" (regexp-opt strings))))
-
 (use-package dired-x
   :bind (("C-x C-j"   . dired-jump)
          ("C-x 4 C-j" . dired-jump-other-window))
-  :commands dired-omit-mode
   :init
-  (add-hook 'dired-mode-hook #'dired-omit-mode)
+  ;; Autoload dired-x but do not omit files by default
+  (add-hook 'dired-mode-hook #'blc-turn-off-dired-omit)
   :config
   (setq-default dired-omit-files
                 (string-join `("\\`\\.[^.]" ,dired-omit-files) "\\|"))
