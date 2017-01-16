@@ -938,6 +938,15 @@ in `zenburn-default-colors-alist'."
 
   (advice-add #'c-lineup-arglist :before-until #'blc-c++-lambda-indent--advice))
 
+(use-package chess
+  :ensure
+  :defer
+  :config
+  (let ((dir (package-desc-dir (cadr (assq 'chess package-alist)))))
+    (setq-default
+     chess-images-default-size blc-chars-per-line
+     chess-images-directory    (blc-join 'dir dir "pieces" "xboard"))))
+
 (use-package color-moccur
   :disabled
   :ensure)
