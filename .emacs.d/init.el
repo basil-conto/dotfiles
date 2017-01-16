@@ -2152,6 +2152,12 @@ in `zenburn-default-colors-alist'."
   :init
   (add-hook 'find-file-hook #'blc-sniff-smerge t))
 
+(use-package smime
+  :defer
+  :init
+  (setq-default smime-certificate-directory
+                (blc-join 'dir message-directory "certs")))
+
 (use-package smtpmail
   :defer
   :init
