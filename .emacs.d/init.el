@@ -1958,6 +1958,10 @@ in `zenburn-default-colors-alist'."
 (use-package outline
   :bind ("C-c C-i" . blc-org-cycle))
 
+(use-package pacmacs
+  :ensure
+  :defer)
+
 (use-package palette
   :ensure
   :defer)
