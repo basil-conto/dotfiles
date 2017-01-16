@@ -1947,6 +1947,10 @@ in `zenburn-default-colors-alist'."
    org-special-ctrl-a/e       'reversed
    org-startup-indented       t))
 
+(use-package org-mime
+  :ensure
+  :defer)
+
 (use-package org-ref
   :ensure
   :defer)
