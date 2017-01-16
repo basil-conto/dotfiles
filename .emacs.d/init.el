@@ -856,6 +856,11 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+;; TODO: Configure
+(use-package auth-password-store
+  :ensure
+  :defer)
+
 (use-package auth-source
   :defer
   :config
