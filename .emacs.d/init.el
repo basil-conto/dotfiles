@@ -1836,6 +1836,12 @@ in `zenburn-default-colors-alist'."
   :init
   (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
 
+(use-package magithub
+  :ensure
+  :after magit
+  :init
+  (setq-default magithub-debug-mode t))
+
 (use-package make-mode
   :defer
   :init
