@@ -1991,6 +1991,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package passmm
+  :ensure
+  :defer)
+
 (use-package pcre2el
   :ensure
   :defer)
