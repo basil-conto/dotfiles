@@ -2217,6 +2217,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package systemd
+  :ensure
+  :defer)
+
 (use-package tex
   :ensure auctex
   :bind (:map TeX-mode-map
