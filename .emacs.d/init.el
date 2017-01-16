@@ -2290,6 +2290,11 @@ in `zenburn-default-colors-alist'."
   :init
   (setq-default uniquify-buffer-name-style 'forward))
 
+(use-package url
+  :defer
+  :config
+  (add-to-list 'url-cookie-untrusted-urls "economist\\.com"))
+
 (use-package use-package
   :commands blc-debug-use-package use-package-autoload-keymap
   :config
