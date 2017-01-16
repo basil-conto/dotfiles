@@ -2069,6 +2069,10 @@ in `zenburn-default-colors-alist'."
    reftex-plug-into-AUCTeX  t
    reftex-revisit-to-follow t))
 
+(use-package regex-tool
+  :ensure
+  :defer)
+
 (use-package remember
   :bind (("<f7>" . remember-notes)
          ("<f8>" . remember-notes-save-and-bury-buffer))
