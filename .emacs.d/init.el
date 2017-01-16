@@ -309,6 +309,11 @@ description of the arguments."
   (interactive)
   (blc-turn-off-modes #'electric-indent-local-mode))
 
+(defun blc-increase-readability ()
+  "Adjust font for increased readability."
+  (setq line-spacing (window-font-height))
+  (text-scale-set 1))
+
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
   (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
@@ -722,6 +727,11 @@ in `zenburn-default-colors-alist'."
           (   ivy-mode-hook ,#'blc-zenburn-darken-ivy  )
           (nlinum-mode-hook ,#'blc-zenburn-darken-linum))))
 
+;;; Constants
+
+(defconst blc-chars-per-line 80
+  "Target maximum number of characters per line.")
+
 ;;; Variables
 
 (defvar blc-repos-dir (blc-join user-emacs-directory "repos")
@@ -756,7 +766,7 @@ in `zenburn-default-colors-alist'."
  scroll-preserve-screen-position t
  scroll-step                     1
  ;; Spacing
- fill-column                     80
+ fill-column                     blc-chars-per-line
  indent-tabs-mode                nil
  tab-width                       2
  x-gtk-use-system-tooltips       nil)
@@ -1181,7 +1191,7 @@ in `zenburn-default-colors-alist'."
 (use-package eww
   :defer
   :init
-  (add-hook 'eww-mode-hook #'visual-line-mode)
+  (add-hook 'eww-mode-hook #'blc-increase-readability)
   (setq-default
    eww-search-prefix
    "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q="))
@@ -1240,7 +1250,7 @@ in `zenburn-default-colors-alist'."
   :init
   (mapc (-rpartial #'add-hook #'turn-on-fci-mode) blc-fundamental-hooks)
   (setq-default fci-rule-color  "#696969"
-                fci-rule-column 80))
+                fci-rule-column blc-chars-per-line))
 
 (use-package find-file
   :defer
@@ -1824,11 +1834,15 @@ in `zenburn-default-colors-alist'."
   :init
   (advice-add #'message-send :around #'blc-set-sender--advice)
 
+  (add-hook 'message-setup-hook #'footnote-mode)
+
   (setq-default
    message-citation-line-format   "On %a, %b %d %Y, at %R, %f wrote:\n"
    message-citation-line-function #'message-insert-formatted-citation-line
-   message-directory              (blc-join user-emacs-directory "Mail")
-   message-fill-column            66)
+   message-cite-reply-position    'above
+   message-directory              (blc-join 'dir user-emacs-directory "Mail")
+   message-fill-column            66
+   message-from-style             nil)
 
   :config
   (setq-default message-alternative-emails
@@ -1891,7 +1905,8 @@ in `zenburn-default-colors-alist'."
    org-export-coding-system   'utf-8
    org-goto-interface         'outline-path-completion
    org-lowest-priority        ?D
-   org-special-ctrl-a/e       'reversed))
+   org-special-ctrl-a/e       'reversed
+   org-startup-indented       t))
 
 (use-package org-ref
   :ensure
@@ -2024,6 +2039,13 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default sh-basic-offset 2
                 sh-indentation  2))
+
+(use-package shr
+  :defer
+  :init
+  (setq-default shr-bullet  "• "
+                shr-hr-line ?─
+                shr-width   blc-chars-per-line))
 
 (use-package simple
   :bind
@@ -2300,9 +2322,9 @@ in `zenburn-default-colors-alist'."
               ("C-M-<" . writeroom-decrease-width)
               ("C-M->" . writeroom-increase-width)
               ("C-M-=" . writeroom-adjust-width  ))
-  :init
+  :config
   ;; Less jumpy with `auto-fill-mode'
-  (setq-default visual-fill-column-width (+ fill-column 20)))
+  (setq visual-fill-column-width (+ fill-column 20)))
 
 (use-package wttrin
   :ensure
