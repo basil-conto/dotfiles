@@ -509,8 +509,7 @@ contains conflict markers."
 (defun blc-turn-on-xref-js2 ()
   "Register xref-js2 backend and sanitise keymap."
   (unbind-key "M-." js2-mode-map)     ; Reused by xref
-  (add-hook 'xref-backend-functions
-            #'xref-js2-xref-backend nil t))
+  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
 
 (defun blc-turn-on-xterm-mouse (&optional frame &rest _)
   "Enable `xterm-mouse-mode' with first terminal frame created."
@@ -556,9 +555,17 @@ Uses `fast-line-number', which see."
   "Advise NEWLINE-FUNCTION to first delete trailing whitespace."
   (advice-add newline-function :before #'blc-trim-before-newline--advice))
 
-(defun blc-join (&rest paths)
-  "Join PATHS with a trailing slash if applicable."
-  (f-slash (apply #'f-join paths)))
+(defun blc-join (type &rest paths)
+  "Join PATHS, potentially with a trailing slash.
+If TYPE is `dir', always append a trailing slash; if it is
+`file', never append a slash; otherwise, if it is `check', append
+a slash when PATHS correspond to an existing directory. "
+  (funcall
+   (pcase type
+     ('dir   #'file-name-as-directory)
+     ('check #'f-slash)
+     (_      #'identity))
+   (apply #'f-join paths)))
 
 (defun blc-large-buffer-p ()
   "Determine whether buffer classifies as being large.
@@ -734,7 +741,7 @@ in `zenburn-default-colors-alist'."
 
 ;;; Variables
 
-(defvar blc-repos-dir (blc-join user-emacs-directory "repos")
+(defvar blc-repos-dir (blc-join 'dir user-emacs-directory "repos")
   "Directory containing symlinks to user Git repositories.")
 
 (defvar blc-bib-file "~/.bib.bib"
@@ -758,7 +765,8 @@ in `zenburn-default-colors-alist'."
 (defalias #'yes-or-no-p #'y-or-n-p)
 
 (setq-default
- source-directory                (blc-join blc-repos-dir "localsrc" "emacs")
+ source-directory
+ (blc-join 'dir blc-repos-dir "localsrc" "emacs")
  ;; Movement/drawing
  recenter-redisplay              nil
  scroll-conservatively           most-positive-fixnum
@@ -851,7 +859,8 @@ in `zenburn-default-colors-alist'."
 (use-package auth-source
   :defer
   :config
-  (add-to-list 'auth-sources (blc-join user-emacs-directory "authinfo.gpg"))
+  (add-to-list 'auth-sources
+               (blc-join 'file user-emacs-directory "authinfo.gpg"))
 
   (setq-default
    auth-source-cache-expiry 900
@@ -1023,7 +1032,7 @@ in `zenburn-default-colors-alist'."
 (use-package cus-edit
   :defer
   :init
-  (let ((custom (blc-join user-emacs-directory "custom.el")))
+  (let ((custom (blc-join 'file user-emacs-directory "custom.el")))
     (when (f-exists-p (setq-default custom-file custom))
       (lwarn 'blc :warning "Custom file %s exists but is not loaded." custom))))
 
@@ -1303,13 +1312,15 @@ in `zenburn-default-colors-alist'."
   :mode ("/\\(?:\
 \\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
 \\|BRANCH_DESCRIPTION\\)\\'" . git-commit-mode)
+
+  :init
+  (add-hook 'with-editor-post-finish-hook #'blc-kill-git-commit-buffer)
+
   :config
   (setq-default git-commit-summary-max-length 50
                 git-commit-fill-column        68)
 
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line)
-
-  (add-hook 'with-editor-post-finish-hook #'blc-kill-git-commit-buffer)
 
   (global-git-commit-mode))
 
@@ -1324,8 +1335,9 @@ in `zenburn-default-colors-alist'."
 (use-package gnus
   :defer
   :init
-  (setq-default gnus-home-directory user-emacs-directory
-                gnus-init-file      (blc-join gnus-home-directory "gnus")))
+  (setq-default
+   gnus-home-directory user-emacs-directory
+   gnus-init-file      (blc-join 'file gnus-home-directory "gnus")))
 
 (use-package gnus-alias
   :ensure
@@ -1806,9 +1818,10 @@ in `zenburn-default-colors-alist'."
 
 (use-package make-mode
   :defer
+  :init
+  (add-hook 'makefile-mode-hook #'blc-turn-off-makefile-tab-face)
   :config
-  (setq-default makefile-macro-assign " := ")
-  (add-hook 'makefile-mode-hook #'blc-turn-off-makefile-tab-face))
+  (setq-default makefile-macro-assign " := "))
 
 (use-package man
   :defer
@@ -1968,9 +1981,7 @@ in `zenburn-default-colors-alist'."
 ;; TODO: Delight
 (use-package projectile
   :ensure
-  :defer
   :bind-keymap ("C-c p" . projectile-command-map)
-  :init
   :config
   (setq-default
    projectile-completion-system           'ivy
@@ -2062,9 +2073,7 @@ in `zenburn-default-colors-alist'."
 
   (column-number-mode)
 
-  (setq-default
-   read-mail-command 'gnus
-   mail-user-agent   'gnus-user-agent))
+  (setq-default read-mail-command 'gnus))
 
 (use-package skype
   :ensure
@@ -2090,7 +2099,7 @@ in `zenburn-default-colors-alist'."
    message-send-mail-function             #'smtpmail-send-it
    smtpmail-debug-info                    t
    smtpmail-debug-verb                    t
-   smtpmail-queue-dir                     (blc-join message-directory
+   smtpmail-queue-dir                     (blc-join 'dir message-directory
                                                     "queued-mail")
    smtpmail-smtp-server                   "smtp.gmail.com"
    smtpmail-smtp-service                  "smtps"
@@ -2241,6 +2250,7 @@ in `zenburn-default-colors-alist'."
   (setq-default vr/match-separator-use-custom-face t))
 
 (use-package vlf
+  :disabled
   :ensure
   :defer)
 
