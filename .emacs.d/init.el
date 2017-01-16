@@ -2352,6 +2352,10 @@ in `zenburn-default-colors-alist'."
   (setq-default whitespace-style '(face tabs trailing empty tab-mark))
   (global-whitespace-mode))
 
+(use-package wiki-summary
+  :ensure
+  :defer)
+
 (use-package windmove
   :bind
   (("S-<up>"      . windmove-up   )
