@@ -817,7 +817,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package ace-window
   :ensure
-  :bind ("M-]" . ace-window))
+  :bind ("M-o" . ace-window))
 
 (use-package ag
   :ensure
@@ -871,7 +871,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package avy
   :ensure
-  :bind (("C-c #" . avy-goto-char-timer)
+  :bind (("M-]"   . avy-goto-char-timer)
          ("M-g f" . avy-goto-line      )))
 
 (use-package babel
@@ -1162,6 +1162,9 @@ in `zenburn-default-colors-alist'."
   :commands engine-mode engine/execute-search engine/get-query
   :bind-keymap ("C-x /" . engine-mode-map)
   :config
+  (defengine book-depository
+    "https://www.bookdepository.com/search?searchTerm=%s"
+    :keybinding "b")
   (defengine google-def
     "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=define+%s"
     :keybinding "d")
@@ -1268,15 +1271,15 @@ in `zenburn-default-colors-alist'."
 
 (use-package find-func
   :bind
-  (("C-x F"   . find-function)
-   ("C-x 4 F" . find-function-other-window)
-   ("C-x 5 F" . find-function-other-frame)
-   ("C-x K"   . find-function-on-key)
-   ("C-x 4 K" . find-function-on-key-other-window)
-   ("C-x 5 K" . find-function-on-key-other-frame)
-   ("C-x V"   . find-variable)
-   ("C-x 4 V" . find-variable-other-window)
-   ("C-x 5 V" . find-variable-other-frame)))
+  (("C-h C-f"   . find-function)
+   ("C-h 4 C-f" . find-function-other-window)
+   ("C-h 5 C-f" . find-function-other-frame)
+   ("C-h C-k"   . find-function-on-key)
+   ("C-h 4 C-k" . find-function-on-key-other-window)
+   ("C-h 5 C-k" . find-function-on-key-other-frame)
+   ("C-h C-v"   . find-variable)
+   ("C-h 4 C-v" . find-variable-other-window)
+   ("C-h 5 C-v" . find-variable-other-frame)))
 
 (use-package flex-mode
   :load-path "lisp"
