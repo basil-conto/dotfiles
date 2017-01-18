@@ -275,6 +275,7 @@ into account."
   "Attempt to pass 0 to all MODES."
   (mapc (-rpartial #'blc-apply-safe 0) modes))
 
+;; TODO: Move to password-store
 (defun blc-mail-ids (&optional max)
   "Return alist of IMAPS identities.
 Each identity has the form (ALIAS . ADDRESS), where both key and
@@ -283,6 +284,7 @@ value are strings. The returned identities are retrieved from
   (-map (-lambda ((&plist :host alias :user addr))
           `(,alias . ,addr))
         (auth-source-search
+         :type    'netrc
          :require '(:port)
          :port    "imaps"
          :max     (or max 8))))
