@@ -289,18 +289,78 @@ value are strings. The returned identities are retrieved from
          :port    "imaps"
          :max     (or max 8))))
 
-;; TODO: `completing-read' with all available browsers
-(defun blc-browse-url (url &rest args)
-  "Prompt user to load URL in in- or ex-ternal browser.
-The internal browser corresponds to `eww'. See `browse-url' for a
-description of the arguments."
-  (let* ((prompt  "Open URL `%s' in external browser?")
-         (sample  (truncate-string-to-width
-                   url (- fill-column (length prompt)) 0 nil t))
-         (browser (if (y-or-n-p (format prompt sample))
-                      #'browse-url-default-browser
-                    #'eww-browse-url)))
-    (apply browser url args)))
+(defun blc-async-print-url--lpr (url &rest _)
+  "Asynchronously print URL using `lpr-command'.
+A slave Emacs process is used to start `lpr-command' with
+`lpr-switches' and URL as arguments. This function is written
+with a print command like `hp-print' in mind."
+  (interactive "fPrint file: ")
+  (apply #'async-start-process
+         "LPR Print" lpr-command nil `(,@lpr-switches ,url)))
+
+(defun blc-async-print-url--webkit (url &rest _)
+  "Asynchronously print URL using `wkhtmltopdf'.
+The contents of URL are converted to a temporary PDF file by
+calling `wkhtmltopdf' from a slave Emacs process before the
+generated file is printed with `blc-async-print-url--lpr'."
+  (let ((tmp (make-temp-file "blc-" nil ".pdf")))
+    (async-start-process "WebKit Print"
+                         "wkhtmltopdf"
+                         (-partial #'blc-async-print-url--lpr tmp)
+                         url
+                         tmp)))
+
+(defun blc-print-url--selector (url)
+  "Return appropriate printer and filter for URL.
+The two values are returned as the CAR and CDR of a cons cell,
+respectively."
+  (if-let ((mimetype (mailcap-extension-to-mime (url-file-extension url)))
+           (remote   (url-handler-file-remote-p url)))
+      (if (string-match-p
+           (regexp-opt '("application/pdf" "application/postscript")) mimetype)
+          `(,#'blc-async-print-url--lpr . ,#'url-file-local-copy)
+        `(,#'blc-async-print-url--webkit . ,#'identity))
+    (if (string= mimetype "text/html")
+        `(,#'blc-async-print-url--webkit . ,#'identity)
+      `(,#'blc-async-print-url--lpr
+        . ,(-compose #'url-filename #'url-generic-parse-url)))))
+
+;; TODO: Smarter MIME-type handling?
+(defun blc-print-url (url &rest args)
+  "Print contents of URL.
+See `browse-url' for an explanation of the arguments."
+  (interactive (browse-url-interactive-arg "URL: "))
+  (-let [(browser . filter) (blc-print-url--selector url)]
+    (apply browser (funcall filter url) args)))
+
+;; TODO: Add downloader?
+(defvar blc-browser-alist
+  `(("EWW"                . ,#'eww-browse-url       )
+    ("Firefox"            . ,#'browse-url-firefox   )
+    ("XDG"                . ,#'browse-url-xdg-open  )
+    ("Print"              . ,#'blc-print-url        )
+    ("Chromium"           . ,#'browse-url-chromium  )
+    ("Google Chrome"      . ,#'browse-url-chrome    )
+    ("Elinks"             . ,#'browse-url-elinks    )
+    ("Xterm text browser" . ,#'browse-url-text-xterm)
+    ("Emacs text browser" . ,#'browse-url-text-emacs))
+  "Map preferred browsers to their calling function.")
+
+(defun blc-counsel-browse-url (url &rest args)
+  "Read WWW browser name to open URL with completion.
+See `blc-browser-alist' for known browsers and `browse-url' for a
+description of the arguments to this function."
+  (interactive (browse-url-interactive-arg "URL: "))
+  (let* ((prompt-fmt (if (string-blank-p url)
+                         "Open browser: "
+                       "Open URL `%s' in: "))
+         (prompt-url (url-truncate-url-for-viewing url (lsh (frame-width) -1)))
+         (browser    (ivy-read (format prompt-fmt prompt-url)
+                               blc-browser-alist
+                               :require-match t
+                               :preselect     0
+                               :caller        'blc-counsel-browse-url)))
+    (apply (cdr (assoc-string browser blc-browser-alist)) url args)))
 
 (defun blc-turn-off-dired-omit ()
   "Disable `dired-omit-mode'."
@@ -905,7 +965,7 @@ in `zenburn-default-colors-alist'."
 (use-package browse-url
   :defer
   :init
-  (setq-default browse-url-browser-function #'blc-browse-url))
+  (setq-default browse-url-browser-function #'blc-counsel-browse-url))
 
 (use-package calendar
   :defer
