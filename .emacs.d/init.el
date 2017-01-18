@@ -1796,7 +1796,9 @@ in `zenburn-default-colors-alist'."
   :ensure
   :mode "\\.ledger\\'"
   :config
-  (setq-default ledger-use-iso-dates t))
+  (setq-default
+   ledger-post-amount-alignment-at :decimal
+   ledger-use-iso-dates            t))
 
 (use-package lisp-mode
   :defer
