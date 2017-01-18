@@ -1109,9 +1109,9 @@ in `zenburn-default-colors-alist'."
 (use-package cus-edit
   :defer
   :init
-  (let ((custom (blc-join 'file user-emacs-directory "custom.el")))
-    (when (f-exists-p (setq-default custom-file custom))
-      (lwarn 'blc :warning "Custom file %s exists but is not loaded." custom))))
+  (when-let ((custom (blc-join 'file user-emacs-directory "custom.el"))
+             (exists (f-exists-p (setq-default custom-file custom))))
+    (lwarn 'blc :warning "Custom file %s exists but is not loaded." custom)))
 
 (use-package csv-mode
   :ensure
@@ -2192,13 +2192,13 @@ in `zenburn-default-colors-alist'."
    ("C-x C-k" . kill-whole-line))
 
   :init
+  (setq-default read-mail-command 'gnus)
+
   (add-hook 'special-mode-hook #'blc-turn-off-line-numbers)
   (with-current-buffer (messages-buffer)
     (blc-turn-off-line-numbers))
 
-  (column-number-mode)
-
-  (setq-default read-mail-command 'gnus))
+  (column-number-mode))
 
 (use-package skype
   :ensure
