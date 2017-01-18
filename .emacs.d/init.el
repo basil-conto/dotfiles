@@ -83,6 +83,7 @@ why-are-you-changing-gc-cons-threshold/'."
 ;;; Packaging
 
 ;; Built-in dependencies
+(require 'map)
 (require 'package)
 (require 'seq)
 (require 'subr-x)
@@ -128,14 +129,14 @@ why-are-you-changing-gc-cons-threshold/'."
 ;;; Byte-compiler declarations
 
 (eval-and-compile
-  (mapc (-lambda ((file . funcs)) (mapc (-rpartial #'autoload file) funcs))
-        '(("browse-url" . (browse-url-default-browser))
-          ("cc-defs"    . (c-langelem-pos))
-          ("csv-mode"   . (csv-align-fields))
-          ("dired-x"    . (dired-omit-mode))
-          ("hi-lock"    . (hi-lock-set-pattern))
-          ("shr"        . (shr-copy-url))
-          ("smtpmail"   . (smtpmail-user-mail-address)))))
+  (map-do #'(lambda (file funcs) (mapc (-rpartial #'autoload file) funcs))
+          '(("browse-url" . (browse-url-default-browser))
+            ("cc-defs"    . (c-langelem-pos))
+            ("csv-mode"   . (csv-align-fields))
+            ("dired-x"    . (dired-omit-mode))
+            ("hi-lock"    . (hi-lock-set-pattern))
+            ("shr"        . (shr-copy-url))
+            ("smtpmail"   . (smtpmail-user-mail-address)))))
 
 (eval-when-compile
   (defvar c-mode-base-map)
@@ -238,7 +239,7 @@ Include every major mode derived from the current
 (defun blc-holiday-list--advice (haystack)
   "Replace holiday strings according to `blc-holiday-list-lut'."
   (let ((lut blc-holiday-list-lut))
-    (blc-tree-sed (regexp-opt (-map #'car lut))
+    (blc-tree-sed (regexp-opt (map-keys lut))
                   (-compose  #'cdr (-rpartial #'assoc-string lut t))
                   haystack)))
 
@@ -687,22 +688,22 @@ function at URL
 
 (defun blc-google-contacts-fontify ()
   "Customise `google-contacts-mode' faces."
-  (mapc (-applify #'face-remap-add-relative)
-        '((google-contacts-familyname font-lock-keyword-face)
-          (google-contacts-givenname  font-lock-keyword-face)
-          (google-contacts-header     font-lock-string-face ))))
+  (map-do #'face-remap-add-relative
+          '((google-contacts-familyname . font-lock-keyword-face)
+            (google-contacts-givenname  . font-lock-keyword-face)
+            (google-contacts-header     . font-lock-string-face ))))
 
 (defun blc-man-fontify ()
   "Customise `Man-mode' faces."
-  (mapc (-applify #'face-remap-add-relative)
-        '((Man-overstrike font-lock-keyword-face)
-          (Man-underline  font-lock-string-face ))))
+  (map-do #'face-remap-add-relative
+          '((Man-overstrike . font-lock-keyword-face)
+            (Man-underline  . font-lock-string-face ))))
 
 (defun blc-woman-fontify ()
   "Customise `woman-mode' faces."
-  (mapc (-applify #'face-remap-add-relative)
-        '((woman-bold   font-lock-keyword-face)
-          (woman-italic font-lock-string-face ))))
+  (map-do #'face-remap-add-relative
+          '((woman-bold   . font-lock-keyword-face)
+            (woman-italic . font-lock-string-face ))))
 
 (defun blc-zenburn-assoc (colour)
   "Return the `zenburn-theme' values associated with COLOURS.
@@ -729,10 +730,10 @@ in `zenburn-default-colors-alist'."
   "Customise `zenburn-theme' to taste."
   (set-face-background 'highlight (blc-zenburn-assoc 'zenburn-bg-1))
 
-  (mapc (-applify #'add-hook)
-        `((   fci-mode-hook ,#'blc-zenburn-brighten-fci)
-          (   ivy-mode-hook ,#'blc-zenburn-darken-ivy  )
-          (nlinum-mode-hook ,#'blc-zenburn-darken-linum))))
+  (map-do #'add-hook
+        `((   fci-mode-hook . ,#'blc-zenburn-brighten-fci)
+          (   ivy-mode-hook . ,#'blc-zenburn-darken-ivy  )
+          (nlinum-mode-hook . ,#'blc-zenburn-darken-linum))))
 
 ;;; Constants
 
@@ -872,7 +873,7 @@ in `zenburn-default-colors-alist'."
    auth-source-debug        t)
 
   ;; Add SMTPS
-  (setf (alist-get 'smtp auth-source-protocols) '("smtp" "smtps" "25" "587")))
+  (map-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "587")))
 
 (use-package avy
   :ensure
@@ -939,7 +940,7 @@ in `zenburn-default-colors-alist'."
                         (c-basic-offset  . 2)
                         (c-offsets-alist . ,offsets)))
 
-    (setf (alist-get 'other c-default-style) name))
+    (map-put c-default-style 'other name))
 
   (advice-add #'c-lineup-arglist :before-until #'blc-c++-lambda-indent--advice))
 
@@ -1013,10 +1014,10 @@ in `zenburn-default-colors-alist'."
    counsel-grep-base-command "ag --nocolor \"%s\" %s"
    ;; Do not match start of input for counsel commands
    ivy-initial-inputs-alist
-   (-remove (-lambda ((cmd))
-              (or (memq cmd '(man woman))
-                  (string-prefix-p "counsel-" (blc-as-string cmd))))
-            ivy-initial-inputs-alist))
+   (map-remove #'(lambda (cmd _)
+                   (or (memq cmd '(man woman))
+                       (string-prefix-p "counsel-" (blc-as-string cmd))))
+               ivy-initial-inputs-alist))
 
   (ivy-set-sources
    'counsel-locate
@@ -1126,13 +1127,13 @@ in `zenburn-default-colors-alist'."
   (setq-default dired-omit-files
                 (string-join `("\\`\\.[^.]" ,dired-omit-files) "\\|"))
 
-  (mapc (-lambda ((cmd . suffs))
-          (let ((patt (apply #'blc-regexp-opt suffs)))
-            (add-to-list 'dired-guess-shell-alist-user
-                         `(,(format "\\.%s\\'" patt) ,cmd))))
-        '(("lowriter" . ("doc" "docx"))
-          ("mpv"      . ("mp4" "mkv"))
-          ("pdf"      . ("pdf")))))
+  (map-do #'(lambda (cmd suffs)
+              (let ((patt (apply #'blc-regexp-opt suffs)))
+                (add-to-list 'dired-guess-shell-alist-user
+                             `(,(format "\\.%s\\'" patt) ,cmd))))
+          '(("lowriter" . ("doc" "docx"))
+            ("mpv"      . ("mp4" "mkv"))
+            ("pdf"      . ("pdf")))))
 
 (use-package disaster
   :ensure
@@ -1379,9 +1380,9 @@ in `zenburn-default-colors-alist'."
   (let ((ids (blc-mail-ids)))
     (setq-default
      gnus-alias-default-identity (or (caar ids) "")
-     gnus-alias-identity-alist   (-map (-lambda ((alias . from))
-                                         `(,alias "" ,from "" () "" ""))
-                                       ids))))
+     gnus-alias-identity-alist   (map-apply #'(lambda (alias from)
+                                                `(,alias "" ,from "" () "" ""))
+                                            ids))))
 
 (use-package golden-ratio-scroll-screen
   :disabled
@@ -1572,10 +1573,12 @@ in `zenburn-default-colors-alist'."
      sorts (apply #'append (-separate (-lambda ((key)) (not (eq t key)))
                                       (symbol-value sorts)))))
 
-  (add-to-list 'ivy-sort-functions-alist
-               '(Info-complete-menu-item . blc-info-item-sort))
-
-  (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)
+  (mapc (-lambda ((map key val))
+          (map-put (symbol-value map) key val))
+        `((ivy-sort-functions-alist
+           Info-complete-menu-item ,#'blc-info-item-sort)
+          (ivy-re-builders-alist
+           t ,#'ivy--regex-ignore-order)))
 
   (setq-default
    ivy-count-format          "(%d/%d) "
@@ -1593,9 +1596,9 @@ in `zenburn-default-colors-alist'."
   (advice-add #'bibtex-completion-format-entry
               :filter-args #'blc-narrow-candidate--advice)
 
-  (mapc (-applify #'add-to-list)
-        `((bibtex-completion-additional-search-fields "date")
-          (bibtex-completion-bibliography             ,blc-bib-file)))
+  (map-do #'add-to-list
+          `((bibtex-completion-additional-search-fields . "date")
+            (bibtex-completion-bibliography             . ,blc-bib-file)))
 
   (setq-default
    bibtex-completion-display-formats
@@ -1672,17 +1675,17 @@ in `zenburn-default-colors-alist'."
    js2-skip-preprocessor-directives     t))
 
   ;; ;; FIXME
-  ;; (mapc (-applify #'set-face-foreground)
-  ;;       '((js2-error             "#ff0000")
-  ;;         (js2-external-variable "#ff0000")
-  ;;         (js2-function-param    "#5fd7af")))
+  ;; (map-do #'set-face-foreground
+  ;;         '((js2-error             . "#ff0000")
+  ;;           (js2-external-variable . "#ff0000")
+  ;;           (js2-function-param    . "#5fd7af")))
 
   ;; (defun blc-js2-moar-colour ()
   ;;   "Further customise `js2-mode' faces."
   ;;   (interactive)
-  ;;   (mapc (-applify #'set-face-foreground)
-  ;;         '((js2-function-call   "#fce94f")
-  ;;           (js2-object-property "#fcaf3e")))))
+  ;;   (map-do #'set-face-foreground
+  ;;           '((js2-function-call   . "#fce94f")
+  ;;             (js2-object-property . "#fcaf3e")))))
 
 (use-package js2-refactor
   :ensure
@@ -1714,10 +1717,10 @@ in `zenburn-default-colors-alist'."
    js3-skip-preprocessor-directives          t)
 
   ;; FIXME
-  (mapc (-applify #'set-face-foreground)
-        '((js3-function-param-face    "#ffffff")
-          (js3-external-variable-face "#ff0000")
-          (js3-error-face             "#ff0000"))))
+  (map-do #'set-face-foreground
+          '((js3-function-param-face    . "#ffffff")
+            (js3-external-variable-face . "#ff0000")
+            (js3-error-face             . "#ff0000"))))
 
 (use-package json-mode
   :ensure
@@ -1830,9 +1833,9 @@ in `zenburn-default-colors-alist'."
   ;;  'magit-header-line nil
   ;;  :inherit    'magit-section-heading
   ;;  :background (internal-get-lisp-face-attribute 'default :background))
-  ;; (mapc (-applify #'set-face-foregrounds)
-  ;;       '((magit-dimmed "#808080")
-  ;;         (magit-hash   "#808080"))))
+  ;; (map-do #'set-face-foregrounds
+  ;;         '((magit-dimmed . "#808080")
+  ;;           (magit-hash   . "#808080"))))
 
 (use-package magit-gh-pulls
   :disabled
@@ -1890,7 +1893,7 @@ in `zenburn-default-colors-alist'."
 
   :config
   (setq-default message-alternative-emails
-                (regexp-opt (-map #'cdr (blc-mail-ids)))))
+                (regexp-opt (map-values (blc-mail-ids)))))
 
 (use-package minimap
   :ensure
@@ -1930,7 +1933,7 @@ in `zenburn-default-colors-alist'."
 ;; KLUDGE: Force installation of newer version of built-in package
 (eval-and-compile
   (unless (assq 'org package-alist)
-    (setf (alist-get 'org package--builtins t t) t)))
+    (map-delete package--builtins 'org)))
 
 (use-package org
   :ensure
@@ -2253,9 +2256,9 @@ in `zenburn-default-colors-alist'."
    TeX-PDF-mode               t)
 
   ;; Set priority of pre-configured PDF viewers
-  (mapc (-lambda ((nom)) (push `(output-pdf ,nom) TeX-view-program-selection))
-        (-keep (-rpartial #'assoc-string TeX-view-program-list-builtin)
-               '("Zathura" "PDF Tools"))))
+  (mapc #'(lambda (nom) (push `(output-pdf ,nom) TeX-view-program-selection))
+        (-intersection '("Zathura" "PDF Tools")
+                       (map-keys TeX-view-program-list-builtin))))
 
 (use-package text-mode
   :defer
