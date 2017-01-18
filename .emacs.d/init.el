@@ -2298,6 +2298,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package sx
+  :ensure
+  :defer)
+
 (use-package systemd
   :ensure
   :defer)
