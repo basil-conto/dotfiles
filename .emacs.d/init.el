@@ -1915,7 +1915,9 @@ in `zenburn-default-colors-alist'."
 (use-package magithub
   :ensure
   :after magit
-  :init
+  :commands magithub-feature-autoinject
+  :config
+  (magithub-feature-autoinject      t)
   (setq-default magithub-debug-mode t))
 
 (use-package make-mode
