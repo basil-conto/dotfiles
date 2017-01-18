@@ -51,7 +51,7 @@
 (let ((start     (current-time))
       (file      load-file-name)
       (oldthresh gc-cons-threshold)
-      (maxthresh (lsh gc-cons-threshold 4)))
+      (maxthresh (lsh gc-cons-threshold 6)))
 
   (defun blc-report-init-time ()
     "Report total user initialisation time.
@@ -2206,7 +2206,9 @@ in `zenburn-default-colors-alist'."
   (setq-default
    inhibit-default-init   t
    inhibit-startup-screen t)
-  (add-hook 'after-init-hook #'blc-report-init-time t))
+  (mapc (-cut add-hook 'after-init-hook <> t)
+        `(,#'blc-report-init-time
+          ,#'blc-restore-gc-thresh)))
 
 (use-package subword
   :defer
