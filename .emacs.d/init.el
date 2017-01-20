@@ -1404,6 +1404,16 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package ggtags
+  :ensure
+  :bind (:map ggtags-mode-map
+              ("M-F" . ggtags-find-reference))
+  :commands ggtags-find-reference
+  :config
+  (unbind-key "M-<" ggtags-navigation-map) ; Such rude ;_;
+  (unbind-key "M->" ggtags-navigation-map)
+  (unbind-key "M-]" ggtags-mode-map))
+
 (use-package ghc
   :ensure
   :defer
@@ -1482,15 +1492,15 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
-(use-package ggtags
+;; FIXME
+(use-package gscholar-bibtex
   :ensure
-  :bind (:map ggtags-mode-map
-              ("M-F" . ggtags-find-reference))
-  :commands ggtags-find-reference
+  :defer
   :config
-  (unbind-key "M-<" ggtags-navigation-map) ; Such rude ;_;
-  (unbind-key "M->" ggtags-navigation-map)
-  (unbind-key "M-]" ggtags-mode-map))
+  (setq-default
+   gscholar-bibtex-database-file  blc-bib-file
+   gscholar-bibtex-default-source
+   (map-contains-key gscholar-bibtex-available-sources "Google Scholar")))
 
 (use-package haskell-cabal
   :ensure haskell-mode
