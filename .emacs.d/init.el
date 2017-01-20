@@ -134,6 +134,7 @@ why-are-you-changing-gc-cons-threshold/'."
           '(("browse-url" . (browse-url-chrome
                              browse-url-interactive-arg))
             ("cc-defs"    . (c-langelem-pos))
+            ("comint"     . (comint-mode))
             ("csv-mode"   . (csv-align-fields))
             ("dired-x"    . (dired-omit-mode))
             ("hi-lock"    . (hi-lock-set-pattern))
@@ -1544,7 +1545,9 @@ in `zenburn-default-colors-alist'."
               :before #'blc-hi-lock-exclude-derived-modes--advice)
   (global-hi-lock-mode)
   :config
-  (add-to-list 'hi-lock-exclude-modes 'comint-mode))
+  (mapc (-partial #'add-to-list 'hi-lock-exclude-modes)
+        `(,#'comint-mode
+          ,#'eshell-mode)))
 
 (use-package highlight-escape-sequences
   :ensure
