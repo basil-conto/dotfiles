@@ -174,6 +174,13 @@ why-are-you-changing-gc-cons-threshold/'."
   "Concatenate all OBJECTS under `blc-as-string' as a symbol."
   (intern (mapconcat #'blc-as-string objects "")))
 
+(defun blc-quote-format-string (format-string)
+  "Escape format specifiers in FORMAT-STRING.
+Replace %-sequences with literal percentage characters `%%' for
+passing FORMAT-STRING to functions that expect a format control
+string."
+  (replace-regexp-in-string "%" "%%" format-string t t))
+
 (defun blc-regexp-opt (&rest strings)
   "Remove any shy groups after applying `regexp-opt' to STRINGS."
   (string-remove-suffix
@@ -358,7 +365,8 @@ description of the arguments to this function."
                          "Open browser: "
                        "Open URL `%s' in: "))
          (prompt-url (url-truncate-url-for-viewing url (lsh (frame-width) -1)))
-         (browser    (ivy-read (format prompt-fmt prompt-url)
+         (prompt     (blc-quote-format-string (format prompt-fmt prompt-url)))
+         (browser    (ivy-read prompt
                                blc-browser-alist
                                :require-match t
                                :preselect     0
