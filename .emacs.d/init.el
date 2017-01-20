@@ -22,6 +22,7 @@
 ;; * Fix `c++-mode' `memer-init-intro' indentation
 
 ;; Explore
+;; * IRC log viewing
 ;; * HighlightChars
 ;; * Outshine/outline-magic
 ;; * Emms
