@@ -1422,7 +1422,8 @@ in `zenburn-default-colors-alist'."
 
   :config
   (setq-default git-commit-summary-max-length 50
-                git-commit-fill-column        68)
+                git-commit-fill-column        68
+                git-commit-major-mode         #'org-mode)
 
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line)
 
