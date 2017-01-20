@@ -131,7 +131,8 @@ why-are-you-changing-gc-cons-threshold/'."
 
 (eval-and-compile
   (map-do #'(lambda (file funcs) (mapc (-rpartial #'autoload file) funcs))
-          '(("browse-url" . (browse-url-default-browser))
+          '(("browse-url" . (browse-url-chrome
+                             browse-url-interactive-arg))
             ("cc-defs"    . (c-langelem-pos))
             ("csv-mode"   . (csv-align-fields))
             ("dired-x"    . (dired-omit-mode))
