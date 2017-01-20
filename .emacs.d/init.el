@@ -380,6 +380,14 @@ description of the arguments to this function."
   (setq line-spacing (window-font-height))
   (text-scale-set 1))
 
+(defun blc-eww-bookmark-save ()
+  "Copy the URL of the current bookmark into the kill ring."
+  (interactive)
+  (if-let ((eww-data
+            (get-text-property (line-beginning-position) 'eww-bookmark)))
+      (eww-copy-page-url)
+    (user-error "No bookmark on the current line")))
+
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
   (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
@@ -1287,7 +1295,10 @@ in `zenburn-default-colors-alist'."
                 ess-indent-from-lhs nil))
 
 (use-package eww
-  :defer
+  :bind (:map eww-bookmark-mode-map
+              ("n" .             next-line)
+              ("p" .         previous-line)
+              ("w" . blc-eww-bookmark-save))
   :init
   (add-hook 'eww-mode-hook #'blc-increase-readability)
   (setq-default
