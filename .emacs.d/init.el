@@ -901,7 +901,9 @@ in `zenburn-default-colors-alist'."
 (use-package apt-sources
   ;; FIXME
   :load-path "/usr/share/emacs/site-lisp/debian-el"
-  :mode ("\\.sources\\'" . apt-sources-mode)
+  :mode (("\\.sources\\'"                   . apt-sources-mode)
+         ("sources\\.list\\'"               . apt-sources-mode)
+         ("sources\\.list\\.d/.*\\.list\\'" . apt-sources-mode))
   :init
   (add-hook 'apt-sources-mode-hook #'blc-turn-off-local-electric-indent))
 
