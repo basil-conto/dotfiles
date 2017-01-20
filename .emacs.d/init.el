@@ -1978,6 +1978,10 @@ in `zenburn-default-colors-alist'."
   :config
   (blc-trim-before-newline #'markdown-enter-key))
 
+(use-package matlab
+  :ensure matlab-mode
+  :defer)
+
 (use-package menu-bar
   :defer
   :init
