@@ -116,9 +116,11 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 
 (use-package gnus-desktop-notify
   :ensure
-  :commands gnus-desktop-notify-dbus
+  :commands gnus-desktop-notify-send
   :init
-  (setq-default gnus-desktop-notify-function #'gnus-desktop-notify-dbus)
+  (setq-default
+   gnus-desktop-notify-format             "%3n: %G"
+   gnus-desktop-notify-function           #'gnus-desktop-notify-send)
   (gnus-desktop-notify-mode))
 
 (use-package gnus-demon
