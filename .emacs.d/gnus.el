@@ -35,7 +35,7 @@ After scanning, truncate growing network log buffers to
 `message-log-max' lines."
   (unless gnus-slave
     (gnus-demon-scan-news)
-    (dolist (log '("*imap log*" "*nntp-log*"))
+    (dolist (log blc-gnus-log-buffers)
       (with-current-buffer log
         (goto-char (point-max))
         (let ((inhibit-read-only t))

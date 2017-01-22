@@ -139,6 +139,8 @@ why-are-you-changing-gc-cons-threshold/'."
             ("dired-x"    . (dired-omit-mode))
             ("eww"        . (eww-copy-page-url))
             ("hi-lock"    . (hi-lock-set-pattern))
+            ("ibuf-ext"   . (ibuffer-auto-mode
+                             ibuffer-switch-to-saved-filter-groups))
             ("mailcap"    . (mailcap-extension-to-mime))
             ("message"    . (message-fetch-field
                              message-narrow-to-headers))
@@ -410,6 +412,14 @@ description of the arguments to this function."
   "Highlight missing trailing EOF newlines."
   (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
 
+(defvar blc-ibuffer-default-group "default"
+  "Name of default saved ibuffer filter group.")
+
+(defun blc-turn-on-ibuffer-filter-groups ()
+  "Enable default ibuffer filter groups.
+See `blc-ibuffer-default-group'."
+  (ibuffer-switch-to-saved-filter-groups blc-ibuffer-default-group))
+
 (defvar blc-info-item--cache ()
   "Cache of Info menu item points.
 (Item name . point) cons pairs are keyed by Info file + node.")
@@ -652,12 +662,12 @@ Uses `fast-line-number', which see."
 If TYPE is `dir', always append a trailing slash; if it is
 `file', never append a slash; otherwise, if it is `check', append
 a slash when PATHS correspond to an existing directory. "
-  (funcall
-   (pcase type
-     ('dir   #'file-name-as-directory)
-     ('check #'f-slash)
-     (_      #'identity))
-   (apply #'f-join paths)))
+  (file-truename
+   (funcall (pcase type
+              ('dir   #'file-name-as-directory)
+              ('check #'f-slash)
+              (_      #'identity))
+            (apply #'f-join paths))))
 
 (defun blc-large-buffer-p ()
   "Determine whether buffer classifies as being large.
@@ -844,6 +854,9 @@ in `zenburn-default-colors-alist'."
         '(conf ess haskell-cabal hledger mustache prog text))
   "Hooks whose modes derive from `fundamental-mode' or nothing.")
 
+(defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
+  "List of buffer names associated with Gnus logs.")
+
 
 ;;;; MISCELLANEA
 
@@ -909,7 +922,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package ace-window
   :ensure
-  :bind ("M-o" . ace-window))
+  :bind* ("M-o" . ace-window))
 
 (use-package ag
   :ensure
@@ -1642,6 +1655,66 @@ in `zenburn-default-colors-alist'."
   :disabled
   :load-path "lisp"
   :bind ("C-c I" . i18next-query-replace))
+
+;; TODO:
+;; * Look into:
+;;   - ibuffer-git
+;;   - ibuffer-projectile
+;;   - ibuffer-tramp
+;;   - ibuffer-vc
+(use-package ibuffer
+  :bind ([remap list-buffers] . ibuffer)
+  :init
+  (mapc (-partial #'add-hook 'ibuffer-mode-hook)
+        `(,#'ibuffer-auto-mode
+          ,#'blc-turn-on-ibuffer-filter-groups))
+
+  :config
+  (require 'ibuf-ext)
+
+  ;; Define before use
+  (mapc #'(lambda (filter)
+            (push filter ibuffer-saved-filters))
+        `(("package" (or (directory . ,source-directory)
+                         (directory . ,(f-parent data-directory))
+                         (directory . ,(f-join   package-user-dir))))
+          ("REPL" (or (mode . eshell-mode)
+                      (mode . inferior-emacs-lisp-mode)
+                      (mode . lisp-interaction-mode)))))
+
+  (setq-default
+   ibuffer-always-compile-formats         t
+   ibuffer-default-sorting-mode           'alphabetic
+   ibuffer-old-time                       12
+   ibuffer-saved-filter-groups
+   `((,blc-ibuffer-default-group
+      ("Code" (and (derived-mode . prog-mode)
+                   (not (saved . "package"))
+                   (not (saved . "REPL"))))
+      ("Dir"  (mode . dired-mode))
+      ("Doc"  (or (mode . apropos-mode)
+                  (mode . help-mode)
+                  (mode . Info-mode)
+                  (mode . Man-mode)
+                  (mode . woman-mode)))
+      ("Gnus" (or (saved . "gnus")
+                  (predicate
+                   . (when-let ((drool (bound-and-true-p gnus-dribble-buffer)))
+                       (string= (buffer-name) (buffer-name drool))))))
+      ("Git"  (derived-mode . magit-mode))
+      ("Log"  (or (mode . compilation-mode)
+                  (mode . messages-buffer-mode)
+                  (name . "\\*WoMan-Log\\*")
+                  ,@(-map (-partial #'cons 'name)
+                          blc-gnus-log-buffers)))
+      ("PDF"  (mode . pdf-view-mode))
+      ("Pkg"  (saved . "package"))
+      ("REPL" (saved . "REPL"))
+      ("TeX"  (saved . "TeX"))
+      ("Text" (saved . "text document"))
+      ("Web"  (saved . "web"))))
+   ibuffer-show-empty-filter-groups       nil
+   ibuffer-use-other-window               t))
 
 (use-package ido
   :defer
