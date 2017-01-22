@@ -277,6 +277,10 @@ into account."
       (apply send args)
     (lwarn 'blc :error "Invalid `From' header")))
 
+(defun blc-pcomplete--advice (&rest _)
+  "Replace pcomplete with default completion UI."
+  (completion-at-point))
+
 
 ;;; Modes
 
@@ -1306,7 +1310,9 @@ in `zenburn-default-colors-alist'."
 (use-package eshell
   :defer
   :init
-  (add-hook 'eshell-mode-hook #'blc-turn-off-line-numbers))
+  (add-hook 'eshell-mode-hook #'blc-turn-off-line-numbers)
+  :config
+  (advice-add #'eshell-pcomplete :override #'blc-pcomplete--advice))
 
 (use-package ess
   :ensure
@@ -1851,6 +1857,7 @@ in `zenburn-default-colors-alist'."
   :ensure
   :mode "\\.ledger\\'"
   :config
+  (advice-add #'ledger-pcomplete :override #'blc-pcomplete--advice)
   (setq-default
    ledger-post-amount-alignment-at :decimal
    ledger-use-iso-dates            t))
