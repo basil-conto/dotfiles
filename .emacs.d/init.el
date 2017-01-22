@@ -1870,6 +1870,10 @@ in `zenburn-default-colors-alist'."
              (char-to-string (char-from-name (concat name " symbol") t)))
          lunar-phase-names)))
 
+(use-package know-your-http-well
+  :ensure
+  :defer)
+
 (use-package macrostep
   :ensure
   :defer)
