@@ -989,6 +989,13 @@ in `zenburn-default-colors-alist'."
   :init
   (setq-default browse-url-browser-function #'blc-counsel-browse-url))
 
+(use-package bug-reference
+  :defer
+  :init
+  (map-do #'add-hook
+          `((prog-mode-hook . ,#'bug-reference-prog-mode)
+            (text-mode-hook . ,#'bug-reference-mode     ))))
+
 (use-package calendar
   :defer
   :init
