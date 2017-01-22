@@ -72,7 +72,8 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
            "%-29= : "                     ; Colon
            "%3{%-50,50s%}%)"              ; Subject
            "%4{%9&user-date;%}"           ; Age-sensitive date
-           "\n"))
+           "\n")
+   gnus-update-message-archive-method     t)
 
   ;; FIXME: NNTP firewall
   (let* ((nngmail
