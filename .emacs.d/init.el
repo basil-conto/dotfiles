@@ -1602,6 +1602,7 @@ in `zenburn-default-colors-alist'."
   :config
   (mapc (-partial #'add-to-list 'hi-lock-exclude-modes)
         `(,#'comint-mode
+          ,#'completion-list-mode
           ,#'eshell-mode)))
 
 (use-package highlight-escape-sequences
