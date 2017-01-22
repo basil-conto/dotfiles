@@ -97,8 +97,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
               ("M-D" . blc-download))
   :init
   (setq-default
-   gnus-blocked-images                    nil
-   gnus-inhibit-mime-unbuttonizing        t)
+   gnus-blocked-images                    nil)
   :config
   (setq-default
    gnus-visible-headers
