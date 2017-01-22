@@ -137,9 +137,14 @@ why-are-you-changing-gc-cons-threshold/'."
             ("comint"     . (comint-mode))
             ("csv-mode"   . (csv-align-fields))
             ("dired-x"    . (dired-omit-mode))
+            ("eww"        . (eww-copy-page-url))
             ("hi-lock"    . (hi-lock-set-pattern))
+            ("mailcap"    . (mailcap-extension-to-mime))
+            ("message"    . (message-fetch-field
+                             message-narrow-to-headers))
             ("shr"        . (shr-copy-url))
-            ("smtpmail"   . (smtpmail-user-mail-address)))))
+            ("smtpmail"   . (smtpmail-user-mail-address))
+            ("url-utl"    . (url-get-url-at-point)))))
 
 (eval-when-compile
   (defvar c-mode-base-map)
@@ -2004,7 +2009,7 @@ in `zenburn-default-colors-alist'."
   (blc-turn-off-modes #'menu-bar-mode))
 
 (use-package message
-  :defer
+  :commands message-send message-insert-formatted-citation-line
   :init
   (advice-add #'message-send :around #'blc-set-sender--advice)
 
