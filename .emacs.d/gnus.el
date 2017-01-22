@@ -184,6 +184,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   :defer
   :init
   (setq-default
+   gnus-auto-select-first                 nil
    gnus-auto-select-next                  nil
    gnus-sum-thread-tree-false-root        ""
    gnus-sum-thread-tree-leaf-with-other   "├➤ "
