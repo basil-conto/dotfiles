@@ -17,11 +17,10 @@
 
 (defun blc-user-date (date)
   "Massage DATE before passing it to `gnus-user-date'."
-  (gnus-user-date
-   (funcall (if (stringp date)
-                #'identity
-              #'blc-user-date--format)
-            date)))
+  (let ((conv (if (stringp date)
+                  #'identity
+                #'blc-user-date--format)))
+    (gnus-user-date (funcall conv date))))
 
 (defun gnus-user-format-function-dgroup (&rest _)
   "User-defined Gnus group line timestamp format."
