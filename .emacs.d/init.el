@@ -1072,7 +1072,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package comment-dwim-2
   :ensure
-  :bind ("M-;" . comment-dwim-2))
+  :bind ([remap comment-dwim] . comment-dwim-2))
 
 (use-package company
   :ensure
@@ -1090,20 +1090,20 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer
   :bind
-  (("M-x"     . counsel-M-x)
-   ("M-y"     . counsel-yank-pop)
-   ("C-s"     . counsel-grep-or-swiper)
-   ("C-c g"   . counsel-ag)
+  (("C-c g"   . counsel-ag)
    ("C-c t"   . counsel-git)
    ("C-c u"   . counsel-unicode-char)
-   ("C-h f"   . counsel-describe-function)
-   ("C-h v"   . counsel-describe-variable)
-   ("C-h S"   . counsel-info-lookup-symbol)
    ("C-h C-j" . counsel-describe-face)
-   ("C-x C-f" . counsel-find-file)
    ("C-x C-l" . counsel-locate)
    ("C-c j d" . counsel-dired-jump)
-   ("C-c j f" . counsel-file-jump))
+   ("C-c j f" . counsel-file-jump)
+   ([remap execute-extended-command] . counsel-M-x)
+   ([remap yank-pop                ] . counsel-yank-pop)
+   ([remap isearch-forward         ] . counsel-grep-or-swiper)
+   ([remap describe-function       ] . counsel-describe-function)
+   ([remap describe-variable       ] . counsel-describe-variable)
+   ([remap info-lookup-symbol      ] . counsel-info-lookup-symbol)
+   ([remap find-file               ] . counsel-find-file))
   :config
   (setq-default
    ;; Search with smart case and shell expansion
@@ -1681,8 +1681,9 @@ in `zenburn-default-colors-alist'."
   :ensure
   :delight ivy-mode
   :commands ivy--regex-ignore-order ivy-set-sources
-  :bind (("C-x b"   . ivy-switch-buffer)
-         ("C-x 4 b" . ivy-switch-buffer-other-window)
+  :bind (([remap switch-to-buffer] . ivy-switch-buffer)
+         ([remap switch-to-buffer-other-window]
+          . ivy-switch-buffer-other-window)
          ("C-c r"   . ivy-resume))
   :init
   (setq-default completing-read-function #'ivy-completing-read)
@@ -2262,11 +2263,11 @@ in `zenburn-default-colors-alist'."
 
 (use-package simple
   :bind
-  (("M-c"     . capitalize-dwim)
-   ("M-l"     .   downcase-dwim)
-   ("M-u"     .     upcase-dwim)
-   ("M-\\"    .   cycle-spacing)
-   ("C-x C-k" . kill-whole-line))
+  (("C-x C-k"                       . kill-whole-line)
+   ([remap delete-horizontal-space] .   cycle-spacing)
+   ([remap         capitalize-word] . capitalize-dwim)
+   ([remap           downcase-word] .   downcase-dwim)
+   ([remap             upcase-word] .     upcase-dwim))
 
   :init
   (setq-default read-mail-command 'gnus)
