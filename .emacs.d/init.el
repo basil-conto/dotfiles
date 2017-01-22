@@ -206,6 +206,7 @@ Issue a warning otherwise."
 
 ;;; Advice
 
+;; FIXME: Use `display-buffer-alist'
 (defun blc-split-larger-dimension--advice (split &rest args)
   "Sacrifice the larger window dimension when splitting."
   (let ((split-width-threshold       (window-height))
