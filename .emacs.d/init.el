@@ -2086,6 +2086,13 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package paradox
+  :ensure
+  :defer
+  :init
+  (setq-default paradox-execute-asynchronously t
+                paradox-github-token           t))
+
 (use-package "paragraphs"
   :defer
   :init
