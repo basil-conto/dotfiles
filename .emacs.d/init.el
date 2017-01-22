@@ -1501,6 +1501,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package google-this
+  :ensure
+  :defer)
+
 ;; FIXME
 (use-package gscholar-bibtex
   :ensure
