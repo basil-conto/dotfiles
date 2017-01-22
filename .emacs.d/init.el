@@ -2411,6 +2411,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package unfill
+  :ensure
+  :bind ([remap fill-paragraph] . unfill-toggle))
+
 (use-package uniquify
   :defer
   :init
