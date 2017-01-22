@@ -2321,6 +2321,20 @@ in `zenburn-default-colors-alist'."
   (setq-default
    inhibit-default-init   t
    inhibit-startup-screen t)
+
+  (let* ((cowfile "-f$(shuf -en1 $(cowsay -l | tail -n+2))")
+         (state   "$(shuf -en1 -- '' -b -d -g -p -s -t -w -y)")
+         (command (format "fortune -aes | cowsay %s %s -n" cowfile state))
+         (fortune (with-temp-buffer
+                    (call-process-shell-command command nil t)
+                    (let ((comment-empty-lines t)
+                          (comment-start       ";;"))
+                      (comment-region (point-min) (point-max)))
+                    (delete-trailing-whitespace)
+                    (insert ?\n)
+                    (buffer-string))))
+    (setq-default initial-scratch-message fortune))
+
   (mapc (-cut add-hook 'after-init-hook <> t)
         `(,#'blc-report-init-time
           ,#'blc-restore-gc-thresh)))
