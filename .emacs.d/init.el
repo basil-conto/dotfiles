@@ -1244,7 +1244,8 @@ in `zenburn-default-colors-alist'."
               (let ((patt (apply #'blc-regexp-opt suffs)))
                 (add-to-list 'dired-guess-shell-alist-user
                              `(,(format "\\.%s\\'" patt) ,cmd))))
-          '(("lowriter" . ("doc" "docx"))
+          '(("localc"   . ("ods" "xls" "xlsx"))
+            ("lowriter" . ("odt" "doc" "docx"))
             ("mpv"      . ("mp4" "mkv"))
             ("pdf"      . ("pdf")))))
 
