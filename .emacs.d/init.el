@@ -1658,6 +1658,10 @@ in `zenburn-default-colors-alist'."
   :bind ("C-c I" . i18next-query-replace))
 
 ;; TODO:
+;; * Configure:
+;;   - *LPR Print*
+;;   - *Ledger Report*
+;;   - *Shell Command Output*
 ;; * Look into:
 ;;   - ibuffer-git
 ;;   - ibuffer-projectile
