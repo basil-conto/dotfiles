@@ -30,7 +30,7 @@ init: $(filter $(init-el)%, $(list-bc))
 
 .PHONY: gnus
 gnus: ELFLAGS := -nw
-gnus: ELPRE   := --funcall gnus
+gnus: ELPRE   := --funcall gnus-slave
 gnus: ELPOST  := --funcall gnus-group-save-newsrc --funcall kill-emacs
 gnus: $(filter $(gnus-el)%, $(list-bc))
 
