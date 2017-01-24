@@ -2181,17 +2181,24 @@ in `zenburn-default-colors-alist'."
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link))
   :init
-  (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
+  (map-do #'add-hook
+          `((          org-mode-hook . ,#'auto-fill-mode)
+            (outline-minor-mode-hook . ,#'orgstruct-mode)))
 
   (setq-default
-   org-catch-invisible-edits  'smart
-   org-ctrl-k-protect-subtree t
-   org-cycle-separator-lines  1
-   org-export-coding-system   'utf-8
-   org-goto-interface         'outline-path-completion
-   org-lowest-priority        ?D
-   org-special-ctrl-a/e       'reversed
-   org-startup-indented       t))
+   org-catch-invisible-edits     'smart
+   org-ctrl-k-protect-subtree    t
+   org-export-coding-system      'utf-8
+   org-footnote-section          nil
+   org-goto-interface            'outline-path-completion
+   org-list-demote-modify-bullet '(("+" . "-")
+                                   ("-" . "+"))
+   org-list-use-circular-motion  t
+   org-log-into-drawer           t
+   org-lowest-priority           ?D
+   org-M-RET-may-split-line      nil
+   org-special-ctrl-a/e          'reversed
+   org-startup-indented          t))
 
 (use-package org-mime
   :ensure
