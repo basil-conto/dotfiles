@@ -1667,6 +1667,8 @@ in `zenburn-default-colors-alist'."
 
 ;; TODO:
 ;; * Configure:
+;;   - Diff buffers
+;;   - Org buffers
 ;;   - *LPR Print*
 ;;   - *Ledger Report*
 ;;   - *Shell Command Output*
