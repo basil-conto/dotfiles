@@ -2073,9 +2073,16 @@ in `zenburn-default-colors-alist'."
   :ensure
   :after magit
   :commands magithub-feature-autoinject
+  :init
+  (setq-default magithub-debug-mode     t
+                ;; KLUDGE: Enable magithub in a sandboxed state
+                magithub-hub-executable "")
   :config
-  (magithub-feature-autoinject      t)
-  (setq-default magithub-debug-mode t))
+  ;; KLUDGE: Allow magithub to be enabled on next
+  ;;         `magithub-toggle-pull-requests' or
+  ;;         `magithub-toggle-issues'.
+  (custom-reevaluate-setting 'magithub-hub-executable)
+  (magithub-feature-autoinject t))
 
 (use-package make-mode
   :defer
