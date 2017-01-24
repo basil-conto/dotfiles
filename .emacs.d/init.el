@@ -1398,9 +1398,15 @@ in `zenburn-default-colors-alist'."
 
 (use-package fill-column-indicator
   :ensure
-  :defer
+  :commands turn-off-fci-mode
   :init
-  (mapc (-rpartial #'add-hook #'turn-on-fci-mode) blc-fundamental-hooks)
+  (let* ((whitelist blc-fundamental-hooks)
+         (blacklist '(lisp-interaction-mode-hook org-mode-hook))
+         (togglers  `(,#'turn-on-fci-mode ,#'turn-off-fci-mode))
+         (togglees  `(,whitelist ,blacklist))
+         (hookers   (-partial #'-rpartial #'add-hook)))
+    (-zip-with #'mapc (mapcar hookers togglers) togglees))
+
   (setq-default fci-rule-color  "#696969"
                 fci-rule-column blc-chars-per-line))
 
