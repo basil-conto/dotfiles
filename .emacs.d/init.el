@@ -130,7 +130,8 @@ why-are-you-changing-gc-cons-threshold/'."
 ;;; Byte-compiler declarations
 
 (eval-and-compile
-  (map-do #'(lambda (file funcs) (mapc (-rpartial #'autoload file) funcs))
+  (map-do (lambda (file funcs)
+            (mapc (-rpartial #'autoload file) funcs))
           '(("browse-url" . (browse-url-chrome
                              browse-url-interactive-arg))
             ("cc-defs"    . (c-langelem-pos))
@@ -303,13 +304,13 @@ into account."
 Each identity has the form (ALIAS . ADDRESS), where both key and
 value are strings. The returned identities are retrieved from
 `auth-sources'."
-  (-map (-lambda ((&plist :host alias :user addr))
-          `(,alias . ,addr))
-        (auth-source-search
-         :type    'netrc
-         :require '(:port)
-         :port    "imaps"
-         :max     (or max 8))))
+  (mapcar (-lambda ((&plist :host alias :user addr))
+            `(,alias . ,addr))
+          (auth-source-search
+           :type    'netrc
+           :require '(:port)
+           :port    "imaps"
+           :max     (or max 8))))
 
 (defun blc-async-print-url--lpr (url &rest _)
   "Asynchronously print URL using `lpr-command'.
@@ -453,7 +454,7 @@ of top-level menu items is littered by later detailed node
 listings in lexicographic order."
   (let ((blc-info-item--file
          (intern (concat Info-current-file Info-current-node))))
-    (if-let ((indices (-map #'blc-info-item--point args))
+    (if-let ((indices (mapcar #'blc-info-item--point args))
              (found   (-all-p #'numberp indices)))
         (apply #'< indices)
       (apply #'string< args))))
@@ -548,8 +549,8 @@ Return a LIST-SEP-delimited (default \" \") string of account
 prefixed by CATEGORY and ACCT-SEP (default \":\")."
   (let ((list-sep (or list-sep " "))
         (acct-sep (or acct-sep ":")))
-    (mapconcat #'(lambda (account)
-                   (string-join `(,category ,account) acct-sep))
+    (mapconcat (lambda (account)
+                 (string-join `(,category ,account) acct-sep))
                accounts
                list-sep)))
 
@@ -821,7 +822,8 @@ in `zenburn-default-colors-alist'."
   (-zip-with
    #'set-face-background
    (cdr ivy-minibuffer-faces)
-   (-map #'blc-zenburn-assoc '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
+   (mapcar #'blc-zenburn-assoc
+           '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
 
 (defun blc-zenburn-darken-linum ()
   "Darken foreground of face `linum' under `zenburn-theme'."
@@ -850,8 +852,8 @@ in `zenburn-default-colors-alist'."
   "Default user BibTeX file.")
 
 (defvar blc-fundamental-hooks
-  (-map (-rpartial #'blc-symcat "-mode-hook")
-        '(conf ess haskell-cabal hledger mustache prog text))
+  (mapcar (-rpartial #'blc-symcat "-mode-hook")
+          '(conf ess haskell-cabal hledger mustache prog text))
   "Hooks whose modes derive from `fundamental-mode' or nothing.")
 
 (defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
@@ -1127,9 +1129,9 @@ in `zenburn-default-colors-alist'."
    counsel-grep-base-command "ag --nocolor \"%s\" %s"
    ;; Do not match start of input for counsel commands
    ivy-initial-inputs-alist
-   (map-remove #'(lambda (cmd _)
-                   (or (memq cmd '(man woman))
-                       (string-prefix-p "counsel-" (blc-as-string cmd))))
+   (map-remove (lambda (cmd _)
+                 (or (memq cmd '(man woman))
+                     (string-prefix-p "counsel-" (blc-as-string cmd))))
                ivy-initial-inputs-alist))
 
   (ivy-set-sources
@@ -1240,10 +1242,10 @@ in `zenburn-default-colors-alist'."
   (setq-default dired-omit-files
                 (string-join `("\\`\\.[^.]" ,dired-omit-files) "\\|"))
 
-  (map-do #'(lambda (cmd suffs)
-              (let ((patt (apply #'blc-regexp-opt suffs)))
-                (add-to-list 'dired-guess-shell-alist-user
-                             `(,(format "\\.%s\\'" patt) ,cmd))))
+  (map-do (lambda (cmd suffs)
+            (let ((patt (apply #'blc-regexp-opt suffs)))
+              (add-to-list 'dired-guess-shell-alist-user
+                           `(,(format "\\.%s\\'" patt) ,cmd))))
           '(("localc"   . ("ods" "xls" "xlsx"))
             ("lowriter" . ("odt" "doc" "docx"))
             ("mpv"      . ("mp4" "mkv"))
@@ -1510,8 +1512,8 @@ in `zenburn-default-colors-alist'."
   (let ((ids (blc-mail-ids)))
     (setq-default
      gnus-alias-default-identity (or (caar ids) "")
-     gnus-alias-identity-alist   (map-apply #'(lambda (alias from)
-                                                `(,alias "" ,from "" () "" ""))
+     gnus-alias-identity-alist   (map-apply (lambda (alias from)
+                                              `(,alias "" ,from "" () "" ""))
                                             ids))))
 
 (use-package golden-ratio-scroll-screen
@@ -1678,8 +1680,8 @@ in `zenburn-default-colors-alist'."
   (require 'ibuf-ext)
 
   ;; Define before use
-  (mapc #'(lambda (filter)
-            (push filter ibuffer-saved-filters))
+  (mapc (lambda (filter)
+          (push filter ibuffer-saved-filters))
         `(("package" (or (directory . ,source-directory)
                          (directory . ,(f-parent data-directory))
                          (directory . ,(f-join   package-user-dir))))
@@ -1711,8 +1713,8 @@ in `zenburn-default-colors-alist'."
       ("Log"  (or (derived-mode . compilation-mode)
                   (mode . messages-buffer-mode)
                   (name . "\\*WoMan-Log\\*")
-                  ,@(-map (-partial #'cons 'name)
-                          blc-gnus-log-buffers)))
+                  ,@(mapcar (-partial #'cons 'name)
+                            blc-gnus-log-buffers)))
       ("PDF"  (mode . pdf-view-mode))
       ("Pkg"  (saved . "package"))
       ("REPL" (saved . "REPL"))
@@ -1970,9 +1972,9 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default
    lunar-phase-names
-   (-map #'(lambda (name)
+   (mapcar (lambda (name)
              (char-to-string (char-from-name (concat name " symbol") t)))
-         lunar-phase-names)))
+           lunar-phase-names)))
 
 (use-package know-your-http-well
   :ensure
@@ -2030,9 +2032,9 @@ in `zenburn-default-colors-alist'."
     (set-default logargs (blc-tree-sed logre logcommits
                                        (symbol-value logargs) t t 1))
 
-    (mapc #'(lambda (fmt)
-              (set-default fmt (replace-regexp-in-string
-                                fmtre fmtwidth (symbol-value fmt) t t 1)))
+    (mapc (lambda (fmt)
+            (set-default fmt (replace-regexp-in-string
+                              fmtre fmtwidth (symbol-value fmt) t t 1)))
           '(magit-refs-local-branch-format
             magit-refs-remote-branch-format
             magit-refs-symref-format
@@ -2501,7 +2503,8 @@ in `zenburn-default-colors-alist'."
    TeX-PDF-mode               t)
 
   ;; Set priority of pre-configured PDF viewers
-  (mapc #'(lambda (nom) (push `(output-pdf ,nom) TeX-view-program-selection))
+  (mapc (lambda (nom)
+          (push `(output-pdf ,nom) TeX-view-program-selection))
         (-intersection '("Zathura" "PDF Tools")
                        (map-keys TeX-view-program-list-builtin))))
 
@@ -2679,13 +2682,13 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default
    wttrin-default-cities
-   (-map (-rpartial #'string-join ", ")
-         '(("Athens"     "Greece"  )
-           ("Avoca"      "Ireland" )
-           ("Dublin"     "Ireland" )
-           ("Kfar Qasim" "Israel"  )
-           ("Harare"     "Zimbabwe")
-           (             "Moon"    )))))
+   (mapcar (-rpartial #'string-join ", ")
+           '(("Athens"     "Greece"  )
+             ("Avoca"      "Ireland" )
+             ("Dublin"     "Ireland" )
+             ("Kfar Qasim" "Israel"  )
+             ("Harare"     "Zimbabwe")
+             (             "Moon"    )))))
 
 (use-package xref-js2
   :ensure
