@@ -1324,7 +1324,7 @@ in `zenburn-default-colors-alist'."
   (engine-mode))
 
 (use-package eshell
-  :defer
+  :commands eshell-pcomplete
   :init
   (add-hook 'eshell-mode-hook #'blc-turn-off-line-numbers)
   :config
@@ -1938,6 +1938,7 @@ in `zenburn-default-colors-alist'."
 (use-package ledger-mode
   :ensure
   :mode "\\.ledger\\'"
+  :commands ledger-pcomplete
   :config
   (advice-add #'ledger-pcomplete :override #'blc-pcomplete--advice)
   (setq-default
