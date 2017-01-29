@@ -1252,6 +1252,7 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (setq-default
+   dired-auto-revert-buffer t
    dired-listing-switches
    (string-join '("--almost-all"
                   "--classify"
