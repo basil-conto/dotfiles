@@ -2635,6 +2635,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package tuareg
+  :ensure
+  :defer)
+
 (use-package typit
   :ensure
   :defer)
