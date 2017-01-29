@@ -824,6 +824,11 @@ function at URL
           '((Man-overstrike . font-lock-keyword-face)
             (Man-underline  . font-lock-string-face ))))
 
+(defun blc-message-header-fontify ()
+  "Customise `message-mode' header faces."
+  (map-do #'face-remap-add-relative
+          '((message-header-name . font-lock-builtin-face))))
+
 (defun blc-woman-fontify ()
   "Customise `woman-mode' faces."
   (map-do #'face-remap-add-relative
@@ -2142,9 +2147,11 @@ in `zenburn-default-colors-alist'."
 (use-package message
   :commands message-send message-insert-formatted-citation-line
   :init
-  (advice-add #'message-send :around #'blc-set-sender--advice)
+  (map-do #'add-hook
+          `((message-mode-hook  . ,#'blc-message-header-fontify)
+            (message-setup-hook . ,#'footnote-mode)))
 
-  (add-hook 'message-setup-hook #'footnote-mode)
+  (advice-add #'message-send :around #'blc-set-sender--advice)
 
   (setq-default
    message-citation-line-format   "On %a, %b %d %Y, at %R, %f wrote:\n"
