@@ -2613,6 +2613,8 @@ in `zenburn-default-colors-alist'."
 (use-package time
   :defer
   :init
+  (add-hook 'after-init-hook #'display-time)
+
   (let ((fmt "%a %d %b %R %z"))
     (setq-default
      display-time-format                 fmt
@@ -2622,9 +2624,7 @@ in `zenburn-default-colors-alist'."
                                            ("Africa/Harare" "Harare"  )
                                            ("Europe/Athens" "Athens"  )
                                            ("Asia/Tel_Aviv" "Tel Aviv"))
-     display-time-world-time-format      fmt))
-
-  (display-time))
+     display-time-world-time-format      fmt)))
 
 (use-package tool-bar
   :defer
