@@ -2667,9 +2667,10 @@ in `zenburn-default-colors-alist'."
 
 (use-package vc-hooks
   :defer
-  :init
-  ;; Magit-only
-  (setq-default vc-handled-backends ()))
+  :config
+  ;; Git or Magit only
+  (let ((backends (-list (assoc-string 'Git vc-handled-backends))))
+    (setq-default vc-handled-backends backends)))
 
 (use-package visual-fill-column
   :ensure
