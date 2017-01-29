@@ -1543,6 +1543,9 @@ in `zenburn-default-colors-alist'."
    gnus-home-directory user-emacs-directory
    gnus-init-file      (blc-join 'file gnus-home-directory "gnus")))
 
+;; FIXME:
+;; * Do not unconditionally remove existing signature
+;; * Add newline after signature
 (use-package gnus-alias
   :ensure
   :bind (:map message-mode-map
@@ -1558,9 +1561,10 @@ in `zenburn-default-colors-alist'."
   (let ((ids (blc-mail-ids)))
     (setq-default
      gnus-alias-default-identity (or (caar ids) "")
-     gnus-alias-identity-alist   (map-apply (lambda (alias from)
-                                              `(,alias "" ,from "" () "" ""))
-                                            ids))))
+     gnus-alias-identity-alist
+     (map-apply (lambda (alias from)
+                  `(,alias . ("" ,from "" () "" ,(concat user-full-name "\n"))))
+                ids))))
 
 (use-package golden-ratio-scroll-screen
   :disabled
@@ -2155,7 +2159,7 @@ in `zenburn-default-colors-alist'."
   (blc-turn-off-modes #'menu-bar-mode))
 
 (use-package message
-  :commands message-send message-insert-formatted-citation-line
+  :commands message-insert-formatted-citation-line message-send
   :init
   (map-do #'add-hook
           `((message-mode-hook  . ,#'blc-message-header-fontify)
@@ -2163,17 +2167,17 @@ in `zenburn-default-colors-alist'."
 
   (advice-add #'message-send :around #'blc-set-sender--advice)
 
+  (setq-default message-directory (blc-join 'dir user-emacs-directory "Mail"))
+
+  :config
   (setq-default
+   message-alternative-emails     (regexp-opt (map-values (blc-mail-ids)))
    message-citation-line-format   "On %a, %b %d %Y, at %R, %f wrote:\n"
    message-citation-line-function #'message-insert-formatted-citation-line
    message-cite-reply-position    'above
-   message-directory              (blc-join 'dir user-emacs-directory "Mail")
    message-fill-column            66
-   message-from-style             nil)
-
-  :config
-  (setq-default message-alternative-emails
-                (regexp-opt (map-values (blc-mail-ids)))))
+   message-from-style             nil
+   message-signature              user-full-name))
 
 (use-package minimap
   :ensure
