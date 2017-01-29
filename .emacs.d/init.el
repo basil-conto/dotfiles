@@ -1838,15 +1838,16 @@ in `zenburn-default-colors-alist'."
   :bind (([remap switch-to-buffer] . ivy-switch-buffer)
          ([remap switch-to-buffer-other-window]
           . ivy-switch-buffer-other-window)
+         ("M-D"     . ivy-dispatching-done)
          ("C-c r"   . ivy-resume))
   :init
   (setq-default completing-read-function #'ivy-completing-read)
+
   :config
   ;; Banish catch-all keys to the tail of the alist
-  (let ((sorts 'ivy-sort-matches-functions-alist))
-    (set-default
-     sorts (apply #'append (-separate (-lambda ((key)) (not (eq t key)))
-                                      (symbol-value sorts)))))
+  (let ((sorts 'ivy-sort-matches-functions-alist)
+        (delim (-lambda ((key)) (not (eq t key)))))
+    (set-default sorts (apply #'append (-separate delim (symbol-value sorts)))))
 
   (mapc (-lambda ((map key val))
           (map-put (symbol-value map) key val))
