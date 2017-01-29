@@ -1261,6 +1261,15 @@ in `zenburn-default-colors-alist'."
                   "-l")
                 " ")))
 
+(use-package dired-aux
+  :defer
+  :config
+  (let* ((cmds     'dired-compress-files-alist)
+         (cmds-old (symbol-value cmds))
+         (cmds-new '(("\\.tar\\.7z\\'" . "tar -c %i | 7zr a -si %o")
+                     ("\\.7z\\'"       . "7zr a %o %i"))))
+    (set-default cmds (-union cmds-new cmds-old))))
+
 (use-package dired-x
   :bind (("C-x C-j"   . dired-jump)
          ("C-x 4 C-j" . dired-jump-other-window))
