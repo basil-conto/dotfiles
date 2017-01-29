@@ -2241,25 +2241,36 @@ in `zenburn-default-colors-alist'."
          ("C-c b" . org-iswitchb)
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link))
+
   :init
   (map-do #'add-hook
-          `((          org-mode-hook . ,#'auto-fill-mode)
-            (outline-minor-mode-hook . ,#'orgstruct-mode)))
+          `((          org-mode-hook . ,#'auto-fill-mode   )
+            (outline-minor-mode-hook . ,#'orgstruct-mode   )))
+
+  :config
+  (let* ((loads 'org-babel-load-languages)
+         (langs '(C haskell java js latex ledger lisp makefile
+                    ocaml org perl python scheme shell))
+         (elems (mapcar (-rpartial #'cons t) langs)))
+    (set-default loads (map-merge 'list elems (symbol-value loads))))
 
   (setq-default
-   org-catch-invisible-edits     'smart
-   org-ctrl-k-protect-subtree    t
-   org-export-coding-system      'utf-8
-   org-footnote-section          nil
-   org-goto-interface            'outline-path-completion
-   org-list-demote-modify-bullet '(("+" . "-")
-                                   ("-" . "+"))
-   org-list-use-circular-motion  t
-   org-log-into-drawer           t
-   org-lowest-priority           ?D
-   org-M-RET-may-split-line      nil
-   org-special-ctrl-a/e          'reversed
-   org-startup-indented          t))
+   org-catch-invisible-edits          'smart
+   org-ctrl-k-protect-subtree         t
+   org-export-coding-system           'utf-8
+   org-footnote-section               nil
+   org-goto-interface                 'outline-path-completion
+   org-list-demote-modify-bullet      '(("+" . "-") ("-" . "+"))
+   org-list-use-circular-motion       t
+   org-log-into-drawer                t
+   org-lowest-priority                ?D
+   org-M-RET-may-split-line           nil
+   org-outline-path-complete-in-steps nil
+   org-refile-targets
+   `((nil . (:maxlevel . ,org-goto-max-level)))
+   org-refile-use-outline-path        'file
+   org-special-ctrl-a/e               t
+   org-startup-indented               t))
 
 (use-package org-mime
   :ensure
