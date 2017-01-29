@@ -353,7 +353,7 @@ respectively."
   "Print contents of URL.
 See `browse-url' for an explanation of the arguments."
   (interactive (browse-url-interactive-arg "URL: "))
-  (-let [(browser . filter) (blc-print-url--selector url)]
+  (-let (((browser . filter) (blc-print-url--selector url)))
     (apply browser (funcall filter url) args)))
 
 ;; TODO: Add downloader?
