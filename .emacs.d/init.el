@@ -1599,6 +1599,20 @@ in `zenburn-default-colors-alist'."
    gscholar-bibtex-default-source
    (map-contains-key gscholar-bibtex-available-sources "Google Scholar")))
 
+(use-package hacker-typer
+  :ensure
+  :defer
+  :config
+  (require 'mm-util)                    ; ;_;
+  (let* ((dir    (blc-join 'dir source-directory "src"))
+         (files  (directory-files dir t "\\.c\\'" t))
+         (urls   (mapcar (-partial #'concat "file://") files))
+         (double (mapcar (-partial #'* 2) hacker-typer-random-range)))
+    (setq-default
+     hacker-typer-files          urls
+     hacker-typer-random-range   double
+     hacker-typer-show-hackerman t)))
+
 (use-package haskell-cabal
   :ensure haskell-mode
   :defer
