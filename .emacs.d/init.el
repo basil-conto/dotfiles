@@ -396,6 +396,29 @@ description of the arguments to this function."
   (interactive)
   (blc-turn-off-modes #'electric-indent-local-mode))
 
+(defun blc-rainbow-font-lock-faces ()
+  "Highlight font lock face variable names."
+  (interactive)
+  (font-lock-add-keywords
+   nil
+   (mapcar
+    (lambda (face)
+      `(,(regexp-opt `(,(symbol-name face)) 'symbols) . ,face))
+    '(font-lock-builtin-face
+      font-lock-comment-delimiter-face
+      font-lock-comment-face
+      font-lock-constant-face
+      font-lock-doc-face
+      font-lock-function-name-face
+      font-lock-keyword-face
+      font-lock-preprocessor-face
+      font-lock-string-face
+      font-lock-type-face
+      font-lock-variable-name-face
+      font-lock-warning-face
+      font-lock-negation-char-face)))
+  (font-lock-flush))
+
 (defun blc-increase-readability ()
   "Adjust font for increased readability."
   (setq line-spacing (window-font-height))
@@ -1281,6 +1304,8 @@ in `zenburn-default-colors-alist'."
 (use-package elisp-mode
   :defer
   :init
+  (add-hook 'emacs-lisp-mode-hook #'blc-rainbow-font-lock-faces)
+
   (delight '((      emacs-lisp-mode "ελ" :major)
              (lisp-interaction-mode "λι" :major))))
 
