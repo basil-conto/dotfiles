@@ -97,11 +97,26 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   :init
   (setq-default
    gnus-blocked-images                    nil)
+
   :config
-  (setq-default
-   gnus-visible-headers
-   (-union '("^Delivered-To:")
-           (-list gnus-visible-headers))))
+  ;; Reorder headers
+  (let* ((heads 'gnus-sorted-header-list)
+         (order (symbol-value heads))
+         (tos   '("^To:" "^Delivered-To:" "^Reply-To:")))
+    (set-default heads (-splice-list (-partial #'string= (car tos)) tos order)))
+
+  ;; Customise header faces
+  (-let* ((head-to                        "^\\(?:Delivered-\\)?To:")
+          (head-vis                       (-list gnus-visible-headers))
+          (faces-old                      gnus-header-face-alist)
+          (faces-new                      `((,head-to nil font-lock-string-face)
+                                            ("^Date:" nil font-lock-type-face)))
+          (faces                          (-union faces-new faces-old))
+          ((heads names contents)         (-unzip faces))
+          (names                          (-cycle (-non-nil names))))
+    (setq-default
+     gnus-header-face-alist               (-zip heads names contents)
+     gnus-visible-headers                 (-union `(,head-to) head-vis))))
 
 (use-package gnus-cloud
   :defer
