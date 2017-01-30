@@ -147,7 +147,7 @@ why-are-you-changing-gc-cons-threshold/'."
                              message-narrow-to-headers))
             ("shr"        . (shr-copy-url))
             ("smtpmail"   . (smtpmail-user-mail-address))
-            ("url-utl"    . (url-get-url-at-point)))))
+            ("url-util"   . (url-get-url-at-point)))))
 
 (eval-when-compile
   (defvar c-mode-base-map)
