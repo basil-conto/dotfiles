@@ -131,7 +131,7 @@ why-are-you-changing-gc-cons-threshold/'."
 
 (eval-and-compile
   (map-do (lambda (file funcs)
-            (mapc (-rpartial #'autoload file) funcs))
+            (mapc (-cut autoload <> file) funcs))
           '(("browse-url" . (browse-url-chrome
                              browse-url-interactive-arg))
             ("cc-defs"    . (c-langelem-pos))
@@ -259,7 +259,7 @@ Include every major mode derived from the current
   "Replace holiday strings according to `blc-holiday-list-lut'."
   (let ((lut blc-holiday-list-lut))
     (blc-tree-sed (regexp-opt (map-keys lut))
-                  (-compose  #'cdr (-rpartial #'assoc-string lut t))
+                  (-compose  #'cdr (-cut assoc-string <> lut t))
                   haystack)))
 
 (defun blc-narrow-candidate--advice (args)
@@ -267,7 +267,7 @@ Include every major mode derived from the current
 `ivy-bibtex-default-action' only considers `frame-width', which
 does not, for example, take the effect of `ivy-format-function'
 into account."
-  (-update-at 1 (-partial #'+ -3) args))
+  (-update-at 1 (-cut + -3 <>) args))
 
 (defun blc-set-sender--advice (send &rest args)
   "Change the sender's email address before sending mail."
@@ -290,13 +290,13 @@ into account."
 (defun blc-with-every-frame (&rest funs)
   "Run abnormal hooks in current frame and with every new one."
   ;; `run-hook-with-args' is not available during initialisation
-  (mapc (-juxt (-rpartial #'funcall  (selected-frame))
-               (-partial  #'add-hook 'after-make-frame-functions))
+  (mapc (-juxt (-cut funcall <> (selected-frame))
+               (-cut add-hook 'after-make-frame-functions <>))
         funs))
 
 (defun blc-turn-off-modes (&rest modes)
   "Attempt to pass 0 to all MODES."
-  (mapc (-rpartial #'blc-apply-safe 0) modes))
+  (mapc (-cut blc-apply-safe <> 0) modes))
 
 ;; TODO: Move to password-store
 (defun blc-mail-ids (&optional max)
@@ -880,7 +880,7 @@ in `zenburn-default-colors-alist'."
   "Default user BibTeX file.")
 
 (defvar blc-fundamental-hooks
-  (mapcar (-rpartial #'blc-symcat "-mode-hook")
+  (mapcar (-cut blc-symcat <> "-mode-hook")
           '(conf ess haskell-cabal hledger mustache prog text))
   "Hooks whose modes derive from `fundamental-mode' or nothing.")
 
@@ -1206,7 +1206,7 @@ in `zenburn-default-colors-alist'."
   :ensure boogie-friends
   :defer
   :init
-  (mapc (-partial #'add-hook 'dafny-mode-hook)
+  (mapc (-cut add-hook 'dafny-mode-hook <>)
         `(,#'blc-turn-off-local-electric-indent
           ,#'blc-turn-off-flycheck
           ,#'blc-turn-off-prettify-symbols)))
@@ -1392,7 +1392,7 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer
   :config
-  (mapc (-partial #'add-to-list 'exec-path-from-shell-variables)
+  (mapc (-cut add-to-list 'exec-path-from-shell-variables <>)
         '("SSH_AGENT_PID" "SSH_AUTH_SOCK")))
 
 (use-package executable
@@ -1413,9 +1413,9 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer
   :init
-  (mapc (-rpartial #'add-hook #'fic-mode) blc-fundamental-hooks)
+  (mapc (-cut add-hook <> #'fic-mode) blc-fundamental-hooks)
   :config
-  (mapc (-partial #'add-to-list 'fic-highlighted-words)
+  (mapc (-cut add-to-list 'fic-highlighted-words <>)
         '("HACK" "KLUDGE" "NOTE" "WARN")))
 
 (use-package figlet
@@ -1444,7 +1444,7 @@ in `zenburn-default-colors-alist'."
          (blacklist '(lisp-interaction-mode-hook org-mode-hook))
          (togglers  `(,#'turn-on-fci-mode ,#'turn-off-fci-mode))
          (togglees  `(,whitelist ,blacklist))
-         (hookers   (-partial #'-rpartial #'add-hook)))
+         (hookers   (-cut -rpartial #'add-hook <>)))
     (-zip-with #'mapc (mapcar hookers togglers) togglees))
 
   (setq-default fci-rule-color  "#696969"
@@ -1606,8 +1606,8 @@ in `zenburn-default-colors-alist'."
   (require 'mm-util)                    ; ;_;
   (let* ((dir    (blc-join 'dir source-directory "src"))
          (files  (directory-files dir t "\\.c\\'" t))
-         (urls   (mapcar (-partial #'concat "file://") files))
-         (double (mapcar (-partial #'* 2) hacker-typer-random-range)))
+         (urls   (mapcar (-cut concat "file://" <>) files))
+         (double (mapcar (-cut * 2 <>) hacker-typer-random-range)))
     (setq-default
      hacker-typer-files          urls
      hacker-typer-random-range   double
@@ -1680,7 +1680,7 @@ in `zenburn-default-colors-alist'."
               :before #'blc-hi-lock-exclude-derived-modes--advice)
   (global-hi-lock-mode)
   :config
-  (mapc (-partial #'add-to-list 'hi-lock-exclude-modes)
+  (mapc (-cut add-to-list 'hi-lock-exclude-modes <>)
         `(,#'comint-mode
           ,#'completion-list-mode
           ,#'eshell-mode)))
@@ -1738,7 +1738,7 @@ in `zenburn-default-colors-alist'."
 (use-package ibuffer
   :bind ([remap list-buffers] . ibuffer)
   :init
-  (mapc (-partial #'add-hook 'ibuffer-mode-hook)
+  (mapc (-cut add-hook 'ibuffer-mode-hook <>)
         `(,#'ibuffer-auto-mode
           ,#'blc-turn-on-ibuffer-filter-groups))
 
@@ -1779,7 +1779,7 @@ in `zenburn-default-colors-alist'."
       ("Log"  (or (derived-mode . compilation-mode)
                   (mode . messages-buffer-mode)
                   (name . "\\*WoMan-Log\\*")
-                  ,@(mapcar (-partial #'cons 'name)
+                  ,@(mapcar (-cut cons 'name <>)
                             blc-gnus-log-buffers)))
       ("PDF"  (mode . pdf-view-mode))
       ("Pkg"  (saved . "package"))
@@ -1936,7 +1936,7 @@ in `zenburn-default-colors-alist'."
   :init
   (setq-default js2-bounce-indent-p t)
 
-  (mapc (-partial #'add-hook 'js2-mode-hook)
+  (mapc (-cut add-hook 'js2-mode-hook <>)
         `(,#'js2-highlight-unused-variables-mode
           ,#'blc-turn-off-local-electric-indent))
 
@@ -2243,15 +2243,13 @@ in `zenburn-default-colors-alist'."
          ("C-c l" . org-store-link))
 
   :init
-  (map-do #'add-hook
-          `((          org-mode-hook . ,#'auto-fill-mode   )
-            (outline-minor-mode-hook . ,#'orgstruct-mode   )))
+  (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
 
   :config
   (let* ((loads 'org-babel-load-languages)
          (langs '(C haskell java js latex ledger lisp makefile
                     ocaml org perl python scheme shell))
-         (elems (mapcar (-rpartial #'cons t) langs)))
+         (elems (mapcar (-cut cons <> t) langs)))
     (set-default loads (map-merge 'list elems (symbol-value loads))))
 
   (setq-default
@@ -2446,6 +2444,7 @@ in `zenburn-default-colors-alist'."
                 shr-width   blc-chars-per-line))
 
 (use-package simple
+  :commands turn-on-auto-fill
   :bind
   (("C-x C-k"                       . kill-whole-line)
    ([remap delete-horizontal-space] .   cycle-spacing)
@@ -2455,6 +2454,9 @@ in `zenburn-default-colors-alist'."
 
   :init
   (setq-default read-mail-command 'gnus)
+
+  (mapc (-cut add-hook <> #'turn-on-auto-fill)
+        '(LaTeX-mode-hook org-mode-hook))
 
   (add-hook 'special-mode-hook #'blc-turn-off-line-numbers)
   (with-current-buffer (messages-buffer)
@@ -2583,9 +2585,8 @@ in `zenburn-default-colors-alist'."
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer)
 
-  (mapc (-partial #'add-hook 'LaTeX-mode-hook)
-        `(,#'turn-on-auto-fill
-          ,#'blc-configure-beamer
+  (mapc (-cut add-hook 'LaTeX-mode-hook <>)
+        `(,#'blc-configure-beamer
           ,#'blc-configure-latexmk))
 
   :config
@@ -2606,7 +2607,7 @@ in `zenburn-default-colors-alist'."
 (use-package text-mode
   :defer
   :init
-  (mapc (-partial #'add-hook 'text-mode-hook)
+  (mapc (-cut add-hook 'text-mode-hook <>)
         `(,#'blc-indent-relative-first-indent-point
           ,#'blc-turn-off-local-electric-indent)))
 
@@ -2782,7 +2783,7 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default
    wttrin-default-cities
-   (mapcar (-rpartial #'string-join ", ")
+   (mapcar (-cut string-join <> ", ")
            '(("Athens"     "Greece"  )
              ("Avoca"      "Ireland" )
              ("Dublin"     "Ireland" )
