@@ -2054,6 +2054,8 @@ in `zenburn-default-colors-alist'."
 (use-package magit
   :ensure
   :bind ("C-x g" . magit-status)
+  :init
+  (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
   :config
   (delight                              ; Tidy?
    '((magit-blame-mode-lighter  "± Bl"  magit-blame)
@@ -2083,7 +2085,8 @@ in `zenburn-default-colors-alist'."
 
   (setq-default
    magit-branch-popup-show-variables t
-   magit-repository-directories      `((,blc-repos-dir . 2)))
+   magit-display-buffer-function
+   #'magit-display-buffer-same-window-except-diff-v1)
 
   (let* (;; Limit number of commits in log
          (logcommits       "32")
