@@ -1521,8 +1521,7 @@ in `zenburn-default-colors-alist'."
 
   :config
   (setq-default git-commit-summary-max-length 50
-                git-commit-fill-column        68
-                git-commit-major-mode         #'org-mode)
+                git-commit-fill-column        68)
 
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line)
 
@@ -2243,7 +2242,8 @@ in `zenburn-default-colors-alist'."
          ("C-c l" . org-store-link))
 
   :init
-  (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
+  (mapc (-cut add-hook <> #'orgstruct-mode)
+        '(git-commit-setup-hook outline-minor-mode-hook))
 
   :config
   (let* ((loads 'org-babel-load-languages)
