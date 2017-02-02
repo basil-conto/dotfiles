@@ -138,6 +138,7 @@ why-are-you-changing-gc-cons-threshold/'."
             ("comint"     . (comint-mode))
             ("csv-mode"   . (csv-align-fields))
             ("dired-x"    . (dired-omit-mode))
+            ("erc"        . (erc-mode))
             ("eww"        . (eww-copy-page-url))
             ("hi-lock"    . (hi-lock-set-pattern))
             ("ibuf-ext"   . (ibuffer-auto-mode
@@ -1682,6 +1683,7 @@ in `zenburn-default-colors-alist'."
   (mapc (-cut add-to-list 'hi-lock-exclude-modes <>)
         `(,#'comint-mode
           ,#'completion-list-mode
+          ,#'erc-mode
           ,#'eshell-mode)))
 
 (use-package highlight-escape-sequences
