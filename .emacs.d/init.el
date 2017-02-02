@@ -2242,7 +2242,10 @@ in `zenburn-default-colors-alist'."
    `((nil . (:maxlevel . ,org-goto-max-level)))
    org-refile-use-outline-path        'file
    org-special-ctrl-a/e               t
-   org-startup-indented               t))
+   org-startup-indented               t
+   org-todo-keywords
+   '((sequence "NEXT(n)" "TODO(t)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
+               "DONE(d)" "VOID(v)"))))
 
 (use-package org-mime
   :ensure
