@@ -2023,6 +2023,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package magit
   :ensure
+  :commands magit-display-buffer-same-window-except-diff-v1
   :bind ("C-x g" . magit-status)
   :init
   (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
