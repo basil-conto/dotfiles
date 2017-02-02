@@ -1510,7 +1510,7 @@ in `zenburn-default-colors-alist'."
    gnus-init-file      (blc-join 'file gnus-home-directory "gnus")))
 
 ;; FIXME:
-;; * Do not unconditionally remove existing signature
+;; * Do not delete message body/citations/signature at startup or alias switch
 ;; * Add newline after signature
 (use-package gnus-alias
   :ensure
