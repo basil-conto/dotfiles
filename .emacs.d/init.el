@@ -445,44 +445,6 @@ description of the arguments to this function."
 See `blc-ibuffer-default-group'."
   (ibuffer-switch-to-saved-filter-groups blc-ibuffer-default-group))
 
-(defvar blc-info-item--cache ()
-  "Cache of Info menu item points.
-(Item name . point) cons pairs are keyed by Info file + node.")
-
-(defvar blc-info-item--file nil
-  "Canonical symbol whose name is the Current Info page.")
-
-(defun blc-info-item--point (item)
-  "Return point right after Info menu ITEM or nil.
-The caller should dynamically bind `blc-info-item--file' to the
-current Info page for ostensible efficiency."
-  (let ((itemkey (intern item))
-        ;; (Item, point) pairs for current Info page
-        (cached (assq blc-info-item--file blc-info-item--cache)))
-    (or (alist-get itemkey (cdr cached)) ; Either already cached
-        (when-let ((point                ; Or searched for from scratch
-                    (save-excursion
-                      (goto-char (point-min))
-                      (re-search-forward (format "^\\* +?%s:" item) nil t))))
-          (if cached
-              (push `(,itemkey . ,point) (cdr cached)) ; Inner alist
-            (push `(,blc-info-item--file               ; Outer alist
-                    . ((,itemkey . ,point))) blc-info-item--cache))
-          point))))
-
-(defun blc-info-item-sort (&rest args)
-  "Sort comparator for Info menu items.
-Sort menu items A and B according to their order of appearance in
-the Info page. This is useful in cases where the candidate list
-of top-level menu items is littered by later detailed node
-listings in lexicographic order."
-  (let ((blc-info-item--file
-         (intern (concat Info-current-file Info-current-node))))
-    (if-let ((indices (mapcar #'blc-info-item--point args))
-             (found   (-all-p #'numberp indices)))
-        (apply #'< indices)
-      (apply #'string< args))))
-
 (defun blc-download-rfc (&optional arg)
   "Download (write) current RFC buffer into `irfc-directory'."
   (interactive "P")
@@ -1136,7 +1098,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package counsel
   :ensure
-  :defer
+  :commands ivy-set-sources
   :bind
   (("C-c g"   . counsel-ag)
    ("C-c t"   . counsel-git)
@@ -1164,7 +1126,7 @@ in `zenburn-default-colors-alist'."
                ivy-initial-inputs-alist))
 
   (ivy-set-sources
-   'counsel-locate
+   #'counsel-locate
    '((blc-some-recentf)
      (original-source))))
 
@@ -1845,17 +1807,17 @@ in `zenburn-default-colors-alist'."
   (setq-default completing-read-function #'ivy-completing-read)
 
   :config
-  ;; Banish catch-all keys to the tail of the alist
-  (let ((sorts 'ivy-sort-matches-functions-alist)
-        (delim (-lambda ((key)) (not (eq t key)))))
-    (set-default sorts (apply #'append (-separate delim (symbol-value sorts)))))
-
   (mapc (-lambda ((map key val))
           (map-put (symbol-value map) key val))
         `((ivy-sort-functions-alist
-           Info-complete-menu-item ,#'blc-info-item-sort)
+           ,#'Info-complete-menu-item
+           ;; Reverse parsed order
+           ;; TODO: Give meaningful function name/docstring
+           ,(-const t))
           (ivy-re-builders-alist
-           t ,#'ivy--regex-ignore-order)))
+           t
+           ;; Set default behaviour
+           ,#'ivy--regex-ignore-order)))
 
   (setq-default
    ivy-count-format          "(%d/%d) "
