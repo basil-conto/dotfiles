@@ -1816,13 +1816,13 @@ in `zenburn-default-colors-alist'."
   (mapc (-lambda ((map key val))
           (map-put (symbol-value map) key val))
         `((ivy-sort-functions-alist
-           ,#'Info-complete-menu-item
            ;; Reverse parsed order
-           ;; TODO: Give meaningful function name/docstring
-           ,(-const t))
+           ,#'Info-complete-menu-item
+           ,(defalias 'blc-ivy-sort-reverse (-const t)
+              "Predicate that the elements being compared should be swapped."))
           (ivy-re-builders-alist
+           ;; Default behaviour
            t
-           ;; Set default behaviour
            ,#'ivy--regex-ignore-order)))
 
   (setq-default
