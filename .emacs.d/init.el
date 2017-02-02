@@ -1782,7 +1782,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package irfc
   :ensure
-  :mode ("rfc[0-9]+\\.txt\\'" . irfc-mode))
+  :mode ("rfc[0-9]+\\.txt\\'" . irfc-mode)
+  :bind (:map irfc-mode-map
+              ("DEL" . scroll-down)))
 
 (use-package "isearch"
   :defer
