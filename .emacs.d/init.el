@@ -1187,6 +1187,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package debpaste
+  :ensure
+  :defer)
+
 (use-package define-word
   :ensure
   :bind ("C-c /" . define-word-at-point))
