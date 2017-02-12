@@ -1018,6 +1018,13 @@ in `zenburn-default-colors-alist'."
   :disabled
   :ensure)
 
+(use-package battery
+  :defer
+  :init
+  (add-hook 'after-init-hook #'display-battery-mode)
+  :config
+  (setq-default battery-mode-line-format (concat " " battery-mode-line-format)))
+
 (use-package better-shell
   :ensure
   :defer)
