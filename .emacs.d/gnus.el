@@ -88,9 +88,9 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
             (nnimap-stream                tls)
             (nnir-search-engine           imap)))
 
-         (gmail `(,@(-map (-lambda ((name))
-                            `(nnimap ,name ,@nngmail))
-                          (blc-mail-ids))))
+         (gmail `(,@(mapcar (pcase-lambda (`(,name))
+                              `(nnimap ,name ,@nngmail))
+                            (blc-mail-ids))))
 
          (news  '((nntp "news.gwene.org"
                         (nntp-record-commands t)))))
@@ -109,7 +109,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (let* ((heads 'gnus-sorted-header-list)
          (order (symbol-value heads))
          (tos   '("^To:" "^Delivered-To:" "^Reply-To:")))
-    (set-default heads (-splice-list (-partial #'string= (car tos)) tos order)))
+    (set-default heads (-splice-list (-cut string= (car tos) <>) tos order)))
 
   ;; Customise header faces
   (-let* ((head-to                        "^\\(?:Delivered-\\)?To:")
