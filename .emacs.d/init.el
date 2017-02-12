@@ -273,9 +273,10 @@ into account."
 
 (defun blc-set-sender--advice (send &rest args)
   "Change the sender's email address before sending mail."
-  (-if-let* ((user-mail-address (save-restriction
-                                  (message-narrow-to-headers)
-                                  (message-fetch-field "From" t)))
+  (-if-let* ((user-mail-address (mail-strip-quoted-names
+                                 (save-restriction
+                                   (message-narrow-to-headers)
+                                   (message-fetch-field "From" t))))
              (user (-some->> (smtpmail-user-mail-address)
                              (setq user-mail-address)
                              (setq smtpmail-smtp-user))))
@@ -1532,7 +1533,8 @@ in `zenburn-default-colors-alist'."
      gnus-alias-default-identity (or (caar ids) "")
      gnus-alias-identity-alist
      (map-apply (lambda (alias from)
-                  `(,alias . ("" ,from "" () "" ,(concat user-full-name "\n"))))
+                  `(,alias . ("" ,(format "\"%s\" <%s>" user-full-name from)
+                              "" () "" ,(concat user-full-name "\n"))))
                 ids))))
 
 (use-package golden-ratio-scroll-screen
@@ -2167,7 +2169,7 @@ in `zenburn-default-colors-alist'."
    message-citation-line-function #'message-insert-formatted-citation-line
    message-cite-reply-position    'above
    message-fill-column            66
-   message-from-style             nil
+   message-from-style             'angles
    message-signature              user-full-name))
 
 (use-package minimap
