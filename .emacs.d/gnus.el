@@ -213,6 +213,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    gnus-sum-thread-tree-single-leaf       "╰➤ "
    gnus-sum-thread-tree-indent            " "
    gnus-sum-thread-tree-vertical          "│ "
+   gnus-summary-display-while-building    16
    gnus-summary-gather-subject-limit      'fuzzy
    gnus-summary-next-group-on-exit        nil
    gnus-summary-thread-gathering-function #'gnus-gather-threads-by-references
