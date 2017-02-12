@@ -800,31 +800,33 @@ function at URL
           '((woman-bold   . font-lock-keyword-face)
             (woman-italic . font-lock-string-face ))))
 
-(defun blc-zenburn-assoc (colour)
+(defun blc-zenburn-assoc-default (colour &optional default)
   "Return the `zenburn-theme' values associated with COLOURS.
 For each colour name in COLOURS return its corresponding CDR slot
 in `zenburn-default-colors-alist'."
-  (cdr (assoc-string colour zenburn-default-colors-alist)))
+  (if-let ((val (assoc-string colour zenburn-default-colors-alist)))
+      (cdr val)
+    default))
 
 (defun blc-zenburn-brighten-fci ()
   "Distinguish FCI rule from background under 256 colours."
-  (setq-default fci-rule-color (blc-zenburn-assoc 'zenburn-bg+1)))
+  (setq-default fci-rule-color (blc-zenburn-assoc-default 'zenburn-bg+1)))
 
 (defun blc-zenburn-darken-ivy ()
   "Darken background of `ivy' matches under `zenburn-theme'."
   (seq-mapn
    #'set-face-background
    (cdr ivy-minibuffer-faces)
-   (mapcar #'blc-zenburn-assoc
+   (mapcar #'blc-zenburn-assoc-default
            '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
 
 (defun blc-zenburn-darken-linum ()
   "Darken foreground of face `linum' under `zenburn-theme'."
-  (set-face-foreground 'linum (blc-zenburn-assoc 'zenburn-bg+3)))
+  (set-face-foreground 'linum (blc-zenburn-assoc-default 'zenburn-bg+3)))
 
 (defun blc-setup-theme-zenburn ()
   "Customise `zenburn-theme' to taste."
-  (set-face-background 'highlight (blc-zenburn-assoc 'zenburn-bg-1))
+  (set-face-background 'highlight (blc-zenburn-assoc-default 'zenburn-bg-1))
 
   (map-do #'add-hook
           `((   fci-mode-hook . ,#'blc-zenburn-brighten-fci    )
