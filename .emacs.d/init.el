@@ -1743,7 +1743,8 @@ in `zenburn-default-colors-alist'."
 ;;   - ibuffer-projectile
 ;;   - ibuffer-tramp
 ;;   - ibuffer-vc
-(use-package ibuffer
+
+(use-package ibuf-ext
   :bind ([remap list-buffers] . ibuffer)
   :init
   (mapc (-cut add-hook 'ibuffer-mode-hook <>)
@@ -1751,8 +1752,6 @@ in `zenburn-default-colors-alist'."
           ,#'blc-turn-on-ibuffer-filter-groups))
 
   :config
-  (require 'ibuf-ext)
-
   ;; Define before use
   (mapc (lambda (filter)
           (push filter ibuffer-saved-filters))
