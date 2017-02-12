@@ -1130,7 +1130,7 @@ in `zenburn-default-colors-alist'."
   (global-company-mode))
 
 (use-package conf-mode
-  :defer
+  :mode ("\\.dirs\\'" . conf-unix-mode)
   :init
   (add-hook 'conf-mode-hook #'blc-turn-off-local-electric-indent))
 
