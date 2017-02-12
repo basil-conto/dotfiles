@@ -1806,6 +1806,12 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package ielm
+  :defer
+  :init
+  ;; Display IELM buffer in other window by default
+  (push '("\\`\\*ielm" () (inhibit-same-window . t)) display-buffer-alist))
+
 (use-package "indent"
   :defer
   :init
