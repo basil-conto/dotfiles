@@ -170,6 +170,11 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
            "%9u&dgroup;"                  ; Last read
            "\n")))
 
+(use-package gnus-msg
+  :defer
+  :init
+  (setq-default gnus-gcc-mark-as-read t))
+
 (use-package gnus-notifications
   :disabled                               ; Notifies of all unread messages ;_;
   :defer
