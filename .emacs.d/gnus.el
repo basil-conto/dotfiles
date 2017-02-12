@@ -47,6 +47,12 @@ After scanning, truncate growing network log buffers to
   (let ((gnus-activate-level (1+ gnus-activate-level)))
     (blc-demon-scan-mail)))
 
+(defun blc-turn-on-demon-scan-mail ()
+  "Add daemonic handlers for mail and news scanning."
+  (mapc (-applify #'gnus-demon-add-handler)
+        `((,#'blc-demon-scan-mail 300  5)
+          (,#'blc-demon-scan-news 900 30))))
+
 (defun blc-gnus-topic-fold ()
   "Toggle folding of current topic.
 See URL `https://www.emacswiki.org/emacs/GnusTopics'."
@@ -140,11 +146,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 (use-package gnus-demon
   :defer
   :init
-  (setq-default gnus-demon-timestep 1)
-
-  (mapc (-applify #'gnus-demon-add-handler)
-        `((,#'blc-demon-scan-mail 300  5)
-          (,#'blc-demon-scan-news 900 30))))
+  (setq-default gnus-demon-timestep 1))
 
 (use-package gnus-group
   :defer
