@@ -467,6 +467,17 @@ See `blc-ibuffer-default-group'."
   (blc-turn-off-modes #'nlinum-mode
                       #'linum-mode))
 
+(defvar blc-org-todo-keywords
+  '((("NEXT" . "n")
+     ("TODO" . "t")
+     ("MEET" . "m")
+     ("WAIT" . "w@")
+     ("BALK" . "b"))
+    (("DONE" . "d!")
+     ("VOID" . "v@")))
+  "List of `org' TODO/DONE alists of keywords and selectors.
+The two alists represent the TODO/DONE states, respectively.")
+
 (defun blc-org-cycle ()
   "Call a prefixed `org-cycle'.
 Without the prefix, visibility cycling in `outline-minor-mode'
@@ -824,6 +835,21 @@ in `zenburn-default-colors-alist'."
   "Darken foreground of face `linum' under `zenburn-theme'."
   (set-face-foreground 'linum (blc-zenburn-assoc-default 'zenburn-bg+3)))
 
+(defun blc-zenburn-fontify-org-todo ()
+  "Customise `org' TODO keyword faces."
+  (setq-default
+   org-todo-keyword-faces
+   (seq-mapn #'cons
+             (mapcan #'map-keys blc-org-todo-keywords)
+             (mapcar #'blc-zenburn-assoc-default
+                     '(zenburn-magenta     ; NEXT
+                       org-todo            ; TODO
+                       zenburn-yellow      ; MEET
+                       zenburn-cyan        ; WAIT
+                       zenburn-fg          ; BALK
+                       org-done            ; DONE
+                       zenburn-blue-2))))) ; VOID
+
 (defun blc-setup-theme-zenburn ()
   "Customise `zenburn-theme' to taste."
   (set-face-background 'highlight (blc-zenburn-assoc-default 'zenburn-bg-1))
@@ -1123,11 +1149,12 @@ in `zenburn-default-colors-alist'."
   (setq-default
    ;; Search with smart case and shell expansion
    counsel-grep-base-command "ag --nocolor \"%s\" %s"
-   ;; Do not match start of input for counsel commands
+   ;; Do not match start of input for counsel, man or org commands
    ivy-initial-inputs-alist
    (map-remove (lambda (cmd _)
                  (or (memq cmd '(man woman))
-                     (string-prefix-p "counsel-" (blc-as-string cmd))))
+                     (string-match-p "^\\(?:org\\|counsel\\)-"
+                                     (blc-as-string cmd))))
                ivy-initial-inputs-alist))
 
   (ivy-set-sources
@@ -2227,6 +2254,8 @@ in `zenburn-default-colors-alist'."
         '(git-commit-setup-hook outline-minor-mode-hook))
 
   :config
+  (require 'remember)
+
   (let* ((loads 'org-babel-load-languages)
          (langs '(C haskell java js latex ledger lisp makefile
                     ocaml org perl python scheme shell))
@@ -2234,25 +2263,32 @@ in `zenburn-default-colors-alist'."
     (set-default loads (map-merge 'list elems (symbol-value loads))))
 
   (setq-default
-   org-catch-invisible-edits          'smart
-   org-ctrl-k-protect-subtree         t
-   org-export-coding-system           'utf-8
-   org-footnote-section               nil
-   org-goto-interface                 'outline-path-completion
-   org-list-demote-modify-bullet      '(("+" . "-") ("-" . "+"))
-   org-list-use-circular-motion       t
-   org-log-into-drawer                t
-   org-lowest-priority                ?D
-   org-M-RET-may-split-line           nil
-   org-outline-path-complete-in-steps nil
+   org-agenda-files                                  `(,remember-data-file)
+   org-archive-location                              "~/.archive::"
+   org-catch-invisible-edits                         'smart
+   org-checkbox-hierarchical-statistics              nil
+   org-ctrl-k-protect-subtree                        t
+   org-export-coding-system                          'utf-8
+   org-footnote-section                              nil
+   org-goto-interface                                'outline-path-completion
+   org-hierarchical-todo-statistics                  nil
+   org-list-demote-modify-bullet                     '(("+" . "-") ("-" . "+"))
+   org-list-use-circular-motion                      t
+   org-log-into-drawer                               t
+   org-lowest-priority                               ?D
+   org-M-RET-may-split-line                          nil
+   org-outline-path-complete-in-steps                nil
+   org-refile-allow-creating-parent-nodes            'confirm
    org-refile-targets
    `((nil . (:maxlevel . ,org-goto-max-level)))
-   org-refile-use-outline-path        'file
-   org-special-ctrl-a/e               t
-   org-startup-indented               t
+   org-refile-use-outline-path                       'file
+   org-special-ctrl-a/e                              t
+   org-startup-indented                              t
    org-todo-keywords
-   '((sequence "NEXT(n)" "TODO(t)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
-               "DONE(d)" "VOID(v)"))))
+   (let ((keywords (mapcar (-cut map-apply (-cut format "%s(%s)" <> <>) <>)
+                           blc-org-todo-keywords)))
+     `((type ,@(apply #'append (-interpose '("|") keywords)))))
+   org-treat-S-cursor-todo-selection-as-state-change nil))
 
 (use-package org-mime
   :ensure
