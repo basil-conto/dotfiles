@@ -244,8 +244,8 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   "Exempt derived modes from hi-lock highlighting.
 Include every major mode derived from the current
 `hi-lock-exclude-modes' in that blacklist."
-  (when-let ((modes   'hi-lock-exclude-modes)
-             (derived (apply #'derived-mode-p (symbol-value modes))))
+  (when-let* ((modes   'hi-lock-exclude-modes)
+              (derived (apply #'derived-mode-p (symbol-value modes))))
     (add-to-list modes major-mode)))
 
 (defvar blc-holiday-list-lut
@@ -268,7 +268,8 @@ Include every major mode derived from the current
 `ivy-bibtex-default-action' only considers `frame-width', which
 does not, for example, take the effect of `ivy-format-function'
 into account."
-  (-update-at 1 (-cut + -3 <>) args))
+  (seq-let (entry width) args
+    `(,entry ,(- width 3))))
 
 (defun blc-set-sender--advice (send &rest args)
   "Change the sender's email address before sending mail."
@@ -330,7 +331,7 @@ generated file is printed with `blc-async-print-url--lpr'."
   (let ((tmp (make-temp-file "blc-" nil ".pdf")))
     (async-start-process "WebKit Print"
                          "wkhtmltopdf"
-                         (-partial #'blc-async-print-url--lpr tmp)
+                         (-cut blc-async-print-url--lpr tmp)
                          url
                          tmp)))
 
@@ -354,7 +355,7 @@ respectively."
   "Print contents of URL.
 See `browse-url' for an explanation of the arguments."
   (interactive (browse-url-interactive-arg "URL: "))
-  (-let (((browser . filter) (blc-print-url--selector url)))
+  (pcase-let ((`(,browser . ,filter) (blc-print-url--selector url)))
     (apply browser (funcall filter url) args)))
 
 ;; TODO: Add downloader?
@@ -493,7 +494,7 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
 
 (defun blc-some-recentf (&optional count)
   "Return first COUNT or 5 items in `recentf-list'."
-  (-take (or count (lsh ivy-height -1)) recentf-list))
+  (seq-take recentf-list (or count (lsh ivy-height -1))))
 
 (defun blc-align-all-csv-fields ()
   "Align all fields in the current CSV buffer."
@@ -810,7 +811,7 @@ in `zenburn-default-colors-alist'."
 
 (defun blc-zenburn-darken-ivy ()
   "Darken background of `ivy' matches under `zenburn-theme'."
-  (-zip-with
+  (seq-mapn
    #'set-face-background
    (cdr ivy-minibuffer-faces)
    (mapcar #'blc-zenburn-assoc
@@ -825,9 +826,10 @@ in `zenburn-default-colors-alist'."
   (set-face-background 'highlight (blc-zenburn-assoc 'zenburn-bg-1))
 
   (map-do #'add-hook
-        `((   fci-mode-hook . ,#'blc-zenburn-brighten-fci)
-          (   ivy-mode-hook . ,#'blc-zenburn-darken-ivy  )
-          (nlinum-mode-hook . ,#'blc-zenburn-darken-linum))))
+          `((   fci-mode-hook . ,#'blc-zenburn-brighten-fci    )
+            (   ivy-mode-hook . ,#'blc-zenburn-darken-ivy      )
+            (nlinum-mode-hook . ,#'blc-zenburn-darken-linum    )
+            (   org-load-hook . ,#'blc-zenburn-fontify-org-todo))))
 
 ;;; Constants
 
@@ -1153,8 +1155,8 @@ in `zenburn-default-colors-alist'."
 (use-package cus-edit
   :defer
   :init
-  (when-let ((custom (blc-join 'file user-emacs-directory "custom.el"))
-             (exists (f-exists-p (setq-default custom-file custom))))
+  (when-let* ((custom (blc-join 'file user-emacs-directory "custom.el"))
+              (exists (f-exists-p (setq-default custom-file custom))))
     (lwarn 'blc :warning "Custom file %s exists but is not loaded." custom)))
 
 (use-package csv-mode
@@ -1407,12 +1409,13 @@ in `zenburn-default-colors-alist'."
   :ensure
   :commands turn-off-fci-mode
   :init
+  ;; Enable in whitelist, disable in blacklist
   (let* ((whitelist blc-fundamental-hooks)
          (blacklist '(lisp-interaction-mode-hook org-mode-hook))
          (togglers  `(,#'turn-on-fci-mode ,#'turn-off-fci-mode))
          (togglees  `(,whitelist ,blacklist))
          (hookers   (-cut -rpartial #'add-hook <>)))
-    (-zip-with #'mapc (mapcar hookers togglers) togglees))
+    (seq-mapn #'mapc (mapcar hookers togglers) togglees))
 
   (setq-default fci-rule-color  "#696969"
                 fci-rule-column blc-chars-per-line))
@@ -1813,7 +1816,7 @@ in `zenburn-default-colors-alist'."
   (setq-default completing-read-function #'ivy-completing-read)
 
   :config
-  (mapc (-lambda ((map key val))
+  (mapc (pcase-lambda (`(,map ,key ,val))
           (map-put (symbol-value map) key val))
         `((ivy-sort-functions-alist
            ;; Reverse parsed order
@@ -1891,7 +1894,7 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default
    js-enabled-frameworks
-   (-intersection '(dojo javascript prototype) js-enabled-frameworks)
+   (seq-intersection '(dojo javascript prototype) js-enabled-frameworks)
    js-indent-level         4
    js-switch-indent-offset 4))
 
@@ -2348,8 +2351,8 @@ in `zenburn-default-colors-alist'."
 (use-package python
   :defer
   :config
-  (when-let ((cmds '("epylint3" "epylint" "pyflakes"))
-             (cmd  (-some #'executable-find cmds)))
+  (when-let* ((cmds '("epylint3" "epylint" "pyflakes"))
+              (cmd  (seq-some #'executable-find cmds)))
     (setq-default python-check-command cmd))
 
   (setq-default python-shell-interpreter "ipython3"))
@@ -2578,8 +2581,8 @@ in `zenburn-default-colors-alist'."
   ;; Set priority of pre-configured PDF viewers
   (mapc (lambda (nom)
           (push `(output-pdf ,nom) TeX-view-program-selection))
-        (-intersection '("Zathura" "PDF Tools")
-                       (map-keys TeX-view-program-list-builtin))))
+        (seq-intersection '("Zathura" "PDF Tools")
+                          (map-keys TeX-view-program-list-builtin))))
 
 (use-package text-mode
   :defer
