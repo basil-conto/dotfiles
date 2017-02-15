@@ -234,6 +234,10 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
           (gnus-thread-sort-functions  ,#'gnus-thread-sort-by-date  t))))
 
 (use-package gnus-topic
+  :bind (:map gnus-topic-mode-map
+              ;; FIXME: Different tab characters?
+              ("<tab>" . blc-gnus-topic-fold)
+              ("TAB"   . blc-gnus-topic-fold))
   :init
   (add-hook 'gnus-group-mode-hook #'gnus-topic-mode))
 
