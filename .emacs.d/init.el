@@ -863,18 +863,22 @@ in `zenburn-default-colors-alist'."
 
 (defun blc-zenburn-fontify-org-todo ()
   "Customise `org' TODO keyword faces."
-  (setq-default
-   org-todo-keyword-faces
-   (seq-mapn #'cons
-             (mapcan #'map-keys blc-org-todo-keywords)
-             (mapcar #'blc-zenburn-assoc-default
-                     '(zenburn-magenta     ; NEXT
-                       org-todo            ; TODO
-                       zenburn-yellow      ; MEET
-                       zenburn-cyan        ; WAIT
-                       zenburn-fg          ; BALK
-                       org-done            ; DONE
-                       zenburn-blue-2))))) ; VOID
+  (let* (;; Key faces by default TODO/DONE face
+         (faces    '((org-todo . (zenburn-magenta    ; NEXT
+                                  nil                ; TODO
+                                  zenburn-yellow     ; MEET
+                                  zenburn-cyan       ; WAIT
+                                  zenburn-fg))       ; BALK
+                     (org-done . (nil                ; DONE
+                                  zenburn-blue-2)))) ; VOID
+         ;; Get corresponding colour codes / face names
+         (faces    (mapcar (-cut map-apply #'blc-zenburn-assoc-default <>)
+                           (map-apply (-cut -zip-fill <> <> ()) faces)))
+         ;; Extract custom keywords
+         (keywords (mapcar #'map-keys blc-org-todo-keywords)))
+    (setq-default org-todo-keyword-faces
+                  ;; Zip TODO and DONE keywords with faces, respectively
+                  (-flatten (-zip-with #'-zip-pair keywords faces)))))
 
 (defun blc-setup-theme-zenburn ()
   "Customise `zenburn-theme' to taste."
@@ -2288,33 +2292,48 @@ in `zenburn-default-colors-alist'."
         '(git-commit-setup-hook outline-minor-mode-hook))
 
   :config
-  (require 'remember)
-
-  (let* ((loads 'org-babel-load-languages)
-         (langs '(C haskell java js latex ledger lisp makefile
-                    ocaml org perl python scheme shell))
-         (elems (mapcar (-cut cons <> t) langs)))
-    (set-default loads (map-merge 'list elems (symbol-value loads))))
+  (mapc (-cut map-put org-babel-load-languages <> t)
+        '(C
+          haskell
+          java
+          js
+          latex
+          ledger
+          lisp
+          makefile
+          ocaml
+          org
+          perl
+          python
+          scheme
+          shell))
 
   (setq-default
-   org-agenda-files                                  `(,remember-data-file)
-   org-archive-location                              "~/.archive::"
+   org-agenda-files                                  `(,org-default-notes-file)
+   org-archive-location
+   (format "%s::" (blc-join 'file user-emacs-directory "org-archive"))
    org-catch-invisible-edits                         'smart
    org-checkbox-hierarchical-statistics              nil
    org-ctrl-k-protect-subtree                        t
+   org-directory
+   (blc-join 'dir user-emacs-directory "org-directory")
    org-export-coding-system                          'utf-8
    org-footnote-section                              nil
    org-goto-interface                                'outline-path-completion
+   org-goto-max-level                                10
    org-hierarchical-todo-statistics                  nil
-   org-list-demote-modify-bullet                     '(("+" . "-") ("-" . "+"))
+   org-list-demote-modify-bullet
+   (apply #'-zip-pair (-permutations '("+" "-")))
    org-list-use-circular-motion                      t
    org-log-into-drawer                               t
-   org-lowest-priority                               ?D
+   org-log-redeadline                                'note
+   org-log-reschedule                                'note
+   org-lowest-priority                               (+ org-highest-priority 3)
    org-M-RET-may-split-line                          nil
    org-outline-path-complete-in-steps                nil
    org-refile-allow-creating-parent-nodes            'confirm
    org-refile-targets
-   `((nil . (:maxlevel . ,org-goto-max-level)))
+   `((org-agenda-files . (:maxlevel . ,org-goto-max-level)))
    org-refile-use-outline-path                       'file
    org-special-ctrl-a/e                              t
    org-startup-indented                              t
@@ -2322,7 +2341,8 @@ in `zenburn-default-colors-alist'."
    (let ((keywords (mapcar (-cut map-apply (-cut format "%s(%s)" <> <>) <>)
                            blc-org-todo-keywords)))
      `((type ,@(apply #'append (-interpose '("|") keywords)))))
-   org-treat-S-cursor-todo-selection-as-state-change nil))
+   org-treat-S-cursor-todo-selection-as-state-change nil
+   org-use-fast-tag-selection                        t))
 
 (use-package org-mime
   :ensure
