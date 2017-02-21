@@ -143,6 +143,7 @@ why-are-you-changing-gc-cons-threshold/'."
             ("hi-lock"    . (hi-lock-set-pattern))
             ("ibuf-ext"   . (ibuffer-auto-mode
                              ibuffer-switch-to-saved-filter-groups))
+            ("mail-utils" . (mail-strip-quoted-names))
             ("mailcap"    . (mailcap-extension-to-mime))
             ("message"    . (message-fetch-field
                              message-narrow-to-headers))
@@ -161,7 +162,6 @@ why-are-you-changing-gc-cons-threshold/'."
   (defvar recentf-list)
   (defvar smerge-mode)
   (defvar smtpmail-smtp-user)
-  (defvar TeX-command-default)
   (defvar TeX-command-list)
   (defvar whitespace-style)
   (defvar zenburn-default-colors-alist))
@@ -600,7 +600,7 @@ contains conflict markers."
            (latex-mode LaTeX-mode)      ; Applicable modes
            :help ,dsc))))               ; Command description
 
-    (setq TeX-command-default nom))
+    (setq-default TeX-command-default nom))
 
   (add-to-list 'LaTeX-clean-intermediate-suffixes "\\.fdb_latexmk"))
 
