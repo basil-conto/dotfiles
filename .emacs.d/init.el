@@ -479,6 +479,10 @@ See `blc-ibuffer-default-group'."
         (call-interactively #'write-file))
     (write-file dir t)))
 
+(defun blc-ivy-sort-reverse (_x _y)
+  "Predicate that the order of X and Y should be swapped."
+  t)
+
 (defun blc-turn-off-makefile-tab-face ()
   "Disable tab face visualisation in `makefile-mode'."
   (setq-local whitespace-style (delq 'tabs whitespace-style)))
@@ -1882,17 +1886,12 @@ in `zenburn-default-colors-alist'."
   (setq-default completing-read-function #'ivy-completing-read)
 
   :config
-  (mapc (pcase-lambda (`(,map ,key ,val))
-          (map-put (symbol-value map) key val))
-        `((ivy-sort-functions-alist
-           ;; Reverse parsed order
-           ,#'Info-complete-menu-item
-           ,(defalias 'blc-ivy-sort-reverse (-const t)
-              "Predicate that the elements being compared should be swapped."))
-          (ivy-re-builders-alist
-           ;; Default behaviour
-           t
-           ,#'ivy--regex-ignore-order)))
+  ;; Default behaviour
+  (map-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
+
+  ;; Reverse parsed order
+  (mapc (-cut map-put ivy-sort-functions-alist <> #'blc-ivy-sort-reverse)
+        '(,#'Info-complete-menu-item ,#'Man-goto-section))
 
   (setq-default
    ivy-count-format          "(%d/%d) "
