@@ -143,6 +143,7 @@ why-are-you-changing-gc-cons-threshold/'."
             ("hi-lock"    . (hi-lock-set-pattern))
             ("ibuf-ext"   . (ibuffer-auto-mode
                              ibuffer-switch-to-saved-filter-groups))
+            ("ielm"       . (inferior-emacs-lisp-mode))
             ("mail-utils" . (mail-strip-quoted-names))
             ("mailcap"    . (mailcap-extension-to-mime))
             ("message"    . (message-fetch-field
@@ -262,6 +263,27 @@ Include every major mode derived from the current
     (blc-tree-sed (regexp-opt (map-keys lut))
                   (-compose  #'cdr (-cut assoc-string <> lut t))
                   haystack)))
+
+(defun blc-ielm-buffer-p (name _action)
+  "Return non-nil if NAME names an `ielm' buffer.
+Intended to be used as a condition in `display-buffer-alist'."
+  (with-current-buffer name
+    (derived-mode-p #'inferior-emacs-lisp-mode)))
+
+;; TODO: Generalise display buffer condition, argument list and interactive spec
+(defun blc-ielm-window-action--advice (ielm &optional other-window)
+  "Toggle other window popping for `ielm' via prefix argument.
+`ielm' will reuse the current window unless called with a prefix
+argument OTHER-WINDOW.
+
+This advice works by extending `ielm' to accept a prefix argument
+and temporarily pushing an `inhibit-same-window' property for
+`ielm' buffers onto `display-buffer-alist'."
+  (interactive "P")
+  (let ((display-buffer-alist
+         (cons `(,#'blc-ielm-buffer-p () (inhibit-same-window . ,other-window))
+               display-buffer-alist)))
+    (funcall ielm)))
 
 (defun blc-narrow-candidate--advice (args)
   "Decrease `ivy-bibtex' entry width due to other formatting.
@@ -1808,9 +1830,10 @@ in `zenburn-default-colors-alist'."
 
 (use-package ielm
   :defer
+  :delight inferior-emacs-lisp-mode "ιλ"
   :init
-  ;; Display IELM buffer in other window by default
-  (push '("\\`\\*ielm" () (inhibit-same-window . t)) display-buffer-alist))
+  ;; TODO: Investigate feasibility of replacing with ivy M-x actions
+  (advice-add #'ielm :around #'blc-ielm-window-action--advice))
 
 (use-package "indent"
   :defer
