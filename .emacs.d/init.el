@@ -924,8 +924,11 @@ in `zenburn-default-colors-alist'."
 (defalias #'yes-or-no-p #'y-or-n-p)
 
 (setq-default
+ mode-line-format
+ (blc-tree-sed " +" " " mode-line-format)
  source-directory
  (blc-join 'dir blc-repos-dir "localsrc" "emacs")
+ x-gtk-use-system-tooltips       nil
  ;; Movement/drawing
  recenter-redisplay              nil
  scroll-conservatively           most-positive-fixnum
@@ -935,8 +938,7 @@ in `zenburn-default-colors-alist'."
  ;; Spacing
  fill-column                     blc-chars-per-line
  indent-tabs-mode                nil
- tab-width                       2
- x-gtk-use-system-tooltips       nil)
+ tab-width                       2)
 
 ;;; Bindings
 
