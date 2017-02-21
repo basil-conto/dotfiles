@@ -1015,6 +1015,14 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default asm-comment-char ?#))
 
+;; TODO: Eval first?
+(use-package async
+  :ensure
+  :defer
+  :init
+  (setq-default async-bytecomp-allowed-packages '(all))
+  (async-bytecomp-package-mode))
+
 (use-package auctex-latexmk
   :ensure
   :defer)
