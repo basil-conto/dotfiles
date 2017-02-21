@@ -52,7 +52,7 @@
 (let ((start     (current-time))
       (file      load-file-name)
       (oldthresh gc-cons-threshold)
-      (maxthresh (lsh gc-cons-threshold 6)))
+      (maxthresh (ash gc-cons-threshold 6)))
 
   (defun blc-report-init-time ()
     "Report total user initialisation time.
@@ -219,7 +219,7 @@ Issue a warning otherwise."
 (defun blc-split-larger-dimension--advice (split &rest args)
   "Sacrifice the larger window dimension when splitting."
   (let ((split-width-threshold       (window-height))
-        (split-height-threshold (lsh (window-width) -1))) ; Adjust slightly
+        (split-height-threshold (ash (window-width) -1))) ; Adjust slightly
     (apply split args)))
 
 (defun blc-trim-before-newline--advice (&rest _)
@@ -380,7 +380,7 @@ description of the arguments to this function."
   (let* ((prompt-fmt (if (string-blank-p url)
                          "Open browser: "
                        "Open URL `%s' in: "))
-         (prompt-url (url-truncate-url-for-viewing url (lsh (frame-width) -1)))
+         (prompt-url (url-truncate-url-for-viewing url (ash (frame-width) -1)))
          (prompt     (blc-quote-format-string (format prompt-fmt prompt-url)))
          (browser    (ivy-read prompt
                                blc-browser-alist
@@ -506,7 +506,7 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
 
 (defun blc-some-recentf (&optional count)
   "Return first COUNT or 5 items in `recentf-list'."
-  (seq-take recentf-list (or count (lsh ivy-height -1))))
+  (seq-take recentf-list (or count (ash ivy-height -1))))
 
 (defun blc-align-all-csv-fields ()
   "Align all fields in the current CSV buffer."
