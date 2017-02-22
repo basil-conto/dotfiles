@@ -2154,6 +2154,9 @@ in `zenburn-default-colors-alist'."
 
   (add-to-list 'magit-rebase-arguments "--interactive")
 
+  ;; Always highlight tabs
+  (map-put magit-diff-highlight-indentation "" 'tabs)
+
   (setq-default
    magit-branch-popup-show-variables t
    magit-display-buffer-function
