@@ -1503,7 +1503,7 @@ in `zenburn-default-colors-alist'."
   (setq-default
    backup-by-copying          t         ; Do not clobber symlinks
    backup-directory-alist               ; Backup/auto-save directory
-   `(("." . "~/.backup/"))
+   '(("." . "~/.backup/"))
    delete-old-versions        t
    directory-free-space-args  "-hP"
    kept-new-versions          4
@@ -1847,8 +1847,7 @@ in `zenburn-default-colors-alist'."
       ("Log"  (or (derived-mode . compilation-mode)
                   (mode . messages-buffer-mode)
                   (name . "\\*WoMan-Log\\*")
-                  ,@(mapcar (-cut cons 'name <>)
-                            blc-gnus-log-buffers)))
+                  ,@(-annotate (-const 'name) blc-gnus-log-buffers)))
       ("PDF"  (mode . pdf-view-mode))
       ("Pkg"  (saved . "package"))
       ("REPL" (saved . "REPL"))
@@ -2642,22 +2641,19 @@ in `zenburn-default-colors-alist'."
 (use-package "startup"
   :defer
   :init
-  (setq-default
-   inhibit-default-init   t
-   inhibit-startup-screen t)
-
   (let* ((cowfile "-f$(shuf -en1 $(cowsay -l | tail -n+2))")
          (state   "$(shuf -en1 -- '' -b -d -g -p -s -t -w -y)")
          (command (format "fortune -aes | cowsay %s %s -n" cowfile state))
-         (fortune (with-temp-buffer
+         (fortune (with-output-to-string
                     (call-process-shell-command command nil t)
                     (let ((comment-empty-lines t)
                           (comment-start       ";;"))
                       (comment-region (point-min) (point-max)))
                     (delete-trailing-whitespace)
-                    (insert ?\n)
-                    (buffer-string))))
-    (setq-default initial-scratch-message fortune))
+                    (insert ?\n))))
+    (setq inhibit-default-init    t
+          inhibit-startup-screen  t
+          initial-scratch-message fortune))
 
   (mapc (-cut add-hook 'after-init-hook <> t)
         `(,#'blc-report-init-time
@@ -2780,7 +2776,7 @@ in `zenburn-default-colors-alist'."
   :defer
   :config
   ;; Git or Magit only
-  (let ((backends (-list (assoc-string 'Git vc-handled-backends))))
+  (let ((backends (-list (assoc-string 'git vc-handled-backends t))))
     (setq-default vc-handled-backends backends)))
 
 (use-package visual-fill-column
