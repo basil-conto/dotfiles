@@ -1347,7 +1347,10 @@ in `zenburn-default-colors-alist'."
          ("C-x 4 C-j" . dired-jump-other-window))
   :init
   ;; Autoload dired-x but do not omit files by default
-  (add-hook 'dired-mode-hook #'blc-turn-off-dired-omit)
+  (mapc (-cut add-hook 'dired-mode-hook <>)
+        `(,#'blc-turn-off-dired-omit
+          ,#'hl-line-mode))
+
   :config
   (setq-default dired-omit-files
                 (string-join `("\\`\\.[^.]" ,dired-omit-files) "\\|"))
