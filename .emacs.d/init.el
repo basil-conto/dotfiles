@@ -2798,6 +2798,11 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package warnings
+  :defer
+  :init
+  (setq-default warning-minimum-log-level :debug))
+
 (use-package wc-mode
   :ensure
   :commands wc-mode
