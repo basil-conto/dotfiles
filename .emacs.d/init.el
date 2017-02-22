@@ -2434,11 +2434,14 @@ in `zenburn-default-colors-alist'."
 
 (use-package pdf-tools
   :ensure
-  :defer
-  :init
-  (blc-with-every-frame #'blc-turn-on-pdf-tools)
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :bind (:map pdf-view-mode-map
+              ("C-s" . isearch-forward))
+  ;; :init
   ;; (add-hook'pdf-view-mode-hook #'turn-on-auto-revert-mode)
-  (setq-default pdf-view-display-size 'fit-page))
+  :config
+  (setq-default pdf-view-display-size 'fit-page)
+  (blc-with-every-frame #'blc-turn-on-pdf-tools))
 
 (use-package perl-mode
   :mode "\\.latexmkrc\\'")
