@@ -1191,22 +1191,29 @@ in `zenburn-default-colors-alist'."
 
 (use-package counsel
   :ensure
+  :delight counsel-mode
   :commands ivy-set-sources
   :bind
-  (("C-c g"   . counsel-ag)
+  (("C-s"     . counsel-grep-or-swiper)
+   ("C-c g"   . counsel-ag)
    ("C-c t"   . counsel-git)
    ("C-c u"   . counsel-unicode-char)
    ("C-h C-j" . counsel-describe-face)
    ("C-x C-l" . counsel-locate)
    ("C-c j d" . counsel-dired-jump)
    ("C-c j f" . counsel-file-jump)
-   ([remap execute-extended-command] . counsel-M-x)
-   ([remap yank-pop                ] . counsel-yank-pop)
-   ([remap isearch-forward         ] . counsel-grep-or-swiper)
+   ([remap describe-bindings       ] . counsel-descbinds)
    ([remap describe-function       ] . counsel-describe-function)
    ([remap describe-variable       ] . counsel-describe-variable)
+   ([remap execute-extended-command] . counsel-M-x)
+   ([remap find-file               ] . counsel-find-file)
+   ([remap find-library            ] . counsel-find-library)
+   ([remap imenu                   ] . counsel-imenu)
    ([remap info-lookup-symbol      ] . counsel-info-lookup-symbol)
-   ([remap find-file               ] . counsel-find-file))
+   ([remap load-library            ] . counsel-load-library)
+   ([remap load-theme              ] . counsel-load-theme)
+   ([remap pop-mark                ] . counsel-mark-ring)
+   ([remap yank-pop                ] . counsel-yank-pop))
   :config
   (setq-default
    ;; Search with smart case and shell expansion
@@ -1219,6 +1226,8 @@ in `zenburn-default-colors-alist'."
                                      (blc-as-string cmd))))
                ivy-initial-inputs-alist))
 
+  (counsel-mode)
+
   (ivy-set-sources
    #'counsel-locate
    '((blc-some-recentf)
@@ -1230,7 +1239,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package counsel-projectile
   :ensure
-  :defer)
+  :defer
+  :init
+  (add-hook 'projectile-mode-hook #'counsel-projectile-on))
 
 (use-package crontab-mode
   :ensure
@@ -1725,14 +1736,6 @@ in `zenburn-default-colors-alist'."
 (use-package helm-proc
   :ensure
   :defer)
-
-(use-package helm-projectile
-  :disabled
-  :ensure
-  :after helm projectile
-  :commands helm-projectile-on
-  :config
-  (helm-projectile-on))
 
 (use-package hi-lock
   :commands turn-on-hi-lock-if-enabled
