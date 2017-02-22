@@ -2309,13 +2309,7 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
-;; KLUDGE: Force installation of newer version of built-in package
-(eval-and-compile
-  (unless (assq 'org package-alist)
-    (map-delete package--builtins 'org)))
-
 (use-package org
-  :ensure
   :ensure org-plus-contrib
   :bind (("C-c a" . org-agenda)
          ("C-c b" . org-iswitchb)
