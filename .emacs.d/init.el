@@ -1077,9 +1077,8 @@ in `zenburn-default-colors-alist'."
 (use-package battery
   :defer
   :init
-  (add-hook 'after-init-hook #'display-battery-mode)
-  :config
-  (setq-default battery-mode-line-format (concat " " battery-mode-line-format)))
+  (setq-default battery-mode-line-format "🔋%b%p%% ")
+  (display-battery-mode))
 
 (use-package better-shell
   :ensure
@@ -2719,8 +2718,6 @@ in `zenburn-default-colors-alist'."
 (use-package time
   :defer
   :init
-  (add-hook 'after-init-hook #'display-time)
-
   (let ((fmt "%a %d %b %R %z"))
     (setq-default
      display-time-format                 fmt
@@ -2730,7 +2727,9 @@ in `zenburn-default-colors-alist'."
                                            ("Africa/Harare" "Harare"  )
                                            ("Europe/Athens" "Athens"  )
                                            ("Asia/Tel_Aviv" "Tel Aviv"))
-     display-time-world-time-format      fmt)))
+     display-time-world-time-format      fmt))
+
+  (display-time))
 
 (use-package tool-bar
   :defer
