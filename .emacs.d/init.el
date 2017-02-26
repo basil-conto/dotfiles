@@ -144,7 +144,6 @@ why-are-you-changing-gc-cons-threshold/'."
             ("ibuf-ext"   . (ibuffer-auto-mode
                              ibuffer-switch-to-saved-filter-groups))
             ("ielm"       . (inferior-emacs-lisp-mode))
-            ("magit-git"  . (magit-git-lines))
             ("mail-utils" . (mail-strip-quoted-names))
             ("mailcap"    . (mailcap-extension-to-mime))
             ("message"    . (message-fetch-field
@@ -293,21 +292,6 @@ does not, for example, take the effect of `ivy-format-function'
 into account."
   (seq-let (entry width) args
     `(,entry ,(- width 3))))
-
-(defun blc-magit-sort-version-tags--advice (tags)
-  "Attempt to sort annotated git TAGS by version."
-  (sort tags (lambda (&rest args)
-               (let ((extractor (-cut split-string <> "[[:space:]]\\{2,\\}")))
-                 (condition-case nil
-                     (apply #'version< (map-keys (mapcar extractor args)))
-                   (error))))))
-
-(defun blc-magit-sort-tag-refs--advice (insert-tags &rest args)
-  "Add version tag sorting advice to the tag refs section."
-  (advice-add #'magit-git-lines
-              :filter-return #'blc-magit-sort-version-tags--advice)
-  (apply insert-tags args)
-  (advice-remove #'magit-git-lines #'blc-magit-sort-version-tags--advice))
 
 (defun blc-set-sender--advice (send &rest args)
   "Change the sender's email address before sending mail."
@@ -2125,7 +2109,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package magit
   :ensure
-  :commands magit-display-buffer-same-window-except-diff-v1 magit-insert-tags
+  :commands magit-display-buffer-same-window-except-diff-v1
   :bind ("C-x g" . magit-status)
   :init
   (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
@@ -2148,8 +2132,6 @@ in `zenburn-default-colors-alist'."
      (magit-stashes-mode        "± Sts"      :major)
      (magit-status-mode         "±"          :major)
      (magit-submodule-list-mode "± Md"       :major)))
-
-  (advice-add #'magit-insert-tags :around #'blc-magit-sort-tag-refs--advice)
 
   (global-magit-file-mode)
   (magit-wip-after-apply-mode)
