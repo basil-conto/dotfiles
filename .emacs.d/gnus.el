@@ -49,6 +49,7 @@ After scanning, truncate growing network log buffers to
 
 (defun blc-turn-on-demon-scan-mail ()
   "Add daemonic handlers for mail and news scanning."
+  (interactive)
   (mapc (-applify #'gnus-demon-add-handler)
         `((,#'blc-demon-scan-mail 300  5)
           (,#'blc-demon-scan-news 900 30))))
@@ -69,6 +70,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   :init
   (setq-default
    gnus-extract-address-components        #'mail-extract-address-components
+   gnus-group-uncollapsed-levels          3
    gnus-invalid-group-regexp              "[: `'\"]\\|^$"
    gnus-select-method                     '(nnnil)
    gnus-summary-line-format
@@ -143,6 +145,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   :commands gnus-desktop-notify-send
   :init
   (setq-default
+   gnus-desktop-notify-groups             'gnus-desktop-notify-explicit
    gnus-desktop-notify-format             "%3n: %G"
    gnus-desktop-notify-function           #'gnus-desktop-notify-send)
   (gnus-desktop-notify-mode))
