@@ -808,10 +808,23 @@ function at URL
 
 ;;; Themes
 
-(defun blc-set-font (&optional frame &rest _)
-  "Set font on graphic FRAME."
-  (when (display-graphic-p frame)
-    (set-face-attribute 'default frame :font "DejaVu Sans Mono 8")))
+;; FIXME:
+;; * Avoid formatting font name as a string
+;; * Replace semi-obsolete `font' frame parameter with standard face attributes
+;; TODO:
+;; * Allow resetting to default height
+(defun blc-set-font-height (height &optional frame)
+  "Set font HEIGHT in 1/10 pt for FRAME.
+When called interactively without a prefix argument, or when
+FRAME is nil, set font height for the current as well as all new
+frames."
+  (interactive (list (read-face-attribute 'default :height)
+                     (and current-prefix-arg (selected-frame))))
+  (let ((font (format "%s-%d" (face-attribute 'default :family) (/ height 10))))
+    (funcall (if frame
+                 (-cut modify-frame-parameters frame <>)
+               #'modify-all-frames-parameters)
+             `((font . ,font)))))
 
 (defun blc-google-contacts-fontify ()
   "Customise `google-contacts-mode' faces."
@@ -919,8 +932,19 @@ in `zenburn-default-colors-alist'."
   (and (load-theme theme t)
        (blc-apply-safe (blc-symcat "blc-setup-theme-" theme))))
 
-(blc-with-every-frame #'blc-set-font)
+;; Maximise initial frame
+(map-put initial-frame-alist 'fullscreen 'maximized)
 
+;; Disable menu and tool bars
+(mapc (-cut map-put default-frame-alist <> 0)
+      '(menu-bar-lines tool-bar-lines))
+
+;; Set default font under X
+;; TODO: Separate height from family?
+(map-put (map-elt window-system-default-frame-alist 'x)
+         'font "DejaVu Sans Mono-8")
+
+;; Ask short questions
 (defalias #'yes-or-no-p #'y-or-n-p)
 
 (setq-default
@@ -2230,11 +2254,6 @@ in `zenburn-default-colors-alist'."
   :ensure matlab-mode
   :defer)
 
-(use-package menu-bar
-  :defer
-  :init
-  (blc-turn-off-modes #'menu-bar-mode))
-
 (use-package message
   :commands message-insert-formatted-citation-line message-send
   :init
@@ -2711,11 +2730,6 @@ in `zenburn-default-colors-alist'."
      display-time-world-time-format      fmt))
 
   (display-time))
-
-(use-package tool-bar
-  :defer
-  :init
-  (blc-turn-off-modes #'tool-bar-mode))
 
 (use-package top-mode
   :ensure
