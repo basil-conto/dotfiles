@@ -1,30 +1,3 @@
-[user]
-	name             = Basil L. Contovounesios
-	email            = contovob@tcd.ie
-	signingkey       = 5D5D8CFF
-[commit]
-	gpgsign          = true
-[core]
-	editor           = emacs -nw
-	attributesfile   = ~/.gitattributes
-	whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
-[color]
-	ui               = auto
-[diff]
-	algorithm        = histogram
-	submodule        = log
-[diff "gpg"]
-	textconv         = gpg --decrypt
-[pager]
-	log              = diff-highlight | pager
-	show             = diff-highlight | pager
-	diff             = diff-highlight | pager
-[interactive]
-	diffFilter       = diff-highlight
-[status]
-	submodulesummary = 1
-[submodule]
-	fetchJobs        = 0
 [alias]
 	a     = add
 	ae    = add --edit
@@ -59,5 +32,30 @@
 	st    = status
 	sb    = status --short --branch
 	wip   = commit --edit --message='[WIP]'
+[commit]
+	gpgsign          = true
+[core]
+	attributesfile   = ~/.gitattributes
+	editor           = emacs -nw
+	whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
+[diff]
+	algorithm        = histogram
+	submodule        = log
+[diff "gpg"]
+	textconv         = gpg --decrypt
+[interactive]
+	diffFilter       = diff-highlight
+[pager]
+	diff             = diff-highlight | pager
+	log              = diff-highlight | pager
+	show             = diff-highlight | pager
+[status]
+	submodulesummary = 1
+[submodule]
+	fetchJobs        = 0
 [tag]
 	sort             = version:refname
+[user]
+	email            = contovob@tcd.ie
+	name             = Basil L. Contovounesios
+	signingkey       = 5D5D8CFF
