@@ -57,3 +57,5 @@
 	st    = status
 	sb    = status --short --branch
 	wip   = commit --edit --message='[WIP]'
+[tag]
+	sort             = version:refname
