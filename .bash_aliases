@@ -41,7 +41,15 @@ alias list='wajig listinstalled'
 alias dis='xdg-open'
 
 # feh
-alias feh='feh --scale-down --auto-rotate'
+# TODO: RC file?
+alias feh='feh   \
+--auto-rotate    \
+--borderless     \
+--draw-filename  \
+--image-bg black \
+--no-fehbg       \
+--scale-down     \
+--sort filename'
 
 # xbacklight
 alias dark='xbacklight -set 0'
