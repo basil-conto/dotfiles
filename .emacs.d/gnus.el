@@ -53,6 +53,10 @@ After scanning, truncate growing network log buffers to
         `((,#'blc-demon-scan-mail 300  5)
           (,#'blc-demon-scan-news 900 30))))
 
+(defun blc-gnus-kill-log-buffers ()
+  "Kill buffers named in `blc-gnus-log-buffers'."
+  (kill-matching-buffers (format "\\`%s\\'" (regexp-opt blc-gnus-log-buffers))))
+
 (defun blc-gnus-topic-fold ()
   "Toggle folding of current topic.
 See URL `https://www.emacswiki.org/emacs/GnusTopics'."
@@ -151,7 +155,8 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 (use-package gnus-group
   :defer
   :init
-  (mapc (-rpartial #'add-hook #'gnus-group-set-timestamp)
+  (add-hook 'gnus-exit-gnus-hook #'blc-gnus-kill-log-buffers)
+  (mapc (-cut add-hook <> #'gnus-group-set-timestamp)
         '(gnus-group-catchup-group-hook
           gnus-select-group-hook))
 
