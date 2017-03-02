@@ -43,6 +43,8 @@
 	dn    = diff --name-only
 	dr    = diff -R --ws-error-highlight=all
 	drn   = diff -R --name-only
+	dru   = diff -R --ws-error-highlight=all @{upstream}
+	drnu  = diff -R --name-only @{upstream}
 	files = !git status --short | awk '{print $2}'
 	get   = fetch --prune
 	last  = log -1
