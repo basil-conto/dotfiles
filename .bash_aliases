@@ -2,32 +2,32 @@
 # ~/.bash_aliases
 
 # safety
-alias cp='cp -i'
-alias mv='mv -i'
+alias cp='cp --interactive'
+alias mv='mv --interactive'
 alias rm='rm -I'
 
 alias forget='echo RELOADAGENT | gpg-connect-agent'
 
 # ls
 alias ls='ls --color=auto --group-directories-first'
-alias l='ls -F'
-alias ll='l -lh'
-alias la='ll -A'
+alias l='ls --classify'
+alias ll='l --human-readable -l'
+alias la='ll --almost-all'
 
 # grep
 alias grep='grep --color=auto'
-alias egrep='grep -E'
-alias fgrep='grep -F'
-alias rgrep='grep -r'
+alias egrep='grep --extended-regexp'
+alias fgrep='grep --fixed-strings'
+alias rgrep='grep --recursive'
 alias psgrep='ps aux | grep'
 
 # directories
-alias mkdir='mkdir -pv'
-alias cdtemp='cd $(mktemp -d)'
+alias mkdir='mkdir --parents --verbose'
+alias cdtemp='cd $(mktemp --directory)'
 alias venture='pushd .; cd'
 
 # make
-alias make='make -j$(nproc)'
+alias make='make --jobs=$(nproc)'
 
 # apt
 alias uu='sudo apt-get update && sudo apt-get upgrade'
@@ -60,11 +60,12 @@ alias g++11='g++ -std=c++11'
 
 # emacsen
 alias em='emacs -nw'
-alias ec='emacsclient -a= -t'
-alias ecc='emacsclient -a= -c -n'
+alias emacsclient='emacsclient --alternate-editor='
+alias ec='emacsclient --tty'
+alias ecc='emacsclient --create-frame --no-wait'
 
 # colordiff
-alias ciff='colordiff -y -W 160'
+alias ciff='colordiff --side-by-side --width=160'
 
 # mp3blaster
 alias blaster='padsp mp3blaster'
@@ -81,19 +82,19 @@ alias ydl-vorbis='ydl -x --audio-format vorbis --audio-quality 128K'
 alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 
 # notify-send
-alias apprise='notify-send -u low'
-alias error='notify-send -u critical -i error'
+alias apprise='notify-send --urgency=low'
+alias error='notify-send --icon=error --urgency=critical'
 
 # gcal
-alias gcal='gcal -s 1'
+alias gcal='gcal --starting-day=Monday'
 
 # vlc
 alias nvlc='nvlc --browse-dir .'
 
 # cpufreq
-alias policy='cpufreq-info -p'
-alias powersave='sudo cpufreq-set -rg powersave'
-alias performance='sudo cpufreq-set -rg performance'
+alias policy='cpufreq-info --policy'
+alias powersave='sudo cpufreq-set --governor powersave --related'
+alias performance='sudo cpufreq-set --governor performance --related'
 
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'
