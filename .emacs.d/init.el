@@ -1801,7 +1801,8 @@ in `zenburn-default-colors-alist'."
 ;;   - ibuffer-vc
 
 (use-package ibuf-ext
-  :bind ([remap list-buffers] . ibuffer)
+  :bind (([remap list-buffers] . ibuffer)
+         ("C-c C-j"            . ibuffer-jump))
   :init
   (mapc (-cut add-hook 'ibuffer-mode-hook <>)
         `(,#'ibuffer-auto-mode
