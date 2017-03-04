@@ -927,7 +927,7 @@ in `zenburn-default-colors-alist'."
       '(menu-bar-lines tool-bar-lines))
 
 ;; Set default font under X
-;; TODO: Separate height from family?
+;; TODO: Separate size from family?
 (map-put (map-elt window-system-default-frame-alist 'x)
          'font "DejaVu Sans Mono-8")
 
