@@ -161,7 +161,6 @@ why-are-you-changing-gc-cons-threshold/'."
   (defvar js2-mode-map)
   (defvar LaTeX-clean-intermediate-suffixes)
   (defvar recentf-list)
-  (defvar smerge-mode)
   (defvar smtpmail-smtp-user)
   (defvar TeX-command-list)
   (defvar whitespace-style)
@@ -592,18 +591,6 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   "Disable scroll bar."
   (with-selected-frame frame
     (blc-turn-off-modes #'toggle-scroll-bar)))
-
-(defun blc-sniff-smerge ()
-  "Conditionally enable `smerge-mode'.
-Enable `smerge-mode' only if buffer is reasonably sized and
-contains conflict markers."
-  (when (and (not (blc-large-buffer-p))
-             (save-excursion
-               (goto-char (point-min))
-               (re-search-forward "^<<<<<<< " nil t)))
-    (smerge-start-session)
-    (when smerge-mode
-      (message "Merge conflict detected. Enabled `smerge-mode'."))))
 
 (defun blc-configure-beamer ()
   "Configure LaTeX Beamer intermediate suffixes."
@@ -2582,11 +2569,6 @@ in `zenburn-default-colors-alist'."
 (use-package smart-mode-line
   :ensure
   :defer)
-
-(use-package smerge-mode
-  :defer
-  :init
-  (add-hook 'find-file-hook #'blc-sniff-smerge t))
 
 (use-package smime
   :defer
