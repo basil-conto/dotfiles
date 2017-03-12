@@ -1183,6 +1183,12 @@ in `zenburn-default-colors-alist'."
   (setq-default company-idle-delay nil)
   (global-company-mode))
 
+(use-package compile
+  :defer
+  :init
+  (setq-default compilation-message-face  'default
+                compilation-scroll-output 'first-error))
+
 (use-package conf-mode
   :mode ("\\.dirs\\'" . conf-unix-mode)
   :init
