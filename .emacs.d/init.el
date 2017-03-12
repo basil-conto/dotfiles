@@ -580,7 +580,7 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 
 (defun blc-delight-isearch ()
   "Shorten lighter of `isearch-mode'."
-  (setq isearch-mode " 🔍"))
+  (setq isearch-mode "🔍"))
 
 (defun blc-turn-on-pdf-tools (&optional frame &rest _)
   "Install and enable PDF Tools on graphic FRAME."
@@ -1055,6 +1055,10 @@ in `zenburn-default-colors-alist'."
 
   ;; Add SMTPS
   (map-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "587")))
+
+(use-package autorevert
+  :defer
+  :delight auto-revert-mode "↻")
 
 (use-package avy
   :ensure
@@ -1742,12 +1746,17 @@ in `zenburn-default-colors-alist'."
   (advice-add #'turn-on-hi-lock-if-enabled
               :before #'blc-hi-lock-exclude-derived-modes--advice)
   (global-hi-lock-mode)
+
   :config
   (mapc (-cut add-to-list 'hi-lock-exclude-modes <>)
         `(,#'comint-mode
           ,#'completion-list-mode
           ,#'erc-mode
-          ,#'eshell-mode)))
+          ,#'eshell-mode))
+
+  (let* ((mode    'hi-lock-mode)
+         (lighter (map-elt minor-mode-alist mode)))
+    (map-put minor-mode-alist mode (blc-tree-sed " .+" "⛯" lighter))))
 
 (use-package highlight-escape-sequences
   :ensure
@@ -1864,8 +1873,8 @@ in `zenburn-default-colors-alist'."
 
 (use-package ielm
   :defer
-  :delight inferior-emacs-lisp-mode "ιλ"
   :init
+  (delight 'inferior-emacs-lisp-mode "ιλ" :major)
   ;; TODO: Investigate feasibility of replacing with ivy M-x actions
   (advice-add #'ielm :around #'blc-ielm-window-action--advice))
 
@@ -1910,8 +1919,8 @@ in `zenburn-default-colors-alist'."
   :bind (([remap switch-to-buffer] . ivy-switch-buffer)
          ([remap switch-to-buffer-other-window]
           . ivy-switch-buffer-other-window)
-         ("M-D"     . ivy-dispatching-done)
-         ("C-c r"   . ivy-resume))
+         ("M-D"   . ivy-dispatching-done)
+         ("C-c r" . ivy-resume))
   :init
   (setq-default completing-read-function #'ivy-completing-read)
 
@@ -2125,40 +2134,39 @@ in `zenburn-default-colors-alist'."
   :bind ("C-x g" . magit-status)
   :init
   (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
+
   :config
   (delight                              ; Tidy?
-   '((magit-blame-mode-lighter  "± Bl"  magit-blame)
-     (magit-cherry-mode         "± Ch"       :major)
-     (magit-diff-mode           "± Df"       :major)
-     (magit-log-mode            "± Lg"       :major)
-     (magit-log-select-mode     "± Ls"       :major)
-     (magit-merge-preview-mode  "± Mg"       :major)
-     (magit-mode                "±"          :major)
-     (magit-process-mode        "± Pr"       :major)
-     (magit-rebase-mode         "± Rb"       :major)
-     (magit-reflog-mode         "± Rfl"      :major)
-     (magit-refs-mode           "± Rf"       :major)
-     (magit-repolist-mode       "± Rp"       :major)
-     (magit-revision-mode       "± Rv"       :major)
-     (magit-stash-mode          "± St"       :major)
-     (magit-stashes-mode        "± Sts"      :major)
-     (magit-status-mode         "±"          :major)
-     (magit-submodule-list-mode "± Md"       :major)))
-
-  (global-magit-file-mode)
-  (magit-wip-after-apply-mode)
-  (magit-wip-after-save-mode)
-  (magit-wip-before-change-mode)
-
-  (add-to-list 'magit-rebase-arguments "--interactive")
-
-  ;; Always highlight tabs
-  (map-put magit-diff-highlight-indentation "" 'tabs)
+   '((magit-blame-mode                "🖜"    magit-blame)
+     (magit-cherry-mode               "±Ch"  :major     )
+     (magit-diff-mode                 "±Df"  :major     )
+     (magit-log-mode                  "±Lg"  :major     )
+     (magit-log-select-mode           "±Ls"  :major     )
+     (magit-merge-preview-mode        "±Mg"  :major     )
+     (magit-mode                      "±"    :major     )
+     (magit-process-mode              "±Pr"  :major     )
+     (magit-rebase-mode               "±Rb"  :major     )
+     (magit-reflog-mode               "±Rfl" :major     )
+     (magit-refs-mode                 "±Rf"  :major     )
+     (magit-repolist-mode             "±Rp"  :major     )
+     (magit-revision-mode             "±Rv"  :major     )
+     (magit-stash-mode                "±St"  :major     )
+     (magit-stashes-mode              "±Sts" :major     )
+     (magit-status-mode               "±"    :major     )
+     (magit-submodule-list-mode       "±Md"  :major     )
+     (magit-wip-after-apply-mode      ""     magit-wip  )
+     (magit-wip-after-save-local-mode ""     magit-wip  )
+     (magit-wip-before-change-mode    ""     magit-wip  )))
 
   (setq-default
    magit-branch-popup-show-variables t
    magit-display-buffer-function
    #'magit-display-buffer-same-window-except-diff-v1)
+
+  ;; Always highlight tabs
+  (map-put magit-diff-highlight-indentation "" 'tabs)
+
+  (add-to-list 'magit-rebase-arguments "--interactive")
 
   (let* (;; Limit number of commits in log
          (logcommits       "32")
@@ -2180,7 +2188,12 @@ in `zenburn-default-colors-alist'."
           '(magit-refs-local-branch-format
             magit-refs-remote-branch-format
             magit-refs-symref-format
-            magit-refs-tags-format))))
+            magit-refs-tags-format)))
+
+  (global-magit-file-mode)
+  (magit-wip-after-apply-mode)
+  (magit-wip-after-save-mode)
+  (magit-wip-before-change-mode))
 
   ;; ;; FIXME: modify tango-dark
   ;; (set-face-attribute
@@ -2448,13 +2461,13 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default
    projectile-completion-system           'ivy
-   projectile-find-dir-includes-top-level t)
-
-  ;; Delight mode but not project name
-  (let ((var 'projectile-mode-line)
-        (nom "Projectile")
-        (dim ""))
-    (set-default var (blc-tree-sed nom dim (symbol-value var))))
+   projectile-find-dir-includes-top-level t
+   ;; Delight mode but not project name
+   ;; FIXME: Make more resilient
+   projectile-mode-line
+   '(:eval (format "[%s]" (if (file-remote-p default-directory)
+                              ""
+                            (projectile-project-name)))))
 
   (projectile-mode))
 
