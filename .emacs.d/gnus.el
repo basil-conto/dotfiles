@@ -229,7 +229,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    `(((gnus-seconds-today)                . "%R")
      ((float-time
        (time-add
-        ,(days-to-time 1)
+        ',(days-to-time 1)
         (gnus-seconds-today)))            . "Y %R")
      (,(float-time (days-to-time 7))      . "%a %d")
      ((gnus-seconds-year)                 . "%d %b")

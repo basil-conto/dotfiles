@@ -146,6 +146,7 @@ why-are-you-changing-gc-cons-threshold/'."
             ("ielm"       . (inferior-emacs-lisp-mode))
             ("mail-utils" . (mail-strip-quoted-names))
             ("mailcap"    . (mailcap-extension-to-mime))
+            ("man"        . (Man-goto-section))
             ("message"    . (message-fetch-field
                              message-narrow-to-headers))
             ("shr"        . (shr-copy-url))
@@ -1936,7 +1937,7 @@ in `zenburn-default-colors-alist'."
 
   ;; Reverse parsed order
   (mapc (-cut map-put ivy-sort-functions-alist <> #'blc-ivy-sort-reverse)
-        '(,#'Info-complete-menu-item ,#'Man-goto-section))
+        `(,#'Info-complete-menu-item ,#'Man-goto-section))
 
   (setq-default
    ivy-count-format          "(%d/%d) "
