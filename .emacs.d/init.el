@@ -1465,6 +1465,7 @@ in `zenburn-default-colors-alist'."
               ("p" .         previous-line)
               ("w" . blc-eww-bookmark-save))
   :init
+  (delight  'eww-mode "🕸" :major)
   (add-hook 'eww-mode-hook #'blc-increase-readability)
   (setq-default
    eww-search-prefix
@@ -2254,8 +2255,10 @@ in `zenburn-default-colors-alist'."
   :bind (:map markdown-mode-map
               ("TAB" . markdown-cycle))
   :mode "\\.md\\'" "\\.markdown\\'"
-  :commands markdown-cycle markdown-enter-key
+  :commands markdown-enter-key
   :config
+  (delight '((     gfm-mode "🐙" :major)
+             (markdown-mode "🡇" :major)))
   (blc-trim-before-newline #'markdown-enter-key))
 
 (use-package matlab
