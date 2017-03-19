@@ -1036,6 +1036,15 @@ in `zenburn-default-colors-alist'."
   (setq-default async-bytecomp-allowed-packages '(all))
   (async-bytecomp-package-mode))
 
+(use-package atomic-chrome
+  :ensure
+  :defer
+  :config
+  (setq-default
+   atomic-chrome-extension-type-list
+   (seq-intersection '(ghost-text) atomic-chrome-extension-type-list))
+  (map-put atomic-chrome-url-major-mode-alist "github\\.com" #'gfm-mode))
+
 (use-package auctex-latexmk
   :ensure
   :defer)
