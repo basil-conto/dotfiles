@@ -1524,14 +1524,17 @@ in `zenburn-default-colors-alist'."
   :init
   ;; Enable in whitelist, disable in blacklist
   (let* ((whitelist blc-fundamental-hooks)
-         (blacklist '(lisp-interaction-mode-hook org-mode-hook))
+         (blacklist '(lisp-interaction-mode-hook
+                      org-mode-hook
+                      visual-line-mode-hook))
          (togglers  `(,#'turn-on-fci-mode ,#'turn-off-fci-mode))
          (togglees  `(,whitelist ,blacklist))
          (hookers   (-cut -rpartial #'add-hook <>)))
     (seq-mapn #'mapc (mapcar hookers togglers) togglees))
 
-  (setq-default fci-rule-color  "#696969"
-                fci-rule-column blc-chars-per-line))
+  (setq-default
+   fci-rule-color  "#696969"            ; Fallback colour
+   fci-rule-column blc-chars-per-line))
 
 (use-package find-file
   :defer
