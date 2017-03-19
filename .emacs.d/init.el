@@ -1585,9 +1585,8 @@ in `zenburn-default-colors-alist'."
               ("M-F" . ggtags-find-reference))
   :commands ggtags-find-reference
   :config
-  (unbind-key "M-<" ggtags-navigation-map) ; Such rude ;_;
-  (unbind-key "M->" ggtags-navigation-map)
-  (unbind-key "M-]" ggtags-mode-map))
+  (unbind-key "M-]" ggtags-mode-map)    ; `ggtags-find-reference'
+  (setq-default ggtags-enable-navigation-keys nil))
 
 (use-package ghc
   :ensure
