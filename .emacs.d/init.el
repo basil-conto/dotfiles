@@ -2398,6 +2398,14 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package org-pomodoro
+  :ensure
+  :defer
+  :config
+  (setq-default
+   org-pomodoro-format
+   (blc-tree-sed "pomodoro" "🍅" org-pomodoro-format nil t)))
+
 (use-package org-ref
   :ensure
   :defer)
