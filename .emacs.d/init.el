@@ -2778,7 +2778,8 @@ in `zenburn-default-colors-alist'."
   (defun blc-debug-use-package ()
     "Toggle `use-package' debugging."
     (interactive)
-    (setq-default use-package-debug (not use-package-debug))))
+    (message "use-package debugging %sabled"
+             (if (setq use-package-debug (not use-package-debug)) "en" "dis"))))
 
 (use-package vc-hooks
   :defer
