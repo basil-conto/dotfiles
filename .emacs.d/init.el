@@ -1836,8 +1836,7 @@ in `zenburn-default-colors-alist'."
 
   :config
   ;; Define before use
-  (mapc (lambda (filter)
-          (push filter ibuffer-saved-filters))
+  (mapc (-cut add-to-list 'ibuffer-saved-filters <>)
         `(("package" (or (directory . ,source-directory)
                          (directory . ,(f-parent data-directory))
                          (directory . ,(f-join   package-user-dir))))
@@ -2304,8 +2303,9 @@ in `zenburn-default-colors-alist'."
    minimap-recenter-type   'relative
    minimap-width-fraction  0.05
    minimap-window-location 'right)
+  ;; FIXME: Add zenburn-specific override
   (set-face-background 'minimap-active-region-background "#696969")
-  (set-face-attribute  'minimap-font-face nil :font "DejaVu Sans Mono 1"))
+  (set-face-attribute  'minimap-font-face nil :height 10))
 
 (use-package mm-decode
   :defer
