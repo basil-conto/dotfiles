@@ -1420,7 +1420,7 @@ in `zenburn-default-colors-alist'."
   :bind-keymap ("C-x /" . engine-mode-map)
   :config
   (defengine book-depository
-    "https://www.bookdepository.com/search?searchTerm=%s"
+    "https://bookdepository.com/search?searchTerm=%s"
     :keybinding "b")
   (defengine google-def
     "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=define+%s"
@@ -1432,10 +1432,10 @@ in `zenburn-default-colors-alist'."
     "https://scholar.google.com/scholar?q=%s"
     :keybinding "s")
   (defengine hoogle
-    "https://www.haskell.org/hoogle/?hoogle=%s"
+    "https://haskell.org/hoogle/?hoogle=%s"
     :keybinding "h")
   (defengine imdb
-    "http://www.imdb.com/find?q=%s"
+    "http://imdb.com/find?q=%s"
     :keybinding "i")
   (defengine stack-overflow
     "https://stackoverflow.com/search?q=%s"
