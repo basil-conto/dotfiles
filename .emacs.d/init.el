@@ -1816,7 +1816,7 @@ in `zenburn-default-colors-alist'."
 
 (use-package ibuf-ext
   :bind (([remap list-buffers] . ibuffer)
-         ("C-c C-j"            . ibuffer-jump))
+         ("C-c j b"            . ibuffer-jump))
   :init
   (mapc (-cut add-hook 'ibuffer-mode-hook <>)
         `(,#'ibuffer-auto-mode
@@ -2809,6 +2809,64 @@ in `zenburn-default-colors-alist'."
 (use-package web-mode
   :ensure
   :mode ("\\.html\\'" "\\.mustache\\'"))
+
+;; TODO:
+;; * Merge with:
+;;   - `engine-mode'
+;;     + `thing-at-point'
+;;   - `eww-search-prefix'
+;;   - Org bookmarks
+;;   - DRY with `simple-query'
+(use-package webjump
+  :bind (("C-c j w" . webjump))
+  :config
+  (setq-default
+   webjump-sites
+   '(("Book Depository"
+      . [simple-query "https://bookdepository.com/"
+                      "https://bookdepository.com/search?searchTerm=hi"
+                      ""])
+     ("Emacs Wiki"
+      . [simple-query "https://emacswiki.org/"
+                      "https://emacswiki.org/cgi-bin/wiki/"
+                      ""])
+     ("GitHub"
+      . [mirrors      "https://github.com/"
+                      "https://github.com/basil-conto"
+                      "https://github.com/issues"
+                      "https://github.com/notifications"
+                      "https://github.com/pulls"
+                      "https://github.com/search"])
+     ("Google Definition"
+      . [simple-query "https://encrypted.google.com/"
+                      "https://encrypted.google.com/search?q=define+"
+                      "&ie=utf-8&oe=utf-8"])
+     ("Google Encrypted"
+      . [simple-query "https://encrypted.google.com/"
+                      "https://encrypted.google.com/search?q="
+                      "&ie=utf-8&oe=utf-8"])
+     ("Google Scholar"
+      . [simple-query "https://scholar.google.com/"
+                      "https://scholar.google.com/scholar?q="
+                      ""])
+     ("Hoogle"
+      . [simple-query "https://haskell.org/hoogle/"
+                      "https://haskell.org/hoogle/?hoogle="
+                      ""])
+     ("IMDB"
+      . [simple-query "http://imdb.com/"
+                      "http://imdb.com/find?q="
+                      ""])
+     ("Imgur"
+      .               "http://imgur.com/")
+     ("Stack Overflow"
+      . [simple-query "https://stackoverflow.com/"
+                      "https://stackoverflow.com/search?q="
+                      ""])
+     ("Wikipedia"
+      . [simple-query "https://en.wikipedia.org/"
+                      "https://en.wikipedia.org/w/index.php?search="
+                      ""]))))
 
 (use-package wgrep
   :ensure
