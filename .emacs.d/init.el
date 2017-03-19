@@ -155,8 +155,6 @@ why-are-you-changing-gc-cons-threshold/'."
 
 (eval-when-compile
   (defvar c-mode-base-map)
-  (defvar git-commit-filename-regexp)
-  (defvar git-commit-mode)
   (defvar ivy-height)
   (defvar ivy-minibuffer-faces)
   (defvar js2-mode-map)
@@ -544,12 +542,15 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
        blink-cursor-mode
        (blc-turn-off-modes #'blink-cursor-mode)))
 
-(defun blc-kill-git-commit-buffer ()
-  "Ensure message buffer is killed post-git-commit."
-  (and git-commit-mode
-       buffer-file-name
-       (string-match-p git-commit-filename-regexp buffer-file-name)
-       (kill-buffer)))
+(defun blc-kill-git-buffer ()
+  "Kill current git commit message or rebase todo list buffer."
+  (when-let ((re (cond ((bound-and-true-p git-commit-mode)
+                        (bound-and-true-p git-commit-filename-regexp))
+                       ((derived-mode-p #'git-rebase-mode)
+                        (bound-and-true-p git-rebase-filename-regexp)))))
+    (and buffer-file-name
+         (string-match-p re buffer-file-name)
+         (kill-buffer))))
 
 (defun blc-download (&optional url file)
   "Download contents of URL to a file named FILE.
@@ -1597,9 +1598,6 @@ in `zenburn-default-colors-alist'."
   :mode ("/\\(?:\
 \\(?:\\(?:COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
 \\|BRANCH_DESCRIPTION\\)\\'" . git-commit-mode)
-
-  :init
-  (add-hook 'with-editor-post-finish-hook #'blc-kill-git-commit-buffer)
 
   :config
   (setq-default git-commit-summary-max-length 50
@@ -2856,6 +2854,15 @@ in `zenburn-default-colors-alist'."
   :defer
   :init
   (winner-mode))
+
+(use-package with-editor
+  :ensure
+  :defer
+  :init
+  ;; Clean up git buffers whether action executed or cancelled
+  (mapc (-cut add-hook <> #'blc-kill-git-buffer)
+        '(with-editor-post-cancel-hook
+          with-editor-post-finish-hook)))
 
 (use-package woman
   :defer
