@@ -2457,6 +2457,11 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package pcomplete
+  :defer
+  :init
+  (setq-default pcomplete-ignore-case t))
+
 (use-package pcre2el
   :ensure
   :defer)
