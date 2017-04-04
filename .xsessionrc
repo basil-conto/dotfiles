@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+[ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
+[ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
+xscreensaver -no-splash &
