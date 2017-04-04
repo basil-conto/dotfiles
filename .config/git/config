@@ -41,6 +41,7 @@
   gpgsign          = true
 
 [core]
+  compression      = 9
   editor           = ec
   whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 
