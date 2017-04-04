@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+# FIXME:
+# * Report charging status
+# * Detect colour support?
+# TODO:
+# * Handle missing .bash_colours file
+[ -r "${HOME}/.bash_colours" ] && . "${HOME}/.bash_colours"
+
+format () {
+  local face=''
+  if [ "$1" -le 20 ]; then
+    face="${RED_BF}"
+  elif [ "$1" -ge 80 ]; then
+    face="${GRN_BF}"
+  fi
+  printf '%b%3u%b' "${face}" "$1" "${RESET}"
+}
+
+for bat in /sys/class/power_supply/BAT*; do
+  printf '%s: %s%%\n' "$(basename ${bat})" "$(format $(cat ${bat}/capacity))"
+done
+
+bash_colours_unset
+unset -f bash_colours_unset fontify
