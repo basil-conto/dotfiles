@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+chromium --proxy-auto-detect &> /dev/null &

@@ -69,9 +69,6 @@ alias g++11='g++ -std=c++11'
 
 # emacsen
 alias em='emacs -nw'
-alias emacsclient='emacsclient --alternate-editor='
-alias ec='emacsclient --tty'
-alias ecc='emacsclient --create-frame --no-wait'
 
 # colordiff
 alias ciff='colordiff --side-by-side --width=160'
@@ -86,9 +83,6 @@ alias startvm='vboxmanage startvm'
 alias ydl='youtube-dl --ignore-errors --prefer-ffmpeg'
 alias ydl-mp3='ydl -x --audio-format mp3 --audio-quality 256K'
 alias ydl-vorbis='ydl -x --audio-format vorbis --audio-quality 128K'
-
-# chromium
-alias chromium-proxy='chromium --proxy-auto-detect &> /dev/null &'
 
 # notify-send
 alias apprise='notify-send --urgency=low'

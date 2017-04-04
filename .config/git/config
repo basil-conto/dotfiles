@@ -35,7 +35,7 @@
 [commit]
 	gpgsign          = true
 [core]
-	editor           = emacs -nw
+	editor           = ec
 	whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 [diff]
 	algorithm        = histogram
