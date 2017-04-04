@@ -10,17 +10,17 @@ _pip_completion()
 complete -o default -F _pip_completion pip
 
 # pyenv
-if [ -f "${HOME}/.pyenv/completions/pyenv.bash" ]; then
+if [ -r "${HOME}/.pyenv/completions/pyenv.bash" ]; then
   . "${HOME}/.pyenv/completions/pyenv.bash"
 fi
 
 # tmux
-if [ -f /usr/share/doc/tmux/examples/bash_completion_tmux.sh ]; then
+if [ -r /usr/share/doc/tmux/examples/bash_completion_tmux.sh ]; then
   . /usr/share/doc/tmux/examples/bash_completion_tmux.sh
 fi
 
 # youtube-dl
-if [ -f "${LOCAL_DIR}/etc/bash_completion.d/youtube-dl.bash-completion" ]; then
+if [ -r "${LOCAL_DIR}/etc/bash_completion.d/youtube-dl.bash-completion" ]; then
   . "${LOCAL_DIR}/etc/bash_completion.d/youtube-dl.bash-completion"
 fi
 

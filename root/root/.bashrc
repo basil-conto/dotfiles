@@ -9,8 +9,8 @@ eval "`dircolors`"
 
 export GREP_OPTIONS='--color=auto'
 
-[ -f ~/.bash_aliases ] && . ~/.bash_aliases
-[ -f ~/.bash_colours ] && . ~/.bash_colours
+[ -r ~/.bash_aliases ] && . ~/.bash_aliases
+[ -r ~/.bash_colours ] && . ~/.bash_colours
 
 # Prompt
 PS1="\[${PRP}\]${debian_chroot:+($debian_chroot)}\[${RESET}\]"

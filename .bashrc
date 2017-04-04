@@ -37,11 +37,11 @@ shopt -s checkwinsize
   || eval "$(dircolors -b)"
 
 # Alias definitions.
-[ -f ~/.bash_aliases    ] && . ~/.bash_aliases
+[ -r ~/.bash_aliases    ] && . ~/.bash_aliases
 # Colour definitions
-[ -f ~/.bash_colours    ] && . ~/.bash_colours
+[ -r ~/.bash_colours    ] && . ~/.bash_colours
 # User completions
-[ -f ~/.bash_completion ] && . ~/.bash_completion
+[ -r ~/.bash_completion ] && . ~/.bash_completion
 
 # Colour man pages
 man() {
