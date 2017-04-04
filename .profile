@@ -8,8 +8,13 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-# When running bash
-[ -n "${BASH_VERSION}" ] && [ -f "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
+if [ -z "${BASH_VERSION}" ]; then
+  opt=p
+else
+  opt=u
+  [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
+fi
+ulimit -${opt} 1024
 
 # Rubbish (bin)
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
