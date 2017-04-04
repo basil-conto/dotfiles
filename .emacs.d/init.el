@@ -649,7 +649,7 @@ for some definition of \"normal\".
 See URL `http://emacs.stackexchange.com/a/3822' for limitations."
   (interactive)
   (let ((line-number-display-limit-width most-positive-fixnum)
-        (line-number-display-limit       nil))
+        line-number-display-limit)
     (save-excursion
       (goto-char (or pos (point)))
       (string-to-number (format-mode-line "%l")))))
@@ -2199,7 +2199,7 @@ in `zenburn-default-colors-alist'."
          (fmtflags         '(?n ?U))
          (fmtre            (format "%%\\([+-]??[[:digit:]]*?\\)[%s]"
                                    (apply #'string fmtflags)))
-         (case-fold-search nil))
+         case-fold-search)
 
     (set-default logargs (blc-tree-sed logre logcommits
                                        (symbol-value logargs) t t 1))
