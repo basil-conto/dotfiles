@@ -2318,7 +2318,7 @@ in `zenburn-default-colors-alist'."
   :init
   (setq-default
    mm-decrypt-option            'ask
-   mm-default-directory         "~/downloads/"
+   mm-default-directory         "~/Downloads/"
    mm-external-terminal-program "gnome-terminal"
    mm-inline-large-images       'resize
    mm-sign-option               'guided
