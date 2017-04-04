@@ -15,6 +15,7 @@ else
   [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 fi
 ulimit -${opt} 1024
+unset opt
 
 # Rubbish (bin)
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
@@ -34,9 +35,6 @@ if [ -d "${HOME}/.pyenv" ]; then
   export PATH="${PYENV_ROOT}/bin:${PATH}"
   eval "$(pyenv init -)"
 fi
-
-# Limit number of user processes
-ulimit -u 1024
 
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
