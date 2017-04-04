@@ -1,0 +1,2 @@
+! Use LightDM user switcher with XScreenSaver
+xscreensaver.newLoginCommand: dm-tool switch-to-greeter
