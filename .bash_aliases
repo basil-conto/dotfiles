@@ -19,7 +19,8 @@ alias grep='grep --color=auto'
 alias egrep='grep --extended-regexp'
 alias fgrep='grep --fixed-strings'
 alias rgrep='grep --recursive'
-alias psgrep='ps aux | grep'
+alias psgrep='ps -A --no-headers \
+--format="pid,euser,s,%cpu,%mem,start_time,args" | grep'
 
 # directories
 alias mkdir='mkdir --parents --verbose'
