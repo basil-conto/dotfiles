@@ -35,7 +35,6 @@
 [commit]
 	gpgsign          = true
 [core]
-	attributesfile   = ~/.gitattributes
 	editor           = emacs -nw
 	whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 [diff]
