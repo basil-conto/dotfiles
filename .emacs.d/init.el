@@ -419,6 +419,10 @@ description of the arguments to this function."
   (interactive)
   (blc-turn-off-modes #'electric-indent-local-mode))
 
+(defun blc-turn-off-indent-tabs ()
+  "Disable tab indentation."
+  (setq indent-tabs-mode nil))
+
 (defun blc-rainbow-font-lock-faces ()
   "Highlight font lock face variable names."
   (interactive)
@@ -1621,7 +1625,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package gitconfig-mode
   :ensure
-  :defer)
+  :defer
+  :init
+  (add-hook 'gitconfig-mode-hook #'blc-turn-off-indent-tabs))
 
 (use-package gitignore-mode
   :ensure

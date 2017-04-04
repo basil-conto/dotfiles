@@ -1,60 +1,74 @@
 [alias]
-	a     = add
-	ae    = add --edit
-	ap    = add --patch
-	br    = branch
-	brl   = !git branch --color=always --all | grep
-	brv   = !git branch --color=always --verbose --verbose \
-	      | grep --color=always --extended-regexp '^|ahead|behind|gone'
-	ch    = cherry-pick
-	cm    = commit
-	co    = checkout
-	cop   = checkout --patch --
-	d     = diff
-	dc    = diff --cached
-	dcn   = diff --cached --name-only
-	dn    = diff --name-only
-	dr    = diff -R --ws-error-highlight=all
-	drn   = diff -R --name-only
-	dru   = diff -R --ws-error-highlight=all @{upstream}
-	drnu  = diff -R --name-only @{upstream}
-	files = !git status --short | awk '{print $2}'
-	get   = fetch --prune
-	last  = log -1
-	l     = log --graph --all --decorate --oneline
-	lg1   = log --graph --all --decorate --abbrev-commit --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
-	lg2   = log --graph --all --decorate --abbrev-commit --format=format:'%C(bold cyan)%h%C(reset) - %C(bold blue)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(white)- %an%C(reset)'
-	lg    = !git lg1
-	lp    = log --patch
-	mff   = merge --ff
-	mnff  = merge --no-ff
-	rb    = rebase
-	st    = status
-	sb    = status --short --branch
-	wip   = commit --edit --message='[WIP]'
+  a     = add
+  ae    = add --edit
+  ap    = add --patch
+  br    = branch
+  brl   = !git branch --color=always --all | grep
+  brv   = !git branch --color=always --verbose --verbose \
+        | grep --color=always --extended-regexp '^|ahead|behind|gone'
+  ch    = cherry-pick
+  cm    = commit
+  co    = checkout
+  cop   = checkout --patch --
+  d     = diff
+  dc    = diff --cached
+  dcn   = diff --cached --name-only
+  dn    = diff --name-only
+  dr    = diff -R --ws-error-highlight=all
+  drn   = diff -R --name-only
+  dru   = diff -R --ws-error-highlight=all @{upstream}
+  drnu  = diff -R --name-only @{upstream}
+  files = !git status --short | awk '{print $2}'
+  get   = fetch --prune
+  last  = log -1
+  l     = log --graph --all --decorate --oneline
+  lg    = !git lg1
+  lg1   = log --graph --all --decorate --abbrev-commit --date=relative   \
+--format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) \
+%s - %an%C(bold yellow)%d%C(reset)'
+  lg2   = log --graph --all --decorate --abbrev-commit                \
+--format=format:'%C(bold cyan)%h%C(reset) - %C(bold blue)%aD%C(reset) \
+%C(bold green)(%ar)%C(bold yellow)%d%C(reset)%n          %s - %an'
+  lp    = log --patch
+  mff   = merge --ff
+  mnff  = merge --no-ff
+  rb    = rebase
+  st    = status
+  sb    = status --short --branch
+  wip   = commit --edit --message='[WIP]'
+
 [commit]
-	gpgsign          = true
+  gpgsign          = true
+
 [core]
-	editor           = ec
-	whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
+  editor           = ec
+  whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
+
 [diff]
-	algorithm        = histogram
-	submodule        = log
+  algorithm        = histogram
+  submodule        = log
+
 [diff "gpg"]
-	textconv         = gpg --decrypt
+  textconv         = gpg --decrypt
+
 [interactive]
-	diffFilter       = diff-highlight
+  diffFilter       = diff-highlight
+
 [pager]
-	diff             = diff-highlight | pager
-	log              = diff-highlight | pager
-	show             = diff-highlight | pager
+  diff             = diff-highlight | pager
+  log              = diff-highlight | pager
+  show             = diff-highlight | pager
+
 [status]
-	submodulesummary = 1
+  submodulesummary = 1
+
 [submodule]
-	fetchJobs        = 0
+  fetchJobs        = 0
+
 [tag]
-	sort             = version:refname
+  sort             = version:refname
+
 [user]
-	email            = contovob@tcd.ie
-	name             = Basil L. Contovounesios
-	signingkey       = 5D5D8CFF
+  email            = contovob@tcd.ie
+  name             = Basil L. Contovounesios
+  signingKey       = 5D5D8CFF
