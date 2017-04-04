@@ -74,6 +74,7 @@ git_ps1() {
 brack_hi='\342\224\214'
 brack_lo='\342\224\224'
 
+# FIXME: Use PROMPT_COMMAND
 PS1="\[${WHT_BF}\]${brack_hi}[\[${GRN_BF}\]\u@\h${WHT_BF}]"
 PS1+="\[${YLW_BF}\]\$(git_ps1)"
 PS1+="\[${BLU_BF}\] \w "
