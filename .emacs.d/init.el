@@ -692,6 +692,15 @@ a slash when PATHS correspond to an existing directory. "
               (_      #'identity))
             (apply #'f-join paths))))
 
+;; TODO: Cross-platform?
+(defun blc-user-dir (dir)
+  "Return path of XDG user DIR via `xdg-user-dir' executable."
+  (file-name-as-directory
+   (with-temp-buffer
+     (call-process "xdg-user-dir" nil t nil dir)
+     (buffer-substring-no-properties
+      (point-min) (blc-butlast-point (point-max))))))
+
 (defun blc-large-buffer-p ()
   "Determine whether buffer classifies as being large.
 Return `t' if buffer size falls under
@@ -2321,11 +2330,11 @@ in `zenburn-default-colors-alist'."
 
 (use-package mm-decode
   :defer
-  :init
+  :config
   (setq-default
    mm-decrypt-option            'ask
-   mm-default-directory         "~/Downloads/"
-   mm-external-terminal-program "gnome-terminal"
+   mm-default-directory         (blc-user-dir "DOWNLOAD")
+   mm-external-terminal-program "x-terminal-emulator"
    mm-inline-large-images       'resize
    mm-sign-option               'guided
    mm-verify-option             'always))
