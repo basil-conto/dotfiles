@@ -941,6 +941,7 @@ in `zenburn-default-colors-alist'."
 (setq-default
  mode-line-format
  (blc-tree-sed " +" " " mode-line-format)
+ shell-file-name                 "/bin/sh"
  source-directory
  (blc-join 'dir blc-repos-dir "localsrc" "emacs")
  x-gtk-use-system-tooltips       nil
@@ -2580,6 +2581,13 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default sh-basic-offset 2
                 sh-indentation  2))
+
+(use-package shell
+  :defer
+  :init
+  (setq-default explicit-shell-file-name (or (getenv "ESHELL")
+                                             (getenv "SHELL")
+                                             "/bin/bash")))
 
 (use-package shr
   :defer
