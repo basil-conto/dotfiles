@@ -2680,16 +2680,21 @@ in `zenburn-default-colors-alist'."
 (use-package "startup"
   :defer
   :init
-  (let* ((cowfile "-f$(shuf -en1 $(cowsay -l | tail -n+2))")
-         (state   "$(shuf -en1 -- '' -b -d -g -p -s -t -w -y)")
-         (command (format "fortune -aes | cowsay %s %s -n" cowfile state))
-         (fortune (with-output-to-string
+  ;; TODO: Investigate speed of command substitution vs lisp shuffling
+  (let* ((states  '("" "b" "d" "g" "p" "s" "t" "w" "y"))
+         (cows    (directory-files "/usr/share/cowsay/cows" nil "\\.cow\\'" t))
+         (args    (mapcar #'seq-random-elt `(,states ,cows)))
+         (command (apply #'format "fortune -aes | cowsay -n%sf%s" args))
+         (fortune (with-temp-buffer
                     (call-process-shell-command command nil t)
-                    (let ((comment-empty-lines t)
-                          (comment-start       ";;"))
-                      (comment-region (point-min) (point-max)))
-                    (delete-trailing-whitespace)
-                    (insert ?\n))))
+                    (let ((pmin                (point-min-marker))
+                          (pmax                (point-max-marker))
+                          (comment-start       ";;")
+                          (comment-empty-lines t)
+                          delete-trailing-lines)
+                      (comment-region                 pmin pmax)
+                      (delete-trailing-whitespace     pmin pmax)
+                      (buffer-substring-no-properties pmin pmax)))))
     (setq inhibit-default-init    t
           inhibit-startup-screen  t
           initial-scratch-message fortune))
