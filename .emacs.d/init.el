@@ -2937,9 +2937,10 @@ in `zenburn-default-colors-alist'."
   :init
   (setq-default
    scroll-error-top-bottom t
-   split-window-keep-point nil)
-  (advice-add #'split-window-sensibly
-              :around #'blc-split-larger-dimension--advice))
+   split-window-keep-point nil))
+  ;; ;; FIXME: Improve window splitting
+  ;; (advice-add #'split-window-sensibly
+  ;;             :around #'blc-split-larger-dimension--advice))
 
 (use-package winner
   :defer
