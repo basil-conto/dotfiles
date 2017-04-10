@@ -95,9 +95,9 @@ alias gcal='gcal --starting-day=Monday'
 alias nvlc='nvlc --browse-dir .'
 
 # cpufreq
-alias policy='cpufreq-info --policy'
-alias powersave='sudo cpufreq-set --governor powersave --related'
-alias performance='sudo cpufreq-set --governor performance --related'
+# alias policy='cpufreq-info --policy'
+# alias powersave='sudo cpufreq-set --governor powersave --related'
+# alias performance='sudo cpufreq-set --governor performance --related'
 
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'
