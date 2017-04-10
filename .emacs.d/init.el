@@ -731,6 +731,15 @@ Return `t' if buffer size falls under
   (when (blc-large-buffer-p)
     (blc-strip-buffer)))
 
+(defun blc-bury-buffer (&optional buffer-or-name unbury)
+  "Un/bury buffer.
+With prefix argument UNBURY, call `unbury-buffer'. Otherwise pass
+BUFFER-OR-NAME to `bury-buffer'."
+  (interactive "i\nP")
+  (if unbury
+      (unbury-buffer)
+    (bury-buffer buffer-or-name)))
+
 (defun blc-revert-buffer ()
   "Reconcile current buffer with what lives on the disk.
 Offer to revert from the auto-save file, if that exists."
@@ -996,6 +1005,7 @@ in `zenburn-default-colors-alist'."
  ("C-x 7"       .      blc-transpose-split)
  ("S-<prior>"   .          previous-buffer)
  ("S-<next>"    .              next-buffer)
+ ("C-x B"       .          blc-bury-buffer)
  ("<f5>"        .        blc-revert-buffer)
  ;; Mutatis mutandis within tmux
  ("M-[ 5 ; 2 ~" .          previous-buffer)
