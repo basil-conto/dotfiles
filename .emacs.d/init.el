@@ -755,12 +755,6 @@ relevant major-mode."
   (let ((suffix (unless (string-blank-p suffix) (f-swap-ext "" suffix))))
     (find-file (make-temp-file prefix nil suffix))))
 
-(defun blc-sudo-find-file ()
-  "Open current file as root via `sudo'."
-  (interactive)
-  (when-let ((file (and buffer-read-only buffer-file-name)))
-    (find-alternate-file (format "/sudo::%s" file))))
-
 (defun blc-make-graphic-display ()
   "Make a graphical frame.
 Display is determined by the environment variable DISPLAY."
@@ -1000,7 +994,6 @@ in `zenburn-default-colors-alist'."
  ("C-x C-p"     .   blc-open-previous-line)
  ("C-x C-n"     .   blc-open-next-line    )
  ;; Frame / window / buffer
- ("C-c s"       .       blc-sudo-find-file)
  ("C-x 5 3"     . blc-make-graphic-display)
  ("C-x 7"       .      blc-transpose-split)
  ("S-<prior>"   .          previous-buffer)
