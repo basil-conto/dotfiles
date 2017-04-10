@@ -135,10 +135,8 @@ why-are-you-changing-gc-cons-threshold/'."
           '(("browse-url" . (browse-url-chrome
                              browse-url-interactive-arg))
             ("cc-defs"    . (c-langelem-pos))
-            ("comint"     . (comint-mode))
             ("csv-mode"   . (csv-align-fields))
             ("dired-x"    . (dired-omit-mode))
-            ("erc"        . (erc-mode))
             ("eww"        . (eww-copy-page-url))
             ("hi-lock"    . (hi-lock-set-pattern))
             ("ibuf-ext"   . (ibuffer-auto-mode
@@ -1772,10 +1770,11 @@ in `zenburn-default-colors-alist'."
 
   :config
   (mapc (-cut add-to-list 'hi-lock-exclude-modes <>)
-        `(,#'comint-mode
-          ,#'completion-list-mode
-          ,#'erc-mode
-          ,#'eshell-mode))
+        '(comint-mode
+          completion-list-mode
+          erc-mode
+          eshell-mode
+          term-mode))
 
   (let* ((mode    'hi-lock-mode)
          (lighter (map-elt minor-mode-alist mode)))
