@@ -639,6 +639,14 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 
 ;;; Editing
 
+(defun blc-butlast-point (&optional pos)
+  "Return largest point <= POS or point on a non-empty line.
+Wrap calls to this function in `save-excursion' in order to
+guarantee preservation of point."
+  (let ((pos (or pos (point))))
+    (goto-char pos)
+    (funcall (if (bolp) #'1- #'identity) pos)))
+
 (defun blc-fast-line-number (&optional pos)
   "Return line number at POS or current buffer location.
 Should outperform `line-number-at-pos' under normal conditions,
@@ -646,20 +654,18 @@ for some definition of \"normal\".
 
 See URL `http://emacs.stackexchange.com/a/3822' for limitations."
   (interactive)
-  (let ((line-number-display-limit-width most-positive-fixnum)
-        line-number-display-limit)
-    (save-excursion
-      (goto-char (or pos (point)))
-      (string-to-number (format-mode-line "%l")))))
+  (save-excursion
+    (goto-char (or pos (point)))
+    (string-to-number
+     (let ((line-number-display-limit-width most-positive-fixnum)
+           line-number-display-limit)
+       (format-mode-line "%l")))))
 
 (defun blc-fast-line-count ()
   "Return number of lines within accessible portion of buffer.
 Uses `fast-line-number', which see."
-  (let ((pmax (point-max)))
-    (save-excursion
-      (goto-char pmax)
-      (funcall (if (= pmax (line-beginning-position)) #'1- #'identity)
-               (blc-fast-line-number pmax)))))
+  (save-excursion
+    (blc-butlast-point (blc-fast-line-number))))
 
 (defun blc-echo-fast-line-count ()
   "Emulate `count-lines-page' using `blc-fast-line-count'."
