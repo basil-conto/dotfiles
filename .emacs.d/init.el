@@ -1033,14 +1033,19 @@ in `zenburn-default-colors-alist'."
   :init
   (setq-default alert-default-style 'notifications))
 
+;; FIXME: debian-el bootstrapping
+
 (use-package apt-sources
-  ;; FIXME
-  :load-path "/usr/share/emacs/site-lisp/debian-el"
+  :load-path "lisp"
   :mode (("\\.sources\\'"                   . apt-sources-mode)
          ("sources\\.list\\'"               . apt-sources-mode)
          ("sources\\.list\\.d/.*\\.list\\'" . apt-sources-mode))
   :init
   (add-hook 'apt-sources-mode-hook #'blc-turn-off-local-electric-indent))
+
+(use-package apt-utils
+  :load-path "lisp"
+  :commands apt-utils-search apt-utils-show-package)
 
 (use-package ascii
   :ensure
@@ -1325,6 +1330,10 @@ in `zenburn-default-colors-alist'."
   :defer
   :config
   (dash-enable-font-lock))
+
+(use-package deb-view
+  :load-path "lisp"
+  :defer)
 
 (use-package debbugs
   :ensure
