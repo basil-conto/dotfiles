@@ -1494,6 +1494,10 @@ in `zenburn-default-colors-alist'."
   (setq-default ess-default-style   'DEFAULT
                 ess-indent-from-lhs nil))
 
+(use-package ewmctrl
+  :ensure
+  :defer)
+
 (use-package eww
   :bind (:map eww-bookmark-mode-map
               ("n" .             next-line)
