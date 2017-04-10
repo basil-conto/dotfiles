@@ -1418,6 +1418,13 @@ in `zenburn-default-colors-alist'."
   :ensure
   :bind ("C-h C-m" . discover-my-major))
 
+(use-package dropbox
+  :ensure
+  :defer
+  :init
+  (setq-default dropbox-locale  "en_IE"
+                dropbox-verbose t))
+
 (use-package ducpel
   :ensure
   :defer)
