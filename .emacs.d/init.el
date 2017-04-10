@@ -1967,6 +1967,11 @@ in `zenburn-default-colors-alist'."
    irfc-directory         (seq-find #'identity ffap-rfc-directories)
    irfc-download-base-url (url-file-directory  ffap-rfc-path)))
 
+;; FIXME: Add to MELPA
+(use-package irfc-x
+  :load-path "lisp"
+  :commands irfc-x-list)
+
 (use-package "isearch"
   :defer
   :init
