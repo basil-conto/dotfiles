@@ -485,6 +485,16 @@ See `blc-ibuffer-default-group'."
   "Predicate that the order of X and Y should be swapped."
   t)
 
+(defvar blc-counsel-man-history ()
+  "")
+
+;; (defun blc-counsel-man ()
+;;   ""
+;;   (interactive)
+;;   (ivy-read "Manual entries: " #'Man-completion-table
+;;             :initial-input (Man-default-man-entry)
+;;             :history 
+
 (defun blc-turn-off-makefile-tab-face ()
   "Disable tab face visualisation in `makefile-mode'."
   (setq-local whitespace-style (delq 'tabs whitespace-style)))
