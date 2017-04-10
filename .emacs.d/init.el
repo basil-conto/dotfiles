@@ -153,6 +153,7 @@ why-are-you-changing-gc-cons-threshold/'."
 
 (eval-when-compile
   (defvar c-mode-base-map)
+  (defvar ffap-alist)
   (defvar ivy-height)
   (defvar ivy-minibuffer-faces)
   (defvar js2-mode-map)
@@ -377,12 +378,30 @@ See `browse-url' for an explanation of the arguments."
   (pcase-let ((`(,browser . ,filter) (blc-print-url--selector url)))
     (apply browser (funcall filter url) args)))
 
+(defun blc-browse-url-irfc (url &rest _)
+  "Visit RFC URL via `irfc-visit'.
+URL is parsed using the regular expressions found in
+`auto-mode-alist' and `ffap-alist' for `irfc-mode' and
+`ffap-rfc', respectively."
+  (if-let ((file (url-file-nondirectory url))
+           (res  (seq-remove #'not (map-apply
+                                    (-compose #'car #'rassq)
+                                    `((irfc-mode . ,auto-mode-alist)
+                                      (ffap-rfc  . ,ffap-alist))))))
+      (if-let ((num (save-match-data
+                      (and (string-match (string-join res "\\|") file)
+                           (match-string 1 file)))))
+          (irfc-visit (string-to-number num))
+        (user-error "Invalid RFC URL: %s" url))
+    (user-error "Regexp not found for RFC URL: %s" url)))
+
 ;; TODO: Add downloader?
 (defvar blc-browser-alist
   `(("EWW"                . ,#'eww-browse-url       )
     ("Firefox"            . ,#'browse-url-firefox   )
-    ("XDG"                . ,#'browse-url-xdg-open  )
     ("Print"              . ,#'blc-print-url        )
+    ("Emacs IRFC"         . ,#'blc-browse-url-irfc  )
+    ("XDG"                . ,#'browse-url-xdg-open  )
     ("Chromium"           . ,#'browse-url-chromium  )
     ("Google Chrome"      . ,#'browse-url-chrome    )
     ("Elinks"             . ,#'browse-url-elinks    )
@@ -468,16 +487,6 @@ description of the arguments to this function."
   "Enable default ibuffer filter groups.
 See `blc-ibuffer-default-group'."
   (ibuffer-switch-to-saved-filter-groups blc-ibuffer-default-group))
-
-(defun blc-download-rfc (&optional arg)
-  "Download (write) current RFC buffer into `irfc-directory'."
-  (interactive "P")
-  (if-let ((dir (or (bound-and-true-p irfc-directory)
-                    (f-expand "~")))
-           (arg arg))
-      (let ((default-directory dir))
-        (call-interactively #'write-file))
-    (write-file dir t)))
 
 (defun blc-ivy-sort-reverse (_x _y)
   "Predicate that the order of X and Y should be swapped."
@@ -1240,7 +1249,6 @@ in `zenburn-default-colors-alist'."
    ([remap describe-function       ] . counsel-describe-function)
    ([remap describe-variable       ] . counsel-describe-variable)
    ([remap execute-extended-command] . counsel-M-x)
-   ([remap find-file               ] . counsel-find-file)
    ([remap find-library            ] . counsel-find-library)
    ([remap imenu                   ] . counsel-imenu)
    ([remap info-lookup-symbol      ] . counsel-info-lookup-symbol)
@@ -1518,6 +1526,25 @@ in `zenburn-default-colors-alist'."
 (use-package eyebrowse
   :ensure
   :defer)
+
+(use-package ffap
+  :commands ffap-gnus-hook
+  :bind (([remap dired                 ] . dired-at-point         )
+         ([remap dired-other-frame     ] . ffap-dired-other-frame )
+         ([remap dired-other-window    ] . ffap-dired-other-window)
+         ([remap find-file             ] . find-file-at-point     )
+         ([remap find-file-other-frame ] . ffap-other-frame       )
+         ([remap find-file-other-window] . ffap-other-window      ))
+  :init
+  (mapc (-cut add-hook <> #'ffap-gnus-hook)
+        '(gnus-summary-mode-hook gnus-article-mode-hook))
+  :config
+  (setq-default dired-at-point-require-prefix t
+                ffap-file-finder              #'counsel-find-file
+                ffap-require-prefix           t
+                ffap-rfc-path                 "https://ietf.org/rfc/rfc%s.txt")
+  (add-to-list 'ffap-rfc-directories
+               (blc-join 'dir (blc-user-dir "DOCUMENTS") "rfc")))
 
 (use-package fic-mode
   :ensure
@@ -1931,9 +1958,14 @@ in `zenburn-default-colors-alist'."
 
 (use-package irfc
   :ensure
-  :mode ("rfc[0-9]+\\.txt\\'" . irfc-mode)
+  :mode ("[rR][fF][cC]\\([[:digit:]]+?\\)\\.txt\\'" . irfc-mode)
   :bind (:map irfc-mode-map
-              ("DEL" . scroll-down)))
+              ("DEL" . scroll-down))
+  :config
+  (require 'ffap)
+  (setq-default
+   irfc-directory         (seq-find #'identity ffap-rfc-directories)
+   irfc-download-base-url (url-file-directory  ffap-rfc-path)))
 
 (use-package "isearch"
   :defer
