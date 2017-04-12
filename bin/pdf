@@ -1,11 +1,16 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-viewer='mupdf'
-if [ "$1" = "-z" ]; then
-  viewer='zathura'
-  shift
-fi
+case "$1" in
+  (-z|--zathura)
+    shift
+    zathura --fork "$@" 1>/dev/null 2>&1
+    exit "$?"
+    ;;
+  (-m|--mupdf)
+    shift
+    ;;
+esac
 
 for file in "$@"; do
-  eval "\"${viewer}\" \"${file}\" 1>/dev/null 2>&1 &"
+  mupdf "${file}" 1>/dev/null 2>&1 &
 done
