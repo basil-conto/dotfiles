@@ -1,3 +1,4 @@
+-- -*- haskell-cabal -*-
 -- This is the configuration file for the 'cabal' command line tool.
 
 -- The available configuration options are listed below.
@@ -33,7 +34,7 @@ world-file: /home/blc/.cabal/world
 -- program-prefix: 
 -- program-suffix: 
 -- library-vanilla: True
--- library-profiling:
+library-profiling: True
 -- shared:
 -- executable-dynamic: False
 -- profiling:
@@ -65,7 +66,7 @@ extra-prog-path: /home/blc/.cabal/bin
 -- constraint:
 -- preference:
 -- solver: choose
--- documentation: False
+documentation: True
 -- doc-index-file: $datadir/doc/$arch-$os-$compiler/index.html
 -- max-backjumps: 2000
 -- reorder-goals: False
