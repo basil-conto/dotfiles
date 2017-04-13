@@ -1253,7 +1253,7 @@ in `zenburn-default-colors-alist'."
 (use-package counsel
   :ensure
   :delight counsel-mode
-  :commands ivy-set-sources
+
   :bind
   (("C-s"     . counsel-grep-or-swiper)
    ("C-c g"   . counsel-ag)
@@ -1274,24 +1274,18 @@ in `zenburn-default-colors-alist'."
    ([remap load-theme              ] . counsel-load-theme)
    ([remap pop-mark                ] . counsel-mark-ring)
    ([remap yank-pop                ] . counsel-yank-pop))
+
+  :init
+  ;; Do not remap keys above with `counsel-mode'
+  (setq-default counsel-mode-map ())
+
   :config
   (setq-default
+   counsel-find-file-at-point t
    ;; Search with smart case and shell expansion
-   counsel-grep-base-command "ag --nocolor \"%s\" %s"
-   ;; Do not match start of input for counsel, man or org commands
-   ivy-initial-inputs-alist
-   (map-remove (lambda (cmd _)
-                 (or (memq cmd '(man woman))
-                     (string-match-p "^\\(?:org\\|counsel\\)-"
-                                     (blc-as-string cmd))))
-               ivy-initial-inputs-alist))
+   counsel-grep-base-command  "ag --nocolor \"%s\" %s")
 
-  (counsel-mode)
-
-  (ivy-set-sources
-   #'counsel-locate
-   '((blc-some-recentf)
-     (original-source))))
+  (counsel-mode))
 
 (use-package counsel-gtags
   :ensure
@@ -2026,7 +2020,7 @@ in `zenburn-default-colors-alist'."
 (use-package ivy
   :ensure
   :delight ivy-mode
-  :commands ivy--regex-ignore-order ivy-set-sources
+  :commands ivy--regex-ignore-order ivy-format-function-arrow ivy-set-sources
   :bind (([remap switch-to-buffer] . ivy-switch-buffer)
          ([remap switch-to-buffer-other-window]
           . ivy-switch-buffer-other-window)
@@ -2043,9 +2037,20 @@ in `zenburn-default-colors-alist'."
   (mapc (-cut map-put ivy-sort-functions-alist <> #'blc-ivy-sort-reverse)
         `(,#'Info-complete-menu-item ,#'Man-goto-section))
 
+  (ivy-set-sources 'counsel-locate
+                   '((blc-some-recentf)
+                     (original-source)))
+
   (setq-default
    ivy-count-format          "(%d/%d) "
-   ivy-format-function       'ivy-format-function-arrow
+   ivy-format-function       #'ivy-format-function-arrow
+   ;; Do not match start of input for counsel, man or org commands
+   ivy-initial-inputs-alist
+   (map-remove (lambda (cmd _)
+                 (or (memq cmd '(man woman))
+                     (string-match-p "^\\(?:org\\|counsel\\)-"
+                                     (blc-as-string cmd))))
+               ivy-initial-inputs-alist)
    ivy-on-del-error-function #'ignore
    ivy-use-virtual-buffers   t)
 
