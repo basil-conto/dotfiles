@@ -31,7 +31,7 @@ remote-repo-cache: /home/blc/.cabal/packages
 -- local-repo:
 -- logs-dir:
 world-file: /home/blc/.cabal/world
--- verbose: 1
+verbose: 3
 -- compiler: ghc
 -- with-compiler:
 -- with-hc-pkg:
@@ -45,7 +45,7 @@ library-profiling: True
 -- executable-profiling:
 -- profiling-detail:
 -- library-profiling-detail:
--- optimization: True
+optimization: 2
 -- debug-info: False
 -- library-for-ghci:
 -- split-objs: False
