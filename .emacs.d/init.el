@@ -1518,10 +1518,11 @@ in `zenburn-default-colors-alist'."
   :defer)
 
 (use-package eww
-  :bind (:map eww-bookmark-mode-map
-              ("n" .             next-line)
-              ("p" .         previous-line)
-              ("w" . blc-eww-bookmark-save))
+  :bind (:map
+         eww-bookmark-mode-map
+         ("n" .             next-line)
+         ("p" .         previous-line)
+         ("w" . blc-eww-bookmark-save))
   :init
   (delight  'eww-mode "🕸" :major)
   (add-hook 'eww-mode-hook #'blc-increase-readability)
@@ -1659,8 +1660,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package ggtags
   :ensure
-  :bind (:map ggtags-mode-map
-              ("M-F" . ggtags-find-reference))
+  :bind (:map
+         ggtags-mode-map
+         ("M-F" . ggtags-find-reference))
   :commands ggtags-find-reference
   :config
   (unbind-key "M-]" ggtags-mode-map)    ; `ggtags-find-reference'
@@ -1709,8 +1711,9 @@ in `zenburn-default-colors-alist'."
 ;; * Add newline after signature
 (use-package gnus-alias
   :ensure
-  :bind (:map message-mode-map
-              ("<f6>" . gnus-alias-select-identity))
+  :bind (:map
+         message-mode-map
+         ("<f6>" . gnus-alias-select-identity))
   :init
   (setq-default
    gnus-alias-allow-forward-as-reply t
@@ -1982,8 +1985,9 @@ in `zenburn-default-colors-alist'."
 (use-package irfc
   :ensure
   :mode ("[rR][fF][cC]\\([[:digit:]]+?\\)\\.txt\\'" . irfc-mode)
-  :bind (:map irfc-mode-map
-              ("DEL" . scroll-down))
+  :bind (:map
+         irfc-mode-map
+         ("DEL" . scroll-down))
   :config
   (require 'ffap)
   (setq-default
@@ -2101,8 +2105,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package js2-mode
   :ensure
-  :bind (:map js2-mode-map
-              ("RET" . js2-line-break))
+  :bind (:map
+         js2-mode-map
+         ("RET" . js2-line-break))
   :mode "\\.js\\'"
   :interpreter "node" "nodejs"
   :commands js2-line-break
@@ -2341,8 +2346,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package markdown-mode
   :ensure
-  :bind (:map markdown-mode-map
-              ("TAB" . markdown-cycle))
+  :bind (:map
+         markdown-mode-map
+         ("TAB" . markdown-cycle))
   :mode "\\.md\\'" "\\.markdown\\'"
   :commands markdown-enter-key
   :config
@@ -2550,8 +2556,9 @@ in `zenburn-default-colors-alist'."
 (use-package pdf-tools
   :ensure
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-  :bind (:map pdf-view-mode-map
-              ("C-s" . isearch-forward))
+  :bind (:map
+         pdf-view-mode-map
+         ("C-s" . isearch-forward))
   ;; :init
   ;; (add-hook'pdf-view-mode-hook #'turn-on-auto-revert-mode)
   :config
@@ -2803,8 +2810,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package tex
   :ensure auctex
-  :bind (:map TeX-mode-map
-              ("C-c ?" . TeX-doc))
+  :bind (:map
+         TeX-mode-map
+         ("C-c ?" . TeX-doc))
   :commands TeX-revert-document-buffer
   :init
   (add-hook 'TeX-after-compilation-finished-functions
@@ -3063,10 +3071,11 @@ in `zenburn-default-colors-alist'."
 
 (use-package writeroom-mode
   :ensure
-  :bind (:map writeroom-mode-map
-              ("C-M-<" . writeroom-decrease-width)
-              ("C-M->" . writeroom-increase-width)
-              ("C-M-=" . writeroom-adjust-width  ))
+  :bind (:map
+         writeroom-mode-map
+         ("C-M-<" . writeroom-decrease-width)
+         ("C-M->" . writeroom-increase-width)
+         ("C-M-=" . writeroom-adjust-width  ))
   :config
   ;; Less jumpy with `auto-fill-mode'
   (setq visual-fill-column-width (+ fill-column 20)))
