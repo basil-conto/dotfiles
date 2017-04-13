@@ -149,6 +149,9 @@ why-are-you-changing-gc-cons-threshold/'."
                              message-narrow-to-headers))
             ("shr"        . (shr-copy-url))
             ("smtpmail"   . (smtpmail-user-mail-address))
+            ("term"       . (term-char-mode
+                             term-in-char-mode
+                             term-line-mode))
             ("url-util"   . (url-get-url-at-point)))))
 
 (eval-when-compile
@@ -604,6 +607,13 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
   "Disable scroll bar."
   (with-selected-frame frame
     (blc-turn-off-modes #'toggle-scroll-bar)))
+
+(defun blc-toggle-subterm-mode ()
+  "Toggle between `term-char-mode' and `term-line-mode'."
+  (interactive)
+  (if (term-in-char-mode)
+      (term-line-mode)
+    (term-char-mode)))
 
 (defun blc-configure-beamer ()
   "Configure LaTeX Beamer intermediate suffixes."
@@ -2807,6 +2817,16 @@ in `zenburn-default-colors-alist'."
 (use-package systemd
   :ensure
   :defer)
+
+(use-package term
+  :bind (:map
+         term-mode-map
+         ([remap term-char-mode] . blc-toggle-subterm-mode)
+         ([remap term-line-mode] . blc-toggle-subterm-mode)
+         :map
+         term-raw-map
+         ([remap term-char-mode] . blc-toggle-subterm-mode)
+         ([remap term-line-mode] . blc-toggle-subterm-mode)))
 
 (use-package tex
   :ensure auctex
