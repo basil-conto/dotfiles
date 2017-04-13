@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+[ -n "${COWTUNE_FILE}" ] || exit
+
+fortune -aes \
+  | cowsay "-n$(shuf --echo --head-count=1 -- '' b d g p s t w y)"             \
+           "-f$(shuf --echo --head-count=1 -- $(cowsay -l | tail --lines=+2))" \
+           > "${COWTUNE_FILE}"

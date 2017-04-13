@@ -23,11 +23,12 @@ unset opt
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
 export PATH
 
-export ALTERNATE_EDITOR=          # Lazy emacs daemonisation
-export CACA_DRIVER='ncurses'      # libcaca
-export EDITOR='ec'                # Used by crontab et al.
-export LOCAL_DIR="${HOME}/.local" # Local installations
-export N_PREFIX="${LOCAL_DIR}"    # https://github.com/tj/n
+export ALTERNATE_EDITOR=               # Lazy emacs daemonisation
+export CACA_DRIVER='ncurses'           # libcaca
+export COWTUNE_FILE="${HOME}/.cowtune" # Used in crontab and emacs *scratch*
+export EDITOR='ec'                     # Used by crontab et al.
+export LOCAL_DIR="${HOME}/.local"      # Local installations
+export N_PREFIX="${LOCAL_DIR}"         # https://github.com/tj/n
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Pyenv

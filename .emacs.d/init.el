@@ -2777,24 +2777,23 @@ in `zenburn-default-colors-alist'."
 (use-package "startup"
   :defer
   :init
-  ;; TODO: Investigate speed of command substitution vs lisp shuffling
-  (let* ((states  '("" "b" "d" "g" "p" "s" "t" "w" "y"))
-         (cows    (directory-files "/usr/share/cowsay/cows" nil "\\.cow\\'" t))
-         (args    (mapcar #'seq-random-elt `(,states ,cows)))
-         (command (apply #'format "fortune -aes | cowsay -n%sf%s" args))
-         (fortune (with-temp-buffer
-                    (call-process-shell-command command nil t)
-                    (let ((pmin                (point-min-marker))
-                          (pmax                (point-max-marker))
-                          (comment-start       ";;")
-                          (comment-empty-lines t)
-                          delete-trailing-lines)
-                      (comment-region                 pmin pmax)
-                      (delete-trailing-whitespace     pmin pmax)
-                      (buffer-substring-no-properties pmin pmax)))))
-    (setq inhibit-default-init    t
-          inhibit-startup-screen  t
-          initial-scratch-message fortune))
+  (setq inhibit-default-init   t
+        inhibit-startup-screen t)
+
+  ;; Fortune-telling
+  (let ((scratch (getenv "COWTUNE_FILE")))
+    (when (and scratch (file-readable-p scratch))
+      (setq initial-scratch-message
+            (with-temp-buffer
+              (insert-file-contents-literally scratch)
+              (let ((comment-start ";;")
+                    (comment-empty-lines t)
+                    delete-trailing-lines)
+                (caddr (funcall (-juxt #'comment-region
+                                       #'delete-trailing-whitespace
+                                       #'buffer-substring-no-properties)
+                                (point-min-marker)
+                                (point-max-marker))))))))
 
   (mapc (-cut add-hook 'after-init-hook <> t)
         `(,#'blc-report-init-time
