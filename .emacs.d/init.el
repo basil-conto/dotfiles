@@ -2368,6 +2368,11 @@ in `zenburn-default-colors-alist'."
   :ensure matlab-mode
   :defer)
 
+;; FIXME: Add to M/ELPA
+(use-package meme
+  :load-path "lisp"
+  :commands meme meme-file)
+
 (use-package message
   :commands message-insert-formatted-citation-line message-send
   :init
