@@ -968,7 +968,7 @@ in `zenburn-default-colors-alist'."
          'font "DejaVu Sans Mono-8")
 
 ;; Ask short questions
-(defalias #'yes-or-no-p #'y-or-n-p)
+(advice-add #'yes-or-no-p :override #'y-or-n-p)
 
 (setq-default
  shell-file-name                 "/bin/sh"
