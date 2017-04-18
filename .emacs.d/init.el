@@ -2689,14 +2689,15 @@ in `zenburn-default-colors-alist'."
 (use-package simple
   :commands turn-on-auto-fill
   :bind
-  (("C-x C-k"                       . kill-whole-line)
+  (("M-g e"                         .     first-error)
    ([remap delete-horizontal-space] .   cycle-spacing)
    ([remap         capitalize-word] . capitalize-dwim)
    ([remap           downcase-word] .   downcase-dwim)
    ([remap             upcase-word] .     upcase-dwim))
 
   :init
-  (setq-default read-mail-command 'gnus)
+  (setq-default kill-whole-line   t
+                read-mail-command 'gnus)
 
   (mapc (-cut add-hook <> #'turn-on-auto-fill)
         '(LaTeX-mode-hook org-mode-hook))
