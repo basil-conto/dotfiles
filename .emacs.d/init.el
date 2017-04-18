@@ -1791,25 +1791,6 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
-;; TODO: Delight
-(use-package helm
-  :disabled
-  :ensure
-  :bind ("C-c b" . helm-mini)
-  :init
-  (add-hook 'helm-major-mode-hook #'blc-turn-off-line-numbers)
-  :config
-  (setq-default
-   helm-buffers-fuzzy-matching t
-   helm-M-x-fuzzy-match        t
-   helm-split-window-in-side-p t)
-
-  ;; FIXME: create toggling mechanism
-  (when (bound-and-true-p helm-white-selection)
-    (set-face-foreground 'helm-selection "#ffffff"))
-
-  (helm-mode))
-
 (use-package helm-make
   :ensure
   :defer
@@ -1819,14 +1800,6 @@ in `zenburn-default-colors-alist'."
    helm-make-completion-method  'ivy
    helm-make-list-target-method 'qp
    helm-make-require-match      nil))
-
-(use-package helm-pass
-  :ensure
-  :defer)
-
-(use-package helm-proc
-  :ensure
-  :defer)
 
 (use-package hi-lock
   :commands turn-on-hi-lock-if-enabled
