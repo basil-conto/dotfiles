@@ -679,7 +679,7 @@ See URL `http://emacs.stackexchange.com/a/3822' for limitations."
   "Return number of lines within accessible portion of buffer.
 Uses `fast-line-number', which see."
   (save-excursion
-    (blc-butlast-point (blc-fast-line-number))))
+    (blc-butlast-point (blc-fast-line-number (point-max)))))
 
 (defun blc-echo-fast-line-count ()
   "Emulate `count-lines-page' using `blc-fast-line-count'."
