@@ -2582,6 +2582,10 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package playerctl
+  :ensure
+  :defer)
+
 ;; TODO: Delight
 (use-package projectile
   :ensure
