@@ -1202,6 +1202,10 @@ in `zenburn-default-colors-alist'."
      chess-images-default-size blc-chars-per-line
      chess-images-directory    (blc-join 'dir dir "pieces" "xboard"))))
 
+(use-package cmake-mode
+  :ensure
+  :defer)
+
 (use-package color-moccur
   :disabled
   :ensure)
