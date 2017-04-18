@@ -1677,6 +1677,12 @@ in `zenburn-default-colors-alist'."
   :init
   (add-hook 'haskell-mode-hook #'ghc-init))
 
+(use-package git-annex
+  :ensure
+  :after dired
+  :init
+  (setq-default git-annex-commit nil))
+
 (use-package git-commit
   :ensure magit
   ;; Need to load package to know when to load package :(
