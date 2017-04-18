@@ -2313,6 +2313,10 @@ in `zenburn-default-colors-alist'."
   ;;         '((magit-dimmed . "#808080")
   ;;           (magit-hash   . "#808080"))))
 
+(use-package magit-annex
+  :ensure
+  :defer)
+
 (use-package magit-gh-pulls
   :disabled
   :ensure                               ; gh.el doesn't speak ssh?
