@@ -1777,15 +1777,25 @@ in `zenburn-default-colors-alist'."
      hacker-typer-random-range   double
      hacker-typer-show-hackerman t)))
 
-(use-package haskell-cabal
-  :ensure haskell-mode
-  :defer
-  :init
-  (add-hook 'haskell-cabal-mode-hook #'blc-turn-off-local-electric-indent))
-
 (use-package haskell-mode
   :ensure
-  :defer)
+  :delight haskell-mode ">>="
+  :defer
+  :init
+  (setq-default
+   haskell-completing-read-function            #'ivy-completing-read
+   haskell-indent-offset                       2
+   haskell-notify-p                            t
+   haskell-process-log                         t
+   haskell-process-suggest-hoogle-imports      t
+   haskell-process-suggest-remove-import-lines t)
+
+  (mapc (-cut add-hook 'haskell-mode-hook <>)
+        `(,#'haskell-indent-mode
+          ,#'interactive-haskell-mode))
+
+  (mapc (-cut add-hook <> #'blc-turn-off-local-electric-indent)
+        '(haskell-cabal-mode-hook haskell-mode-hook)))
 
 (use-package hayoo
   :ensure
