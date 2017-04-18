@@ -17,12 +17,6 @@ fi
 ulimit -${opt} 1024
 unset opt
 
-# Rubbish (bin)
-[ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
-[ -d "${HOME}/.local/bin" ] && PATH="${HOME}/.local/bin:${PATH}"
-[ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
-export PATH
-
 export ALTERNATE_EDITOR=               # Lazy emacs daemonisation
 export CACA_DRIVER='ncurses'           # libcaca
 export COWTUNE_FILE="${HOME}/.cowtune" # Used in crontab and emacs *scratch*
@@ -30,6 +24,17 @@ export EDITOR='ec'                     # Used by crontab et al.
 export LOCAL_DIR="${HOME}/.local"      # Local installations
 export N_PREFIX="${LOCAL_DIR}"         # https://github.com/tj/n
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+
+# Rubbish (bin)
+[ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
+[ -d "${LOCAL_DIR}/bin"   ] && PATH="${LOCAL_DIR}/bin:${PATH}"
+[ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
+export PATH
+
+# Books (lib)
+if [ -d "${LOCAL_DIR}/lib" ]; then
+  export LD_LIBRARY_PATH="${LOCAL_DIR}/lib:${LD_LIBRARY_PATH}"
+fi
 
 # Pyenv
 if [ -d "${HOME}/.pyenv" ]; then
