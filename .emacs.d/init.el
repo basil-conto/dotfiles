@@ -164,7 +164,6 @@ why-are-you-changing-gc-cons-threshold/'."
   (defvar recentf-list)
   (defvar smtpmail-smtp-user)
   (defvar TeX-command-list)
-  (defvar whitespace-style)
   (defvar zenburn-default-colors-alist))
 
 ;;; Malformed types
@@ -494,10 +493,6 @@ See `blc-ibuffer-default-group'."
 (defun blc-ivy-sort-reverse (_x _y)
   "Predicate that the order of X and Y should be swapped."
   t)
-
-(defun blc-turn-off-makefile-tab-face ()
-  "Disable tab face visualisation in `makefile-mode'."
-  (setq-local whitespace-style (delq 'tabs whitespace-style)))
 
 (defun blc-turn-off-line-numbers (&rest _)
   "Locally disable display of line numbers."
@@ -976,11 +971,8 @@ in `zenburn-default-colors-alist'."
 (defalias #'yes-or-no-p #'y-or-n-p)
 
 (setq-default
- mode-line-format
- (blc-tree-sed " +" " " mode-line-format)
  shell-file-name                 "/bin/sh"
- source-directory
- (blc-join 'dir blc-repos-dir "localsrc" "emacs")
+ source-directory                (blc-join 'dir blc-repos-dir "local" "emacs")
  x-gtk-use-system-tooltips       nil
  ;; Movement/drawing
  recenter-redisplay              nil
@@ -991,7 +983,10 @@ in `zenburn-default-colors-alist'."
  ;; Spacing
  fill-column                     blc-chars-per-line
  indent-tabs-mode                nil
- tab-width                       2)
+ indicate-buffer-boundaries      t
+ indicate-unused-lines           t
+ mode-line-format                (blc-tree-sed " +" " " mode-line-format)
+ show-trailing-whitespace        t)
 
 ;;; Bindings
 
@@ -2349,8 +2344,6 @@ in `zenburn-default-colors-alist'."
 
 (use-package make-mode
   :defer
-  :init
-  (add-hook 'makefile-mode-hook #'blc-turn-off-makefile-tab-face)
   :config
   (setq-default makefile-macro-assign " := "))
 
@@ -3025,11 +3018,15 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+;; FIXME:
+;; * Refontification of empty lines
+;; TODO:
+;; * Unify with hi-lock using highlight-chars?
 (use-package whitespace
   :defer
   :delight global-whitespace-mode
   :init
-  (setq-default whitespace-style '(face tabs trailing empty tab-mark))
+  (setq-default whitespace-style '(tab-mark))
   (global-whitespace-mode))
 
 (use-package wiki-summary
