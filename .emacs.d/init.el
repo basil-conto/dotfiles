@@ -30,7 +30,6 @@
 ;; * OrgRef
 ;; * OfflineIMAP
 ;; * Quelpa
-;; * Ivy
 ;; * Macros
 ;; * Org
 ;; * Magit
@@ -2024,7 +2023,7 @@ in `zenburn-default-colors-alist'."
    irfc-directory         (seq-find #'identity ffap-rfc-directories)
    irfc-download-base-url (url-file-directory  ffap-rfc-path)))
 
-;; FIXME: Add to MELPA
+;; FIXME: Add to M/ELPA
 (use-package irfc-x
   :load-path "lisp"
   :commands irfc-x-list)
@@ -2112,7 +2111,9 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+;; FIXME: Terminal, width over length, etc.
 (use-package ivy-rich
+  :disabled
   :ensure
   :after ivy
   :functions ivy-set-display-transformer
