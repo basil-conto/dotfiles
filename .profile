@@ -17,11 +17,12 @@ fi
 ulimit -${opt} 1024
 unset opt
 
-export ALTERNATE_EDITOR=               # Lazy emacs daemonisation
-export CACA_DRIVER='ncurses'           # libcaca
-export EDITOR='ec'                     # Used by crontab et al.
-export LOCAL_DIR="${HOME}/.local"      # Local installations
-export N_PREFIX="${LOCAL_DIR}"         # https://github.com/tj/n
+export ALTERNATE_EDITOR=              # Lazy emacs daemonisation
+export CACA_DRIVER=ncurses            # libcaca
+export EDITOR=ec                      # Used by crontab et al.
+export GCALCLI_DIR="${HOME}/.gcalcli" # gcalcli
+export LOCAL_DIR="${HOME}/.local"     # Local installations
+export N_PREFIX="${LOCAL_DIR}"        # https://github.com/tj/n
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Rubbish (bin)
