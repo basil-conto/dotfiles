@@ -1819,9 +1819,16 @@ in `zenburn-default-colors-alist'."
 
 (use-package haskell-mode
   :ensure
-  :delight haskell-mode ">>="
   :defer
   :init
+  (delight '((haskell-indent-mode)
+             (haskell-mode
+              (:eval (if (bound-and-true-p interactive-haskell-mode)
+                         "λ>"
+                       ">>="))
+              :major)
+             (interactive-haskell-mode)))
+
   (setq-default
    haskell-completing-read-function            #'ivy-completing-read
    haskell-indent-offset                       2
@@ -1830,12 +1837,13 @@ in `zenburn-default-colors-alist'."
    haskell-process-suggest-hoogle-imports      t
    haskell-process-suggest-remove-import-lines t)
 
-  (mapc (-cut add-hook 'haskell-mode-hook <>)
-        `(,#'haskell-indent-mode
-          ,#'interactive-haskell-mode))
-
-  (mapc (-cut add-hook <> #'blc-turn-off-local-electric-indent)
-        '(haskell-cabal-mode-hook haskell-mode-hook)))
+  (map-do
+   #'add-hook
+   `((      haskell-cabal-mode-hook . ,#'blc-turn-off-local-electric-indent)
+     ,@(-annotate (-const 'haskell-mode-hook)
+                  `(,#'blc-turn-off-local-electric-indent
+                    ,#'haskell-indent-mode
+                    ,#'interactive-haskell-mode)))))
 
 (use-package hayoo
   :ensure
