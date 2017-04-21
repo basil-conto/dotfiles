@@ -69,6 +69,9 @@
 [interactive]
   diffFilter       = diff-highlight
 
+[log]
+  date             = iso
+
 [pager]
   diff             = diff-highlight | pager
   log              = diff-highlight | pager
