@@ -222,13 +222,6 @@ Issue a warning otherwise."
 
 ;;; Advice
 
-;; FIXME: Use `display-buffer-alist'
-(defun blc-split-larger-dimension--advice (split &rest args)
-  "Sacrifice the larger window dimension when splitting."
-  (let ((split-width-threshold       (window-height))
-        (split-height-threshold (ash (window-width) -1))) ; Adjust slightly
-    (apply split args)))
-
 (defun blc-trim-before-newline--advice (&rest _)
   "Delete trailing whitespace prior to newline insertion."
   (delete-trailing-whitespace (line-beginning-position) (line-end-position)))
@@ -314,6 +307,11 @@ into account."
 (defun blc-pcomplete--advice (&rest _)
   "Replace pcomplete with default completion UI."
   (completion-at-point))
+
+(defun blc-default-min-height--advice (split &rest args)
+  "Apply SPLIT to ARGS under default `window-min-height'."
+  (let ((window-min-height (blc-standard-value 'window-min-height)))
+    (apply split args)))
 
 
 ;;; Modes
@@ -805,11 +803,27 @@ function at URL
   (unless (= (length (window-list)) 2)
     (error "Can only toggle a frame split in twain"))
   (let ((split (if (window-combined-p)
-                   #'split-window-horizontally
-                 #'split-window-vertically)))
+                   #'split-window-right
+                 #'split-window-below)))
     (delete-window)
     (funcall split)
     (switch-to-buffer nil)))
+
+(defun blc-split-window (&optional window)
+  "Split WINDOW in a way suitable for ‘display-buffer’.
+Like `split-window-sensibly' (which see), but prioritise
+horizontal over vertical splitting."
+  (when-let* ((window (or window (selected-window)))
+              (split  (or (and (window-splittable-p window t)
+                               #'split-window-right)
+                          (and (or (window-splittable-p window)
+                                   (and (frame-root-window-p window)
+                                        (not (window-minibuffer-p window))
+                                        (let ((split-height-threshold 0))
+                                          (window-splittable-p window))))
+                               #'split-window-below))))
+    (with-selected-window window
+      (funcall split))))
 
 (defun blc-open-line (forward)
   "Open empty line (FORWARD - 1) lines in front of current line."
@@ -3074,15 +3088,29 @@ in `zenburn-default-colors-alist'."
    windmove-window-distance-delta 2
    windmove-wrap-around           t))
 
+;; TODO:
+;; Improve window splitting
+;; * Look into:
+;;   - `same-window-buffer-names'
+;;   - `same-window-regexps'
+;;   - `special-display-buffer-names'
+;;   - `special-display-frame-alist'
+;;   - `special-display-function'
+;;   - `special-display-regexps'
 (use-package "window"
   :defer
   :init
   (setq-default
-   scroll-error-top-bottom t
-   split-window-keep-point nil))
-  ;; ;; FIXME: Improve window splitting
-  ;; (advice-add #'split-window-sensibly
-  ;;             :around #'blc-split-larger-dimension--advice))
+   display-buffer-reuse-frames     t
+   scroll-error-top-bottom         t
+   split-height-threshold          0
+   split-window-keep-point         nil
+   split-window-preferred-function #'blc-split-window
+   ;; Limit automatic `display-buffer' vertical window splitting
+   window-min-height               20)
+
+  ;; Enable manual vertical window splitting as per usual
+  (advice-add #'split-window-below :around #'blc-default-min-height--advice))
 
 (use-package winner
   :defer
