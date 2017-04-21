@@ -68,7 +68,8 @@ alias g++03='g++ -std=c++03'
 alias g++11='g++ -std=c++11'
 
 # emacsen
-alias em='emacs -nw'
+alias ec='TERM=xterm-24bit emacsclient --tty'
+alias em='TERM=xterm-24bit emacs -nw'
 
 # colordiff
 alias ciff='colordiff --side-by-side --width=160'
