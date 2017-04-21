@@ -2535,6 +2535,11 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer)
 
+(use-package org-pdfview
+  :ensure
+  :after org
+  :after pdf-view)
+
 (use-package org-pomodoro
   :ensure
   :defer
