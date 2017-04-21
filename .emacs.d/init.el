@@ -2303,9 +2303,10 @@ in `zenburn-default-colors-alist'."
      (magit-wip-before-change-mode    ""     magit-wip  )))
 
   (setq-default
-   magit-branch-popup-show-variables t
+   magit-branch-popup-show-variables       t
    magit-display-buffer-function
-   #'magit-display-buffer-same-window-except-diff-v1)
+   #'magit-display-buffer-same-window-except-diff-v1
+   magit-remote-add-set-remote.pushDefault 'ask)
 
   ;; Always highlight tabs
   (map-put magit-diff-highlight-indentation "" 'tabs)
