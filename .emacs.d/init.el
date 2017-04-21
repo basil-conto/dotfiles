@@ -150,10 +150,12 @@ why-are-you-changing-gc-cons-threshold/'."
             ("term"       . (term-char-mode
                              term-in-char-mode
                              term-line-mode))
+            ("tile"       . (tile-get-name))
             ("url-util"   . (url-get-url-at-point)))))
 
 (eval-when-compile
   (defvar c-mode-base-map)
+  (defvar eieio--known-slot-names)
   (defvar ffap-alist)
   (defvar ivy-height)
   (defvar ivy-minibuffer-faces)
@@ -162,7 +164,10 @@ why-are-you-changing-gc-cons-threshold/'."
   (defvar recentf-list)
   (defvar smtpmail-smtp-user)
   (defvar TeX-command-list)
-  (defvar zenburn-default-colors-alist))
+  (defvar tile-cycler)
+  (defvar zenburn-default-colors-alist)
+
+  (add-to-list 'eieio--known-slot-names 'current-strategy))
 
 ;;; Malformed types
 
@@ -636,6 +641,13 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 (defun blc-indent-relative-first-indent-point ()
   "Switch `indent-line-function' to `insert-tab'."
   (setq-local indent-line-function #'indent-relative-first-indent-point))
+
+(defun blc-tile (&optional select)
+  "Tile windows with `tile' and report new strategy.
+With prefix argument SELECT, call `tile-select' instead."
+  (interactive "P")
+  (funcall (if select #'tile-select #'tile))
+  (message "%s" (tile-get-name (eieio-oref tile-cycler 'current-strategy))))
 
 (defun blc-turn-on-xref-js2 ()
   "Register xref-js2 backend and sanitise keymap."
@@ -2858,6 +2870,10 @@ in `zenburn-default-colors-alist'."
   (mapc (-cut add-hook 'text-mode-hook <>)
         `(,#'blc-indent-relative-first-indent-point
           ,#'blc-turn-off-local-electric-indent)))
+
+(use-package tile
+  :ensure
+  :bind (("<f2>" . blc-tile)))
 
 (use-package time
   :defer
