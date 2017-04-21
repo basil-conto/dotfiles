@@ -35,7 +35,6 @@
 ;; * Org
 ;; * Magit
 ;; * ERC/ZNC
-;; * Company
 ;; * URL `http://www.emacswiki.org/emacs/ThreeWindows'
 ;; * Themes
 ;;   - `base16-chalk-dark'
@@ -1230,13 +1229,6 @@ in `zenburn-default-colors-alist'."
 (use-package comment-dwim-2
   :ensure
   :bind ([remap comment-dwim] . comment-dwim-2))
-
-(use-package company
-  :ensure
-  :bind ("M-#" . company-manual-begin)
-  :config
-  (setq-default company-idle-delay nil)
-  (global-company-mode))
 
 (use-package compile
   :defer
