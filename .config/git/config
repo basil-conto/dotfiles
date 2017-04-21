@@ -78,7 +78,7 @@
   show             = diff-highlight | pager
 
 [status]
-  submodulesummary = 1
+  submoduleSummary = true
 
 [submodule]
   fetchJobs        = 0
