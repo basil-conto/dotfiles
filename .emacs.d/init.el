@@ -1059,7 +1059,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package ace-window
   :ensure
-  :bind* ("M-o" . ace-window))
+  :bind* ("M-o" . ace-window)
+  :config
+  (ace-window-display-mode))
 
 (use-package ag
   :ensure
