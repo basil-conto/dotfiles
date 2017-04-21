@@ -49,8 +49,22 @@
   algorithm        = histogram
   submodule        = log
 
+[diff "elisp"]
+  xfuncname        = ^\\([^[:space:]]+[[:space:]]+([^()[:space:]]+)
+
 [diff "gpg"]
   textconv         = gpg --decrypt
+
+[diff "make"]
+  xfuncname        = ^([$.[:alnum:]_].*:|[[:alnum:]_]+[[:space:]]*\
+([*:+]?[:?]?|!?)=|define .*)
+
+[diff "shell"]
+  xfuncname        = ^([[:space:]]*[[:alpha:]_][[:alnum:]_]*[[:space:]]*\\(\\)\
+|[[:alpha:]_][[:alnum:]_]*=)
+
+[diff "texinfo"]
+  xfuncname        = ^@node[[:space:]]+([^,[:space:]][^,]+)
 
 [interactive]
   diffFilter       = diff-highlight

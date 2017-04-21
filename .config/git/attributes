@@ -1,1 +1,50 @@
-*.gpg filter=gpg diff=gpg
+### Diff hunk header patterns
+
+## Built-in
+*.ad[abs]       diff=ada
+*.bib           diff=bibtex
+*.[ch]          diff=cpp
+*.[ch]pp        diff=cpp
+*.cc            diff=cpp
+*.hh            diff=cpp
+*.cs            diff=csharp
+*.css           diff=css
+*.f             diff=fortran
+*.f0[38]        diff=fortran
+*.f15           diff=fortran
+*.f9[05]        diff=fortran
+*.for           diff=fortran
+*.fountain      diff=fountain
+*.html          diff=html
+*.[sx]html      diff=html
+*.xml           diff=html
+*.java          diff=java
+*.m             diff=matlab
+# .h and .m clash with cpp and matlab, respectively ;_;
+*.C             diff=objc
+*.mm            diff=objc
+*.inc           diff=pascal
+*.pas           diff=pascal
+*.pp            diff=pascal
+*.perl          diff=perl
+*.p[lm]         diff=perl
+*.pod           diff=perl
+*.t             diff=perl
+*.php           diff=php
+*.php[3-7]      diff=php
+*.phps          diff=php
+*.phtml         diff=php
+*.py            diff=python
+*.rb            diff=ruby
+*.ruby          diff=ruby
+*.tex           diff=tex
+
+## Custom
+*.el            diff=elisp
+*.gpg           diff=gpg     filter=gpg
+*.mk            diff=make
+*[Mm]akefile    diff=make
+*[Mm]akefile.in diff=make
+*.bash          diff=shell
+*.sh            diff=shell
+*.texi          diff=texinfo
