@@ -1712,6 +1712,10 @@ in `zenburn-default-colors-alist'."
   :init
   (setq-default git-annex-commit nil))
 
+(use-package gitattributes-mode
+  :ensure
+  :defer)
+
 (use-package git-commit
   :ensure magit
   ;; Need to load package to know when to load package :(
