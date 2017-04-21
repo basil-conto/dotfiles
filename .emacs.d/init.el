@@ -84,13 +84,12 @@ why-are-you-changing-gc-cons-threshold/'."
 
 ;; Built-in dependencies
 (require 'map)
-(require 'package)
 (require 'seq)
 (require 'subr-x)
 
 (eval-and-compile
   ;; Sandbox this nuisance
-  (advice-add #'package--save-selected-packages :override #'ignore)
+  (advice-add 'package--save-selected-packages :override #'ignore)
 
   ;; Archives
   (setq-default
