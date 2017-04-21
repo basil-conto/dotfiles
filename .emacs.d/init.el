@@ -186,6 +186,10 @@ why-are-you-changing-gc-cons-threshold/'."
   "Concatenate all OBJECTS under `blc-as-string' as a symbol."
   (intern (mapconcat #'blc-as-string objects "")))
 
+(defun blc-standard-value (var)
+  "Return `standard-value' property of symbol VAR."
+  (eval (car (plist-get (symbol-plist var) 'standard-value))))
+
 (defun blc-quote-format-string (format-string)
   "Escape format specifiers in FORMAT-STRING.
 Replace %-sequences with literal percentage characters `%%' for
@@ -441,9 +445,10 @@ description of the arguments to this function."
   (interactive)
   (blc-turn-off-modes #'electric-indent-local-mode))
 
-(defun blc-turn-off-indent-tabs ()
-  "Disable tab indentation."
-  (setq indent-tabs-mode nil))
+(defun blc-elisp-widen-tabs ()
+  "Reconcile `tab-width' with that used in Emacs core."
+  (let ((var 'tab-width))
+    (set var (blc-standard-value var))))
 
 (defun blc-rainbow-font-lock-faces ()
   "Highlight font lock face variable names."
@@ -480,6 +485,10 @@ description of the arguments to this function."
             (get-text-property (line-beginning-position) 'eww-bookmark)))
       (eww-copy-page-url)
     (user-error "No bookmark on the current line")))
+
+(defun blc-turn-off-indent-tabs ()
+  "Disable tab indentation."
+  (setq indent-tabs-mode nil))
 
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
@@ -996,7 +1005,7 @@ in `zenburn-default-colors-alist'."
  indicate-buffer-boundaries      t
  indicate-unused-lines           t
  mode-line-format                (blc-tree-sed " +" " " mode-line-format)
- show-trailing-whitespace        t)
+ tab-width                       2)
 
 ;;; Bindings
 
@@ -1461,7 +1470,9 @@ in `zenburn-default-colors-alist'."
 (use-package elisp-mode
   :defer
   :init
-  (add-hook 'emacs-lisp-mode-hook #'blc-rainbow-font-lock-faces)
+  (mapc (-cut add-hook 'emacs-lisp-mode-hook <>)
+        `(,#'blc-elisp-widen-tabs
+          ,#'blc-rainbow-font-lock-faces))
 
   (delight '((      emacs-lisp-mode "ελ" :major)
              (lisp-interaction-mode "λι" :major))))
@@ -3040,7 +3051,7 @@ in `zenburn-default-colors-alist'."
   :defer
   :delight global-whitespace-mode
   :init
-  (setq-default whitespace-style '(tab-mark))
+  (setq-default whitespace-style '(face tab-mark trailing))
   (global-whitespace-mode))
 
 (use-package wiki-summary
