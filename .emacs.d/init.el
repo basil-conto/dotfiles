@@ -2666,7 +2666,8 @@ in `zenburn-default-colors-alist'."
 
 (use-package rainbow-mode
   :ensure
-  :defer)
+  :defer
+  :delight rainbow-mode "🌈")
 
 (use-package recentf
   :defer
