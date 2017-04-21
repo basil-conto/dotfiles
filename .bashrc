@@ -44,6 +44,7 @@ shopt -s checkwinsize
 [ -r ~/.bash_completion ] && . ~/.bash_completion
 
 # Colour man pages
+# FIXME: Adapt to zenburn theme
 man() {
   env LESS_TERMCAP_mb=$'\E[01;31m'       \
       LESS_TERMCAP_md=$'\E[01;38;5;74m'  \
@@ -82,14 +83,6 @@ PS1+="\[${PRP}\]${debian_chroot:+($debian_chroot)}"
 PS1+="\[${RED}\]\$(RC=\$?; [ \$RC -ne 0 ] && printf [\$RC])\n"
 PS1+="\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\\$ \[${RESET}\]"
 
-# Don't pollute the environment
-bash_colours_unset
-unset brack_hi brack_lo
-unset -f bash_colours_unset
-
-# Enable colour and special key support in tmux
-[ -z "${TMUX}" ] && export TERM=xterm-256color
-
 # Git sh-prompt options
 for flag in DIRTYSTATE STASHSTATE UPSTREAM; do
   export "GIT_PS1_SHOW${flag}"=auto
@@ -97,6 +90,11 @@ done
 
 # For gpg-agent
 export GPG_TTY="$(tty)"
+
+# Don't pollute the environment
+bash_colours_unset
+unset brack_hi brack_lo flag
+unset -f bash_colours_unset
 
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
