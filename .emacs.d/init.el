@@ -1024,26 +1024,21 @@ in `zenburn-default-colors-alist'."
 
 (bind-keys
  ;; Alignment
- ("C-c P"       .    blc-align-punctuation)
+ ("C-c P"     .    blc-align-punctuation)
  ;; Line
- ("C-c i"       .          indent-relative)
- ("C-x l"       . blc-echo-fast-line-count)
- ("C-x C-p"     .   blc-open-previous-line)
- ("C-x C-n"     .   blc-open-next-line    )
+ ("C-c i"     .          indent-relative)
+ ("C-x l"     . blc-echo-fast-line-count)
+ ("C-x C-p"   .   blc-open-previous-line)
+ ("C-x C-n"   .   blc-open-next-line    )
  ;; Frame / window / buffer
- ("C-x 5 3"     . blc-make-graphic-display)
- ("C-x 7"       .      blc-transpose-split)
- ("S-<prior>"   .          previous-buffer)
- ("S-<next>"    .              next-buffer)
- ("C-x B"       .          blc-bury-buffer)
- ("<f5>"        .        blc-revert-buffer)
- ;; Mutatis mutandis within tmux
- ("M-[ 5 ; 2 ~" .          previous-buffer)
- ("M-[ 6 ; 2 ~" .              next-buffer)
+ ("C-x 5 3"   . blc-make-graphic-display)
+ ("C-x 7"     .      blc-transpose-split)
+ ("C-x B"     .          blc-bury-buffer)
+ ("<f5>"      .        blc-revert-buffer)
  ;; Movement / drawing
- ("M-R"         .           redraw-display)
- ("M-{"         .    blc-small-scroll-down)
- ("M-}"         .    blc-small-scroll-up  ))
+ ("M-R"       .           redraw-display)
+ ("S-<prior>" .    blc-small-scroll-down)
+ ("S-<next>"  .    blc-small-scroll-up  ))
 
 
 ;;;; PACKAGES
@@ -3096,15 +3091,10 @@ in `zenburn-default-colors-alist'."
 
 (use-package windmove
   :bind
-  (("S-<up>"      . windmove-up   )
-   ("S-<down>"    . windmove-down )
-   ("S-<left>"    . windmove-left )
-   ("S-<right>"   . windmove-right)
-   ;; Mutatis mutandis within tmux
-   ("M-[ 1 ; 2 A" . windmove-up   )
-   ("M-[ 1 ; 2 B" . windmove-down )
-   ("M-[ 1 ; 2 D" . windmove-left )
-   ("M-[ 1 ; 2 C" . windmove-right))
+  (("S-<up>"    . windmove-up   )
+   ("S-<down>"  . windmove-down )
+   ("S-<left>"  . windmove-left )
+   ("S-<right>" . windmove-right))
   :config
   (setq-default
    windmove-window-distance-delta 2
