@@ -279,8 +279,8 @@ and temporarily pushing an `inhibit-same-window' property for
 `ielm' buffers onto `display-buffer-alist'."
   (interactive "P")
   (let ((display-buffer-alist
-         (cons `(,#'blc-ielm-buffer-p () (inhibit-same-window . ,other-window))
-               display-buffer-alist)))
+         `((,#'blc-ielm-buffer-p () (inhibit-same-window . ,other-window))
+           ,@display-buffer-alist)))
     (funcall ielm)))
 
 (defun blc-narrow-candidate--advice (args)
