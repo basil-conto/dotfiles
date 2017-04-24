@@ -136,6 +136,7 @@ why-are-you-changing-gc-cons-threshold/'."
             ("dired-x"    . (dired-omit-mode))
             ("eww"        . (eww-copy-page-url))
             ("hi-lock"    . (hi-lock-set-pattern))
+            ("ibuffer"    . (ibuffer-current-buffer))
             ("ibuf-ext"   . (ibuffer-auto-mode
                              ibuffer-switch-to-saved-filter-groups))
             ("ielm"       . (inferior-emacs-lisp-mode))
@@ -431,6 +432,16 @@ description of the arguments to this function."
                                :preselect     0
                                :caller        'blc-counsel-browse-url)))
     (apply (cdr (assoc-string browser blc-browser-alist)) url args)))
+
+(defun blc-counsel-ibuffer-find-file ()
+  "Like `ibuffer-find-file', but backed by `counsel-find-file'."
+  (interactive)
+  (let* ((buffer            (ibuffer-current-buffer))
+         (default-directory (if (buffer-live-p buffer)
+                                (with-current-buffer buffer
+                                  default-directory)
+                              default-directory)))
+    (counsel-find-file)))
 
 (defun blc-turn-off-dired-omit ()
   "Disable `dired-omit-mode'."
@@ -1929,8 +1940,9 @@ in `zenburn-default-colors-alist'."
 ;;   - ibuffer-vc
 
 (use-package ibuf-ext
-  :bind (([remap list-buffers] . ibuffer)
-         ("C-c j b"            . ibuffer-jump))
+  :bind (([remap list-buffers]      . ibuffer)
+         ([remap ibuffer-find-file] . blc-counsel-ibuffer-find-file)
+         ("C-c j b"                 . ibuffer-jump))
   :init
   (mapc (-cut add-hook 'ibuffer-mode-hook <>)
         `(,#'ibuffer-auto-mode
