@@ -2318,12 +2318,15 @@ in `zenburn-default-colors-alist'."
    magit-branch-popup-show-variables       t
    magit-display-buffer-function
    #'magit-display-buffer-same-window-except-diff-v1
+   magit-list-refs-sortby                  "-creatordate"
    magit-remote-add-set-remote.pushDefault 'ask)
 
   ;; Always highlight tabs
   (map-put magit-diff-highlight-indentation "" 'tabs)
 
-  (add-to-list 'magit-rebase-arguments "--interactive")
+  (map-do #'add-to-list
+          '((magit-merge-arguments  . "--ff-only"    )
+            (magit-rebase-arguments . "--interactive")))
 
   (let* (;; Limit number of commits in log
          (logcommits       "32")
