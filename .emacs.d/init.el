@@ -2064,6 +2064,7 @@ in `zenburn-default-colors-alist'."
          ("C-c r" . ivy-resume))
   :init
   (setq-default completing-read-function #'ivy-completing-read)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'ivy-mode)
 
   :config
   ;; Default behaviour
