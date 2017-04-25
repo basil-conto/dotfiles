@@ -1,7 +1,10 @@
-import Data.Default                 ( def )
-import Data.Functor                 ( (<$>) )
-import Data.Maybe                   ( fromMaybe )
 
+-- Base
+import Data.Maybe                   ( fromMaybe )
+import Text.Printf                  ( printf )
+
+-- Third-party
+import Data.Default                 ( def )
 import Graphics.X11.Types           ( mod4Mask, noModMask
                                     -- , xK_Print
                                     )
@@ -21,14 +24,6 @@ import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioLowerVolume
                                     -- , xF86XK_WebCam
                                     -- , xF86XK_WLAN
                                     )
-
-import Prelude                      ( Bool(), Int(), IO(), String()
-                                    , (++), (==), (<), ($)
-                                    , lookup, otherwise, read, return, words
-                                    )
-
-import Text.Printf                  ( printf )
-
 import XMonad.Core                  ( X(), XConfig(..) )
 import XMonad.Hooks.ManageDocks     ( avoidStruts, manageDocks )
 import XMonad.Main                  ( xmonad )
