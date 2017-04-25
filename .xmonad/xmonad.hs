@@ -80,6 +80,7 @@ main :: IO ()
 main = xmonad $ def
      { borderWidth        = 1
      , focusedBorderColor = zenburn "blue" focusedBorderColor
+     , focusFollowsMouse  = False
      , layoutHook         = avoidStruts  $  layoutHook def
      , manageHook         = manageDocks <+> manageHook def
      , modMask            = mod4Mask
