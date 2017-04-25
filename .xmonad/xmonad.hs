@@ -37,7 +37,8 @@ import XMonad.Util.EZConfig         ( additionalKeys )
 import XMonad.Util.Run              ( runProcessWithInput, safeSpawn )
 
 zenburnAlist :: [(String, String)]
-zenburnAlist = [ ("bg"  , "#3F3F3F")
+zenburnAlist = [ ("bg-1", "#2B2B2B")
+               , ("bg"  , "#3F3F3F")
                , ("blue", "#8CD0D3")
                ]
 
@@ -84,7 +85,7 @@ main = xmonad $ def
      , layoutHook         = avoidStruts  $  layoutHook def
      , manageHook         = manageDocks <+> manageHook def
      , modMask            = mod4Mask
-     , normalBorderColor  = zenburn "bg" normalBorderColor
+     , normalBorderColor  = zenburn "bg-1" normalBorderColor
      , terminal           = "x-terminal-emulator"
      }
 
