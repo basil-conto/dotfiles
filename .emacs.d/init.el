@@ -851,6 +851,36 @@ horizontal over vertical splitting."
   (interactive)
   (blc-open-line 1))
 
+;; FIXME: BOB/EOB edge cases
+(defun blc-move-line-up ()
+  "Save current column and exchange current and previous lines."
+  (interactive)
+  (undo-boundary)
+  (let ((col (current-column)))
+    (transpose-lines  1)
+    (forward-line    -2)
+    (move-to-column col)))
+
+;; FIXME: BOB/EOB edge cases
+(defun blc-move-line-down ()
+  "Save current column and exchange current and next lines."
+  (interactive)
+  (undo-boundary)
+  (let ((col (current-column)))
+    (forward-line     1)
+    (transpose-lines  1)
+    (forward-line    -1)
+    (move-to-column col)))
+
+(defun blc-indent-relative (&optional below)
+  "Indent relative to previous or next line.
+Like `indent-relative', but with prefix argument BELOW, first
+exchange current and next lines."
+  (interactive "P")
+  (when below (blc-move-line-down))
+  (indent-relative)
+  (when below (blc-move-line-up)))
+
 (defvar blc-small-scroll-step 6
   "Number of lines constituting a small scroll.")
 
@@ -1037,7 +1067,7 @@ in `zenburn-default-colors-alist'."
  ;; Alignment
  ("C-c P"     .    blc-align-punctuation)
  ;; Line
- ("C-c i"     .          indent-relative)
+ ("C-c i"     .      blc-indent-relative)
  ("C-x l"     . blc-echo-fast-line-count)
  ("C-x C-p"   .   blc-open-previous-line)
  ("C-x C-n"   .   blc-open-next-line    )
