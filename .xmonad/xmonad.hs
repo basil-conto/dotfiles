@@ -1,11 +1,13 @@
+{-# LANGUAGE TupleSections #-}
 
 -- Base
+import Control.Arrow                ( (***) )
 import Data.Maybe                   ( fromMaybe )
 import Text.Printf                  ( printf )
 
 -- Third-party
 import Data.Default                 ( def )
-import Graphics.X11.Types           ( mod4Mask, noModMask
+import Graphics.X11.Types           ( mod4Mask, noModMask, xK_a, xK_s
                                     -- , xK_Print
                                     )
 import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioLowerVolume
@@ -29,7 +31,9 @@ import XMonad.Hooks.ManageDocks     ( avoidStruts, manageDocks )
 import XMonad.Main                  ( xmonad )
 import XMonad.ManageHook            ( (<+>) )
 import XMonad.Util.EZConfig         ( additionalKeys )
-import XMonad.Util.Run              ( runProcessWithInput, safeSpawn )
+import XMonad.Util.Run              ( runProcessWithInput, safeSpawn
+                                    , safeSpawnProg
+                                    )
 
 zenburnAlist :: [(String, String)]
 zenburnAlist = [ ("bg-1", "#2B2B2B")
@@ -73,26 +77,33 @@ pactl args = do
                  ]
 
 main :: IO ()
-main = xmonad $ def
+main = xmonad $ additionalKeys def
      { borderWidth        = 1
      , focusedBorderColor = zenburn "blue" focusedBorderColor
      , focusFollowsMouse  = False
      , layoutHook         = avoidStruts  $  layoutHook def
      , manageHook         = manageDocks <+> manageHook def
-     , modMask            = mod4Mask
+     , modMask            = modMask'
      , normalBorderColor  = zenburn "bg-1" normalBorderColor
      , terminal           = "x-terminal-emulator"
-     }
+     } $
 
-     `additionalKeys`
-     [ ((noModMask, xF86XK_AudioLowerVolume), pactl [ "--decrease", step ])
-     , ((noModMask, xF86XK_AudioRaiseVolume), pactl [ "--increase", step ])
-     , ((noModMask, xF86XK_AudioMute       ), pactl [ "--toggle-mute"    ])
-     , ((noModMask, xF86XK_AudioMicMute    ), pactl [ "--toggle-mute"
-                                                    , "--default-source"
-                                                    ])
-     ]
+     mapPairs ((noModMask,), pactl)
+              [ (xF86XK_AudioLowerVolume, [ "--decrease", step ])
+              , (xF86XK_AudioRaiseVolume, [ "--increase", step ])
+              , (xF86XK_AudioMute       , [ "--toggle-mute"    ])
+              , (xF86XK_AudioMicMute    , [ "--toggle-mute"
+                                          , "--default-source" ])
+              ]
+
+     ++
+     mapPairs ((modMask',), safeSpawnProg)
+              [ (xK_a, "sensible-editor" )
+              , (xK_s, "sensible-browser")
+              ]
 
   where
     step        = "2"
+    modMask'    = mod4Mask
+    mapPairs    = map . uncurry (***)
     zenburn k f = fromMaybe (f def) (lookup k zenburnAlist)
