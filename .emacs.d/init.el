@@ -1858,7 +1858,9 @@ in `zenburn-default-colors-alist'."
 
 (use-package haskell-mode
   :ensure
-  :defer
+  :bind (:map
+         haskell-mode-map
+         ([remap haskell-hoogle] . haskell-hayoo))
   :init
   (delight '((haskell-indent-mode)
              (haskell-mode
