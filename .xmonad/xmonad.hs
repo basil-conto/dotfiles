@@ -2,12 +2,14 @@
 
 -- Base
 import Control.Arrow                ( (***) )
+import Data.Bits                    ( (.|.) )
+import Data.List                    ( uncons )
 import Data.Maybe                   ( fromMaybe )
 import Text.Printf                  ( printf )
 
 -- Third-party
 import Data.Default                 ( def )
-import Graphics.X11.Types           ( mod4Mask, noModMask, xK_a, xK_s
+import Graphics.X11.Types           ( mod4Mask, noModMask, shiftMask, xK_a, xK_s
                                     -- , xK_Print
                                     )
 import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioLowerVolume
@@ -31,9 +33,7 @@ import XMonad.Hooks.ManageDocks     ( avoidStruts, manageDocks )
 import XMonad.Main                  ( xmonad )
 import XMonad.ManageHook            ( (<+>) )
 import XMonad.Util.EZConfig         ( additionalKeys )
-import XMonad.Util.Run              ( runProcessWithInput, safeSpawn
-                                    , safeSpawnProg
-                                    )
+import XMonad.Util.Run              ( runProcessWithInput, safeSpawn )
 
 zenburnAlist :: [(String, String)]
 zenburnAlist = [ ("bg-1", "#2B2B2B")
@@ -97,13 +97,19 @@ main = xmonad $ additionalKeys def
               ]
 
      ++
-     mapPairs ((modMask',), safeSpawnProg)
-              [ (xK_a, "sensible-editor" )
-              , (xK_s, "sensible-browser")
+     mapPairs ((modMask',), safeSpawn')
+              [ (xK_a, ["sensible-editor" ])
+              , (xK_s, ["sensible-browser"])
+              ]
+
+     ++
+     mapPairs ((modMask' .|. shiftMask,), safeSpawn')
+              [ (xK_s, ["sensible-browser", "-private-window", "--incognito"])
               ]
 
   where
     step        = "2"
     modMask'    = mod4Mask
     mapPairs    = map . uncurry (***)
-    zenburn k f = fromMaybe (f def) (lookup k zenburnAlist)
+    safeSpawn'  = maybe mempty (uncurry safeSpawn) . uncons
+    zenburn k f = fromMaybe (f def) $ lookup k zenburnAlist
