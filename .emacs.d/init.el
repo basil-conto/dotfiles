@@ -3168,6 +3168,8 @@ in `zenburn-default-colors-alist'."
    windmove-window-distance-delta 2
    windmove-wrap-around           t))
 
+;; FIXME:
+;; * Do not hinder height of ivy
 ;; TODO:
 ;; Improve window splitting
 ;; * Look into:
