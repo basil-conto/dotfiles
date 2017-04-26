@@ -3018,7 +3018,10 @@ in `zenburn-default-colors-alist'."
 (use-package uniquify
   :defer
   :init
-  (setq-default uniquify-buffer-name-style 'forward))
+  (setq-default uniquify-after-kill-buffer-p  nil
+                uniquify-buffer-name-style    'forward
+                uniquify-min-dir-content      1
+                uniquify-trailing-separator-p t))
 
 (use-package url
   :defer
