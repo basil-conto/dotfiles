@@ -2108,8 +2108,10 @@ in `zenburn-default-colors-alist'."
   :bind (([remap switch-to-buffer] . ivy-switch-buffer)
          ([remap switch-to-buffer-other-window]
           . ivy-switch-buffer-other-window)
-         ("M-D"   . ivy-dispatching-done)
-         ("C-c r" . ivy-resume))
+         ("C-c r" . ivy-resume)
+         :map
+         ivy-minibuffer-map
+         ("M-D"   . ivy-dispatching-done))
   :init
   (setq-default completing-read-function #'ivy-completing-read)
   (add-hook 'eval-expression-minibuffer-setup-hook #'ivy-mode)
