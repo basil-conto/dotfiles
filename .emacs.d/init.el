@@ -3053,7 +3053,6 @@ in `zenburn-default-colors-alist'."
 (use-package visual-regexp-steroids
   :ensure
   :after pcre2el
-  :defer
   :config
   (setq-default vr/match-separator-use-custom-face t))
 
