@@ -385,6 +385,21 @@ See `browse-url' for an explanation of the arguments."
   (pcase-let ((`(,browser . ,filter) (blc-print-url--selector url)))
     (apply browser (funcall filter url) args)))
 
+(defvar blc-hackage-url-format
+  "https://hackage.haskell.org/package/%s/docs/%s.html"
+  "URL format string for Hackage packages.
+The two format specifiers correspond to the package and module
+names, respectively.")
+
+(defun blc-browse-url-ghc-doc (url &rest args)
+  "Pass latest version of Hackage package URL to `browse-url'."
+  (string-match
+   (replace-regexp-in-string "%s" "\\(.+\\)" ghc-doc-hackage-format t t)
+   url)
+  (let* ((matches (mapcar (-cut match-string <> url) '(1 3)))
+         (url     (apply #'format blc-hackage-url-format matches)))
+    (apply #'browse-url url args)))
+
 (defun blc-browse-url-irfc (url &rest _)
   "Visit RFC URL via `irfc-visit'.
 URL is parsed using the regular expressions found in
@@ -1740,7 +1755,8 @@ in `zenburn-default-colors-alist'."
   :ensure
   :defer
   :init
-  (add-hook 'haskell-mode-hook #'ghc-init))
+  (add-hook 'haskell-mode-hook #'ghc-init)
+  (setq-default ghc-doc-browser-function #'blc-browse-url-ghc-doc))
 
 (use-package git-annex
   :ensure
