@@ -944,22 +944,10 @@ frames."
             (google-contacts-givenname  . font-lock-keyword-face)
             (google-contacts-header     . font-lock-string-face ))))
 
-(defun blc-man-fontify ()
-  "Customise `Man-mode' faces."
-  (map-do #'face-remap-add-relative
-          '((Man-overstrike . font-lock-keyword-face)
-            (Man-underline  . font-lock-string-face ))))
-
 (defun blc-message-header-fontify ()
   "Customise `message-mode' header faces."
   (map-do #'face-remap-add-relative
           '((message-header-name . font-lock-builtin-face))))
-
-(defun blc-woman-fontify ()
-  "Customise `woman-mode' faces."
-  (map-do #'face-remap-add-relative
-          '((woman-bold   . font-lock-keyword-face)
-            (woman-italic . font-lock-string-face ))))
 
 (defun blc-zenburn-assoc-default (colour &optional default)
   "Return the `zenburn-theme' values associated with COLOURS.
@@ -2449,11 +2437,6 @@ in `zenburn-default-colors-alist'."
   :config
   (setq-default makefile-macro-assign " := "))
 
-(use-package man
-  :defer
-  :init
-  (add-hook 'Man-mode-hook #'blc-man-fontify))
-
 (use-package markdown-mode
   :ensure
   :bind (:map
@@ -3207,11 +3190,6 @@ in `zenburn-default-colors-alist'."
   (mapc (-cut add-hook <> #'blc-kill-git-buffer)
         '(with-editor-post-cancel-hook
           with-editor-post-finish-hook)))
-
-(use-package woman
-  :defer
-  :init
-  (add-hook 'woman-mode-hook #'blc-woman-fontify))
 
 (use-package wrap-region
   :ensure
