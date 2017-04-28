@@ -1483,8 +1483,8 @@ in `zenburn-default-colors-alist'."
               (add-to-list 'dired-guess-shell-alist-user
                            `(,(format "\\.%s\\'" patt) ,cmd))))
           '(("localc"   . ("ods" "xls" "xlsx"))
-            ("lowriter" . ("odt" "doc" "docx"))
-            ("mpv"      . ("mp4" "mkv"))
+            ("lowriter" . ("doc" "docx" "odt"))
+            ("mpv"      . ("mkv" "mp4" "webm"))
             ("pdf"      . ("pdf")))))
 
 (use-package disaster
