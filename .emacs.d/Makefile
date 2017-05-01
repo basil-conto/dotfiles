@@ -1,6 +1,8 @@
-init-el := init
-gnus-el := gnus
-prof-fn := profile-dotemacs
+### Files
+
+init    := init
+gnus    := gnus
+prof    := profile-dotemacs
 
 lispdir := lisp/
 elpadir := elpa/
@@ -8,38 +10,51 @@ elpadir := elpa/
 suff-el := .el
 suff-bc := .elc
 
-list-bc := $(addsuffix $(suff-bc), $(init-el) $(gnus-el))
-prof-el := $(addsuffix $(suff-el), $(prof-fn))
+targets := $(init) $(gnus)
+list-bc := $(addsuffix $(suff-bc),$(targets))
 
 vpath %$(suff-el) $(lispdir)
 
-ELTARGET          = --eval '(byte-compile-file "$<")'
-COMPILE$(suff-el) = emacs $(ELFLAGS) $(ELPRE) $(ELTARGET) $(ELPOST)
+### Emacs Lisp
+
+ifeq ($(strip $(EL)),)
+	EL := emacs
+endif
+
+ELFILES        = --eval '(byte-compile-file "$<")'
+LINK$(suff-el) = $(EL) $(ELFLAGS) $(ELPRE) $(ELFILES) $(ELPOST)
 
 %$(suff-bc): %$(suff-el)
-	$(COMPILE$(suff-el))
+	$(LINK$(suff-el))
+
+### Rules
 
 .NOTPARALLEL:
+.DEFAULT_GOAL: $(init)
 
 .PHONY: all
-all: init gnus
+all: $(targets)
 
-.PHONY: init
-init: ELFLAGS := --batch
-init: $(filter $(init-el)%, $(list-bc))
+.PHONY: $(init)
+$(init): ELFLAGS := --batch
+$(init): $(filter $(init)%,$(list-bc))
 
-.PHONY: gnus
-gnus: ELFLAGS := -nw
-gnus: ELPRE   := --funcall gnus-slave
-gnus: ELPOST  := --funcall gnus-group-save-newsrc --funcall kill-emacs
-gnus: $(filter $(gnus-el)%, $(list-bc))
+.PHONY: $(gnus)
+$(gnus): ELFLAGS := -nw
+$(gnus): ELPRE   := --funcall gnus-slave
+$(gnus): ELPOST  := --funcall gnus-group-save-newsrc --funcall kill-emacs
+$(gnus): $(filter $(gnus)%,$(list-bc))
+
+.PHONY: $(prof)
+$(prof): ELFLAGS  := -nw
+$(prof): ELPRE    := --quick
+$(prof): ELFILES   = --load '$<'
+$(prof): ELPOST    = --funcall '$@'
+$(prof): $(addsuffix $(suff-el),$(prof))
+	$(LINK$(suff-el))
 
 .PHONY: profile
-profile: ELFLAGS  := -nw
-profile: ELPRE     = --quick --load '$<' --funcall $(prof-fn)
-profile: ELTARGET :=
-profile: $(prof-el)
-	$(COMPILE$(suff-el))
+profile: $(prof)
 
 .PHONY: clean
 clean:
