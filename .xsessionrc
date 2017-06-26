@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+[ -r /etc/profile       ] && . /etc/profile
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 [ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
 xscreensaver -no-splash &
