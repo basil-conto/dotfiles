@@ -19,7 +19,7 @@ unset opt
 
 export ALTERNATE_EDITOR=              # Lazy emacs daemonisation
 export CACA_DRIVER=ncurses            # libcaca
-export EDITOR=ec                      # Used by crontab et al.
+export EDITOR=ecc                     # Used by crontab et al.
 export GCALCLI_DIR="${HOME}/.gcalcli" # gcalcli
 export LOCAL_DIR="${HOME}/.local"     # Local installations
 export N_PREFIX="${LOCAL_DIR}"        # https://github.com/tj/n
