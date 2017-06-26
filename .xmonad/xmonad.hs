@@ -15,9 +15,9 @@ import Graphics.X11.Types           ( mod4Mask, noModMask, shiftMask, xK_a, xK_s
 import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioLowerVolume
                                     , xF86XK_AudioMicMute
                                     , xF86XK_AudioMute
-                                    -- , xF86XK_AudioNext
-                                    -- , xF86XK_AudioPlay
-                                    -- , xF86XK_AudioPrev
+                                    , xF86XK_AudioNext
+                                    , xF86XK_AudioPlay
+                                    , xF86XK_AudioPrev
                                     , xF86XK_AudioRaiseVolume
                                     -- , xF86XK_Display
                                     -- , xF86XK_Launch1
@@ -94,6 +94,14 @@ main = xmonad $ additionalKeys def
               , (xF86XK_AudioMute       , [ "--toggle-mute"       ])
               , (xF86XK_AudioMicMute    , [ "--toggle-mute"
                                           , "--default-source"    ])
+              ]
+
+     ++
+     -- TODO: Replace with direct dbus calls whilst not being tied to cmus?
+     mapPairs ((noModMask,), safeSpawn "playerctl")
+              [ (xF86XK_AudioNext, ["next"      ])
+              , (xF86XK_AudioPlay, ["play-pause"])
+              , (xF86XK_AudioPrev, ["previous"  ])
               ]
 
      ++
