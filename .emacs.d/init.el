@@ -458,17 +458,6 @@ See `blc-ibuffer-default-group'."
     (message-make-from nil)
     (message-replace-header "From")))
 
-(defvar blc-org-todo-keywords
-  '((("NEXT" . "n")
-     ("TODO" . "t")
-     ("MEET" . "m")
-     ("WAIT" . "w@")
-     ("BALK" . "b"))
-    (("DONE" . "d!")
-     ("VOID" . "v@")))
-  "List of `org' TODO/DONE alists of keywords and selectors.
-The two alists represent the TODO/DONE states, respectively.")
-
 (defun blc-org-cycle ()
   "Call a prefixed `org-cycle'.
 Without the prefix, visibility cycling in `outline-minor-mode'
@@ -2171,9 +2160,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    org-special-ctrl-a/e                              t
    org-startup-indented                              t
    org-todo-keywords
-   (cdr (mapcan (lambda (kws)
-                  `("|" ,@(map-apply (-cut format "%s(%s)" <> <>) kws)))
-                blc-org-todo-keywords))
+   '((type "NEXT(n)" "TODO(t)" "MEET(m)" "WAIT(w@)" "BALK(b)" "|"
+           "DONE(d!)" "VOID(v@)"))
    org-treat-S-cursor-todo-selection-as-state-change nil
    org-use-fast-tag-selection                        t
    org-use-speed-commands                            t))
