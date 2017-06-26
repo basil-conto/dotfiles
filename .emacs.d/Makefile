@@ -1,65 +1,57 @@
-### Files
+# Build blc emacs configuration
 
-init    := init
-gnus    := gnus
-prof    := profile-dotemacs
+# Author:   Basil L. Contovounesios <basil.conto@gmail.com>
+# Homepage: https://github.com/basil-conto/dotfiles
 
-lispdir := lisp/
-elpadir := elpa/
+# Files
 
-suff-el := .el
-suff-bc := .elc
+libs := blc-lib blc-macs
+srcs := gnus init
 
-targets := $(init) $(gnus)
-list-bc := $(addsuffix $(suff-bc),$(targets))
+libdir := lisp/
+pkgdir := elpa/
 
-vpath %$(suff-el) $(lispdir)
+# Macros
 
-### Emacs Lisp
+libouts = $(patsubst %,$(libdir)%.elc,$(filter $(1)%,$(libs)))
+srcouts = $(addsuffix .elc,$(filter $(1)%,$(srcs)))
 
-ifeq ($(strip $(EL)),)
-	EL := emacs
-endif
+# Emacs Lisp
 
-ELFILES        = --eval '(byte-compile-file "$<")'
-LINK$(suff-el) = $(EL) $(ELFLAGS) $(ELPRE) $(ELFILES) $(ELPOST)
+EL ?= emacs
 
-%$(suff-bc): %$(suff-el)
-	$(LINK$(suff-el))
+%.elc: %.el
+	$(EL) $(ELFLAGS) --batch --funcall batch-byte-compile $^
 
-### Rules
+# Rules
 
 .NOTPARALLEL:
-.DEFAULT_GOAL: $(init)
 
 .PHONY: all
-all: $(targets)
+all: $(srcs)
 
-.PHONY: $(init)
-$(init): ELFLAGS := --batch
-$(init): $(filter $(init)%,$(list-bc))
+.PHONY: blc-lib
+blc-lib: $(call libouts,blc-lib)
 
-.PHONY: $(gnus)
-$(gnus): ELFLAGS := -nw
-$(gnus): ELPRE   := --funcall gnus-slave
-$(gnus): ELPOST  := --funcall gnus-group-save-newsrc --funcall kill-emacs
-$(gnus): $(filter $(gnus)%,$(list-bc))
+.PHONY: blc-macs
+blc-macs: $(call libouts,blc-macs)
 
-.PHONY: $(prof)
-$(prof): ELFLAGS  := -nw
-$(prof): ELPRE    := --quick
-$(prof): ELFILES   = --load '$<'
-$(prof): ELPOST    = --funcall '$@'
-$(prof): $(addsuffix $(suff-el),$(prof))
-	$(LINK$(suff-el))
+.PHONY: gnus
+gnus: $(libs) $(call srcouts,gnus)
+
+.PHONY: init
+init: $(libs) $(call srcouts,init)
 
 .PHONY: profile
-profile: $(prof)
+profile: ELFLAGS := -nw
+profile:
+	$(EL) $(ELFLAGS) --quick --load $(addprefix $(libdir),profile-dotemacs.el) \
+		--funcall profile-dotemacs
 
 .PHONY: clean
 clean:
-	$(RM) $(list-bc)
+	$(RM) $(call libouts,) $(call srcouts,)
 
 .PHONY: distclean
 distclean: clean
-	$(RM) -r $(elpadir)
+	$(RM) --recursive $(pkgdir)
