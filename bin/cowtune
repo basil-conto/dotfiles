@@ -2,9 +2,10 @@
 
 cowfile="${HOME}/.cowtune"
 cowsay=/usr/games/cowsay
+cows="$(${cowsay} -l | tail --lines=+2)"
 shuf='shuf --echo --head-count=1 --'
 
-/usr/games/fortune -aes                                          \
-  | "${cowsay}" "-n$(${shuf} '' b d g p s t w y)"                \
-                "-f$(${shuf} $(${cowsay} -l | tail --lines=+2))" \
+/usr/games/fortune -aes                           \
+  | "${cowsay}" "-n$(${shuf} '' b d g p s t w y)" \
+                "-f$(${shuf} ${cows})"            \
                 > "${cowfile}"
