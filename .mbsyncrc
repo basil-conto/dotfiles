@@ -1,0 +1,22 @@
+# -*- conf-space -*-
+# Skeleton ~/.mbsyncrc
+
+IMAPStore               foo-remote
+User                    foo@bar.baz
+PassCmd                 "pass foo/bar"
+Host                    imap.bar.baz
+SSLType                 IMAPS
+SSLVersions             TLSv1.2
+
+MaildirStore            foo-local
+Path                    ~/Mail/foo/
+Inbox                   ~/Mail/foo/INBOX
+Flatten                 .
+
+Channel                 foo
+Master                  :foo-remote:
+Slave                   :foo-local:
+Create                  Both
+CopyArrivalDate         yes
+Patterns                *
+SyncState               *
