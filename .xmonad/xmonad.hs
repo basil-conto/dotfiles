@@ -89,11 +89,11 @@ main = xmonad $ additionalKeys def
      } $
 
      mapPairs ((noModMask,), pactl)
-              [ (xF86XK_AudioLowerVolume, [ "--decrease", step ])
-              , (xF86XK_AudioRaiseVolume, [ "--increase", step ])
-              , (xF86XK_AudioMute       , [ "--toggle-mute"    ])
+              [ (xF86XK_AudioLowerVolume, [ "--decrease", volStep ])
+              , (xF86XK_AudioRaiseVolume, [ "--increase", volStep ])
+              , (xF86XK_AudioMute       , [ "--toggle-mute"       ])
               , (xF86XK_AudioMicMute    , [ "--toggle-mute"
-                                          , "--default-source" ])
+                                          , "--default-source"    ])
               ]
 
      ++
@@ -108,7 +108,7 @@ main = xmonad $ additionalKeys def
               ]
 
   where
-    step        = "2"
+    volStep     = "2"
     modMask'    = mod4Mask
     mapPairs    = map . uncurry (***)
     safeSpawn'  = maybe mempty (uncurry safeSpawn) . uncons
