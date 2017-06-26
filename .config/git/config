@@ -13,6 +13,8 @@
   d     = diff
   dc    = diff --cached
   dcn   = diff --cached --name-only
+  diet  = !git reflog expire --all --expire=now \
+       &&  git gc --aggressive --prune=now
   dn    = diff --name-only
   dr    = diff -R --ws-error-highlight=all
   drn   = diff -R --name-only
