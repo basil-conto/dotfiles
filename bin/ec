@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+TERM=xterm-24bits emacs -nw "$@"
