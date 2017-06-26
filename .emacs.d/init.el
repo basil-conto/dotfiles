@@ -93,7 +93,6 @@ why-are-you-changing-gc-cons-threshold/'.")
   ffap-alist
   ffap-file-finder
   ghc-doc-hackage-format
-  git-commit-mode
   ivy-format-function
   ivy-height
   js2-mode-map
@@ -375,7 +374,7 @@ description of the arguments to this function."
 
 (defun blc-kill-git-buffer ()
   "Kill current git commit message or rebase todo list buffer."
-  (when-let (re (cond (git-commit-mode
+  (when-let (re (cond ((bound-and-true-p git-commit-mode)
                        git-commit-filename-regexp)
                       ((derived-mode-p #'git-rebase-mode)
                        git-rebase-filename-regexp)))
@@ -1278,14 +1277,17 @@ With prefix argument SELECT, call `tile-select' instead."
   :ensure)
 
 (use-package git-commit
-  :ensure magit
-  :commands git-commit-setup
   :init
-  (add-hook 'git-commit-setup-hook #'blc-git-commit-set-fill-column)
-  (setq-default global-git-commit-mode        nil
-                git-commit-summary-max-length 50)
   (add-to-list 'auto-mode-alist
-               `(,git-commit-filename-regexp ,#'git-commit-setup))
+               `(,git-commit-filename-regexp . ,#'git-commit-setup))
+
+  (mapc (-cut add-hook 'git-commit-setup-hook <>)
+        `(,#'blc-git-commit-set-fill-column
+          ,#'bug-reference-mode))
+
+  (setq-default git-commit-summary-max-length 50
+                global-git-commit-mode        nil)
+
   :config
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line))
 
@@ -2119,8 +2121,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("C-c l" . org-store-link))
 
   :init
-  (mapc (-cut add-hook <> #'orgstruct-mode)
-        '(git-commit-setup-hook outline-minor-mode-hook))
+  (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
 
   (setq-default org-directory          (blc-dir user-emacs-directory "org")
                 org-default-notes-file (blc-file org-directory "notes.org"))
