@@ -17,6 +17,7 @@ Channel                 foo
 Master                  :foo-remote:
 Slave                   :foo-local:
 Create                  Both
+Expunge                 Both
 CopyArrivalDate         yes
 Patterns                *
 SyncState               *
