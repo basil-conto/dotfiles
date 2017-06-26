@@ -1,0 +1,3 @@
+### ${XDG_CONFIG_HOME}/cmus/rc --- cmus configuration file -*- conf-space -*-
+
+colorscheme zenburn
