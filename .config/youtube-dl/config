@@ -1,0 +1,4 @@
+# Skip unavailable videos in a playlist
+--ignore-errors
+
+--prefer-ffmpeg
