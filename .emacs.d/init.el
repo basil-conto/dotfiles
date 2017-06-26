@@ -550,7 +550,7 @@ With prefix argument SELECT, call `tile-select' instead."
       (set-face-foreground 'linum (blc-zenburn-assoc 'zenburn-bg+3)))
 
     (defun blc-zenburn-fontify-org-todo ()
-      "Customise `org' TODO keyword faces under `zenburn'."
+      "Customise `org-todo-keyword-faces' under `zenburn'."
       (setq-default org-todo-keyword-faces
                     (map-apply (lambda (kw colour)
                                  `(,kw . ,(blc-zenburn-assoc colour)))
