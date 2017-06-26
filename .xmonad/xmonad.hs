@@ -56,25 +56,25 @@ speaker' m v | m         = "mute"
 -- FIXME:
 -- * Change mute, low, etc. message according to button, not status
 -- * Configure Unicode font with speaker instead of speaker'
-pactl :: [String] -> X ()
-pactl args = do
-  [m, v] <- words <$> pamixer (["--get-mute", "--get-volume"] ++ args)
-  safeSpawn "osd_cat"
-    $ (fmt m v) ++ [ "--align=center"
-                   , "--barmode=percentage"
-                   , "--color=#8CD0D3"
-                   , "--delay=1"
-                   , "--font=-*-*-*-*-*-*-20-*-*-*-*-*-*-*"
-                   , "--outline=1"
-                   , "--pos=bottom"
-                   ]
-  return ()
-
+pamixer :: [String] -> X ()
+pamixer args = do
+    -- What if < 2 results?
+    -- safeSpawn "osd_cat" (fmt <$> words <$> pamixer ...) ++ [...]
+    [mute, vol] <- words <$> pa (["--allow-boost", "--get-mute", "--get-volume"] ++ args)
+    return =<< safeSpawn "osd_cat" $ osdArgs mute vol
   where
-    pamixer as = runProcessWithInput "pamixer" as ""
-    fmt m v    = [ "--percentage=" ++ v
-                 , printf "--text=%3s%% %s" v $ speaker' (m == "true") (read v)
-                 ]
+    pa = flip (runProcessWithInput "pamixer") ""
+    osdArgs mute vol
+      = [ "--align=center"
+        , "--barmode=percentage"
+        , "--color=#8CD0D3"
+        , "--delay=1"
+        , "--font=-*-*-*-*-*-*-20-*-*-*-*-*-*-*"
+        , "--outline=1"
+        , "--percentage=" ++ vol
+        , "--pos=bottom"
+        , printf "--text=%3s%% %s" vol $ speaker' (mute == "true") (read vol)
+        ]
 
 main :: IO ()
 main = xmonad $ additionalKeys def
@@ -88,7 +88,7 @@ main = xmonad $ additionalKeys def
      , terminal           = "x-terminal-emulator"
      } $
 
-     mapPairs ((noModMask,), pactl)
+     mapPairs ((noModMask,), pamixer)
               [ (xF86XK_AudioLowerVolume, [ "--decrease", volStep ])
               , (xF86XK_AudioRaiseVolume, [ "--increase", volStep ])
               , (xF86XK_AudioMute       , [ "--toggle-mute"       ])
