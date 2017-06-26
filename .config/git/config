@@ -68,6 +68,9 @@
 [diff "texinfo"]
   xfuncname        = ^@node[[:space:]]+([^,[:space:]][^,]+)
 
+[github]
+  user             = basil-conto
+
 [interactive]
   diffFilter       = diff-highlight
 
