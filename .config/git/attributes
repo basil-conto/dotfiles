@@ -3,7 +3,7 @@
 ## Built-in
 *.ad[abs]       diff=ada
 *.bib           diff=bibtex
-*.[ch]          diff=cpp
+*.[Cch]         diff=cpp
 *.[ch]pp        diff=cpp
 *.cc            diff=cpp
 *.hh            diff=cpp
@@ -21,7 +21,7 @@
 *.java          diff=java
 *.m             diff=matlab
 # .h and .m clash with cpp and matlab, respectively ;_;
-*.C             diff=objc
+*.[CHM]         diff=objc
 *.mm            diff=objc
 *.inc           diff=pascal
 *.pas           diff=pascal
@@ -46,5 +46,5 @@
 *[Mm]akefile    diff=make
 *[Mm]akefile.in diff=make
 *.bash          diff=shell
-*.sh            diff=shell
+*[-.]sh         diff=shell
 *.texi          diff=texinfo
