@@ -21,8 +21,8 @@ import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioLowerVolume
                                     , xF86XK_AudioRaiseVolume
                                     -- , xF86XK_Display
                                     -- , xF86XK_Launch1
-                                    -- , xF86XK_MonBrightnessDown
-                                    -- , xF86XK_MonBrightnessUp
+                                    , xF86XK_MonBrightnessDown
+                                    , xF86XK_MonBrightnessUp
                                     -- , xF86XK_ScreenSaver
                                     -- , xF86XK_Sleep
                                     -- , xF86XK_WebCam
@@ -105,6 +105,12 @@ main = xmonad $ additionalKeys def
               ]
 
      ++
+     mapPairs ((noModMask,), safeSpawn "xbacklight")
+              [ (xF86XK_MonBrightnessDown, ["-dec", lightStep])
+              , (xF86XK_MonBrightnessUp  , ["-inc", lightStep])
+              ]
+
+     ++
      mapPairs ((modMask',), safeSpawn')
               [ (xK_a, ["sensible-editor" ])
               , (xK_s, ["sensible-browser"])
@@ -112,11 +118,13 @@ main = xmonad $ additionalKeys def
 
      ++
      mapPairs ((modMask' .|. shiftMask,), safeSpawn')
+              -- TODO: Add sensible-editor without --demon
               [ (xK_s, ["sensible-browser", "-private-window", "--incognito"])
               ]
 
   where
     volStep     = "2"
+    lightStep   = "10"
     modMask'    = mod4Mask
     mapPairs    = map . uncurry (***)
     safeSpawn'  = maybe mempty (uncurry safeSpawn) . uncons
