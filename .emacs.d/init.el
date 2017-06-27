@@ -203,6 +203,10 @@ and temporarily pushing an `inhibit-same-window' property for
   "Use default inline completion."
   (completion-at-point))
 
+(define-advice magit-list-repos (:filter-return (repos) blc-truename)
+  "Return truenames of REPOS."
+  (mapcar #'realpath-truename repos))
+
 (define-advice makefile-insert-gmake-function
     (:after (&rest _) blc-delete-trailing-space)
   "Delete trailing whitespace after function call insertion."
@@ -1172,6 +1176,7 @@ With prefix argument SELECT, call `tile-select' instead."
    '(("." . "~/.backup/"))
    delete-old-versions        t
    directory-free-space-args  "-hP"
+   find-file-visit-truename   t
    kept-new-versions          4
    kept-old-versions          2
    mode-require-final-newline nil       ; Do not silently append EOF NL
