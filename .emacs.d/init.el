@@ -96,6 +96,8 @@ why-are-you-changing-gc-cons-threshold/'.")
   ivy-format-function
   ivy-height
   js2-mode-map
+  org-default-notes-file
+  org-directory
   recentf-list
   tile-cycler)
 
@@ -459,6 +461,17 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
   (interactive)
   (org-cycle t))
 
+(defun blc-org-find-file (&optional file other-window)
+  "Like `find-file', but defaults to `org-directory' files.
+With prefix argument OTHER-WINDOW, use `find-file-other-window'
+instead."
+  (interactive `(,(read-file-name
+                   "Org file: " org-directory nil nil
+                   ;; default-filename doesn't work with ivy
+                   (file-name-nondirectory org-default-notes-file))
+                 ,current-prefix-arg))
+  (funcall (if other-window #'find-file-other-window #'find-file) file))
+
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
   (interactive)
@@ -603,6 +616,7 @@ With prefix argument SELECT, call `tile-select' instead."
 (bind-keys
  :map global-map
  ("C-c C-r"   . blc-rename-buffer)
+ ("C-c b"     . blc-org-find-file)
  ("C-c i"     . blc-indent-relative)
  ("C-c P"     . blc-align-punctuation)
  ("S-<next>"  . blc-small-scroll-up)
@@ -2100,7 +2114,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :ensure org-plus-contrib
 
   :bind (("C-c a" . org-agenda)
-         ("C-c b" . org-iswitchb)
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link))
 
