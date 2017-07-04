@@ -1147,10 +1147,12 @@ With prefix argument SELECT, call `tile-select' instead."
   :bind (([remap dired                 ] . dired-at-point         )
          ([remap dired-other-frame     ] . ffap-dired-other-frame )
          ([remap dired-other-window    ] . ffap-dired-other-window)
-         ([remap find-file             ] . find-file-at-point     )
          ([remap find-file-other-frame ] . ffap-other-frame       )
          ([remap find-file-other-window] . ffap-other-window      ))
   :init
+  ;; For some reason this does not work with :bind
+  (bind-key [remap find-file] #'find-file-at-point)
+
   (mapc (-cut add-hook <> #'ffap-gnus-hook)
         '(gnus-summary-mode-hook gnus-article-mode-hook))
 
