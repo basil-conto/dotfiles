@@ -874,6 +874,7 @@ With prefix argument SELECT, call `tile-select' instead."
    ([remap load-theme              ] . counsel-load-theme)
    ([remap menu-bar-open           ] . counsel-tmm)
    ([remap org-goto                ] . counsel-org-goto)
+   ([remap org-set-tags-command    ] . counsel-org-tag)
    ([remap pop-mark                ] . counsel-mark-ring)
    ([remap yank-pop                ] . counsel-yank-pop))
 
