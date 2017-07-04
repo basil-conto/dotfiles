@@ -2173,6 +2173,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    org-hierarchical-todo-statistics                  nil
    org-list-demote-modify-bullet                     '(("+" . "-") ("-" . "+"))
    org-list-use-circular-motion                      t
+   org-log-done                                      'note
    org-log-into-drawer                               t
    org-log-redeadline                                'note
    org-log-reschedule                                'note
