@@ -63,12 +63,10 @@ with both raw URLs and links."
   (interactive "i\nF")
   (if (fboundp 'w3m-download)
       (w3m-download url file)
-    (thread-first (or url
-                      (url-get-url-at-point) ; Raw URL
-                      (and (shr-copy-url)    ; Link
-                           (substring-no-properties (pop kill-ring))))
-      ;; Confirm existing file
-      (url-copy-file file 0))))
+    (url-copy-file (or url
+                       (url-get-url-at-point)  ; Raw URL
+                       (shr-url-at-point nil)) ; Link/image
+                   file 0)))                   ; Confirm existing file
 
 (defun blc-gnus-user-date (date)
   "Massage DATE before passing it to `gnus-user-date'."
