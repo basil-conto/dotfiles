@@ -2280,6 +2280,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package playerctl
   :ensure)
 
+(use-package pomidor
+  :ensure)
+
 (use-package projectile
   :ensure
   :functions projectile-add-known-project projectile-save-known-projects
@@ -2325,6 +2328,17 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (add-hook 'ivy-mode-hook #'recentf-mode)
   :config
   (run-at-time t (blc-mins-to-secs 10) 'recentf-save-list))
+
+(use-package redtick
+  :ensure
+  :config
+  ;; Do not distract with colours - inherit `mode-line' foreground
+  (mapc (lambda (bar)
+          (setcar (cddr bar) nil))
+        redtick--bars)
+
+  (setq-default redtick-history-file (expand-file-name "redtick-history.txt"
+                                                       user-emacs-directory)))
 
 (use-package reftex
   :init
