@@ -163,6 +163,21 @@ returns results."
   (and (eq (process-status proc) 'exit)
        (zerop (process-exit-status proc))))
 
+(defun blc-dropbox-status ()
+  "Print status of external dropbox daemon."
+  (interactive)
+  (shell-command "dropbox status" "*Dropbox Status*"))
+
+(defun blc-dropbox-start ()
+  "Start external dropbox daemon."
+  (interactive)
+  (async-shell-command "dropbox start" "*Dropbox Control*"))
+
+(defun blc-dropbox-stop ()
+  "Stop external dropbox daemon."
+  (interactive)
+  (async-shell-command "dropbox stop" "*Dropbox Control*"))
+
 ;;; Files
 
 (defun blc-file (&rest paths)
