@@ -2101,6 +2101,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   (setq-default mml-secure-verbose t))
 
+(use-package "mule-cmds"
+  :init
+  (setq-default default-input-method "greek"))
+
 (use-package mustache-mode
   :ensure)
 
