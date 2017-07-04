@@ -40,58 +40,59 @@
   wip   = commit --edit --message='[WIP]'
 
 [commit]
-  gpgsign          = true
+  gpgsign            = true
 
 [core]
-  compression      = 9
-  editor           = ec
-  whitespace       = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
+  compression        = 9
+  editor             = ec
+  whitespace         = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 
 [diff]
-  algorithm        = histogram
-  submodule        = log
+  algorithm          = histogram
+  submodule          = log
 
 [diff "elisp"]
-  xfuncname        = ^\\([^[:space:]]+[[:space:]]+([^()[:space:]]+)
+  xfuncname          = ^\\([^[:space:]]+[[:space:]]+([^()[:space:]]+)
 
 [diff "gpg"]
-  textconv         = gpg --decrypt
+  textconv           = gpg --decrypt
 
 [diff "make"]
-  xfuncname        = ^([$.[:alnum:]_].*:|[[:alnum:]_]+[[:space:]]*\
+  xfuncname          = ^([$.[:alnum:]_].*:|[[:alnum:]_]+[[:space:]]*\
 ([*:+]?[:?]?|!?)=|define .*)
 
 [diff "shell"]
-  xfuncname        = ^([[:space:]]*[[:alpha:]_][[:alnum:]_]*[[:space:]]*\\(\\)\
-|[[:alpha:]_][[:alnum:]_]*=)
+  xfuncname          = ^([[:space:]]*[[:alpha:]_][[:alnum:]_]*[[:space:]]*\
+\\(\\) |[[:alpha:]_][[:alnum:]_]*=)
 
 [diff "texinfo"]
-  xfuncname        = ^@node[[:space:]]+([^,[:space:]][^,]+)
+  xfuncname          = ^@node[[:space:]]+([^,[:space:]][^,]+)
 
 [github]
-  user             = basil-conto
+  user               = basil-conto
 
 [interactive]
-  diffFilter       = diff-highlight
+  diffFilter         = diff-highlight
 
 [log]
-  date             = iso
+  date               = iso
 
 [pager]
-  diff             = diff-highlight | pager
-  log              = diff-highlight | pager
-  show             = diff-highlight | pager
+  diff               = diff-highlight | pager
+  log                = diff-highlight | pager
+  show               = diff-highlight | pager
 
 [status]
-  submoduleSummary = true
+  showUntrackedFiles = all
+  submoduleSummary   = true
 
 [submodule]
-  fetchJobs        = 0
+  fetchJobs          = 0
 
 [tag]
-  sort             = version:refname
+  sort               = version:refname
 
 [user]
-  email            = contovob@tcd.ie
-  name             = Basil L. Contovounesios
-  signingKey       = AB0D D410 0356 7A55 A0B3 B70F 205A B54A 5D5D 8CFF
+  email              = contovob@tcd.ie
+  name               = Basil L. Contovounesios
+  signingKey         = AB0D D410 0356 7A55 A0B3 B70F 205A B54A 5D5D 8CFF
