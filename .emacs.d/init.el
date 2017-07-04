@@ -859,7 +859,7 @@ With prefix argument SELECT, call `tile-select' instead."
    ("C-c g"   . counsel-ag)
    ("C-c t"   . counsel-git)
    ("C-c u"   . counsel-unicode-char)
-   ("C-h C-j" . counsel-describe-face)
+   ("C-h C-j" . counsel-faces)
    ("C-c j d" . counsel-dired-jump)
    ("C-c j f" . counsel-file-jump)
    ([remap bookmark-jump           ] . counsel-bookmark)
