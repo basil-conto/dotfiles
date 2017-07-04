@@ -2128,8 +2128,18 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
 
-  (setq-default org-directory          (blc-dir user-emacs-directory "org")
-                org-default-notes-file (blc-file org-directory "notes.org"))
+  (setq-default
+   org-directory          (blc-dir user-emacs-directory "org")
+   org-default-notes-file (blc-file org-directory "notes.org")
+   org-modules            '(org-bibtex
+                            org-bookmark
+                            org-docview
+                            org-eshell
+                            org-eww
+                            org-gnus
+                            org-id
+                            org-info
+                            org-man))
 
   :config
   (mapc (-cut map-put org-babel-load-languages <> t)
