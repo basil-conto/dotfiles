@@ -2190,7 +2190,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w@)" "BALK(b)" "|"
            "DONE(d!)" "VOID(v@)"))
    org-treat-S-cursor-todo-selection-as-state-change nil
-   org-use-fast-tag-selection                        t
    org-use-speed-commands                            t))
 
 (use-package org-mime
