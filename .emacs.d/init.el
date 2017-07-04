@@ -203,10 +203,6 @@ and temporarily pushing an `inhibit-same-window' property for
   "Use default inline completion."
   (completion-at-point))
 
-(define-advice magit-list-repos (:filter-return (repos) blc-truename)
-  "Return truenames of REPOS."
-  (mapcar #'realpath-truename repos))
-
 (define-advice makefile-insert-gmake-function
     (:after (&rest _) blc-delete-trailing-space)
   "Delete trailing whitespace after function call insertion."
