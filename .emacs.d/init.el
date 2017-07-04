@@ -190,13 +190,7 @@ This advice works by extending `ielm' to accept a prefix argument
 and temporarily pushing an `inhibit-same-window' property for
 `ielm' buffers onto `display-buffer-alist'."
   (interactive "P")
-  (let ((display-buffer-alist
-         `((,(lambda (name _action)
-               (with-current-buffer name
-                 (derived-mode-p #'inferior-emacs-lisp-mode)))
-            ()
-            (inhibit-same-window . ,other-window))
-           ,@display-buffer-alist)))
+  (let ((display-buffer-alist `(("" () (inhibit-same-window . ,other-window)))))
     (funcall ielm)))
 
 (define-advice ledger-pcomplete (:override (&rest _) blc-completion-at-point)
