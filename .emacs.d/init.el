@@ -622,6 +622,7 @@ With prefix argument SELECT, call `tile-select' instead."
  auto-hscroll-mode               'current-line
  fill-column                     blc-chars-per-line
  frame-resize-pixelwise          t
+ gnutls-log-level                1
  indent-tabs-mode                nil
  indicate-buffer-boundaries      t
  indicate-unused-lines           t
@@ -1346,7 +1347,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package gnutls
   :init
-  (setq-default gnutls-min-prime-bits nil))
+  (setq-default gnutls-min-prime-bits nil
+                gnutls-verify-error   t))
 
 (use-package google-contacts-gnus
   :ensure google-contacts
