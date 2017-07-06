@@ -2092,7 +2092,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
               '((message-citation-line-format
                  "On %a, %b %d %Y, at %R, %f wrote:\n")))
    message-confirm-send                  t
-   message-fill-column                   66
+   message-fill-column                   60
    message-from-style                    'angles
    message-forward-before-signature      nil
    message-make-forward-subject-function #'message-forward-subject-fwd
