@@ -182,19 +182,6 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   "Use default inline completion."
   (completion-at-point))
 
-(define-advice ielm
-    (:around (ielm &optional other-window) blc-other-window-prefix)
-  "Toggle other window popping for `ielm' via prefix argument.
-`ielm' will reuse the current window unless called with prefix
-argument OTHER-WINDOW.
-
-This advice works by extending `ielm' to accept a prefix argument
-and temporarily pushing an `inhibit-same-window' property for
-`ielm' buffers onto `display-buffer-alist'."
-  (interactive "P")
-  (let ((display-buffer-alist `(("" () (inhibit-same-window . ,other-window)))))
-    (funcall ielm)))
-
 (define-advice ledger-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
@@ -414,6 +401,12 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 See `blc-ibuffer-default-group'."
   (ibuffer-switch-to-saved-filter-groups blc-ibuffer-default-group))
 
+(defun blc-ielm-other-window ()
+  "Call `ielm' in another window."
+  (interactive)
+  (let ((display-buffer-alist `(("" () (inhibit-same-window . t)))))
+    (call-interactively #'ielm)))
+
 (defun blc-info-read-buffer ()
   "Read the name, file and node of an Info buffer.
 Return the name of the buffer as a string or `nil'."
@@ -486,16 +479,22 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
   (interactive)
   (org-cycle t))
 
-(defun blc-org-find-file (&optional file other-window)
-  "Like `find-file', but defaults to `org-directory' files.
-With prefix argument OTHER-WINDOW, use `find-file-other-window'
-instead."
-  (interactive `(,(read-file-name
-                   "Org file: " org-directory nil nil
-                   ;; default-filename doesn't work with ivy
-                   (file-name-nondirectory org-default-notes-file))
-                 ,current-prefix-arg))
-  (funcall (if other-window #'find-file-other-window #'find-file) file))
+(defun blc-org-read-file ()
+  "Read `org' filename.
+Defaults to `org-directory' and `org-default-notes-file'."
+  ;; DEFAULT-FILENAME argument doesn't work with ivy
+  (read-file-name "Org file: " org-directory nil nil
+                  (file-name-nondirectory org-default-notes-file)))
+
+(defun blc-org-find-file (&optional file)
+  "Like `find-file', but defaults to `org-directory' files."
+  (interactive `(,(blc-org-read-file)))
+  (find-file file))
+
+(defun blc-org-find-file-other-window (&optional file)
+  "Like `blc-org-find-file', but opens another window."
+  (interactive `(,(blc-org-read-file)))
+  (find-file-other-window file))
 
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
@@ -643,6 +642,7 @@ With prefix argument SELECT, call `tile-select' instead."
  :map global-map
  ("C-c C-r"                 . blc-rename-buffer)
  ("C-c b"                   . blc-org-find-file)
+ ("C-c 4 b"                 . blc-org-find-file-other-window)
  ("C-c i"                   . blc-indent-relative)
  ("C-c P"                   . blc-align-punctuation)
  ("S-<next>"                . blc-small-scroll-up)
