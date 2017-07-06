@@ -499,6 +499,7 @@ Defaults to `org-directory' and `org-default-notes-file'."
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
   (interactive)
+  (require 'term)
   (if (term-in-char-mode)
       (term-line-mode)
     (term-char-mode)))
