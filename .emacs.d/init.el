@@ -410,17 +410,18 @@ See `blc-ibuffer-default-group'."
 (defun blc-info-read-buffer ()
   "Read the name, file and node of an Info buffer.
 Return the name of the buffer as a string or `nil'."
-  (when-let (bufs
-             (blc-keep
-              (lambda (buf)
-                (with-current-buffer buf
-                  (when (derived-mode-p #'Info-mode)
-                    (let ((name (buffer-name)))
-                      `(,(concat name (substring-no-properties
-                                       (cadr mode-line-buffer-identification)))
-                        . ,name)))))
-              (buffer-list)))
-    (blc-aget bufs (completing-read "Info buffer: " bufs))))
+  (let ((bufs (blc-keep
+               (lambda (buf)
+                 (with-current-buffer buf
+                   (when (derived-mode-p #'Info-mode)
+                     (let ((name (buffer-name)))
+                       `(,(concat name (substring-no-properties
+                                        (cadr mode-line-buffer-identification)))
+                         . ,name)))))
+               (buffer-list))))
+    (if (cdr bufs)
+        (blc-aget bufs (completing-read "Info buffer: " bufs))
+      (cdar bufs))))
 
 (defun blc-info (&optional buffer)
   "Call `info' on interactively completed BUFFER."
