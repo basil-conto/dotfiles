@@ -2217,7 +2217,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    org-special-ctrl-a/e                              t
    org-startup-indented                              t
    org-todo-keywords
-   '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w@)" "BALK(b)" "|"
+   '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
            "DONE(d!)" "VOID(v@)"))
    org-treat-S-cursor-todo-selection-as-state-change nil
    org-use-speed-commands                            t))
