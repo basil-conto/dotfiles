@@ -462,6 +462,26 @@ frames."
 
 ;;; Settings
 
+(defvar blc-cities
+  '(("Athens"     :country "GR" :lat [37 59 north] :long [23 44 east])
+    ("Dublin"     :country "IE" :lat [53 21 north] :long [06 16 west])
+    ("Harare"     :country "ZW" :lat [17 52 south] :long [31 02 east])
+    ("Kfar Qasim" :country "IL" :lat [32 07 north] :long [34 59 east])
+    ("Tel Aviv"   :country "IL" :lat [32 04 north] :long [34 47 east])
+    ("Xylokastro" :country "GR" :lat [38 04 north] :long [22 38 east]))
+  "Map city names to their location properties.")
+
+(defvar blc-countries
+  '(("GR" :name "Greece"   :continent "Europe")
+    ("IE" :name "Ireland"  :continent "Europe")
+    ("IL" :name "Israel"   :continent "Asia"  )
+    ("ZW" :name "Zimbabwe" :continent "Africa"))
+  "Map ISO 3166-1 alpha-2 codes to country properties.")
+
+(defun blc--country-xref (props)
+  "Lookup PROPS `:country' properties in `blc-countries'."
+  (blc-aget blc-countries (plist-get props :country)))
+
 (defun blc-turn-off-cursor-blink (&optional frame &rest _)
   "Disable `blink-cursor-mode'."
   (and (display-graphic-p frame)

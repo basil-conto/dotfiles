@@ -496,6 +496,15 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (interactive `(,(blc-org-read-file)))
   (find-file-other-window file))
 
+(defun blc-solar-set-city (&optional city)
+  "Reconcile solar calculations with CITY from `blc-cities'."
+  (interactive `(,(completing-read "City: " blc-cities nil t)))
+  (pcase (blc-aget blc-cities city)
+    ((plist :country country :lat lat :long long)
+     (setq-default calendar-latitude      lat
+                   calendar-longitude     long
+                   calendar-location-name (format "%s, %s" city country)))))
+
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
   (interactive)
@@ -2466,10 +2475,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package solar
   :init
-  (setq-default
-   calendar-latitude      53.3
-   calendar-longitude      6.3
-   calendar-location-name "Dublin, IE"))
+  (blc-solar-set-city "Harare"))
 
 (use-package speedbar
   :config
@@ -2596,12 +2602,14 @@ Filter `starred-name' is implied unless symbol `nostar' present."
      display-time-format                 fmt
      display-time-load-average-threshold 0
      display-time-mail-string            "✉"
-     display-time-world-list             '(("Europe/Dublin" "Dublin"  )
-                                           ("Africa/Harare" "Harare"  )
-                                           ("Europe/Athens" "Athens"  )
-                                           ("Asia/Tel_Aviv" "Tel Aviv"))
+     display-time-world-list
+     (map-apply (pcase-lambda (city (app blc--country-xref country))
+                  `(,(format "%s/%s"
+                             (plist-get country :continent)
+                             (subst-char-in-string ?\s ?_ city))
+                    ,city))
+                blc-cities)
      display-time-world-time-format      fmt))
-
   (display-time))
 
 (use-package top-mode
@@ -2801,16 +2809,12 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package wttrin
   :ensure
-  :config
+  :init
   (setq-default
    wttrin-default-cities
-   (mapcar (-cut string-join <> ", ")
-           '(("Athens"     "Greece"  )
-             ("Avoca"      "Ireland" )
-             ("Dublin"     "Ireland" )
-             ("Kfar Qasim" "Israel"  )
-             ("Harare"     "Zimbabwe")
-             (             "Moon"    )))))
+   `(,"Moon" ,@(map-apply (pcase-lambda (city (app blc--country-xref country))
+                            (format "%s, %s" city (plist-get country :name)))
+                          blc-cities))))
 
 (use-package xref-js2
   :ensure
