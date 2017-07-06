@@ -414,6 +414,31 @@ prefixed by CATEGORY and ACCT-SEP (default \":\")."
 See `blc-ibuffer-default-group'."
   (ibuffer-switch-to-saved-filter-groups blc-ibuffer-default-group))
 
+(defun blc-info-read-buffer ()
+  "Read the name, file and node of an Info buffer.
+Return the name of the buffer as a string or `nil'."
+  (when-let (bufs
+             (blc-keep
+              (lambda (buf)
+                (with-current-buffer buf
+                  (when (derived-mode-p #'Info-mode)
+                    (let ((name (buffer-name)))
+                      `(,(concat name (substring-no-properties
+                                       (cadr mode-line-buffer-identification)))
+                        . ,name)))))
+              (buffer-list)))
+    (blc-aget bufs (completing-read "Info buffer: " bufs))))
+
+(defun blc-info (&optional buffer)
+  "Call `info' on interactively completed BUFFER."
+  (interactive `(,(blc-info-read-buffer)))
+  (info nil buffer))
+
+(defun blc-info-other-window (&optional buffer)
+  "Call `info-other-window' on interactively completed BUFFER."
+  (interactive `(,(blc-info-read-buffer)))
+  (info-other-window nil buffer))
+
 (defun blc-info-kill ()
   "Quit Info and kill its buffer."
   (interactive)
@@ -616,23 +641,25 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (bind-keys
  :map global-map
- ("C-c C-r"   . blc-rename-buffer)
- ("C-c b"     . blc-org-find-file)
- ("C-c i"     . blc-indent-relative)
- ("C-c P"     . blc-align-punctuation)
- ("S-<next>"  . blc-small-scroll-up)
- ("S-<prior>" . blc-small-scroll-down)
- ("<f5>"      . blc-revert-buffer)
+ ("C-c C-r"                 . blc-rename-buffer)
+ ("C-c b"                   . blc-org-find-file)
+ ("C-c i"                   . blc-indent-relative)
+ ("C-c P"                   . blc-align-punctuation)
+ ("S-<next>"                . blc-small-scroll-up)
+ ("S-<prior>"               . blc-small-scroll-down)
+ ("<f5>"                    . blc-revert-buffer)
+ ([remap info]              . blc-info)
+ ([remap info-other-window] . blc-info-other-window)
  :map ctl-x-map
- ("C-n"       . blc-open-next-line)
- ("C-p"       . blc-open-previous-line)
- ("7"         . blc-transpose-split)
- ("B"         . blc-bury-buffer)
- ("l"         . blc-echo-fast-line-count)
+ ("C-n"                     . blc-open-next-line)
+ ("C-p"                     . blc-open-previous-line)
+ ("7"                       . blc-transpose-split)
+ ("B"                       . blc-bury-buffer)
+ ("l"                       . blc-echo-fast-line-count)
  :map ctl-x-5-map
- ("3"         . blc-make-graphic-display)
+ ("3"                       . blc-make-graphic-display)
  :map esc-map
- ("R"         . redraw-display))
+ ("R"                       . redraw-display))
 
 
 ;;;; PACKAGES
