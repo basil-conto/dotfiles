@@ -2241,6 +2241,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package org
   :ensure org-plus-contrib
+  :functions org-clock-in-last org-clock-out org-minutes-to-clocksum-string
 
   :bind (:map
          mode-specific-map
@@ -2265,6 +2266,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                             org-man))
 
   :config
+  (mapc (lambda (cmd)
+          (bind-key (where-is-internal cmd org-mode-map t) cmd))
+        `(,#'org-clock-in-last ,#'org-clock-out))
+
   (mapc (-cut map-put org-babel-load-languages <> t)
         '(C
           haskell
@@ -2288,9 +2293,21 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    org-babel-python-command                          "python3"
    org-catch-invisible-edits                         'smart
    org-checkbox-hierarchical-statistics              nil
+   org-clock-idle-time                               10
+   org-clock-persist                                 'history
+   org-columns-default-format
+   "%ITEM %TODO %1PRIORITY %TAGS %Effort{:} %CLOCKSUM"
    org-ctrl-k-protect-subtree                        t
    org-export-coding-system                          'utf-8
    org-footnote-section                              nil
+   org-global-properties
+   `(("Effort_ALL"
+      . ,(concat
+          "0 " (mapconcat #'org-minutes-to-clocksum-string
+                          (mapcan (lambda (step)
+                                    (number-sequence step (* step 3) step))
+                                  '(15 60))
+                          " "))))
    org-goto-interface                                'outline-path-completion
    org-goto-max-level                                10
    org-hierarchical-todo-statistics                  nil
@@ -2313,7 +2330,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
            "DONE(d!)" "VOID(v@)"))
    org-treat-S-cursor-todo-selection-as-state-change nil
-   org-use-speed-commands                            t))
+   org-use-speed-commands                            t)
+
+  (org-clock-persistence-insinuate))
 
 (use-package org-mime
   :ensure)
