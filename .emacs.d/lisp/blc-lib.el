@@ -81,7 +81,10 @@ instead of the default `assoc'."
 
 (defun blc-symcat (&rest objects)
   "Concatenate unquoted printed OBJECTS as a symbol."
-  (intern (mapconcat (lambda (obj) (prin1-to-string obj t)) objects "")))
+  (intern (mapconcat (lambda (obj)
+                       (prin1-to-string obj t))
+                     objects
+                     "")))
 
 (defun blc-standard-value (var)
   "Return `standard-value' property of symbol VAR."
@@ -438,9 +441,7 @@ Display is determined by the environment variable DISPLAY."
 (defun blc-with-every-frame (&rest fns)
   "Run abnormal hooks in current frame and with every new one."
   (blc-funcs fns (selected-frame))
-  (mapc (lambda (fn)
-          (add-hook 'after-make-frame-functions fn))
-        fns))
+  (mapc (apply-partially #'add-hook 'after-make-frame-functions) fns))
 
 (defun blc-but-fringes (width &rest subtrahends)
   "Subtract SUBTRAHENDS and total fringe columns from WIDTH."
@@ -455,8 +456,7 @@ frames."
                  ,(and current-prefix-arg (selected-frame))))
   (let ((font (format "%s-%d" (face-attribute 'default :family) (/ height 10))))
     (funcall (if frame
-                 (lambda (alist)
-                   (modify-frame-parameters frame alist))
+                 (apply-partially #'modify-frame-parameters frame)
                #'modify-all-frames-parameters)
              `((font . ,font)))))
 
