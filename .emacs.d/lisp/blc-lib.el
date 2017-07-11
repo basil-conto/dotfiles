@@ -517,6 +517,21 @@ overrides them."
   "Locally disable tab indentation."
   (setq indent-tabs-mode nil))
 
+(defun blc-gnus-summary-line-format (&rest from)
+  "Return format string suitable for `gnus-summary-line-format'.
+Strings FROM override the default `f' format spec."
+  (apply #'concat
+         `("%U"                                   ; Read status
+           "%R"                                   ; Replied status
+           "%z"                                   ; Article zcore
+           "%O "                                  ; Download mark
+           "%B"                                   ; Thread tree
+           "%(%2{%-24,24" ,@(or from '("f")) "%}" ; From/To
+           "%-29= : "                             ; Colon
+           "%3{%-50,50s%}%)"                      ; Subject
+           "%4{%9&user-date;%}"                   ; Age-sensitive data
+           "\n")))
+
 (defun blc-turn-on-lexical-binding ()
   "Locally enable lexical binding."
   (setq lexical-binding t))

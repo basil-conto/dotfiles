@@ -88,6 +88,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 (blc-declare-vars
   Info-standalone
   LaTeX-clean-intermediate-suffixes
+  bbdb-mua-summary-unify-format-letter
   c-mode-base-map
   doc-view-resolution
   ffap-alist
@@ -206,6 +207,12 @@ Include every major mode derived from the current
 
 
 ;;; Package utilities
+
+(defun blc-bbdb-set-gnus-summary-line-format ()
+  "Prepare `gnus-summary-line-format' for `bbdb' unification."
+  (setq-default
+   gnus-summary-line-format
+   (blc-gnus-summary-line-format "u" bbdb-mua-summary-unify-format-letter)))
 
 (defun blc-print-url--lpr (url &rest _)
   "Asynchronously print URL using `lpr-command'.
@@ -788,6 +795,33 @@ With prefix argument SELECT, call `tile-select' instead."
   (setq-default battery-mode-line-format "🔋%b%p%% ")
   (display-battery-mode))
 
+(use-package bbdb
+  :ensure
+  :init
+  (map-apply #'add-hook
+             `((gnus-started-hook . ,#'blc-bbdb-set-gnus-summary-line-format)
+               (gnus-startup-hook . ,#'bbdb-insinuate-gnus)))
+
+  (setq-default bbdb-default-country    nil
+                bbdb-name-format        'last-first
+                bbdb-phone-style        nil
+                bbdb-pop-up-window-size t)
+
+  :config
+  ;; Support Eircode
+  (let ((char '(in "A-N" "P-Z" digit)))
+    (add-to-list 'bbdb-legal-postcodes
+                 (blc-rx `(: bos (= 3 ,char) (? ?\s) (= 4 ,char) eos))))
+
+  (setq-default
+   bbdb-phone-label-list
+   (blc-sed-tree "cell" "mobile" bbdb-phone-label-list nil t)
+   bbdb-user-mail-address-re
+   (regexp-opt (mapcar (lambda (addr)
+                         (car (split-string addr "@")))
+                       (blc-msmtp-addresses))
+               'words)))
+
 (use-package better-shell
   :ensure)
 
@@ -1155,6 +1189,16 @@ With prefix argument SELECT, call `tile-select' instead."
   (setq-default ess-default-style   'DEFAULT
                 ess-indent-from-lhs nil))
 
+(use-package eudc
+  :after message
+  :init
+  (add-hook 'gnus-load-hook #'eudc-load-eudc)
+  (setq-default eudc-protocol            'bbdb
+                eudc-inline-query-format '((email)
+                                           (name)
+                                           (firstname)
+                                           (firstname name))))
+
 (use-package ewmctrl
   :ensure)
 
@@ -1375,14 +1419,10 @@ With prefix argument SELECT, call `tile-select' instead."
   (setq-default gnutls-min-prime-bits nil
                 gnutls-verify-error   t))
 
-(use-package google-contacts-gnus
-  :ensure google-contacts
-  :after gnus
+(use-package google-contacts
+  :ensure
   :init
   (add-hook 'google-contacts-mode-hook #'blc-google-contacts-fontify))
-
-(use-package google-contacts-message
-  :after message)
 
 (use-package google-maps
   :ensure)
@@ -2467,6 +2507,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
   :init
   (setq-default kill-whole-line     t
+                mail-user-agent     'gnus-user-agent
                 next-error-recenter '(4)
                 read-mail-command   'gnus)
 

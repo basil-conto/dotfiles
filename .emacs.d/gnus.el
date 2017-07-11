@@ -100,17 +100,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-group-uncollapsed-levels          3
  gnus-invalid-group-regexp              "[: `'\"]\\|^$"
  gnus-select-method                     '(nnnil)
- gnus-summary-line-format
- (concat "%U"                           ; Read status
-         "%R"                           ; Replied status
-         "%z"                           ; Article zcore
-         "%O "                          ; Download mark
-         "%B"                           ; Thread tree
-         "%(%2{%-24,24f%}"              ; From/To
-         "%-29= : "                     ; Colon
-         "%3{%-50,50s%}%)"              ; Subject
-         "%4{%9&user-date;%}"           ; Age-sensitive date
-         "\n")
+ gnus-summary-line-format               (blc-gnus-summary-line-format)
  gnus-update-message-archive-method     t
  gnus-secondary-select-methods
  `(,@(blc-with-contents "~/.mbsyncrc"
