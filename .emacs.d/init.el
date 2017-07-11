@@ -587,10 +587,6 @@ With prefix argument SELECT, call `tile-select' instead."
                 (mapcar #'blc-zenburn-assoc
                         '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
 
-    (defun blc-zenburn-darken-linum ()
-      "Darken foreground of face `linum' under `zenburn'."
-      (set-face-foreground 'linum (blc-zenburn-assoc 'zenburn-bg+3)))
-
     (defun blc-zenburn-fontify-org-todo ()
       "Customise `org-todo-keyword-faces' under `zenburn'."
       (setq-default org-todo-keyword-faces
@@ -603,13 +599,13 @@ With prefix argument SELECT, call `tile-select' instead."
                                  ("BALK" . zenburn-fg     )
                                  ("VOID" . zenburn-blue-2 )))))
 
-    (set-face-background 'highlight (blc-zenburn-assoc 'zenburn-bg-1))
+    (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
+    (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
 
     (map-do #'add-hook
-            `((   fci-mode-hook . ,#'blc-zenburn-brighten-fci    )
-              (   ivy-mode-hook . ,#'blc-zenburn-darken-ivy      )
-              (nlinum-mode-hook . ,#'blc-zenburn-darken-linum    )
-              (   org-load-hook . ,#'blc-zenburn-fontify-org-todo)))))
+            `((fci-mode-hook . ,#'blc-zenburn-brighten-fci    )
+              (ivy-mode-hook . ,#'blc-zenburn-darken-ivy      )
+              (org-load-hook . ,#'blc-zenburn-fontify-org-todo)))))
 
 ;; Maximise initial frame
 (map-put initial-frame-alist 'fullscreen 'maximized)
@@ -2158,9 +2154,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package mwheel
   :init
   (setq-default mwheel-tilt-scroll-p t))
-
-(use-package nlinum
-  :ensure)
 
 (use-package nodejs-repl
   :ensure)
