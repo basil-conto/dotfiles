@@ -2828,6 +2828,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :ensure
   :config
   (setq-default
+   wttrin-default-accept-language
+   `(,(car wttrin-default-accept-language) . "el,en,*")
    wttrin-default-cities
    `(,"Moon" ,@(map-apply
                 (pcase-lambda (loc (app (apply #'blc--country-xref) country))
