@@ -88,7 +88,7 @@ corresponding feature name."
   (macroexp-let2 nil path pathexpr
     `(when (file-readable-p ,path)
        (with-temp-buffer
-         (insert-file-contents-literally ,path)
+         (insert-file-contents ,path)
          ,@body))))
 
 (provide 'blc-macs)
