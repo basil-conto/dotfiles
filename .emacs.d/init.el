@@ -2385,13 +2385,14 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package redtick
   :ensure
   :config
-  ;; Do not distract with colours - inherit `mode-line' foreground
-  (mapc (lambda (bar)
-          (setcar (cddr bar) nil))
-        redtick--bars)
-
-  (setq-default redtick-history-file (expand-file-name "redtick-history.txt"
-                                                       user-emacs-directory)))
+  (setq-default
+   ;; Do not distract with colours - inherit `mode-line' foreground
+   redtick--bars
+   (mapcar (pcase-lambda (`(,interval ,bar _))
+             `(,interval ,bar nil))
+           redtick--bars)
+   redtick-history-file
+   (expand-file-name "redtick-history.txt" user-emacs-directory)))
 
 (use-package reftex
   :init
