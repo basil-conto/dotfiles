@@ -315,6 +315,27 @@ description of the arguments to this function."
 (function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
+(defun blc-system-tz ()
+  "Return contents of `/etc/timezone' or nil."
+  (blc-with-contents "/etc/timezone"
+    (and (blc-search-forward (rx (group (+ nonl)) (? ?\n) eos))
+         (match-string-no-properties 1))))
+
+(defun blc-system-location ()
+  "Return location of `blc-system-tz' or nil."
+  (when-let (tz (blc-system-tz))
+    (cadr (split-string tz "/" t))))
+
+(defun blc-solar-set-location (&optional location)
+  "Reconcile solar calendar with LOCATION from `blc-locations'."
+  (interactive `(,(completing-read "Location: " blc-locations nil t nil ()
+                                   (blc-system-location))))
+  (pcase (blc-aget blc-locations location)
+    ((plist :country country :lat lat :long long)
+     (setq-default calendar-latitude      lat
+                   calendar-longitude     long
+                   calendar-location-name (format "%s, %s" location country)))))
+
 (defun blc-turn-on-c++-comments ()
   "Default to C++-style line comments."
   (if (bound-and-true-p c-buffer-is-cc-mode)
@@ -496,15 +517,6 @@ Defaults to `org-directory' and `org-default-notes-file'."
   "Like `blc-org-find-file', but opens another window."
   (interactive `(,(blc-org-read-file)))
   (find-file-other-window file))
-
-(defun blc-solar-set-city (&optional city)
-  "Reconcile solar calculations with CITY from `blc-cities'."
-  (interactive `(,(completing-read "City: " blc-cities nil t)))
-  (pcase (blc-aget blc-cities city)
-    ((plist :country country :lat lat :long long)
-     (setq-default calendar-latitude      lat
-                   calendar-longitude     long
-                   calendar-location-name (format "%s, %s" city country)))))
 
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
@@ -1451,6 +1463,7 @@ With prefix argument SELECT, call `tile-select' instead."
   (mapc (-cut add-to-list 'hi-lock-exclude-modes <>)
         '(comint-mode
           completion-list-mode
+          display-time-world-mode
           erc-mode
           eshell-mode
           term-mode))
@@ -2476,7 +2489,12 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package solar
   :init
-  (blc-solar-set-city "Harare"))
+  (setq-default
+   calendar-time-display-form
+   '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
+  :config
+  (when-let (loc (blc-system-location))
+    (blc-solar-set-location loc)))
 
 (use-package speedbar
   :config
@@ -2604,12 +2622,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
      display-time-load-average-threshold 0
      display-time-mail-string            "✉"
      display-time-world-list
-     (map-apply (pcase-lambda (city (app blc--country-xref country))
-                  `(,(format "%s/%s"
-                             (plist-get country :continent)
-                             (subst-char-in-string ?\s ?_ city))
-                    ,city))
-                blc-cities)
+     (map-apply (lambda (loc props)
+                  `(,(apply #'blc--location-to-tz loc props) ,loc))
+                blc-locations)
      display-time-world-time-format      fmt))
   (display-time))
 
@@ -2810,12 +2825,13 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package wttrin
   :ensure
-  :init
+  :config
   (setq-default
    wttrin-default-cities
-   `(,"Moon" ,@(map-apply (pcase-lambda (city (app blc--country-xref country))
-                            (format "%s, %s" city (plist-get country :name)))
-                          blc-cities))))
+   `(,"Moon" ,@(map-apply
+                (pcase-lambda (loc (app (apply #'blc--country-xref) country))
+                  (format "%s, %s" loc (plist-get country :name)))
+                blc-locations))))
 
 (use-package xref-js2
   :ensure
