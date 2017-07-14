@@ -18,8 +18,11 @@ See URL `http://bling.github.io/blog/2016/01/18/\
 why-are-you-changing-gc-cons-threshold/'.")
 
 (eval-and-compile
-  ;; Increase GC threshold to at least 64MiB during initialisation
-  (setq gc-cons-threshold (max (ash 1 26) gc-cons-threshold))
+  (defun blc-gc-thresh-maximise ()
+    "Increase GC threshold to at least 64MiB"
+    (setq gc-cons-threshold (max (ash 1 26) gc-cons-threshold)))
+
+  (blc-gc-thresh-maximise)
 
   ;; Include user lisp libraries
   (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
@@ -1414,6 +1417,11 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package gnus
   :init
+  ;; Shave a few startup seconds
+  (map-apply #'add-hook
+             `((gnus-load-hook    . ,#'blc-gc-thresh-maximise)
+               (gnus-started-hook . ,#'blc-gc-thresh-restore )))
+
   (setq-default
    gnus-home-directory user-emacs-directory
    gnus-init-file      (expand-file-name "gnus" gnus-home-directory)))
