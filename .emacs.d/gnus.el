@@ -199,7 +199,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 ;;; Deferrals
 
 (with-eval-after-load 'gnus-art
-  (define-key gnus-article-mode-map (kbd "M-D") #'blc-download)
+  (define-key gnus-article-mode-map "\M-D" #'blc-download)
 
   (let ((to (rx bol (| "Delivered-To" "To") ?:)))
     (setq-default
@@ -227,9 +227,8 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
             (gnus-thread-sort-functions  . ,#'gnus-thread-sort-by-date))))
 
 (with-eval-after-load 'gnus-topic
-  (mapc (lambda (key)
-          (define-key gnus-topic-mode-map (kbd key) #'blc-gnus-topic-fold))
-        '("TAB" "<tab>")))
+  (define-key
+    gnus-topic-mode-map [remap gnus-topic-indent] #'blc-gnus-topic-fold))
 
 (with-eval-after-load 'nnir
   (add-to-list

@@ -665,28 +665,31 @@ With prefix argument SELECT, call `tile-select' instead."
 
 ;;; Bindings
 
-(bind-keys
- :map global-map
- ("C-c C-r"                 . blc-rename-buffer)
- ("C-c b"                   . blc-org-find-file)
- ("C-c 4 b"                 . blc-org-find-file-other-window)
- ("C-c i"                   . blc-indent-relative)
- ("C-c P"                   . blc-align-punctuation)
- ("S-<next>"                . blc-small-scroll-up)
- ("S-<prior>"               . blc-small-scroll-down)
- ("<f5>"                    . blc-revert-buffer)
- ([remap info]              . blc-info)
- ([remap info-other-window] . blc-info-other-window)
- :map ctl-x-map
- ("C-n"                     . blc-open-next-line)
- ("C-p"                     . blc-open-previous-line)
- ("7"                       . blc-transpose-split)
- ("B"                       . blc-bury-buffer)
- ("l"                       . blc-echo-fast-line-count)
- :map ctl-x-5-map
- ("3"                       . blc-make-graphic-display)
- :map esc-map
- ("R"                       . redraw-display))
+(map-apply
+ (lambda (map bindings)
+   (map-apply (-cut define-key map <> <>) bindings))
+ `((,(current-global-map)
+    ([S-next]                  . ,#'blc-small-scroll-up)
+    ([S-prior]                 . ,#'blc-small-scroll-down)
+    ([f5]                      . ,#'blc-revert-buffer)
+    ([remap info]              . ,#'blc-info)
+    ([remap info-other-window] . ,#'blc-info-other-window))
+   (,mode-specific-map
+    ("\C-r"                    . ,#'blc-rename-buffer)
+    ("b"                       . ,#'blc-org-find-file)
+    ("4b"                      . ,#'blc-org-find-file-other-window)
+    ("i"                       . ,#'blc-indent-relative)
+    ("P"                       . ,#'blc-align-punctuation))
+   (,ctl-x-map
+    ("\C-n"                    . ,#'blc-open-next-line)
+    ("\C-p"                    . ,#'blc-open-previous-line)
+    ("7"                       . ,#'blc-transpose-split)
+    ("B"                       . ,#'blc-bury-buffer)
+    ("l"                       . ,#'blc-echo-fast-line-count))
+   (,ctl-x-5-map
+    ("3"                       . ,#'blc-make-graphic-display))
+   (,esc-map
+    ("R"                       . ,#'redraw-display))))
 
 
 ;;;; PACKAGES
@@ -779,7 +782,9 @@ With prefix argument SELECT, call `tile-select' instead."
   :bind (:map
          esc-map
          ("]"   . avy-goto-word-or-subword-1)
-         ("g f" . avy-goto-line)
+         :map
+         goto-map
+         ("f" . avy-goto-line)
          :map
          isearch-mode-map
          ("C-'" . avy-isearch))
@@ -837,8 +842,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package bookmark
   :bind (:map
-         ctl-x-map
-         ("r 4 b" . bookmark-jump-other-window))
+         ctl-x-r-map
+         ("4 b" . bookmark-jump-other-window))
   :init
   (setq-default bookmark-save-flag       1
                 bookmark-search-delay    0
@@ -931,19 +936,7 @@ With prefix argument SELECT, call `tile-select' instead."
   :delight counsel-mode
 
   :bind
-  (:map
-   ctl-x-map
-   ("C-l" . counsel-locate)
-   :map
-   global-map
-   ("C-s"     . counsel-grep-or-swiper)
-   ("C-c g"   . counsel-ag)
-   ("C-c t"   . counsel-git)
-   ("C-c u"   . counsel-unicode-char)
-   ("C-h C-j" . counsel-faces)
-   ("C-c j d" . counsel-dired-jump)
-   ("C-c j f" . counsel-file-jump)
-   ([remap bookmark-jump           ] . counsel-bookmark)
+  (([remap bookmark-jump           ] . counsel-bookmark)
    ([remap describe-bindings       ] . counsel-descbinds)
    ([remap describe-function       ] . counsel-describe-function)
    ([remap describe-variable       ] . counsel-describe-variable)
@@ -951,13 +944,27 @@ With prefix argument SELECT, call `tile-select' instead."
    ([remap find-library            ] . counsel-find-library)
    ([remap imenu                   ] . counsel-imenu)
    ([remap info-lookup-symbol      ] . counsel-info-lookup-symbol)
+   ([remap isearch-forward         ] . counsel-grep-or-swiper)
    ([remap load-library            ] . counsel-load-library)
    ([remap load-theme              ] . counsel-load-theme)
    ([remap menu-bar-open           ] . counsel-tmm)
    ([remap org-goto                ] . counsel-org-goto)
    ([remap org-set-tags-command    ] . counsel-org-tag)
    ([remap pop-mark                ] . counsel-mark-ring)
-   ([remap yank-pop                ] . counsel-yank-pop))
+   ([remap yank-pop                ] . counsel-yank-pop)
+   :map
+   ctl-x-map
+   ("C-l" . counsel-locate)
+   :map
+   help-map
+   ("C-j" . counsel-faces)
+   :map
+   mode-specific-map
+   ("g"   . counsel-ag)
+   ("t"   . counsel-git)
+   ("u"   . counsel-unicode-char)
+   ("j d" . counsel-dired-jump)
+   ("j f" . counsel-file-jump))
 
   :init
   ;; Do not remap keys above with `counsel-mode'
@@ -1037,7 +1044,9 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package define-word
   :ensure
-  :bind ("C-c /" . define-word-at-point))
+  :bind (:map
+         mode-specific-map
+         ("/" . define-word-at-point)))
 
 (use-package delsel
   :init
@@ -1122,7 +1131,9 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package ebib
   :ensure
-  :bind ("C-c e" . ebib)
+  :bind (:map
+         mode-specific-map
+         ("e" . ebib))
   :config
   (setq-default
    ebib-bibtex-dialect 'biblatex
@@ -1150,8 +1161,10 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package engine-mode
   :ensure
-  :commands engine-mode engine/execute-search engine/get-query
-  :bind-keymap ("C-x /" . engine-mode-map)
+  :commands engine/execute-search engine/get-query
+  :init
+  (autoload 'engine-mode-prefixed-map "engine-mode" nil nil 'keymap)
+  (define-key ctl-x-map "/" 'engine-mode-prefixed-map)
   :config
   (defengine book-depository
     "https://bookdepository.com/search?searchTerm=%s"
@@ -1574,9 +1587,13 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package ibuf-ext
   :commands ibuffer-auto-mode
-  :bind (([remap list-buffers]      . ibuffer)
+  :bind (([remap list-buffers] . ibuffer)
+         :map
+         ibuffer-mode-map
          ([remap ibuffer-find-file] . blc-ibuffer-ffap)
-         ("C-c j b"                 . ibuffer-jump))
+         :map
+         mode-specific-map
+         ("j b" . ibuffer-jump))
   :init
   (mapc (-cut add-hook 'ibuffer-mode-hook <>)
         `(,#'ibuffer-auto-mode
@@ -1752,14 +1769,16 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :bind (([remap switch-to-buffer] . ivy-switch-buffer)
          ([remap switch-to-buffer-other-window]
           . ivy-switch-buffer-other-window)
-         ("C-c r" . ivy-resume)
+         :map
+         mode-specific-map
+         ("r"   . ivy-resume)
          :map
          ivy-minibuffer-map
-         ("M-D"   . ivy-dispatching-done)
+         ("M-D" . ivy-dispatching-done)
          :map
          ivy-occur-mode-map
-         ("n"     . ivy-occur-next-line)
-         ("p"     . ivy-occur-previous-line))
+         ("n"   . ivy-occur-next-line)
+         ("p"   . ivy-occur-previous-line))
 
   :init
   ;; Autoloading
@@ -1860,11 +1879,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package js2-mode
   :ensure
-  :bind (:map
-         js2-mode-map
-         ("RET" . js2-line-break))
   :mode "\\.js\\'"
   :interpreter "node" "nodejs"
+  :functions js2-line-break
   :init
   (setq-default js2-bounce-indent-p t)
 
@@ -1874,6 +1891,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
   :config
   (delight #'js2-mode "jsⅡ" :major)
+
+  (define-key js2-mode-map "\r" #'js2-line-break)
 
   (setq-default
    js2-allow-rhino-new-expr-initializer nil
@@ -2214,9 +2233,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package org
   :ensure org-plus-contrib
 
-  :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture)
-         ("C-c l" . org-store-link))
+  :bind (:map
+         mode-specific-map
+         ("a" . org-agenda)
+         ("c" . org-capture)
+         ("l" . org-store-link))
 
   :init
   (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
@@ -2304,9 +2325,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :ensure)
 
 (use-package outline
-  :bind (:map
-         outline-minor-mode-map
-         ("C-c C-i" . blc-org-cycle)))
+  :config
+  (define-key outline-minor-mode-map "\C-c\t" #'blc-org-cycle))
 
 (use-package pacmacs
   :ensure)
@@ -2379,7 +2399,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package projectile
   :ensure
   :functions projectile-add-known-project projectile-save-known-projects
-  :bind-keymap ("C-c p" . projectile-command-map)
+
+  :init
+  (autoload 'projectile-command-map "projectile" nil t 'keymap)
+  (define-key mode-specific-map "p" 'projectile-command-map)
+
   :config
   (when (and (require 'magit-repos nil t) (fboundp 'magit-list-repos))
     (mapc #'projectile-add-known-project (mapcar #'blc-dir (magit-list-repos)))
@@ -2495,15 +2519,13 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package simple
   :commands turn-on-auto-fill
-  :bind (:map
-         esc-map
-         ("g e" . first-error)
-         :map
-         global-map
-         ([remap delete-horizontal-space] .   cycle-spacing)
+  :bind (([remap delete-horizontal-space] .   cycle-spacing)
          ([remap         capitalize-word] . capitalize-dwim)
          ([remap           downcase-word] .   downcase-dwim)
-         ([remap             upcase-word] .     upcase-dwim))
+         ([remap             upcase-word] .     upcase-dwim)
+         :map
+         goto-map
+         ("e" . first-error))
 
   :init
   (setq-default kill-whole-line     t
@@ -2592,11 +2614,13 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package sx
   :ensure
-  :bind (("C-c s a" . sx-tab-all-questions  )
-         ("C-c s i" . sx-inbox              )
-         ("C-c s m" . sx-tab-meta-or-main   )
-         ("C-c s n" . sx-inbox-notifications)
-         ("C-c s s" . sx-search             ))
+  :bind (:map
+         mode-specific-map
+         ("s a" . sx-tab-all-questions  )
+         ("s i" . sx-inbox              )
+         ("s m" . sx-tab-meta-or-main   )
+         ("s n" . sx-inbox-notifications)
+         ("s s" . sx-search             ))
   :init
   (add-hook 'sx-question-list-mode-hook #'blc-sx-question-list-fontify)
   (setq-default sx-question-mode-comments-format "%s:\n   %s\n"))
@@ -2748,7 +2772,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :mode ("\\.html\\'" "\\.mustache\\'"))
 
 (use-package webjump
-  :bind (("C-c j w" . webjump))
+  :bind (:map
+         mode-specific-map
+         ("j w" . webjump))
   :config
   (setq-default
    webjump-sites
