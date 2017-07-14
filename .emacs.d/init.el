@@ -1594,10 +1594,6 @@ With prefix argument SELECT, call `tile-select' instead."
                                                   (-cut blc-aget lut <> nil t)
                                                   calendar-holidays))))
 
-(use-package i18next-wrap
-  :disabled
-  :bind ("C-c I" . i18next-query-replace))
-
 (use-package ibuf-ext
   :commands ibuffer-auto-mode
   :bind (([remap list-buffers] . ibuffer)
