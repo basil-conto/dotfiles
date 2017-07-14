@@ -195,10 +195,13 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   "Delete trailing whitespace after function call insertion."
   (delete-horizontal-space t))
 
-(define-advice recentf-save-list (:around (save &rest args) blc-save-silently)
-  "Temporarily enable `save-silently'."
-  (let ((save-silently t))
-    (apply save args)))
+(define-advice package-install (:before (&rest _) blc-async-bytecomp)
+  "Install `async' and enable `async-bytecomp-package-mode'."
+  (use-package async
+    :ensure
+    :init
+    (setq-default async-bytecomp-allowed-packages '(all))
+    (async-bytecomp-package-mode)))
 
 (define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
   "Exempt derived modes from hi-lock highlighting.
@@ -741,12 +744,6 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package asm-mode
   :config
   (setq-default asm-comment-char ?#))
-
-(use-package async
-  :ensure
-  :init
-  (setq-default async-bytecomp-allowed-packages '(all))
-  (async-bytecomp-package-mode))
 
 (use-package atomic-chrome
   :ensure
