@@ -203,6 +203,15 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
     (setq-default async-bytecomp-allowed-packages '(all))
     (async-bytecomp-package-mode)))
 
+(define-advice recentf-save-list (:around (save &rest args) blc-save-safely)
+  "Save silently only if sole Emacs instance."
+  (when (> 2 (seq-count (lambda (pid)
+                          (string-match-p
+                           "emacs" (alist-get 'comm (process-attributes pid))))
+                        (list-system-processes)))
+    (let ((save-silently t))
+      (apply save args))))
+
 (define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
   "Exempt derived modes from hi-lock highlighting.
 Include every major mode derived from the current
