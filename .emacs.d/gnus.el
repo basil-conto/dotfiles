@@ -111,7 +111,8 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
              (let ((maildir (match-string-no-properties 1)))
                (push `(nnmaildir ,(file-name-nondirectory
                                    (directory-file-name maildir))
-                                 (directory ,maildir))
+                                 (directory ,maildir)
+                                 (nnir-search-engine notmuch))
                      maildirs))))
          (nreverse (delete-dups maildirs))))
 
