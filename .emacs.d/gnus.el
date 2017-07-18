@@ -25,7 +25,8 @@
 (require 'shr)
 (require 'url-util)
 (eval-when-compile
-  (require 'subr-x))
+  (require 'subr-x)
+  (require 'thunk))
 
 ;;; Byte-compiler declarations
 
@@ -54,7 +55,21 @@
               gnus-topic-goto-topic
               gnus-topic-mode))
 
+(blc-autoloads
+  (blc-notmuch nnir-run-blc-notmuch))
+
 ;;; Utilities
+
+(defalias 'blc-mbsync-maildirs
+  (thunk-delay
+   (blc-with-contents "~/.mbsyncrc"
+     (let (maildirs)
+       (while (blc-search-forward (rx bol "MaildirStore"))
+         (when (blc-search-forward
+                (rx bol "Path" (+ space) (group (+ (not space))) eol))
+           (push (expand-file-name (match-string-no-properties 1)) maildirs)))
+       (nreverse (delete-dups maildirs)))))
+  "Thunk with list of unique maildir dirnames in ~/.mbsyncrc.")
 
 (defun blc-download (&optional url file)
   "Download contents of URL to a file named FILE.
@@ -103,18 +118,11 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-summary-line-format               (blc-gnus-summary-line-format)
  gnus-update-message-archive-method     t
  gnus-secondary-select-methods
- `(,@(blc-with-contents "~/.mbsyncrc"
-       (let (maildirs)
-         (while (blc-search-forward (rx bol "MaildirStore"))
-           (when (blc-search-forward
-                  (rx bol "Path" (+ space) (group (+ (not space))) eol))
-             (let ((maildir (match-string-no-properties 1)))
-               (push `(nnmaildir ,(file-name-nondirectory
-                                   (directory-file-name maildir))
-                                 (directory ,maildir))
-                     maildirs))))
-         (nreverse (delete-dups maildirs))))
-
+ `(,@(mapcar (lambda (maildir)
+               `(nnmaildir ,(file-name-nondirectory
+                             (directory-file-name maildir))
+                           (directory ,maildir)))
+             (blc-mbsync-maildirs))
    ;; FIXME: Firewall
    (nntp "news.gwene.org"
          (nntp-record-commands t)))
@@ -182,7 +190,10 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-verbose                           10
 
  ;; nnheader
- gnus-verbose-backends                  10)
+ gnus-verbose-backends                  10
+
+ ;; nnir
+ nnir-notmuch-remove-prefix             (regexp-opt (blc-mbsync-maildirs)))
 
 ;;; Hooks
 
@@ -231,8 +242,10 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
     gnus-topic-mode-map [remap gnus-topic-indent] #'blc-gnus-topic-fold))
 
 (with-eval-after-load 'nnir
-  (add-to-list
-   'nnir-imap-search-arguments
-   `(,(setq-default nnir-imap-default-search-key "gmail") . "X-GM-RAW")))
+  (map-do
+   #'add-to-list
+   `((nnir-engines . (blc-notmuch ,#'nnir-run-blc-notmuch ()))
+     (nnir-imap-search-arguments
+      . (,(setq-default nnir-imap-defaults-search-key "gmail") . "X-GM-RAW")))))
 
 ;;; .gnus.el ends here

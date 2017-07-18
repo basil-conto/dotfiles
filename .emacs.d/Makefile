@@ -5,7 +5,7 @@
 
 # Files
 
-libs := blc-lib blc-macs
+libs := blc-lib blc-macs blc-notmuch
 srcs := gnus init
 
 libdir := lisp/
@@ -36,11 +36,14 @@ blc-lib: $(call libouts,blc-lib)
 .PHONY: blc-macs
 blc-macs: $(call libouts,blc-macs)
 
+.PHONY: blc-notmuch
+blc-notmuch: blc-lib $(call libouts,blc-notmuch)
+
 .PHONY: gnus
 gnus: $(libs) $(call srcouts,gnus)
 
 .PHONY: init
-init: $(libs) $(call srcouts,init)
+init: $(filter-out blc-notmuch,$(libs)) $(call srcouts,init)
 
 .PHONY: profile
 profile: ELFLAGS := -nw
