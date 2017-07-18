@@ -1429,8 +1429,7 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package gnutls
   :init
-  (setq-default gnutls-min-prime-bits nil
-                gnutls-verify-error   t))
+  (setq-default gnutls-min-prime-bits nil))
 
 (use-package google-contacts
   :ensure
