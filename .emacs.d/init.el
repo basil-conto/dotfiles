@@ -814,10 +814,13 @@ With prefix argument SELECT, call `tile-select' instead."
                 bbdb-pop-up-window-size t)
 
   :config
-  ;; Support Eircode
-  (let ((char '(in "A-N" "P-Z" digit)))
-    (add-to-list 'bbdb-legal-postcodes
-                 (blc-rx `(: bos (= 3 ,char) (? ?\s) (= 4 ,char) eos))))
+  (map-do #'add-to-list
+          `(;; Support Eircode
+            (bbdb-legal-postcodes
+             . ,(let ((char '(in "A-N" "P-Z" digit)))
+                  (blc-rx `(: bos (= 3 ,char) (? ?\s) (= 4 ,char) eos))))
+            ;; Display `mail-name' xfield in gnus summary buffer
+            (bbdb-mua-summary-unification-list . ,bbdb-mail-name)))
 
   (setq-default
    bbdb-phone-label-list
