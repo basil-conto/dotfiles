@@ -141,13 +141,6 @@ why-are-you-changing-gc-cons-threshold/'.")
 
 ;;; Variables
 
-(defvar blc-emacs-dirs
-  (mapcar #'expand-file-name
-          `(,(blc-parent-dir data-directory)
-            ,source-directory
-            ,package-user-dir))
-  "List of directories containing Emacs sources.")
-
 (defvar blc-bib-file "~/.bib.bib"
   "Default user BibTeX file.")
 
@@ -1309,19 +1302,10 @@ With prefix argument SELECT, call `tile-select' instead."
    mode-require-final-newline nil       ; Do not silently append EOF NL
    version-control            t)        ; Versioned backups
 
-  (auto-save-visited-mode)
+  (add-to-list 'safe-local-variable-values
+               '(eval . (when buffer-file-name (view-mode))))
 
-  ;; Local variables for Emacs sources
-  (let ((class 'emacs)
-        (risky '(eval . (when buffer-file-name (view-mode)))))
-    (add-to-list 'safe-local-variable-values risky)
-
-    (dir-locals-set-class-variables
-     class
-     `((nil . (,risky
-               (tab-width . ,(blc-standard-value 'tab-width))))))
-
-    (mapc (-cut dir-locals-set-directory-class <> class) blc-emacs-dirs)))
+  (auto-save-visited-mode))
 
 (use-package fill-column-indicator
   :ensure
@@ -1642,7 +1626,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
   ;; Define before use
   (mapc (-cut add-to-list 'ibuffer-saved-filters <>)
-        `(("package" (directory . ,(regexp-opt blc-emacs-dirs)))
+        `(("package" (directory . ,(regexp-opt
+                                    (mapcar #'expand-file-name
+                                            `(,(blc-parent-dir data-directory)
+                                              ,source-directory
+                                              ,package-user-dir)))))
           ("REPL"    (modes . (eshell-mode
                                inferior-emacs-lisp-mode
                                lisp-interaction-mode)))))
