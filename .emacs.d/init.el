@@ -871,7 +871,7 @@ With prefix argument SELECT, call `tile-select' instead."
    calendar-islamic-all-holidays-flag   t))
 
 (use-package calfw-cal
-  :ensure calfw
+  :ensure
   :bind ("<f9>" . cfw:open-diary-calendar))
 
 (use-package cc-mode
