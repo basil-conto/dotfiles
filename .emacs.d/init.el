@@ -679,9 +679,9 @@ With prefix argument SELECT, call `tile-select' instead."
 
 ;;; Bindings
 
-(map-apply
+(map-do
  (lambda (map bindings)
-   (map-apply (-cut define-key map <> <>) bindings))
+   (map-do (-cut define-key map <> <>) bindings))
  `((,(current-global-map)
     ([S-next]                  . ,#'blc-small-scroll-up)
     ([S-prior]                 . ,#'blc-small-scroll-down)
@@ -811,9 +811,9 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package bbdb
   :ensure
   :init
-  (map-apply #'add-hook
-             `((gnus-started-hook . ,#'blc-bbdb-set-gnus-summary-line-format)
-               (gnus-startup-hook . ,#'bbdb-insinuate-gnus)))
+  (map-do #'add-hook
+          `((gnus-started-hook . ,#'blc-bbdb-set-gnus-summary-line-format)
+            (gnus-startup-hook . ,#'bbdb-insinuate-gnus)))
 
   (setq-default bbdb-default-country    nil
                 bbdb-name-format        'last-first
@@ -1423,9 +1423,9 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package gnus
   :init
   ;; Shave a few startup seconds
-  (map-apply #'add-hook
-             `((gnus-load-hook    . ,#'blc-gc-thresh-maximise)
-               (gnus-started-hook . ,#'blc-gc-thresh-restore )))
+  (map-do #'add-hook
+          `((gnus-load-hook    . ,#'blc-gc-thresh-maximise)
+            (gnus-started-hook . ,#'blc-gc-thresh-restore )))
 
   (setq-default
    gnus-home-directory user-emacs-directory
