@@ -157,6 +157,9 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  ;; gnus-notifications
  gnus-notifications-minimum-level       3
 
+ ;; gnus-registry
+ gnus-refer-article-method              '(current (nnregistry))
+
  ;; gnus-spec
  gnus-face-2                            'font-lock-keyword-face
  gnus-face-3                            'font-lock-string-face
@@ -212,6 +215,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
           (gnus-select-group-hook           . ,#'gnus-group-set-timestamp)))
 
 (gnus-demon-add-handler #'gnus-demon-scan-news 10 nil)
+(gnus-registry-initialize)
 
 ;;; Deferrals
 
