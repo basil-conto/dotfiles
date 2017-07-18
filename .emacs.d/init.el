@@ -1660,6 +1660,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                             woman-mode))
                   (names . "Ivy Help")))
       ("Gnus" (or (saved . "gnus")
+                  (modes . gnus-server-mode)
                   (names . (nostar
                             gnus-dribble-buffer))))
       ("Git"  (modes . (magit-mode
