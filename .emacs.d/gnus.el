@@ -118,11 +118,17 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-summary-line-format               (blc-gnus-summary-line-format)
  gnus-update-message-archive-method     t
  gnus-secondary-select-methods
- `(,@(mapcar (lambda (maildir)
-               `(nnmaildir ,(file-name-nondirectory
-                             (directory-file-name maildir))
-                           (directory ,maildir)))
-             (blc-mbsync-maildirs))
+ `(,@(seq-map-indexed
+      (lambda (maildir i)
+        (let ((mailbox (file-name-nondirectory (directory-file-name maildir))))
+          `(nnimap ,mailbox
+                   (nnimap-address         ,(format-network-address
+                                             `[127 1 0 ,(1+ i)]))
+                   (nnimap-record-commands t)
+                   (nnimap-stream          network)
+                   (nnimap-user            ,mailbox)
+                   (nnir-search-engine     imap))))
+      (blc-mbsync-maildirs))
    ;; FIXME: Firewall
    (nntp "news.gwene.org"
          (nntp-record-commands t)))
@@ -244,8 +250,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 (with-eval-after-load 'nnir
   (map-do
    #'add-to-list
-   `((nnir-engines . (blc-notmuch ,#'nnir-run-blc-notmuch ()))
-     (nnir-imap-search-arguments
-      . (,(setq-default nnir-imap-defaults-search-key "gmail") . "X-GM-RAW")))))
+   `((nnir-engines               . (blc-notmuch ,#'nnir-run-blc-notmuch ()))
+     (nnir-imap-search-arguments . ("gmail" . "X-GM-RAW")))))
 
 ;;; .gnus.el ends here
