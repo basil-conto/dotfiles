@@ -120,13 +120,13 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-secondary-select-methods
  `(,@(seq-map-indexed
       (lambda (maildir i)
-        (let ((mailbox (file-name-nondirectory (directory-file-name maildir))))
-          `(nnimap ,mailbox
+        (let ((user (file-name-nondirectory (directory-file-name maildir))))
+          `(nnimap ,user
                    (nnimap-address         ,(format-network-address
                                              `[127 1 0 ,(1+ i)]))
                    (nnimap-record-commands t)
                    (nnimap-stream          network)
-                   (nnimap-user            ,mailbox)
+                   (nnimap-user            ,user)
                    (nnir-search-engine     imap))))
       (blc-mbsync-maildirs))
    ;; FIXME: Firewall
@@ -176,11 +176,11 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-auto-select-first                 nil
  gnus-auto-select-next                  nil
  gnus-sum-thread-tree-false-root        ""
- gnus-sum-thread-tree-leaf-with-other   "├➤ "
+ gnus-sum-thread-tree-leaf-with-other   " ├➤ "
  gnus-sum-thread-tree-root              ""
- gnus-sum-thread-tree-single-leaf       "╰➤ "
+ gnus-sum-thread-tree-single-leaf       " ╰➤ "
  gnus-sum-thread-tree-indent            " "
- gnus-sum-thread-tree-vertical          "│ "
+ gnus-sum-thread-tree-vertical          " │ "
  gnus-summary-gather-subject-limit      'fuzzy
  gnus-summary-next-group-on-exit        nil
  gnus-summary-thread-gathering-function #'gnus-gather-threads-by-references
