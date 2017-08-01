@@ -1885,6 +1885,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package ivy-pages
   :ensure)
 
+(use-package ivy-pass
+  :ensure)
+
 (use-package ivy-rich
   :disabled
   :ensure
