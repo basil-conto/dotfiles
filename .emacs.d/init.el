@@ -135,12 +135,13 @@ why-are-you-changing-gc-cons-threshold/'.")
   (tile        tile-get-name))
 
 (blc-autoloads
-  (gnus     gnus-find-subscribed-addresses)
-  (ibuf-ext ibuffer-pop-filter
-            ibuffer-push-filter)
-  (ibuffer  ibuffer-buf-matches-predicates
-            ibuffer-update)
-  (ielm     inferior-emacs-lisp-mode))
+  (gnus      gnus-find-subscribed-addresses)
+  (gnus-util gnus-extract-address-components)
+  (ibuf-ext  ibuffer-pop-filter
+             ibuffer-push-filter)
+  (ibuffer   ibuffer-buf-matches-predicates
+             ibuffer-update)
+  (ielm      inferior-emacs-lisp-mode))
 
 ;;; Variables
 
@@ -185,6 +186,15 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (define-advice ledger-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
+
+(define-advice mail-extract-address-components
+    (:before-until (address &optional all) blc-delegate-gnus)
+  "Try to cut corners with `gnus-extract-address-components'.
+This is much less accurate but also much more performant than
+`mail-extract-address-components'."
+  (and (not all)
+       (stringp address)
+       (gnus-extract-address-components address)))
 
 (define-advice makefile-insert-gmake-function
     (:after (&rest _) blc-delete-trailing-space)
