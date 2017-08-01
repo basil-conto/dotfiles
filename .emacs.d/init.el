@@ -696,6 +696,7 @@ With prefix argument SELECT, call `tile-select' instead."
 
  ;; xdisp
  auto-hscroll-mode               'current-line
+ highlight-nonselected-windows   t
  line-number-display-limit-width (ash blc-chars-per-line 3)
  scroll-conservatively           most-positive-fixnum
  scroll-margin                   1
