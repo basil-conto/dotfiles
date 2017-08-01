@@ -58,8 +58,8 @@ why-are-you-changing-gc-cons-threshold/'.")
 
   ;; Archives
   (seq-do-indexed (pcase-lambda (`(,id . ,url) i)
-                    (blc-aput 'package-archives           id url)
-                    (blc-aput 'package-archive-priorities id (1+ i)))
+                    (blc-put package-archives           id url)
+                    (blc-put package-archive-priorities id (1+ i)))
                   '(("melpa" . "https://melpa.org/packages/")
                     ("org"   . "http://orgmode.org/elpa/")))
 
@@ -91,8 +91,10 @@ why-are-you-changing-gc-cons-threshold/'.")
 (blc-declare-vars
   Info-standalone
   LaTeX-clean-intermediate-suffixes
+  TeX-command-list
   bbdb-mua-summary-unify-format-letter
   c-mode-base-map
+  dired-guess-shell-alist-user
   doc-view-resolution
   ffap-alist
   ffap-file-finder
@@ -200,7 +202,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   "Save silently only if sole Emacs instance."
   (when (> 2 (seq-count (lambda (pid)
                           (string-match-p
-                           "emacs" (alist-get 'comm (process-attributes pid))))
+                           "emacs" (map-elt (process-attributes pid) 'comm "")))
                         (list-system-processes)))
     (let ((save-silently t))
       (apply save args))))
@@ -323,8 +325,8 @@ description of the arguments to this function."
          (prompt-url (url-truncate-url-for-viewing url (ash (frame-width) -1)))
          (prompt     (blc-sed "%" "%%" (format prompt-fmt prompt-url) t t)))
     (when-let (browser
-               (blc-aget blc-browser-alist
-                         (completing-read prompt blc-browser-alist nil t)))
+               (blc-elt blc-browser-alist
+                        (completing-read prompt blc-browser-alist nil t)))
       (apply browser url args))))
 
 (function-put
@@ -345,7 +347,7 @@ description of the arguments to this function."
   "Reconcile solar calendar with LOCATION from `blc-locations'."
   (interactive `(,(completing-read "Location: " blc-locations nil t nil ()
                                    (blc-system-location))))
-  (pcase (blc-aget blc-locations location)
+  (pcase (blc-elt blc-locations location)
     ((plist :country country :lat lat :long long)
      (setq-default calendar-latitude      lat
                    calendar-longitude     long
@@ -456,7 +458,7 @@ Return the name of the buffer as a string or `nil'."
                          . ,name)))))
                (buffer-list))))
     (if (cdr bufs)
-        (blc-aget bufs (completing-read "Info buffer: " bufs))
+        (blc-elt bufs (completing-read "Info buffer: " bufs))
       (cdar bufs))))
 
 (defun blc-info (&optional buffer)
@@ -556,12 +558,12 @@ Defaults to `org-directory' and `org-default-notes-file'."
       (let* ((nom (format "%s%s"     nom (if pvc " PVC" "")))
              (cmd (format "%s%s %%t" exe (if pvc "-pvc -view=none" "")))
              (dsc (format "Run %s"   nom)))
-        (blc-aput 'TeX-command-list nom     ; Command name
-                  `(,cmd                    ; Non-expanded shell command
-                    TeX-run-command         ; Process handler
-                    nil                     ; Confirm expanded shell command
-                    (latex-mode LaTeX-mode) ; Applicable modes
-                    :help ,dsc))))))        ; Command
+        (blc-put TeX-command-list nom      ; Command name
+                 `(,cmd                    ; Non-expanded shell command
+                   TeX-run-command         ; Process handler
+                   nil                     ; Confirm expanded shell command
+                   (latex-mode LaTeX-mode) ; Applicable modes
+                   :help ,dsc))))))        ; Command
 
 (defun blc-tile (&optional select)
   "Tile windows with `tile' and report new strategy.
@@ -752,7 +754,7 @@ With prefix argument SELECT, call `tile-select' instead."
   (setq-default
    atomic-chrome-extension-type-list
    (seq-intersection '(ghost-text) atomic-chrome-extension-type-list))
-  (blc-aput 'atomic-chrome-url-major-mode-alist "github\\.com" #'gfm-mode))
+  (blc-put atomic-chrome-url-major-mode-alist "github\\.com" #'gfm-mode))
 
 (use-package auctex-latexmk
   :ensure)
@@ -1094,8 +1096,8 @@ With prefix argument SELECT, call `tile-select' instead."
    (blc-rx `(| (: bos ?. (not (in ?.))) (regexp ,dired-omit-files))))
 
   (map-do (lambda (cmd suffs)
-            (thread-first 'dired-guess-shell-alist-user
-              (blc-aput (blc-rx `(: ?. (| ,@suffs) eos)) `(,cmd))))
+            (thread-first dired-guess-shell-alist-user
+              (blc-put (blc-rx `(: ?. (| ,@suffs) eos)) `(,cmd))))
           '(("localc"   . ("ods" "xls" "xlsx"))
             ("lowriter" . ("doc" "docx" "odt"))
             ("mpv"      . ("mkv" "mp4" "webm"))
@@ -1576,9 +1578,10 @@ With prefix argument SELECT, call `tile-select' instead."
                ("Palm Sunday"      . "🌴")
                ("St Patrick's Day" . "☘" )
                ("Valentine's Day"  . "❤" ))))
-    (setq-default calendar-holidays (blc-sed-tree (regexp-opt (map-keys lut))
-                                                  (-cut blc-aget lut <> nil t)
-                                                  calendar-holidays))))
+    (setq-default calendar-holidays
+                  (blc-sed-tree (regexp-opt (map-keys lut))
+                                (-cut blc-elt lut <> nil #'blc-string-equal)
+                                calendar-holidays))))
 
 (use-package ibuf-ext
   :commands ibuffer-auto-mode
@@ -1925,9 +1928,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    ledger-report-use-header-line            t
    ledger-use-iso-dates                     t)
 
-  (blc-aput 'ledger-report-format-specifiers
-            "frame-width"
-            #'blc-ledger-frame-width)
+  (blc-put ledger-report-format-specifiers
+           "frame-width"
+           #'blc-ledger-frame-width)
 
   (ledger-reports-add "blc-account"
                       (string-join '("%(binary)"
@@ -2015,7 +2018,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    magit-remote-add-set-remote.pushDefault 'ask)
 
   ;; Always highlight tabs
-  (blc-aput 'magit-diff-highlight-indentation "" 'tabs)
+  (blc-put magit-diff-highlight-indentation "" 'tabs)
 
   ;; Status buffer
   (mapc (-cut magit-add-section-hook
@@ -2098,21 +2101,22 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                 makefile-tab-after-target-colon                 nil)
 
   ;; Expand GNU functions
-  (let ((fns 'makefile-gnumake-functions-alist))
-    (map-do (lambda (fn args)
-              (unless (assoc-string fn (symbol-value fns))
-                (blc-aput fns fn args)))
-            '(("abspath"  "Names")
-              ("error"    "Text")
-              ("flavor"   "Variable")
-              ("info"     "Text")
-              ("lastword" "Text")
-              ("realpath" "Names")
-              ("value"    "Variable")
-              ("warning"  "Text")
-              ("wordlist" "Start index" "End index" "Text")))
+  (map-do (lambda (fn args)
+            (unless (assoc-string fn makefile-gnumake-functions-alist)
+              (blc-put makefile-gnumake-functions-alist fn args)))
+          '(("abspath"  "Names")
+            ("error"    "Text")
+            ("flavor"   "Variable")
+            ("info"     "Text")
+            ("lastword" "Text")
+            ("realpath" "Names")
+            ("value"    "Variable")
+            ("warning"  "Text")
+            ("wordlist" "Start index" "End index" "Text")))
 
-    (set-default fns (seq-sort-by #'car #'string-lessp (symbol-value fns))))
+  (setq-default makefile-gnumake-functions-alist
+                (seq-sort-by #'car #'string-lessp
+                             makefile-gnumake-functions-alist))
 
   ;; Expand special targets
   (let ((targets 'makefile-special-targets-list))
@@ -2733,8 +2737,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :config
   ;; Git or Magit only
   (setq-default vc-handled-backends
-                (when-let (git (blc-assoc vc-handled-backends 'git t))
-                  `(,git))))
+                (blc-as-list (assoc-string 'git vc-handled-backends t))))
 
 (use-package view
   :delight view-mode "👓")

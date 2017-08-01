@@ -11,6 +11,7 @@
   (add-to-list 'load-path (expand-file-name "mod" user-emacs-directory)))
 (require 'realpath)
 
+(require 'map)
 (require 'seq)
 (eval-when-compile
   (require 'subr-x)
@@ -41,6 +42,10 @@
                                  (funcall type item)
                                  (seq-drop seq index)))))
 
+(defun blc-string-equal (s1 s2)
+  "Like `string-equal', but case-insensitive."
+  (eq t (compare-strings s1 nil nil s2 nil nil t)))
+
 (defun blc-keep (fn seq &optional copy)
   "Map FN over SEQ and return list of non-nil results.
 SEQ is modified destructively unless COPY is non-nil."
@@ -50,32 +55,14 @@ SEQ is modified destructively unless COPY is non-nil."
                `(,result)))
            seq))
 
-(defun blc-assoc (alist key &optional case-fold)
-  "Return cell keyed by KEY in ALIST.
-Non-nil CASE-FOLD means perform case-insensitive lookup using
-`assoc-string' instead of the default `assoc'."
+(defun blc-elt (map key &optional default testfn)
+  "Like `map-elt', but TESTFN defaults to `equal'."
   (declare (pure t))
-  (if case-fold
-      (assoc-string key alist case-fold)
-    (assoc key alist)))
+  (map-elt map key default (or testfn #'equal)))
 
-(defun blc-aget (alist key &optional default case-fold)
-  "Return value mapped by KEY in ALIST or DEFAULT.
-Non-nil CASE-FOLD means perform case-insensitive lookup using
-`assoc-string' instead of the default `assoc'."
-  (declare (pure t))
-  (if-let (cell (blc-assoc alist key case-fold))
-      (cdr cell)
-    default))
-
-(defun blc-aput (symbol key &optional val case-fold)
-  "Map KEY of any type to VAL in alist SYMBOL and return VAL.
-Overwrite any existing value mapped by KEY. Non-nil CASE-FOLD
-means perform case-insensitive lookup using `assoc-string'
-instead of the default `assoc'."
-  (if-let (cell (blc-assoc (symbol-value symbol) key case-fold))
-      (setcdr cell val)
-    (add-to-list symbol `(,key . ,val))))
+(defmacro blc-put (map key value &optional testfn)
+  "Like `map-put', but TESTFN defaults to `equal'."
+  `(map-put ,map ,key ,value ,(or testfn '#'equal)))
 
 ;;; Symbols
 
@@ -486,13 +473,13 @@ frames."
 
 (defun blc--country-xref (&rest plist)
   "Lookup PLIST `:country' property in `blc-countries'."
-  (blc-aget blc-countries (plist-get plist :country)))
+  (blc-elt blc-countries (plist-get plist :country)))
 
 (defun blc--location-to-tz (location &rest plist)
   "Return LOCATION timezone in zoneinfo format.
 LOCATION properties are looked up in `blc-locations' unless PLIST
 overrides them."
-  (let ((props (or plist (blc-aget blc-locations location))))
+  (let ((props (or plist (blc-elt blc-locations location))))
     (format "%s/%s"
             (plist-get (apply #'blc--country-xref props) :area)
             (or (plist-get props :tz)
