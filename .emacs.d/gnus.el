@@ -212,8 +212,6 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
           (gnus-group-mode-hook             . ,#'gnus-topic-mode)
           (gnus-select-group-hook           . ,#'gnus-group-set-timestamp)))
 
-(gnus-demon-add-handler #'gnus-demon-scan-news 10 nil)
-
 ;;; Deferrals
 
 (with-eval-after-load 'gnus-art
