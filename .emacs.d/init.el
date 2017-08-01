@@ -671,22 +671,34 @@ With prefix argument SELECT, call `tile-select' instead."
 (define-symbol-prop #'narrow-to-region 'disabled nil)
 
 (setq-default
- auto-hscroll-mode               'current-line
+ ;; buffer
  fill-column                     blc-chars-per-line
- frame-resize-pixelwise          t
- indent-tabs-mode                nil
  indicate-buffer-boundaries      t
- indicate-unused-lines           t
- line-number-display-limit-width (ash blc-chars-per-line 3)
  mode-line-format                (blc-sed-tree " +" " " mode-line-format)
+ tab-width                       2
+
+ ;; callproc
+ shell-file-name                 "/bin/sh"
+
+ ;; frame
+ frame-resize-pixelwise          t
+
+ ;; indent
+ indent-tabs-mode                nil
+
+ ;; window
  recenter-redisplay              nil
+ scroll-preserve-screen-position t
+ window-combination-resize       t
+
+ ;; xdisp
+ auto-hscroll-mode               'current-line
+ line-number-display-limit-width (ash blc-chars-per-line 3)
  scroll-conservatively           most-positive-fixnum
  scroll-margin                   1
- scroll-preserve-screen-position t
  scroll-step                     1
- shell-file-name                 "/bin/sh"
- tab-width                       2
- window-combination-resize       t
+
+ ;; xfns
  x-gtk-use-system-tooltips       nil)
 
 ;;; Bindings
@@ -2549,10 +2561,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("e" . first-error))
 
   :init
-  (setq-default kill-whole-line     t
-                mail-user-agent     'gnus-user-agent
-                next-error-recenter '(4)
-                read-mail-command   'gnus)
+  (setq-default indicate-unused-lines t
+                kill-whole-line       t
+                mail-user-agent       'gnus-user-agent
+                next-error-recenter   '(4)
+                read-mail-command     'gnus)
 
   (mapc (-cut add-hook <> #'turn-on-auto-fill)
         '(bookmark-edit-annotation-mode-hook LaTeX-mode-hook org-mode-hook))
