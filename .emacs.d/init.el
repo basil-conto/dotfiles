@@ -677,6 +677,9 @@ With prefix argument SELECT, call `tile-select' instead."
  mode-line-format                (blc-sed-tree " +" " " mode-line-format)
  tab-width                       2
 
+ ;; callint
+ mark-even-if-inactive           nil
+
  ;; callproc
  shell-file-name                 "/bin/sh"
 
