@@ -354,6 +354,13 @@ See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
     (forward-line    -1)
     (move-to-column col)))
 
+(defun blc-move-to-column (col)
+  "Like `move-to-column', but extend short lines if needed."
+  (move-to-column col t))
+
+(define-symbol-prop
+ #'blc-move-to-column 'interactive-form (interactive-form #'move-to-column))
+
 (defun blc-indent-relative (&optional below)
   "Indent relative to previous or next line.
 Like `indent-relative', but with prefix argument BELOW, first

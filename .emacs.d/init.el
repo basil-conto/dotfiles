@@ -731,7 +731,9 @@ With prefix argument SELECT, call `tile-select' instead."
    (,ctl-x-5-map
     ("3"                       . ,#'blc-make-graphic-display))
    (,esc-map
-    ("R"                       . ,#'redraw-display))))
+    ("R"                       . ,#'redraw-display))
+   (,goto-map
+    ("\t"                      . ,#'blc-move-to-column))))
 
 
 ;;;; PACKAGES
