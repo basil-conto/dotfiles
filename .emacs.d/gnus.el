@@ -34,6 +34,7 @@
   gnus-article-mode-map
   gnus-directory
   gnus-header-face-alist
+  gnus-level-default-subscribed
   gnus-sorted-header-list
   gnus-startup-file
   gnus-tmp-group
@@ -163,7 +164,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-face-4                            'font-lock-comment-face
 
  ;; gnus-start
- gnus-activate-level                    3
+ gnus-activate-level                    gnus-level-default-subscribed
  gnus-check-new-newsgroups              nil
  gnus-read-newsrc-file                  nil
  gnus-save-killed-list                  nil
