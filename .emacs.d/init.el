@@ -105,7 +105,8 @@ why-are-you-changing-gc-cons-threshold/'.")
   org-default-notes-file
   org-directory
   recentf-list
-  tile-cycler)
+  tile-cycler
+  zenburn-default-colors-alist)
 
 (eval-when-compile
   (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
@@ -592,49 +593,55 @@ With prefix argument SELECT, call `tile-select' instead."
           '((sx-question-list-read-question   . link-visited)
             (sx-question-list-unread-question . link        ))))
 
+(eval-and-compile
+  (defun blc-zenburn-assoc (colour)
+    "Return the `zenburn' value associated with COLOUR."
+    (blc-elt zenburn-default-colors-alist colour nil #'string-equal)))
+
+(defun blc-zenburn-brighten-fci ()
+  "Make FCI rule lighter than background under `zenburn'."
+  (setq-default fci-rule-color (blc-zenburn-assoc 'zenburn-bg+1)))
+
+(defun blc-zenburn-darken-ivy ()
+  "Darken background of `ivy' matches under `zenburn'."
+  (seq-mapn #'set-face-background
+            (cdr (bound-and-true-p ivy-minibuffer-faces))
+            (mapcar #'blc-zenburn-assoc
+                    '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
+
+(defun blc-zenburn-fontify-org-todo ()
+  "Customise `org-todo-keyword-faces' under `zenburn'."
+  (setq-default org-todo-keyword-faces
+                (map-apply (lambda (kw colour)
+                             `(,kw . ,(blc-zenburn-assoc colour)))
+                           '(("NEXT" . zenburn-magenta)
+                             ("EXEC" . zenburn-orange )
+                             ("MEET" . zenburn-yellow )
+                             ("WAIT" . zenburn-cyan   )
+                             ("BALK" . zenburn-fg     )
+                             ("VOID" . zenburn-blue-2 )))))
+
+(defun blc-zenburn-hide-org-clock ()
+  "Use less obtrusive org mode-line clock faces under `zenburn'."
+  (set-face-attribute 'org-mode-line-clock-overrun nil
+                      :inherit    'org-mode-line-clock
+                      :foreground nil
+                      :background nil))
+
 
 ;;;; MISCELLANEA
 
 ;;; Custom theme
 
-(eval-and-compile
-  (when (load-theme 'zenburn t)
+(when (load-theme 'zenburn t)
+  (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
+  (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
 
-    (defun blc-zenburn-assoc (colour)
-      "Return the `zenburn' value associated with COLOUR."
-      (cdr (assoc-string colour zenburn-default-colors-alist)))
-
-    (defun blc-zenburn-brighten-fci ()
-      "Make FCI rule lighter than background under `zenburn'."
-      (setq-default fci-rule-color (blc-zenburn-assoc 'zenburn-bg+1)))
-
-    (defun blc-zenburn-darken-ivy ()
-      "Darken background of `ivy' matches under `zenburn'."
-      (seq-mapn #'set-face-background
-                ()
-                ;; (cdr (bound-and-true-p ivy-minibuffer-faces))
-                (mapcar #'blc-zenburn-assoc
-                        '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
-
-    (defun blc-zenburn-fontify-org-todo ()
-      "Customise `org-todo-keyword-faces' under `zenburn'."
-      (setq-default org-todo-keyword-faces
-                    (map-apply (lambda (kw colour)
-                                 `(,kw . ,(blc-zenburn-assoc colour)))
-                               '(("NEXT" . zenburn-magenta)
-                                 ("EXEC" . zenburn-orange )
-                                 ("MEET" . zenburn-yellow )
-                                 ("WAIT" . zenburn-cyan   )
-                                 ("BALK" . zenburn-fg     )
-                                 ("VOID" . zenburn-blue-2 )))))
-
-    (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
-    (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
-
-    (map-do #'add-hook
-            `((fci-mode-hook . ,#'blc-zenburn-brighten-fci    )
-              (ivy-mode-hook . ,#'blc-zenburn-darken-ivy      )
-              (org-load-hook . ,#'blc-zenburn-fontify-org-todo)))))
+  (map-do #'add-hook
+          `((fci-mode-hook . ,#'blc-zenburn-brighten-fci    )
+            (ivy-mode-hook . ,#'blc-zenburn-darken-ivy      )
+            (org-load-hook . ,#'blc-zenburn-fontify-org-todo)
+            (org-load-hook . ,#'blc-zenburn-hide-org-clock  ))))
 
 ;; Maximise initial frame
 (map-put initial-frame-alist 'fullscreen 'maximized)
