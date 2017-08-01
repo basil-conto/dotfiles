@@ -105,6 +105,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   org-default-notes-file
   org-directory
   recentf-list
+  term-raw-map
   tile-cycler
   zenburn-default-colors-alist)
 
@@ -130,7 +131,6 @@ why-are-you-changing-gc-cons-threshold/'.")
                message-user-mail-address)
   (org         org-goto)
   (term        term-char-mode
-               term-in-char-mode
                term-line-mode)
   (tile        tile-get-name))
 
@@ -539,8 +539,7 @@ Defaults to `org-directory' and `org-default-notes-file'."
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
   (interactive)
-  (require 'term)
-  (if (term-in-char-mode)
+  (if (eq (current-local-map) term-raw-map)
       (term-line-mode)
     (term-char-mode)))
 
