@@ -1572,7 +1572,8 @@ With prefix argument SELECT, call `tile-select' instead."
         '(dired-mode-hook
           git-rebase-mode-hook
           ibuffer-mode-hook
-          ivy-occur-mode-hook)))
+          ivy-occur-mode-hook
+          tabulated-list-mode-hook)))
 
 (use-package hideshow
   :bind (:map
