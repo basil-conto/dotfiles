@@ -283,7 +283,8 @@ See `browse-url' for an explanation of the arguments."
   (pcase-let ((`(,browser . ,filter) (blc-print-url--selector url)))
     (apply browser (funcall filter url) args)))
 
-(function-put #'blc-print-url 'interactive-form (interactive-form #'browse-url))
+(define-symbol-prop
+ #'blc-print-url 'interactive-form (interactive-form #'browse-url))
 
 (defvar blc-hackage-url-format
   "https://hackage.haskell.org/package/%s/docs/%s.html"
@@ -340,7 +341,7 @@ description of the arguments to this function."
                         (completing-read prompt blc-browser-alist nil t)))
       (apply browser url args))))
 
-(function-put
+(define-symbol-prop
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
 (defun blc-system-tz ()
@@ -667,7 +668,7 @@ With prefix argument SELECT, call `tile-select' instead."
 (advice-add #'yes-or-no-p :override #'y-or-n-p)
 
 ;; Like a free bird
-(function-put #'narrow-to-region 'disabled nil)
+(define-symbol-prop #'narrow-to-region 'disabled nil)
 
 (setq-default
  auto-hscroll-mode               'current-line
