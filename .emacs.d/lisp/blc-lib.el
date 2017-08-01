@@ -416,13 +416,17 @@ horizontal over vertical splitting."
 
 (defun blc-small-scroll-up (&optional step)
   "Scroll up `blc-small-scroll-step' lines."
-  (interactive "p")
-  (scroll-up (or step blc-small-scroll-step)))
+  (interactive "P")
+  (scroll-up (if step
+                 (prefix-numeric-value step)
+               blc-small-scroll-step)))
 
 (defun blc-small-scroll-down (&optional step)
   "Scroll down `blc-small-scroll-step' lines."
-  (interactive "p")
-  (scroll-down (or step blc-small-scroll-step)))
+  (interactive "P")
+  (scroll-down (if step
+                   (prefix-numeric-value step)
+                 blc-small-scroll-step)))
 
 ;;; Frames
 
