@@ -92,6 +92,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   Info-standalone
   LaTeX-clean-intermediate-suffixes
   TeX-command-list
+  bbdb-mua-summary-mark
   bbdb-mua-summary-unify-format-letter
   c-mode-base-map
   dired-guess-shell-alist-user
@@ -113,26 +114,28 @@ why-are-you-changing-gc-cons-threshold/'.")
   (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
 
 (blc-declare-fns
-  (cc-cmds     c-toggle-comment-style)
-  (cc-defs     c-langelem-pos)
-  (csv-mode    csv-align-fields)
-  (doc-view    doc-view-start-process)
-  (esh-mode    eshell-truncate-buffer)
-  (eww         eww-copy-page-url
-               eww-html-p)
-  (hi-lock     hi-lock-set-pattern)
-  (ibuf-ext    ibuffer-switch-to-saved-filter-groups)
-  (ibuffer     ibuffer-current-buffer)
-  (man         Man-goto-section)
-  (mailcap     mailcap-extension-to-mime)
-  (message     message-field-value
-               message-make-from
-               message-replace-header
-               message-user-mail-address)
-  (org         org-goto)
-  (term        term-char-mode
-               term-line-mode)
-  (tile        tile-get-name))
+  (bbdb-mua   bbdb-mua-summary-unify)
+  (cc-cmds    c-toggle-comment-style)
+  (cc-defs    c-langelem-pos)
+  (csv-mode   csv-align-fields)
+  (doc-view   doc-view-start-process)
+  (esh-mode   eshell-truncate-buffer)
+  (eww        eww-copy-page-url
+              eww-html-p)
+  (hi-lock    hi-lock-set-pattern)
+  (ibuf-ext   ibuffer-switch-to-saved-filter-groups)
+  (ibuffer    ibuffer-current-buffer)
+  (man        Man-goto-section)
+  (mail-parse mail-header-parse-address)
+  (mailcap    mailcap-extension-to-mime)
+  (message    message-field-value
+              message-make-from
+              message-replace-header
+              message-user-mail-address)
+  (org        org-goto)
+  (term       term-char-mode
+              term-line-mode)
+  (tile       tile-get-name))
 
 (blc-autoloads
   (gnus      gnus-find-subscribed-addresses)
@@ -182,6 +185,20 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
+
+(define-advice eudc-select (:around (select choices &rest args) blc-bbdb-unify)
+  "Feed CHOICES to `bbdb-mua-summary-unify' before completion."
+  (require 'bbdb-mua)
+  (require 'mail-parse)
+  (let ((mark (blc-rx
+               `(: bos (in ?\s ,@(internal--listify bbdb-mua-summary-mark))))))
+    (apply select
+           (mapcar (lambda (choice)
+                     (format "\"%s\" <%s>"
+                             (blc-sed mark "" (bbdb-mua-summary-unify choice))
+                             (car (mail-header-parse-address choice))))
+                   choices)
+           args)))
 
 (define-advice ledger-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
@@ -845,10 +862,12 @@ With prefix argument SELECT, call `tile-select' instead."
           `((gnus-started-hook . ,#'blc-bbdb-set-gnus-summary-line-format)
             (gnus-startup-hook . ,#'bbdb-insinuate-gnus)))
 
-  (setq-default bbdb-default-country    nil
-                bbdb-name-format        'last-first
-                bbdb-phone-style        nil
-                bbdb-pop-up-window-size t)
+  (setq-default bbdb-complete-mail-allow-cycling t
+                bbdb-default-country             nil
+                bbdb-name-format                 'last-first
+                bbdb-phone-style                 nil
+                bbdb-pop-up-window-size          t
+                bbdb-read-name-format            'first-last)
 
   :config
   (map-do #'add-to-list
@@ -1247,11 +1266,13 @@ With prefix argument SELECT, call `tile-select' instead."
   :after message
   :init
   (add-hook 'gnus-load-hook #'eudc-load-eudc)
-  (setq-default eudc-protocol            'bbdb
-                eudc-inline-query-format '((email)
-                                           (name)
-                                           (firstname)
-                                           (firstname name))))
+  (setq-default
+   eudc-protocol                'bbdb
+   eudc-inline-expansion-format '("\"%s %s\" <%s>" firstname name email)
+   eudc-inline-query-format     '((email)
+                                  (name)
+                                  (firstname)
+                                  (firstname name))))
 
 (use-package ewmctrl
   :ensure)
