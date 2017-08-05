@@ -158,16 +158,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 
 ;;; Advice
 
-(define-advice bibtex-completion-format-entry
-    (:around (fmt entry width) blc-narrow)
-  "Decrease `ivy-bibtex' entry width due to other formatting.
-`ivy-bibtex-default-action' only considers `frame-width', which
-does not, for example, take the effect of `ivy-format-function'
-into account."
-  (funcall fmt entry
-           (blc-but-fringes
-            width (string-width (funcall ivy-format-function '(""))))))
-
+;; cc-align
 (define-advice c-lineup-arglist (:before-until (langelem) blc-c++-lambda-indent)
   "Return indentation offset for C++11 lambda arguments.
 Currently keeps offset unchanged by returning 0 for lambdas
@@ -182,10 +173,17 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
 
+;; custom
+(define-advice enable-theme (:after (theme) blc-run-enable-hook)
+  "Run `blc-enable-THEME-hook'."
+  (blc-safe-funcall (blc-symcat "blc-enable-" theme "-hook")))
+
+;; em-cmpl
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
 
+;; eudc
 (define-advice eudc-select (:around (select choices &rest args) blc-bbdb-unify)
   "Feed CHOICES to `bbdb-mua-summary-unify' before completion."
   (require 'bbdb-mua)
@@ -200,10 +198,32 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
                    choices)
            args)))
 
+;; hi-lock
+(define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
+  "Exempt derived modes from hi-lock highlighting.
+Include every major mode derived from the current
+`hi-lock-exclude-modes' in that blacklist."
+  (let ((modes 'hi-lock-exclude-modes))
+    (when (apply #'derived-mode-p (symbol-value modes))
+      (add-to-list modes major-mode))))
+
+;; ivy-bibtex
+(define-advice bibtex-completion-format-entry
+    (:around (fmt entry width) blc-narrow)
+  "Decrease `ivy-bibtex' entry width due to other formatting.
+`ivy-bibtex-default-action' only considers `frame-width', which
+does not, for example, take the effect of `ivy-format-function'
+into account."
+  (funcall fmt entry
+           (blc-but-fringes
+            width (string-width (funcall ivy-format-function '(""))))))
+
+;; ledger-complete
 (define-advice ledger-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
 
+;; mail-extra
 (define-advice mail-extract-address-components
     (:before-until (address &optional all) blc-delegate-gnus)
   "Try to cut corners with `gnus-extract-address-components'.
@@ -213,11 +233,13 @@ This is much less accurate but also much more performant than
        (stringp address)
        (gnus-extract-address-components address)))
 
+;; make-mode
 (define-advice makefile-insert-gmake-function
     (:after (&rest _) blc-delete-trailing-space)
   "Delete trailing whitespace after function call insertion."
   (delete-horizontal-space t))
 
+;; package
 (define-advice package-install (:before (&rest _) blc-async-bytecomp)
   "Install `async' and enable `async-bytecomp-package-mode'."
   (use-package async
@@ -226,6 +248,7 @@ This is much less accurate but also much more performant than
     (setq-default async-bytecomp-allowed-packages '(all))
     (async-bytecomp-package-mode)))
 
+;; recentf
 (define-advice recentf-save-list (:around (save &rest args) blc-save-safely)
   "Save silently only if sole Emacs instance."
   (when (> 2 (seq-count (lambda (pid)
@@ -234,14 +257,6 @@ This is much less accurate but also much more performant than
                         (list-system-processes)))
     (let ((save-silently t))
       (apply save args))))
-
-(define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
-  "Exempt derived modes from hi-lock highlighting.
-Include every major mode derived from the current
-`hi-lock-exclude-modes' in that blacklist."
-  (let ((modes 'hi-lock-exclude-modes))
-    (when (apply #'derived-mode-p (symbol-value modes))
-      (add-to-list modes major-mode))))
 
 
 ;;; Package utilities
@@ -620,10 +635,9 @@ With prefix argument SELECT, call `tile-select' instead."
           '((sx-question-list-read-question   . link-visited)
             (sx-question-list-unread-question . link        ))))
 
-(eval-and-compile
-  (defun blc-zenburn-assoc (colour)
-    "Return the `zenburn' value associated with COLOUR."
-    (blc-elt zenburn-default-colors-alist colour nil #'string-equal)))
+(defun blc-zenburn-assoc (colour)
+  "Return the `zenburn' value associated with COLOUR."
+  (blc-elt zenburn-default-colors-alist colour nil #'string-equal))
 
 (defun blc-zenburn-brighten-fci ()
   "Make FCI rule lighter than background under `zenburn'."
@@ -655,12 +669,8 @@ With prefix argument SELECT, call `tile-select' instead."
                       :foreground nil
                       :background nil))
 
-
-;;;; MISCELLANEA
-
-;;; Custom theme
-
-(when (load-theme 'zenburn t)
+(defun blc-enable-zenburn-hook ()
+  "Setup `zenburn' to taste."
   (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
   (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
 
@@ -669,6 +679,12 @@ With prefix argument SELECT, call `tile-select' instead."
             (ivy-mode-hook . ,#'blc-zenburn-darken-ivy      )
             (org-load-hook . ,#'blc-zenburn-fontify-org-todo)
             (org-load-hook . ,#'blc-zenburn-hide-org-clock  ))))
+
+
+;;;; MISCELLANEA
+
+;; Custom theme
+(load-theme 'zenburn t)
 
 ;; Maximise initial frame
 (map-put initial-frame-alist 'fullscreen 'maximized)
