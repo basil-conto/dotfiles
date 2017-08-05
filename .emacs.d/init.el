@@ -2988,10 +2988,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    wttrin-default-accept-language
    `(,(car wttrin-default-accept-language) . "el,en,*")
    wttrin-default-cities
-   `(,"Moon" ,@(map-apply
-                (pcase-lambda (loc (app (apply #'blc--country-xref) country))
-                  (format "%s, %s" loc (plist-get country :name)))
-                blc-locations))))
+   `("Moon" ,@(map-apply
+               (pcase-lambda (loc (app (apply #'blc--country-xref) country))
+                 (format "%s, %s" loc (plist-get country :name)))
+               blc-locations))))
 
 (use-package xref-js2
   :ensure
