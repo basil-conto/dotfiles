@@ -2310,6 +2310,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   (setq-default mwheel-tilt-scroll-p t))
 
+(use-package neato-graph-bar
+  :ensure)
+
 (use-package nodejs-repl
   :ensure)
 
