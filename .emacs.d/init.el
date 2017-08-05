@@ -2277,6 +2277,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (set-face-background 'minimap-active-region-background "#696969")
   (set-face-attribute  'minimap-font-face nil :height 10))
 
+(use-package misc
+  :bind (([remap zap-to-char] . zap-up-to-char)))
+
 (use-package mm-decode
   :functions mm-file-name-replace-whitespace
   :config
