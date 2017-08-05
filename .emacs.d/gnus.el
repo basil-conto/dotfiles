@@ -97,7 +97,18 @@ with both raw URLs and links."
       (blc-gnus-user-date time)
     ""))
 
-(defun blc-gnus-kill-log-buffers ()
+(defun blc-gnus-truncate-logs ()
+  "Truncate Gnus log buffers to `message-log-max' lines."
+  (mapc (lambda (log)
+          (with-current-buffer log
+            (goto-char (point-max))
+            (let ((inhibit-read-only t))
+              (delete-region (point-min)
+                             (line-beginning-position
+                              (- 1 message-log-max))))))
+        (seq-filter #'get-buffer blc-gnus-log-buffers)))
+
+(defun blc-gnus-kill-logs ()
   "Kill buffers named in `blc-gnus-log-buffers'."
   (kill-matching-buffers (blc-rx `(: bos (| ,@blc-gnus-log-buffers) eos))))
 
@@ -205,9 +216,10 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 ;;; Hooks
 
 (map-do #'add-hook
-        `(;; FIXME: Notifies of all unread messages ;_;
+        `((gnus-after-getting-new-news-hook . ,#'blc-gnus-truncate-logs)
+          ;; FIXME: Notifies of all unread messages ;_;
           ;; (gnus-after-getting-new-news-hook . #'gnus-notifications)
-          (gnus-exit-gnus-hook              . ,#'blc-gnus-kill-log-buffers)
+          (gnus-exit-gnus-hook              . ,#'blc-gnus-kill-logs)
           (gnus-group-catchup-group-hook    . ,#'gnus-group-set-timestamp)
           (gnus-group-mode-hook             . ,#'gnus-topic-mode)
           (gnus-select-group-hook           . ,#'gnus-group-set-timestamp)))

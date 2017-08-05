@@ -624,7 +624,7 @@ Strings FROM override the default `f' format spec."
 (defvar blc-repos-dir (blc-dir user-emacs-directory "repos")
   "Directory containing symlinks to user Git repositories.")
 
-(defvar blc-gnus-log-buffers '("*nntp-log*")
+(defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
   "List of buffer names associated with Gnus logs.")
 
 (provide 'blc-lib)
