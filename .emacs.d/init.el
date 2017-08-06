@@ -1664,6 +1664,13 @@ With prefix argument SELECT, call `tile-select' instead."
                                 (-cut blc-elt lut <> nil #'blc-string-equal)
                                 calendar-holidays))))
 
+(use-package htmlize
+  :ensure
+  :init
+  (setq-default htmlize-css-name-prefix "htmlize-"
+                htmlize-html-charset    "utf-8"
+                htmlize-html-major-mode #'mhtml-mode))
+
 (use-package ibuf-ext
   :commands ibuffer-auto-mode
   :bind (([remap list-buffers] . ibuffer)
