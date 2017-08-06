@@ -152,11 +152,6 @@ why-are-you-changing-gc-cons-threshold/'.")
 (defvar blc-bib-file "~/.bib.bib"
   "Default user BibTeX file.")
 
-(defvar blc-fundamental-hooks
-  (mapcar (-cut blc-symcat <> "-mode-hook")
-          '(conf ess haskell-cabal hledger mustache prog text))
-  "Hooks whose modes derive from `fundamental-mode' or nothing.")
-
 ;;; Advice
 
 ;; cc-align
@@ -679,11 +674,10 @@ With prefix argument SELECT, call `tile-select' instead."
   (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
   (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
 
-  (map-do #'add-hook
-          `((fci-mode-hook . ,#'blc-zenburn-brighten-fci    )
-            (ivy-mode-hook . ,#'blc-zenburn-darken-ivy      )
-            (org-load-hook . ,#'blc-zenburn-fontify-org-todo)
-            (org-load-hook . ,#'blc-zenburn-hide-org-clock  ))))
+  (blc-hook (:hooks fci-mode-hook :fns (blc-zenburn-brighten-fci))
+            (:hooks ivy-mode-hook :fns (blc-zenburn-darken-ivy))
+            (:hooks org-load-hook :fns (blc-zenburn-fontify-org-todo
+                                        blc-zenburn-hide-org-clock))))
 
 
 ;;;; MISCELLANEA
@@ -879,9 +873,9 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package bbdb
   :ensure
   :init
-  (map-do #'add-hook
-          `((gnus-started-hook . ,#'blc-bbdb-set-gnus-summary-line-format)
-            (gnus-startup-hook . ,#'bbdb-insinuate-gnus)))
+  (blc-hook
+    (:hooks gnus-started-hook :fns blc-bbdb-set-gnus-summary-line-format)
+    (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus))
 
   (setq-default bbdb-complete-mail-allow-cycling t
                 bbdb-default-country             nil
@@ -936,9 +930,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package bug-reference
   :init
-  (map-do #'add-hook
-          `((prog-mode-hook . ,#'bug-reference-prog-mode)
-            (text-mode-hook . ,#'bug-reference-mode     ))))
+  (blc-hook (:hooks prog-mode-hook :fns bug-reference-prog-mode)
+            (:hooks text-mode-hook :fns bug-reference-mode)))
 
 (use-package calendar
   :init
@@ -953,9 +946,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package cc-mode
   :init
-  (mapc (-cut add-hook 'c-mode-common-hook <>)
-        `(,#'blc-turn-on-c++-comments
-          ,#'hs-minor-mode))
+  (blc-hook (:hooks c-mode-common-hook :fns (blc-turn-on-c++-comments
+                                             hs-minor-mode)))
   :config
   (let ((name    "blc")
         (base    "linux")
@@ -1101,10 +1093,9 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package dafny-mode
   :ensure boogie-friends
   :init
-  (mapc (-cut add-hook 'dafny-mode-hook <>)
-        `(,#'blc-turn-off-electric-indent-local
-          ,#'blc-turn-off-flycheck
-          ,#'blc-turn-off-prettify-symbols)))
+  (blc-hook (:hooks dafny-mode-hook :fns (blc-turn-off-electric-indent-local
+                                          blc-turn-off-flycheck
+                                          blc-turn-off-prettify-symbols))))
 
 (use-package dash
   :functions dash-enable-font-lock
@@ -1347,8 +1338,8 @@ With prefix argument SELECT, call `tile-select' instead."
          ("C-f" .       ffap-other-frame))
 
   :init
-  (mapc (-cut add-hook <> #'ffap-gnus-hook)
-        '(gnus-summary-mode-hook gnus-article-mode-hook))
+  (blc-hook (:fns ffap-gnus-hook :hooks (gnus-summary-mode-hook
+                                         gnus-article-mode-hook)))
 
   (setq-default dired-at-point-require-prefix t
                 ffap-require-prefix           t
@@ -1361,7 +1352,13 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package fic-mode
   :ensure
   :init
-  (mapc (-cut add-hook <> #'fic-mode) blc-fundamental-hooks)
+  (blc-hook (:fns fic-mode :hooks (conf-mode-hook
+                                   ess-mode-hook
+                                   haskell-cabal-mode-hook
+                                   hledger-mode-hook
+                                   mustache-mode-hook
+                                   prog-mode-hook
+                                   text-mode-hook)))
   :config
   (mapc (-cut add-to-list 'fic-highlighted-words <>)
         '("HACK" "KLUDGE" "NOTE" "WARN")))
@@ -1395,12 +1392,16 @@ With prefix argument SELECT, call `tile-select' instead."
   :init
   (setq-default fci-rule-column blc-chars-per-line)
 
-  (map-do (lambda (fn hooks)
-            (mapc (-cut add-hook <> fn) hooks))
-          `((,#'turn-on-fci-mode  . ,blc-fundamental-hooks)
-            (,#'turn-off-fci-mode . (lisp-interaction-mode-hook
-                                     org-mode-hook
-                                     visual-line-mode-hook)))))
+  (blc-hook (:fns turn-on-fci-mode  :hooks (conf-mode-hook
+                                            ess-mode-hook
+                                            haskell-cabal-mode-hook
+                                            hledger-mode-hook
+                                            mustache-mode-hook
+                                            prog-mode-hook
+                                            text-mode-hook))
+            (:fns turn-off-fci-mode :hooks (lisp-interaction-mode-hook
+                                            org-mode-hook
+                                            visual-line-mode-hook))))
 
 (use-package find-file
   :init
@@ -1468,9 +1469,8 @@ With prefix argument SELECT, call `tile-select' instead."
   (add-to-list 'auto-mode-alist
                `(,git-commit-filename-regexp . ,#'git-commit-setup))
 
-  (mapc (-cut add-hook 'git-commit-setup-hook <>)
-        `(,#'blc-git-commit-set-fill-column
-          ,#'bug-reference-mode))
+  (blc-hook (:hooks git-commit-setup-hook :fns (blc-git-commit-set-fill-column
+                                                bug-reference-mode)))
 
   (setq-default git-commit-summary-max-length 50
                 global-git-commit-mode        nil)
@@ -1489,9 +1489,8 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package gnus
   :init
   ;; Shave a few startup seconds
-  (map-do #'add-hook
-          `((gnus-load-hook    . ,#'blc-gc-thresh-maximise)
-            (gnus-started-hook . ,#'blc-gc-thresh-restore )))
+  (blc-hook (:hooks gnus-load-hook    :fns blc-gc-thresh-maximise)
+            (:hooks gnus-started-hook :fns blc-gc-thresh-restore))
 
   (setq-default
    gnus-home-directory user-emacs-directory
@@ -1555,13 +1554,11 @@ With prefix argument SELECT, call `tile-select' instead."
    haskell-process-suggest-hoogle-imports      t
    haskell-process-suggest-remove-import-lines t)
 
-  (map-do
-   #'add-hook
-   `((haskell-cabal-mode-hook . ,#'blc-turn-off-electric-indent-local)
-     ,@(mapcar (-cut cons 'haskell-mode-hook <>)
-               `(,#'blc-turn-off-electric-indent-local
-                 ,#'haskell-indent-mode
-                 ,#'interactive-haskell-mode))))
+  (blc-hook
+    (:hooks haskell-cabal-mode-hook :fns blc-turn-off-electric-indent-local)
+    (:hooks haskell-mode-hook       :fns (blc-turn-off-electric-indent-local
+                                          haskell-indent-mode
+                                          interactive-haskell-mode)))
 
   :config
   (delight `((,#'haskell-indent-mode)
@@ -1610,12 +1607,11 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package hl-line
   :init
-  (mapc (-cut add-hook <> #'hl-line-mode)
-        '(dired-mode-hook
-          git-rebase-mode-hook
-          ibuffer-mode-hook
-          ivy-occur-mode-hook
-          tabulated-list-mode-hook)))
+  (blc-hook (:fns hl-line-mode :hooks (dired-mode-hook
+                                       git-rebase-mode-hook
+                                       ibuffer-mode-hook
+                                       ivy-occur-mode-hook
+                                       tabulated-list-mode-hook))))
 
 (use-package hideshow
   :bind (:map
@@ -1671,9 +1667,8 @@ With prefix argument SELECT, call `tile-select' instead."
          mode-specific-map
          ("j b" . ibuffer-jump))
   :init
-  (mapc (-cut add-hook 'ibuffer-mode-hook <>)
-        `(,#'ibuffer-auto-mode
-          ,#'blc-turn-on-ibuffer-filter-groups))
+  (blc-hook (:hooks ibuffer-mode-hook :fns (ibuffer-auto-mode
+                                            blc-turn-on-ibuffer-filter-groups)))
 
   :config
   (define-ibuffer-filter modes
@@ -1822,9 +1817,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :ensure
   :delight irony-mode "🜜"
   :init
-  (map-do #'add-hook
-          `((c-mode-common-hook . ,#'irony-mode)
-            (   irony-mode-hook . ,#'irony-cdb-autosetup-compile-options)))
+  (blc-hook
+    (:hooks c-mode-common-hook :fns irony-mode)
+    (:hooks    irony-mode-hook :fns irony-cdb-autosetup-compile-options))
   :config
   (setq-default irony-server-build-dir
                 (blc-dir irony-server-source-dir "build")))
@@ -1975,9 +1970,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   (setq-default js2-bounce-indent-p t)
 
-  (mapc (-cut add-hook 'js2-mode-hook <>)
-        `(,#'js2-highlight-unused-variables-mode
-          ,#'blc-turn-off-electric-indent-local))
+  (blc-hook (:hooks js2-mode-hook :fns (js2-highlight-unused-variables-mode
+                                        blc-turn-off-electric-indent-local)))
 
   :config
   (delight #'js2-mode "jsⅡ" :major)
@@ -2248,11 +2242,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          message-mode-map
          ("C-c C-f f" . blc-message-set-msmtp-from))
   :init
-  (map-do #'add-hook
-          `((message-mode-hook  . ,#'blc-message-header-fontify)
-            (message-setup-hook . ,#'footnote-mode)
-            (message-subscribed-address-functions
-             . ,#'gnus-find-subscribed-addresses)))
+  (blc-hook (:hooks message-mode-hook  :fns blc-message-header-fontify)
+            (:hooks message-setup-hook :fns footnote-mode)
+            (:hooks message-subscribed-address-functions
+                    :fns gnus-find-subscribed-addresses))
+
   :config
   (delight #'message-mode "🖹" :major)
 
@@ -2631,8 +2625,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                 next-error-recenter   '(4)
                 read-mail-command     'gnus)
 
-  (mapc (-cut add-hook <> #'turn-on-auto-fill)
-        '(bookmark-edit-annotation-mode-hook LaTeX-mode-hook org-mode-hook))
+  (blc-hook (:fns turn-on-auto-fill :hooks (bookmark-edit-annotation-mode-hook
+                                            LaTeX-mode-hook
+                                            org-mode-hook)))
 
   (column-number-mode))
 
@@ -2692,9 +2687,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                                        (point-max-marker)))))))
     (setq initial-scratch-message fortune))
 
-  (mapc (-cut add-hook 'window-setup-hook <> t)
-        `(,#'blc-report-init-time
-          ,#'blc-gc-thresh-restore)))
+  (blc-hook (:hooks window-setup-hook :append t :fns (blc-report-init-time
+                                                      blc-gc-thresh-restore))))
 
 (use-package subword
   :delight subword-mode
@@ -2743,12 +2737,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("C-c ?" . TeX-doc))
   :commands TeX-revert-document-buffer
   :init
-  (add-hook 'TeX-after-compilation-finished-functions
-            #'TeX-revert-document-buffer)
-
-  (mapc (-cut add-hook 'LaTeX-mode-hook <>)
-        `(,#'blc-configure-beamer
-          ,#'blc-configure-latexmk))
+  (blc-hook (:hooks TeX-after-compilation-finished-functions
+                    :fns TeX-revert-document-buffer)
+            (:hooks LaTeX-mode-hook :fns (blc-configure-beamer
+                                          blc-configure-latexmk)))
 
   :config
   (setq-default
@@ -2767,9 +2759,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package text-mode
   :init
-  (mapc (-cut add-hook 'text-mode-hook <>)
-        `(,#'blc-indent-relative-first-indent-point
-          ,#'blc-turn-off-electric-indent-local)))
+  (blc-hook (:hooks text-mode-hook :fns (blc-indent-relative-first-indent-point
+                                         blc-turn-off-electric-indent-local))))
 
 (use-package threes
   :ensure)
@@ -2967,9 +2958,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :ensure
   :init
   ;; Clean up git buffers whether action executed or cancelled
-  (mapc (-cut add-hook <> #'blc-kill-git-buffer)
-        '(with-editor-post-cancel-hook
-          with-editor-post-finish-hook)))
+  (blc-hook (:fns blc-kill-git-buffer :hooks (with-editor-post-cancel-hook
+                                              with-editor-post-finish-hook))))
 
 (use-package wrap-region
   :ensure

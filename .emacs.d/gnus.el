@@ -215,14 +215,14 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 
 ;;; Hooks
 
-(map-do #'add-hook
-        `((gnus-after-getting-new-news-hook . ,#'blc-gnus-truncate-logs)
-          ;; FIXME: Notifies of all unread messages ;_;
-          ;; (gnus-after-getting-new-news-hook . #'gnus-notifications)
-          (gnus-exit-gnus-hook              . ,#'blc-gnus-kill-logs)
-          (gnus-group-catchup-group-hook    . ,#'gnus-group-set-timestamp)
-          (gnus-group-mode-hook             . ,#'gnus-topic-mode)
-          (gnus-select-group-hook           . ,#'gnus-group-set-timestamp)))
+(blc-hook
+  ;; FIXME: Adding `gnus-notifications' to `gnus-after-getting-new-news-hook'
+  ;;        notifies of all unread messages ;_;
+  (:hooks gnus-after-getting-new-news-hook :fns blc-gnus-truncate-logs)
+  (:hooks gnus-exit-gnus-hook              :fns blc-gnus-kill-logs)
+  (:hooks gnus-group-catchup-group-hook    :fns gnus-group-set-timestamp)
+  (:hooks gnus-group-mode-hook             :fns gnus-topic-mode)
+  (:hooks gnus-select-group-hook           :fns gnus-group-set-timestamp))
 
 ;;; Deferrals
 

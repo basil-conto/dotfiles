@@ -34,7 +34,7 @@ all: $(srcs)
 blc-lib: $(call libouts,blc-lib)
 
 .PHONY: blc-macs
-blc-macs: $(call libouts,blc-macs)
+blc-macs: blc-lib $(call libouts,blc-macs)
 
 .PHONY: blc-notmuch
 blc-notmuch: blc-lib $(call libouts,blc-notmuch)

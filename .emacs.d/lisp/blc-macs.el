@@ -10,6 +10,9 @@
 ;; * Reword plist `pcase-defmacro' docstring
 
 ;;; Code:
+(eval-and-compile
+  (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
+(require 'blc-lib)
 
 (require 'seq)
 (eval-when-compile
@@ -17,21 +20,23 @@
 
 ;;; Structural patterns
 
-(pcase-defmacro npred (fun)
-  "Build a negated `pred' `pcase' pattern.
-That is, match when FUN applied to the object returns nil."
-  (let ((obj (make-symbol "obj")))
-    `(and ,obj (guard (not (thread-last ,obj ,fun))))))
+(eval-and-compile
 
-(pcase-defmacro plist (&rest args)
-  "Build a `pcase' pattern matching property list elements.
+  (pcase-defmacro npred (fun)
+    "Build a negated `pred' `pcase' pattern.
+That is, match when FUN applied to the object returns nil."
+    (let ((obj (make-symbol "obj")))
+      `(and ,obj (guard (not (thread-last ,obj ,fun))))))
+
+  (pcase-defmacro plist (&rest args)
+    "Build a `pcase' pattern matching property list elements.
 ARGS should itself form a plist whose values are bound to
 elements of the `pcase' expression corresponding to its keys.
 Lookup is performed using `plist-get'."
-  `(and (pred seqp)
-        ,@(mapcar (pcase-lambda ((seq key var))
-                    `(app (pcase--flip plist-get ,key) ,var))
-                  (seq-partition args 2))))
+    `(and (pred seqp)
+          ,@(mapcar (pcase-lambda ((seq key var))
+                      `(app (pcase--flip plist-get ,key) ,var))
+                    (seq-partition args 2)))))
 
 ;;; Declarations
 
@@ -79,6 +84,33 @@ corresponding feature name."
   (blc--when-compile (mapcar (lambda (sym)
                                `(defvar ,sym))
                              symbols)))
+
+;;; Hooks
+
+(defmacro blc-hook (&rest plists)
+  "Add functions to hooks using `add-hook'.
+Elements of PLISTS should form a plist with the following
+recognised keys corresponding to the arguments of `add-hook':
+
+:hooks HOOKS -- HOOKS is either a single hook variable or a list
+thereof.
+
+:fns FNS -- FNS is either a single function to be added to HOOKS
+or a list thereof.
+
+:append APPEND -- See `add-hook'.
+
+:local LOCAL -- See `add-hook'."
+  (declare (indent 0))
+  (macroexp-progn
+   (mapcan (pcase-lambda ((plist :hooks  hooks  :fns   fns
+                                 :append append :local local))
+             (mapcan (lambda (hook)
+                       (mapcar (lambda (fn)
+                                 `(add-hook ',hook #',fn ,append ,local))
+                               (blc-as-list fns)))
+                     (blc-as-list hooks)))
+           plists)))
 
 ;;; Miscellanea
 
