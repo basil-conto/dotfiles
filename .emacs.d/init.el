@@ -103,6 +103,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   ivy-format-function
   ivy-height
   js2-mode-map
+  json-mode-map
   org-default-notes-file
   org-directory
   recentf-list
@@ -1947,6 +1948,12 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (setq-default
    jit-lock-stealth-load 60
    jit-lock-stealth-time  4))
+
+(use-package jq-mode
+  :ensure
+  :init
+  (with-eval-after-load 'json-mode
+    (define-key json-mode-map "\C-c\C-q" #'jq-interactively)))
 
 (use-package js
   :config
