@@ -31,9 +31,10 @@ alias venture='pushd .; cd'
 alias make='make --jobs=$(nproc)'
 
 # apt
-alias uu='sudo apt-get update && sudo apt-get upgrade'
-alias uuu='uu && sudo apt-get dist-upgrade'
-alias uuuu='uuu && sudo apt-get autoremove && sudo apt-get autoclean'
+alias uu='sudo apt-get update && \
+sudo apt-get dist-upgrade     && \
+sudo apt-get autoremove       && \
+sudo apt-get autoclean'
 
 # wajig
 alias list='wajig listinstalled'
