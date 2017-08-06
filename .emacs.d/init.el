@@ -400,6 +400,13 @@ description of the arguments to this function."
     (setq comment-start "//"
           comment-end   "")))
 
+(defun blc-counsel-find-file ()
+  "Like `counsel-find-file', but return buffer, not filename.
+This likens `counsel-find-file' to `find-file' more and makes it
+suitable for assigning to `ffap-file-finder'."
+  (interactive)
+  (find-buffer-visiting (counsel-find-file)))
+
 (defun blc-csv-align-all-fields ()
   "Align all fields in the current CSV buffer."
   (csv-align-fields nil (point-min) (point-max)))
@@ -1042,7 +1049,7 @@ With prefix argument SELECT, call `tile-select' instead."
   :init
   ;; Do not remap keys above with `counsel-mode'
   (setq-default counsel-mode-map ()
-                ffap-file-finder #'counsel-find-file)
+                ffap-file-finder #'blc-counsel-find-file)
 
   (advice-add #'org-goto :override #'counsel-org-goto)
 
