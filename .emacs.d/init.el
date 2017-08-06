@@ -616,6 +616,10 @@ With prefix argument SELECT, call `tile-select' instead."
   (funcall (if select #'tile-select #'tile))
   (message "%s" (tile-get-name (eieio-oref tile-cycler 'current-strategy))))
 
+(defun blc-xref-js2-install-backend ()
+  "Locally install `xref-js2-xref-backend'."
+  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
+
 
 ;;; Theme utilities
 
@@ -3002,11 +3006,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package xref-js2
   :ensure
-  :after js2-mode
   :init
+  (add-hook 'js2-mode-hook #'blc-xref-js2-install-backend)
   (with-eval-after-load 'js2-mode
-    (unbind-key "M-." js2-mode-map)     ; Reused by xref
-    (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+    (unbind-key "M-." js2-mode-map)))
 
 (use-package xt-mouse
   :init
