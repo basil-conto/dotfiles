@@ -69,7 +69,6 @@ why-are-you-changing-gc-cons-threshold/'.")
   ;; Third-party dependencies
   (when-let (missing (seq-remove #'package-installed-p
                                  '(bind-key
-                                   dash-functional
                                    delight
                                    use-package
                                    zenburn-theme)))
@@ -80,7 +79,6 @@ why-are-you-changing-gc-cons-threshold/'.")
 (eval-when-compile
   (setq-default use-package-always-defer t
                 use-package-verbose      'debug)
-  (require 'dash-functional)
   (require 'use-package))
 
 
@@ -638,7 +636,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (defun blc-sx-question-list-fontify ()
   "Customise `sx-question-list-mode' title faces."
-  (map-do (-cut set-face-attribute <> nil :inherit <> :underline nil)
+  (map-do (lambda (child parent)
+            (set-face-attribute child nil :inherit parent :underline nil))
           '((sx-question-list-read-question   . link-visited)
             (sx-question-list-unread-question . link        ))))
 
@@ -696,7 +695,8 @@ With prefix argument SELECT, call `tile-select' instead."
 (map-put initial-frame-alist 'fullscreen 'maximized)
 
 ;; Disable menu and tool bars
-(mapc (-cut map-put default-frame-alist <> 0)
+(mapc (lambda (param)
+        (map-put default-frame-alist param 0))
       '(menu-bar-lines tool-bar-lines))
 
 ;; Set default font under X
@@ -748,7 +748,9 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (map-do
  (lambda (map bindings)
-   (map-do (-cut define-key map <> <>) bindings))
+   (map-do (lambda (key def)
+             (define-key map key def))
+           bindings))
  `((,(current-global-map)
     ([S-next]                  . ,#'blc-small-scroll-up)
     ([S-prior]                 . ,#'blc-small-scroll-down)
@@ -1105,6 +1107,7 @@ With prefix argument SELECT, call `tile-select' instead."
                                           blc-turn-off-prettify-symbols))))
 
 (use-package dash
+  :ensure
   :functions dash-enable-font-lock
   :config
   (dash-enable-font-lock))
@@ -1178,7 +1181,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package dired-aux
   :config
-  (mapc (-cut add-to-list 'dired-compress-files-alist <>)
+  (mapc (lambda (pair)
+          (add-to-list 'dired-compress-files-alist pair))
         '(("\\.tar\\.7z\\'" . "tar -c %i | 7zr a -si %o")
           ("\\.7z\\'"       . "7zr a %o %i"))))
 
@@ -1313,7 +1317,8 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package exec-path-from-shell
   :ensure
   :config
-  (mapc (-cut add-to-list 'exec-path-from-shell-variables <>)
+  (mapc (lambda (var)
+          (add-to-list 'exec-path-from-shell-variables var))
         '("SSH_AGENT_PID" "SSH_AUTH_SOCK")))
 
 (use-package executable
@@ -1367,7 +1372,8 @@ With prefix argument SELECT, call `tile-select' instead."
                                    prog-mode-hook
                                    text-mode-hook)))
   :config
-  (mapc (-cut add-to-list 'fic-highlighted-words <>)
+  (mapc (lambda (word)
+          (add-to-list 'fic-highlighted-words word))
         '("HACK" "KLUDGE" "NOTE" "WARN")))
 
 (use-package figlet
@@ -1541,9 +1547,13 @@ With prefix argument SELECT, call `tile-select' instead."
   (require 'mm-util)
   (setq-default
    hacker-typer-files
-   (mapcar (-cut concat "file://" <>)
+   (mapcar (lambda (file)
+             (concat "file://" file))
            (directory-files (blc-dir source-directory "src") t "\\.c\\'" t))
-   hacker-typer-random-range   (mapcar (-cut * 2 <>) hacker-typer-random-range)
+   hacker-typer-random-range
+   (mapcar (lambda (bound)
+             (ash bound 1))
+           hacker-typer-random-range)
    hacker-typer-show-hackerman t))
 
 (use-package haskell-mode
@@ -1595,7 +1605,8 @@ With prefix argument SELECT, call `tile-select' instead."
   (global-hi-lock-mode)
 
   :config
-  (mapc (-cut add-to-list 'hi-lock-exclude-modes <>)
+  (mapc (lambda (mode)
+          (add-to-list 'hi-lock-exclude-modes mode))
         '(comint-mode
           completion-list-mode
           display-time-world-mode
@@ -1661,7 +1672,8 @@ With prefix argument SELECT, call `tile-select' instead."
                ("Valentine's Day"  . "❤" ))))
     (setq-default calendar-holidays
                   (blc-sed-tree (regexp-opt (map-keys lut))
-                                (-cut blc-elt lut <> nil #'blc-string-equal)
+                                (lambda (day)
+                                  (blc-elt lut day nil #'blc-string-equal))
                                 calendar-holidays))))
 
 (use-package htmlize
@@ -1717,7 +1729,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                (ibuffer-buf-matches-predicates buf `(,re)))))))
 
   ;; Define before use
-  (mapc (-cut add-to-list 'ibuffer-saved-filters <>)
+  (mapc (lambda (filter)
+          (add-to-list 'ibuffer-saved-filters filter))
         `(("package" (directory . ,(regexp-opt
                                     (mapcar #'expand-file-name
                                             `(,(blc-parent-dir data-directory)
@@ -1880,12 +1893,14 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (map-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
 
   ;; Reverse parsed order
-  (mapc (-cut map-put ivy-sort-functions-alist <> #'blc-sort-reverse)
+  (mapc (lambda (caller)
+          (map-put ivy-sort-functions-alist caller #'blc-sort-reverse))
         `(,#'Info-complete-menu-item
           ,#'Man-goto-section))
 
   ;; Faces
-  (map-do (-cut set-face-attribute <> nil :inherit <>)
+  (map-do (lambda (child parent)
+            (set-face-attribute child nil :inherit parent))
           '((ivy-action          . font-lock-keyword-face)
             (ivy-modified-buffer . font-lock-variable-name-face)
             (ivy-virtual         . shadow)))
@@ -2116,10 +2131,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (blc-put magit-diff-highlight-indentation "" 'tabs)
 
   ;; Status buffer
-  (mapc (-cut magit-add-section-hook
-              'magit-status-headers-hook
-              <>
-              'magit-insert-head-branch-header)
+  (mapc (lambda (fn)
+          (magit-add-section-hook
+           'magit-status-headers-hook fn 'magit-insert-head-branch-header))
         '(magit-insert-remote-header
           magit-insert-repo-header))
 
@@ -2216,19 +2230,22 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   ;; Expand special targets
   (let ((targets 'makefile-special-targets-list))
     ;; Remove old-fashioned suffix rules
-    (set targets (seq-remove (-cut string-match-p "\\." <>)
+    (set targets (seq-remove (lambda (target)
+                               (string-match-p "\\." target))
                              (symbol-value targets)))
 
-    (mapc (-cut add-to-list targets <>) '("DEFAULT_GOAL"
-                                          "DELETE_ON_ERROR"
-                                          "EXPORT_ALL_VARIABLES"
-                                          "INTERMEDIATE"
-                                          "LOW_RESOLUTION_TIME"
-                                          "ONESHELL"
-                                          "NOTPARALLEL"
-                                          "POSIX"
-                                          "SECONDARY"
-                                          "SECONDEXPANSION"))
+    (mapc (lambda (target)
+            (add-to-list targets target))
+          '("DEFAULT_GOAL"
+            "DELETE_ON_ERROR"
+            "EXPORT_ALL_VARIABLES"
+            "INTERMEDIATE"
+            "LOW_RESOLUTION_TIME"
+            "ONESHELL"
+            "NOTPARALLEL"
+            "POSIX"
+            "SECONDARY"
+            "SECONDEXPANSION"))
 
     (set-default targets (sort (symbol-value targets) #'string-lessp))))
 
@@ -2361,7 +2378,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                             org-man))
 
   :config
-  (mapc (-cut map-put org-babel-load-languages <> t)
+  (mapc (lambda (lang)
+          (map-put org-babel-load-languages lang t))
         '(C
           haskell
           java
