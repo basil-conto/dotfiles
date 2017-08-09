@@ -24,7 +24,7 @@
 ;;; Sequences
 
 (defun blc-true-list-p (object)
-  "Determine whether the last `cdr' of OBJECT is nil."
+  "Like `format-proper-list-p', but faster."
   (declare (pure t))
   (null (nthcdr (safe-length object) object)))
 
