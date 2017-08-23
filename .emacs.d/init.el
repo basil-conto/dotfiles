@@ -24,11 +24,14 @@ why-are-you-changing-gc-cons-threshold/'.")
 
   (blc-gc-thresh-maximise)
 
-  ;; Include user lisp libraries
-  (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
+  ;; Include user libraries
+  (mapc (lambda (dir)
+          (add-to-list 'load-path (expand-file-name dir user-emacs-directory)))
+        '("lisp" "mod")))
 
 ;; User
 (require 'blc-lib)
+(require 'realpath)
 (eval-when-compile
   (require 'blc-macs))
 
@@ -39,14 +42,16 @@ why-are-you-changing-gc-cons-threshold/'.")
 (eval-when-compile
   (require 'subr-x))
 
-;;; Profiling
-
+;; Profiling
 (defalias 'blc-report-init-time
   (let ((file load-file-name))
     (lambda ()
       (thread-last (float-time (time-subtract after-init-time before-init-time))
         (message "Loading %s...done (%.3fs)" file))))
   "`use-package'-style `emacs-init-time' to 3 decimal places.")
+
+;; Startup speedup
+(advice-add #'file-truename :override #'realpath-truename)
 
 ;;; Packaging
 
