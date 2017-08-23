@@ -90,7 +90,7 @@ Like `message', but each line is prefixed with a timestamp."
       (condition-case err
           (blc-keep
            (lambda (line)
-             (when-let (dir (file-name-directory line))
+             (when-let* ((dir (file-name-directory line)))
                (let* ((art   (file-name-nondirectory line))
                       (group (blc-sed prefix ""
                                       (directory-file-name (blc-parent-dir dir))

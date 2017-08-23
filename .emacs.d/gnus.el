@@ -93,7 +93,7 @@ with both raw URLs and links."
 
 (defun gnus-user-format-function-dgroup (&rest _)
   "User-defined Gnus group line timestamp format."
-  (if-let (time (gnus-group-timestamp gnus-tmp-group))
+  (if-let* ((time (gnus-group-timestamp gnus-tmp-group)))
       (blc-gnus-user-date time)
     ""))
 

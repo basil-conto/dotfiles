@@ -51,7 +51,7 @@
 SEQ is modified destructively unless COPY is non-nil."
   (funcall (if copy #'seq-mapcat #'mapcan)
            (lambda (item)
-             (when-let (result (funcall fn item))
+             (and-let* ((result (funcall fn item)))
                `(,result)))
            seq))
 

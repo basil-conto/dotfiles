@@ -72,11 +72,11 @@ why-are-you-changing-gc-cons-threshold/'.")
   (package-initialize)
 
   ;; Third-party dependencies
-  (when-let (missing (seq-remove #'package-installed-p
-                                 '(bind-key
-                                   delight
-                                   use-package
-                                   zenburn-theme)))
+  (when-let* ((missing (seq-remove #'package-installed-p
+                                   '(bind-key
+                                     delight
+                                     use-package
+                                     zenburn-theme))))
     (when (y-or-n-p (format "Install missing packages %s?" missing))
       (mapc #'package-install missing))))
 
@@ -187,8 +187,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
   "Feed CHOICES to `bbdb-mua-summary-unify' before completion."
   (require 'bbdb-mua)
   (require 'mail-parse)
-  (let ((mark (blc-rx
-               `(: bos (in ?\s ,@(internal--listify bbdb-mua-summary-mark))))))
+  (let ((mark (blc-rx `(: bos (in ?\s ,@(blc-as-list bbdb-mua-summary-mark))))))
     (apply select
            (mapcar (lambda (choice)
                      (format "\"%s\" <%s>"
@@ -296,8 +295,8 @@ The contents of URL are converted to a temporary PDF file by
   "Return cons cell with appropriate printer and filter for URL."
   (require 'eww)
   (require 'mailcap)
-  (if-let ((mimetype (mailcap-extension-to-mime (url-file-extension url)))
-           (remote   (url-handler-file-remote-p url)))
+  (if-let* ((mimetype (mailcap-extension-to-mime (url-file-extension url)))
+            ((url-handler-file-remote-p url)))
       (if (string-match-p
            (regexp-opt '("application/pdf" "application/postscript")) mimetype)
           `(,#'blc-print-url--lpr . ,#'url-file-local-copy)
@@ -336,11 +335,11 @@ URL is parsed using the regular expressions found in
 `auto-mode-alist' and `ffap-alist' for `irfc-mode' and
 `ffap-rfc', respectively."
   (require 'ffap)
-  (if-let (res (blc-keep (lambda (cell)
-                           (when-let (re (car cell))
-                             `(regexp ,re)))
-                         (map-apply #'rassq `((irfc-mode . ,auto-mode-alist)
-                                              (ffap-rfc  . ,ffap-alist)))))
+  (if-let* ((res (blc-keep (lambda (cell)
+                             (and-let* ((re (car cell)))
+                               `(regexp ,re)))
+                           (map-apply #'rassq `((irfc-mode . ,auto-mode-alist)
+                                                (ffap-rfc  . ,ffap-alist))))))
       (pcase (blc-matches (blc-rx `(| ,@res)) (url-file-nondirectory url) 1)
         (`(,num) (irfc-visit (string-to-number num)))
         (_       (user-error "Invalid RFC URL: %s" url)))
@@ -367,9 +366,9 @@ description of the arguments to this function."
                        "Open URL `%s' in: "))
          (prompt-url (url-truncate-url-for-viewing url (ash (frame-width) -1)))
          (prompt     (blc-sed "%" "%%" (format prompt-fmt prompt-url) t t)))
-    (when-let (browser
-               (blc-elt blc-browser-alist
-                        (completing-read prompt blc-browser-alist nil t)))
+    (when-let* ((browser
+                 (blc-elt blc-browser-alist
+                          (completing-read prompt blc-browser-alist nil t))))
       (apply browser url args))))
 
 (define-symbol-prop
@@ -383,7 +382,7 @@ description of the arguments to this function."
 
 (defun blc-system-location ()
   "Return location of `blc-system-tz' or nil."
-  (when-let (tz (blc-system-tz))
+  (and-let* ((tz (blc-system-tz)))
     (cadr (split-string tz "/" t))))
 
 (defun blc-solar-set-location (&optional location)
@@ -434,7 +433,8 @@ suitable for assigning to `ffap-file-finder'."
 (defun blc-eww-bookmark-save ()
   "Copy the URL of the current bookmark into the kill ring."
   (interactive)
-  (if-let (eww-data (get-text-property (line-beginning-position) 'eww-bookmark))
+  (if-let* ((eww-data
+             (get-text-property (line-beginning-position) 'eww-bookmark)))
       (eww-copy-page-url)
     (user-error "No bookmark on the current line")))
 
@@ -445,13 +445,13 @@ suitable for assigning to `ffap-file-finder'."
 
 (defun blc-kill-git-buffer ()
   "Kill current git commit message or rebase todo list buffer."
-  (when-let (re (cond ((bound-and-true-p git-commit-mode)
-                       git-commit-filename-regexp)
-                      ((derived-mode-p #'git-rebase-mode)
-                       git-rebase-filename-regexp)))
-    (and buffer-file-name
-         (string-match-p re buffer-file-name)
-         (kill-buffer))))
+  (when-let* ((re (cond ((bound-and-true-p git-commit-mode)
+                         git-commit-filename-regexp)
+                        ((derived-mode-p #'git-rebase-mode)
+                         git-rebase-filename-regexp)))
+              (buffer-file-name)
+              ((string-match-p re buffer-file-name)))
+    (kill-buffer)))
 
 (defun blc-git-commit-set-fill-column ()
   "Set local `fill-column' for `git-commit-mode' buffers."
@@ -2288,7 +2288,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
   (add-to-list 'message-required-mail-headers 'To)
 
-  (when-let (addresses (blc-msmtp-addresses))
+  (when-let* ((addresses (blc-msmtp-addresses)))
     (setq-default message-alternative-emails (regexp-opt addresses)
                   user-mail-address          (car addresses)))
 
@@ -2557,7 +2557,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :config
   (map-do
    (lambda (var cmds)
-     (when-let (cmd (seq-some #'executable-find cmds))
+     (when-let* ((cmd (seq-some #'executable-find cmds)))
        (set-default var cmd)))
    '((python-check-command     . ("epylint3" "epylint" "pyflakes"))
      (python-shell-interpreter . ("ipython3" "python3" "ipython" "python")))))
@@ -2687,7 +2687,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    calendar-time-display-form
    '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
   :config
-  (when-let (loc (blc-system-location))
+  (when-let* ((loc (blc-system-location)))
     (blc-solar-set-location loc)))
 
 (use-package speedbar
@@ -2712,16 +2712,16 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (setq inhibit-default-init    t
         inhibit-startup-screen  t)
 
-  (when-let ((fortune
-              (blc-with-contents (or (getenv "COWTUNE_FILE") "~/.cowtune")
-                (let ((comment-start ";;")
-                      (comment-empty-lines t)
-                      delete-trailing-lines)
-                  (caddr (blc-funcalls `(,#'comment-region
-                                         ,#'delete-trailing-whitespace
-                                         ,#'buffer-substring-no-properties)
-                                       (point-min-marker)
-                                       (point-max-marker)))))))
+  (when-let* ((fortune
+               (blc-with-contents (or (getenv "COWTUNE_FILE") "~/.cowtune")
+                 (let ((comment-start ";;")
+                       (comment-empty-lines t)
+                       delete-trailing-lines)
+                   (caddr (blc-funcalls `(,#'comment-region
+                                          ,#'delete-trailing-whitespace
+                                          ,#'buffer-substring-no-properties)
+                                        (point-min-marker)
+                                        (point-max-marker)))))))
     (setq initial-scratch-message fortune))
 
   (blc-hook (:hooks window-setup-hook :append t :fns (blc-report-init-time
