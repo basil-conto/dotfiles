@@ -17,6 +17,8 @@
   (require 'subr-x)
   (require 'thunk))
 
+(autoload 'xdg-user-dir "xdg")
+
 (defgroup blc ()
   "Conveniences for blc."
   :group 'local)
@@ -186,11 +188,10 @@ returns results."
   "Return parent directory of PATH."
   (file-name-directory (directory-file-name path)))
 
-;; TODO: Cross-platform?
 (defun blc-user-dir (dir)
-  "Return path of XDG user DIR via `xdg-user-dir' executable."
-  (let ((path (car (process-lines "xdg-user-dir" dir))))
-    (and (stringp path) (file-name-as-directory path))))
+  "Like `xdg-user-dir', but return directory name."
+  (and-let* ((file (xdg-user-dir dir)))
+    (file-name-as-directory file)))
 
 (defun blc-switch-to-temp-file (&optional prefix suffix)
   "Create and switch to a temporary file.
