@@ -291,7 +291,7 @@ BUFFER-OR-NAME to `bury-buffer'."
                                   (sort (copy-sequence buffer-name-history)
                                         #'string-lessp)
                                   nil nil nil
-                                  buffer-name-history
+                                  'buffer-name-history
                                   (buffer-name))
                  unique))
 
