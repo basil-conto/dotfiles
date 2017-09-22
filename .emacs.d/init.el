@@ -615,16 +615,15 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
              `(,#'next-single-property-change ,#'line-end-position)
            `(,#'previous-single-property-change ,#'line-beginning-position))))
 
-;; FIXME: why not "p"?
-(defun blc-org-agenda-day-backward (&optional n)
+(defun blc-org-agenda-day-backward (n)
   "Like `previous-line', but for `org' agenda date lines."
-  (interactive "P")
-  (blc--org-agenda-day (- (prefix-numeric-value n))))
+  (interactive "p")
+  (blc--org-agenda-day (- n)))
 
-(defun blc-org-agenda-day-forward (&optional n)
+(defun blc-org-agenda-day-forward (n)
   "Like `next-line', but for `org' agenda date lines."
-  (interactive "P")
-  (blc--org-agenda-day (prefix-numeric-value n)))
+  (interactive "p")
+  (blc--org-agenda-day n))
 
 (defun blc-org-read-file ()
   "Read `org' filename.
