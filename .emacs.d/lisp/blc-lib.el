@@ -328,21 +328,21 @@ See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
     (indent-region pmin pmax)
     (untabify      pmin pmax)))
 
-(defun blc-open-line (forward)
-  "Open empty line (FORWARD - 1) lines in front of current line."
+(defun blc--open-line (n)
+  "Open empty line (N - 1) lines in front of current line."
   (save-excursion
-    (end-of-line forward)
+    (end-of-line n)
     (open-line 1)))
 
 (defun blc-open-previous-line ()
   "Open empty line before current line."
   (interactive)
-  (blc-open-line 0))
+  (blc--open-line 0))
 
 (defun blc-open-next-line ()
   "Open empty line after current line."
   (interactive)
-  (blc-open-line 1))
+  (blc--open-line 1))
 
 (defun blc-move-line-up ()
   "Save current column and exchange current and previous lines."
