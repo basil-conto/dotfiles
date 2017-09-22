@@ -1623,6 +1623,9 @@ With prefix argument SELECT, call `tile-select' instead."
            hacker-typer-random-range)
    hacker-typer-show-hackerman t))
 
+(use-package hackernews
+  :ensure)
+
 (use-package haskell-mode
   :ensure
   :bind (:map
