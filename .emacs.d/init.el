@@ -2869,11 +2869,12 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("e" . first-error))
 
   :init
-  (setq-default indicate-unused-lines t
-                kill-whole-line       t
-                mail-user-agent       'gnus-user-agent
-                next-error-recenter   '(4)
-                read-mail-command     'gnus)
+  (setq-default async-shell-command-display-buffer nil
+                indicate-unused-lines              t
+                kill-whole-line                    t
+                mail-user-agent                    'gnus-user-agent
+                next-error-recenter                '(4)
+                read-mail-command                  'gnus)
 
   (blc-hook (:fns turn-on-auto-fill :hooks (bookmark-edit-annotation-mode-hook
                                             LaTeX-mode-hook
