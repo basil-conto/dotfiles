@@ -2728,6 +2728,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package pomidor
   :ensure)
 
+(use-package proced
+  :init
+  (setq-default proced-auto-update-flag t))
+
 (use-package projectile
   :ensure
   :functions projectile-add-known-project projectile-save-known-projects
