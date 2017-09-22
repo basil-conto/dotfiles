@@ -425,11 +425,6 @@ suitable for assigning to `ffap-file-finder'."
      ,@(and page `(,(number-to-string page))))
    callback))
 
-(defun blc-eww-increase-readability ()
-  "Adjust font for increased readability."
-  (setq line-spacing (window-font-height))
-  (text-scale-set 1))
-
 (defun blc-eww-bookmark-save ()
   "Copy the URL of the current bookmark into the kill ring."
   (interactive)
@@ -1312,7 +1307,6 @@ With prefix argument SELECT, call `tile-select' instead."
          ("p" .         previous-line)
          ("w" . blc-eww-bookmark-save))
   :init
-  (add-hook 'eww-mode-hook #'blc-eww-increase-readability)
   (setq-default
    eww-search-prefix
    "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=")
