@@ -1072,6 +1072,7 @@ With prefix argument SELECT, call `tile-select' instead."
   (add-hook 'conf-mode-hook #'blc-turn-off-electric-indent-local)
   :config
   (delight `((    ,#'conf-colon-mode "🔧[:]"  :major)
+             (  ,#'conf-desktop-mode "🔧[🗔]"  :major)
              (    ,#'conf-space-mode "🔧[ ]"  :major)
              (     ,#'conf-unix-mode "🔧[🐧]" :major)
              (,#'conf-xdefaults-mode "🔧[X]"  :major))))
