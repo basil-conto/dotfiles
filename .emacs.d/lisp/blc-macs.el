@@ -14,6 +14,7 @@
   (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
 (require 'blc-lib)
 
+(require 'map)
 (require 'seq)
 (eval-when-compile
   (require 'subr-x))
@@ -112,12 +113,30 @@ or a list thereof.
                      (blc-as-list hooks)))
            plists)))
 
-;;; Miscellanea
+;;; Keys
 
-(defmacro blc-with-contents (pathexpr &rest body)
-  "Evaluate BODY in a buffer with the contents of file PATHEXPR."
+(defmacro blc-define-keys (&rest alist)
+  "Bind multiple keys per multiple keymaps.
+Elements of ALIST should have the form (KEYMAP . BINDINGS), where
+KEYMAP is an expression evaluating to a keymap. For each element
+of the alist BINDINGS of the form (KEY . DEF), `define-key' is
+called on KEYMAP, KEY and DEF."
+  (declare (indent 0))
+  (macroexp-progn
+   (map-apply (lambda (map bindings)
+                (macroexp-let2 nil map map
+                  (macroexp-progn
+                   (map-apply (lambda (key def)
+                                `(define-key ,map ,key ,def))
+                              bindings))))
+              alist)))
+
+;; Files & buffers
+
+(defmacro blc-with-contents (path &rest body)
+  "Evaluate BODY in a buffer with the contents of file PATH."
   (declare (indent 1))
-  (macroexp-let2 nil path pathexpr
+  (macroexp-let2 nil path path
     `(when (file-readable-p ,path)
        (with-temp-buffer
          (insert-file-contents ,path)

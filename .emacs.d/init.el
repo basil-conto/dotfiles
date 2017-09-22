@@ -746,35 +746,32 @@ With prefix argument SELECT, call `tile-select' instead."
 
 ;;; Bindings
 
-(map-do
- (lambda (map bindings)
-   (map-do (lambda (key def)
-             (define-key map key def))
-           bindings))
- `((,(current-global-map)
-    ([S-next]                  . ,#'blc-small-scroll-up)
-    ([S-prior]                 . ,#'blc-small-scroll-down)
-    ([f5]                      . ,#'blc-revert-buffer)
-    ([remap info]              . ,#'blc-info)
-    ([remap info-other-window] . ,#'blc-info-other-window))
-   (,mode-specific-map
-    ("\C-r"                    . ,#'blc-rename-buffer)
-    ("b"                       . ,#'blc-org-find-file)
-    ("4b"                      . ,#'blc-org-find-file-other-window)
-    ("i"                       . ,#'blc-indent-relative)
-    ("P"                       . ,#'blc-align-punctuation))
-   (,ctl-x-map
-    ("\C-n"                    . ,#'blc-open-next-line)
-    ("\C-p"                    . ,#'blc-open-previous-line)
-    ("7"                       . ,#'blc-transpose-split)
-    ("B"                       . ,#'blc-bury-buffer)
-    ("l"                       . ,#'blc-echo-fast-line-count))
-   (,ctl-x-5-map
-    ("3"                       . ,#'blc-make-graphic-display))
-   (,esc-map
-    ("R"                       . ,#'redraw-display))
-   (,goto-map
-    ("\t"                      . ,#'blc-move-to-column))))
+(blc-define-keys
+  ((current-global-map)
+   ([S-next]                  . #'blc-small-scroll-up)
+   ([S-prior]                 . #'blc-small-scroll-down)
+   ([f5]                      . #'blc-revert-buffer)
+   ([remap info]              . #'blc-info)
+   ([remap info-other-window] . #'blc-info-other-window)
+   ([remap zap-to-char]       . #'zap-up-to-char))
+  (mode-specific-map
+   ("\C-r"                    . #'blc-rename-buffer)
+   ("P"                       . #'blc-align-punctuation)
+   ("b"                       . #'blc-org-find-file)
+   ("4b"                      . #'blc-org-find-file-other-window)
+   ("i"                       . #'blc-indent-relative))
+  (ctl-x-map
+   ("\C-n"                    . #'blc-open-next-line)
+   ("\C-p"                    . #'blc-open-previous-line)
+   ("7"                       . #'blc-transpose-split)
+   ("B"                       . #'blc-bury-buffer)
+   ("l"                       . #'blc-echo-fast-line-count))
+  (ctl-x-5-map
+   ("3"                       . #'blc-make-graphic-display))
+  (esc-map
+   ("R"                       . #'redraw-display))
+  (goto-map
+   ("\t"                      . #'blc-move-to-column)))
 
 
 ;;;; PACKAGES
@@ -2311,9 +2308,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    minimap-window-location 'right)
   (set-face-background 'minimap-active-region-background "#696969")
   (set-face-attribute  'minimap-font-face nil :height 10))
-
-(use-package misc
-  :bind (([remap zap-to-char] . zap-up-to-char)))
 
 (use-package mm-decode
   :functions mm-file-name-replace-whitespace
