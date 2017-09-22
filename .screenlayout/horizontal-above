@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+# ┌────────┐
+# │        │
+# │  HDM1  │
+# └────────┘
+#  ┌──────┐
+#  │LVDS1*│
+#  └──────┘
+"$(dirname -- $(realpath -- $0))/xrandr" \
+  --output LVDS1 --mode 1600x900  --pos 40x1050 --rotate normal --primary \
+  --output HDMI1 --mode 1680x1050 --pos 0x0     --rotate normal
