@@ -824,6 +824,9 @@ With prefix argument SELECT, call `tile-select' instead."
    ([remap zap-to-char]       . #'zap-up-to-char))
   (mode-specific-map
    ("\C-r"                    . #'blc-rename-buffer)
+   ("C"                       . #'copy-from-above-command)
+   ("e"                       . #'ielm)
+   ("4e"                      . #'blc-ielm-other-window)
    ("P"                       . #'blc-align-punctuation)
    ("b"                       . #'blc-org-find-file)
    ("4b"                      . #'blc-org-find-file-other-window)
@@ -1106,11 +1109,11 @@ With prefix argument SELECT, call `tile-select' instead."
    ("C-j" . counsel-faces)
    :map
    mode-specific-map
-   ("g"   . counsel-ag)
-   ("t"   . counsel-git)
    ("u"   . counsel-unicode-char)
+   ("j a" . counsel-ag)
    ("j d" . counsel-dired-jump)
-   ("j f" . counsel-file-jump))
+   ("j f" . counsel-file-jump)
+   ("j g" . counsel-git))
 
   :init
   ;; Do not remap keys above with `counsel-mode'
@@ -1280,7 +1283,7 @@ With prefix argument SELECT, call `tile-select' instead."
   :ensure
   :bind (:map
          mode-specific-map
-         ("e" . ebib))
+         ("E" . ebib))
   :config
   (setq-default
    ebib-bibtex-dialect 'biblatex
