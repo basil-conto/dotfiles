@@ -2815,6 +2815,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :config
   (setq-default remember-notes-initial-major-mode #'org-mode))
 
+(use-package restclient
+  :ensure t
+  :init
+  (add-hook 'restclient-mode-hook #'blc-turn-off-electric-indent-local))
+
 (use-package sass-mode
   :ensure
   :init
