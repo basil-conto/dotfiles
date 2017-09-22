@@ -109,6 +109,8 @@ why-are-you-changing-gc-cons-threshold/'.")
   json-mode-map
   org-default-notes-file
   org-directory
+  org-entities
+  org-entities-user
   recentf-list
   term-raw-map
   tile-cycler
@@ -118,28 +120,31 @@ why-are-you-changing-gc-cons-threshold/'.")
   (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
 
 (blc-declare-fns
-  (bbdb-mua   bbdb-mua-summary-unify)
-  (cc-cmds    c-toggle-comment-style)
-  (cc-defs    c-langelem-pos)
-  (csv-mode   csv-align-fields)
-  (doc-view   doc-view-start-process)
-  (esh-mode   eshell-truncate-buffer)
-  (eww        eww-copy-page-url
-              eww-html-p)
-  (hi-lock    hi-lock-set-pattern)
-  (ibuf-ext   ibuffer-switch-to-saved-filter-groups)
-  (ibuffer    ibuffer-current-buffer)
-  (man        Man-goto-section)
-  (mail-parse mail-header-parse-address)
-  (mailcap    mailcap-extension-to-mime)
-  (message    message-field-value
-              message-make-from
-              message-replace-header
-              message-user-mail-address)
-  (org        org-goto)
-  (term       term-char-mode
-              term-line-mode)
-  (tile       tile-get-name))
+  (bbdb-mua      bbdb-mua-summary-unify)
+  (cc-cmds       c-toggle-comment-style)
+  (cc-defs       c-langelem-pos)
+  (csv-mode      csv-align-fields)
+  (doc-view      doc-view-start-process)
+  (esh-mode      eshell-truncate-buffer)
+  (eww           eww-copy-page-url
+                 eww-html-p)
+  (hi-lock       hi-lock-set-pattern)
+  (ibuf-ext      ibuffer-switch-to-saved-filter-groups)
+  (ibuffer       ibuffer-current-buffer)
+  (man           Man-goto-section)
+  (mail-parse    mail-header-parse-address)
+  (mailcap       mailcap-extension-to-mime)
+  (message       message-field-value
+                 message-make-from
+                 message-replace-header
+                 message-user-mail-address)
+  (org           org-goto
+                 org-set-property
+                 org-time-stamp-format)
+  (org-pcomplete org-thing-at-point)
+  (term          term-char-mode
+                 term-line-mode)
+  (tile          tile-get-name))
 
 (blc-autoloads
   (gnus      gnus-find-subscribed-addresses)
@@ -221,7 +226,7 @@ into account."
   "Use default inline completion."
   (completion-at-point))
 
-;; mail-extra
+;; mail-extr
 (define-advice mail-extract-address-components
     (:before-until (address &optional all) blc-delegate-gnus)
   "Try to cut corners with `gnus-extract-address-components'.
@@ -236,6 +241,38 @@ This is much less accurate but also much more performant than
     (:after (&rest _) blc-delete-trailing-space)
   "Delete trailing whitespace after function call insertion."
   (delete-horizontal-space t))
+
+;; org-agenda
+(define-advice org-agenda-finalize (:after (&rest _) blc-pad-dates)
+  "Display double spacing before org agenda view date lines.
+This is defined as advice instead of being added to
+`org-agenda-finalize-hook' to ensure it runs irrespective of
+`org-agenda-multi'."
+  (save-excursion
+    (goto-char (point-min))
+    (let (day)
+      (while (setq day (next-single-property-change (line-end-position)
+                                                    'org-date-line))
+        (goto-char day)
+        (put-text-property (line-end-position 0)
+                           (line-beginning-position)
+                           'display "\n\n")))))
+
+;; org-pcomplete
+(define-advice pcomplete/org-mode/tex (:override () blc-complete-entity)
+  "Perform Org entity completion via `completion-in-region'.
+Offer all entities found in `org-entities-user' and
+`org-entities' except those multiples of en space."
+  (when (equal "tex" (car-safe (org-thing-at-point)))
+    (completion-in-region
+     (save-excursion
+       (skip-chars-backward "^\\\\")
+       (point))
+     (point)
+     (sort (blc-keep #'car-safe (append org-entities-user org-entities))
+           #'string-lessp)
+     (lambda (entity)
+       (/= ?_ (string-to-char entity))))))
 
 ;; package
 (define-advice package-install (:before (&rest _) blc-async-bytecomp)
@@ -563,6 +600,32 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
   (interactive)
   (org-cycle t))
 
+(defun blc--org-agenda-day-1 (n sign iter origin)
+  "Subroutine of `blc--org-agenda-day'."
+  (while (unless (zerop n)
+           (and-let* ((day (funcall iter (funcall origin) 'org-date-line)))
+             (goto-char day)
+             (beginning-of-line)
+             (setq n (- n sign))))))
+
+(defun blc--org-agenda-day (n)
+  "Move N agenda date lines forward (backward if N is negative)."
+  (apply #'blc--org-agenda-day-1 n (cl-signum n)
+         (if (natnump n)
+             `(,#'next-single-property-change ,#'line-end-position)
+           `(,#'previous-single-property-change ,#'line-beginning-position))))
+
+;; FIXME: why not "p"?
+(defun blc-org-agenda-day-backward (&optional n)
+  "Like `previous-line', but for `org' agenda date lines."
+  (interactive "P")
+  (blc--org-agenda-day (- (prefix-numeric-value n))))
+
+(defun blc-org-agenda-day-forward (&optional n)
+  "Like `next-line', but for `org' agenda date lines."
+  (interactive "P")
+  (blc--org-agenda-day (prefix-numeric-value n)))
+
 (defun blc-org-read-file ()
   "Read `org' filename.
 Defaults to `org-directory' and `org-default-notes-file'."
@@ -579,6 +642,11 @@ Defaults to `org-directory' and `org-default-notes-file'."
   "Like `blc-org-find-file', but opens another window."
   (interactive `(,(blc-org-read-file)))
   (find-file-other-window file))
+
+(defun blc-org-prop-captured ()
+  "Set inactive timestamp :captured: property on current entry."
+  (org-set-property
+   "captured" (format-time-string (org-time-stamp-format t t))))
 
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
@@ -926,9 +994,8 @@ With prefix argument SELECT, call `tile-select' instead."
          ctl-x-r-map
          ("4 b" . bookmark-jump-other-window))
   :init
-  (setq-default bookmark-save-flag       1
-                bookmark-search-delay    0
-                bookmark-use-annotations t))
+  (setq-default bookmark-save-flag    1
+                bookmark-search-delay 0))
 
 (use-package browse-url
   :init
@@ -2347,6 +2414,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package org
   :ensure org-plus-contrib
+  :functions org-clock-in-last org-clock-out org-minutes-to-clocksum-string
 
   :bind (:map
          mode-specific-map
@@ -2355,7 +2423,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("l" . org-store-link))
 
   :init
-  (add-hook 'outline-minor-mode-hook #'orgstruct-mode)
+  (blc-hook (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
+            (:hooks outline-minor-mode-hook          :fns orgstruct-mode))
 
   (setq-default
    org-directory          (blc-dir user-emacs-directory "org")
@@ -2371,6 +2440,12 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                             org-man))
 
   :config
+  (require 'dom)
+
+  (mapc (lambda (cmd)
+          (global-set-key (where-is-internal cmd org-mode-map t) cmd))
+        `(,#'org-clock-in-last ,#'org-clock-out))
+
   (mapc (lambda (lang)
           (map-put org-babel-load-languages lang t))
         '(C
@@ -2389,38 +2464,172 @@ Filter `starred-name' is implied unless symbol `nostar' present."
           shell))
 
   (setq-default
-   org-agenda-files                                  `(,org-default-notes-file)
+   ;; ob-python
+   org-babel-python-command               "python3"
+
+   ;; org
+   org-agenda-files
+   (expand-file-name "agenda-index" org-directory)
    org-archive-location
    (format "%s::" (blc-file org-directory "archive.org"))
-   org-babel-python-command                          "python3"
-   org-catch-invisible-edits                         'smart
-   org-checkbox-hierarchical-statistics              nil
-   org-ctrl-k-protect-subtree                        t
-   org-export-coding-system                          'utf-8
-   org-footnote-section                              nil
-   org-goto-interface                                'outline-path-completion
-   org-goto-max-level                                10
-   org-hierarchical-todo-statistics                  nil
-   org-list-demote-modify-bullet                     '(("+" . "-") ("-" . "+"))
-   org-list-use-circular-motion                      t
-   org-log-done                                      'note
-   org-log-into-drawer                               t
-   org-log-redeadline                                'note
-   org-log-reschedule                                'note
-   org-lowest-priority                               (+ org-highest-priority 3)
-   org-M-RET-may-split-line                          nil
-   org-outline-path-complete-in-steps                nil
-   org-refile-allow-creating-parent-nodes            'confirm
-   org-refile-targets
-   `((org-agenda-files . (:maxlevel . ,org-goto-max-level)))
-   org-refile-use-outline-path                       'file
-   org-special-ctrl-a/e                              t
-   org-startup-indented                              t
+   org-catch-invisible-edits              'smart
+   org-columns-default-format
+   "%ITEM %TODO %1PRIORITY %TAGS %Effort{:} %CLOCKSUM"
+   org-ctrl-k-protect-subtree             t
+   org-global-properties
+   `(("Effort_ALL"
+      . ,(concat
+          "0 " (mapconcat #'org-minutes-to-clocksum-string
+                          (mapcan (lambda (step)
+                                    (number-sequence step (* step 3) step))
+                                  '(15 60))
+                          " "))))
+   org-goto-interface                     'outline-path-completion
+   org-goto-max-level                     10
+   org-hierarchical-todo-statistics       nil
+   org-highlight-latex-and-related        '(entities latex script)
+   org-log-done                           'note
+   org-log-into-drawer                    t
+   org-log-redeadline                     'note
+   org-log-reschedule                     'note
+   org-lowest-priority                    (+ org-highest-priority 3)
+   org-M-RET-may-split-line               nil
+   org-outline-path-complete-in-steps     nil
+   org-property-format                    "%-20s %s"
+   org-refile-allow-creating-parent-nodes 'confirm
+   org-refile-targets `((org-agenda-files . (:maxlevel . ,org-goto-max-level)))
+   org-refile-use-outline-path            'file
+   org-reverse-note-order                 t
+   org-special-ctrl-a/e                   t
+   org-startup-indented                   t
    org-todo-keywords
    '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
            "DONE(d!)" "VOID(v@)"))
    org-treat-S-cursor-todo-selection-as-state-change nil
-   org-use-speed-commands                            t))
+   org-use-speed-commands                 t
+
+   ;; org-agenda
+   org-agenda-todo-ignore-with-date       t
+   org-agenda-todo-list-sublevels         nil
+   org-agenda-window-setup                'other-window
+
+   ;; org-capture
+   org-capture-bookmark                   nil
+   org-capture-templates
+   `(("t" . ("Task" entry (file+olp "" "Tasks")
+             ,(string-join '("* %?"     ; Final point
+                             "%A"       ; Annotation with description prompt
+                             "%i")      ; Active region contents
+                           "\n")
+             :prepend t :unnarrowed t))
+     ("s" . ("Show" entry (file+olp "" "Projects" "Show")
+             ,(string-join '("* %?"
+                             "%x"       ; X clipboard contents
+                             "%A"
+                             "%i")
+                           "\n")
+             :prepend t :unnarrowed t))
+     ("b" . ("Book" entry (file "books.org")
+             ,(concat "* %? %^g"        ; Genre tag prompt
+                      (mapconcat (apply-partially #'format "%%^{%s}p")
+                                 '(title
+                                   author
+                                   publisher
+                                   published
+                                   published_orig
+                                   language
+                                   format
+                                   pages
+                                   price
+                                   discount)
+                                 ""))   ; Property prompts
+             :prepend t :unnarrowed t))
+     ("e" . ("Entertainment" entry (file+olp "ents.org" "Inbox")
+             "* %?"
+             :prepend t :unnarrowed t))
+     ("p" . ("Playlist" entry (file+olp "ents.org" "Playlist")
+             "* %?"
+             :prepend t :unnarrowed t)))
+
+   ;; org-clock
+   org-clock-idle-time                    10
+   org-clock-persist                      'history
+
+   ;; org-footnote
+   org-footnote-section                   nil
+
+   ;; org-list
+   org-checkbox-hierarchical-statistics   nil
+   org-list-demote-modify-bullet          '(("+" . "-") ("-" . "+"))
+   org-list-use-circular-motion           t
+
+   ;; ox
+   org-export-coding-system               'utf-8
+
+   ;; ox-html
+   org-html-checkbox-type                 'html
+   org-html-doctype                       "html5"
+   org-html-footnotes-section
+   (blc-dom-to-xml 'div
+                   '((id . footnotes))
+                   (dom-node 'h3  '((class .      footnotes)) "%s")
+                   (dom-node 'div '((id    . text-footnotes)) "%s"))
+   org-html-html5-fancy                   t
+   org-html-htmlize-output-type           'css
+   org-html-metadata-timestamp-format     "%F %a %R %Z"
+   org-html-validation-link               ""
+
+   ;; ox-publish
+   org-publish-project-alist
+   `(,(let* ((proj "recipes")
+             (pubdir (blc-dir (blc-user-dir "PUBLICSHARE") proj)))
+        `(,proj
+          :base-directory       ,(blc-dir org-directory proj)
+          :publishing-directory ,pubdir
+          :publishing-function  ,#'org-html-publish-to-html
+          :recursive            t
+          :with-author          nil
+          :with-toc             nil
+          :html-postamble       t
+          :html-home/up-format
+          ,(blc-dom-to-xml 'div
+                           '((id . org-div-home-and-up))
+                           (dom-node 'a
+                                     '((accesskey . h)
+                                       (href      . "%s"))
+                                     "&uarr;"))
+          :completion-function
+          (,(lambda (&rest _)
+              (mapc (lambda (file)
+                      (set-file-modes file (pcase file
+                                             ((pred file-regular-p)   #o640)
+                                             ((pred file-directory-p) #o750)
+                                             (_ (file-modes file)))))
+                    (directory-files-recursively pubdir "" t)))))))
+   org-publish-use-timestamps-flag        nil)
+
+  (org-clock-persistence-insinuate)
+
+  (with-eval-after-load 'org-agenda
+    (map-do (apply-partially #'define-key org-agenda-mode-map)
+            `(("\M-n" . ,#'blc-org-agenda-day-forward)
+              ("\M-p" . ,#'blc-org-agenda-day-backward))))
+
+  (with-eval-after-load 'ox-html
+    (map-put org-html-checkbox-types
+             'html
+             (let ((checkbox '((type     . checkbox)
+                               (disabled . ""))))
+               (map-apply (lambda (state checked)
+                            `(,state . ,(blc-dom-to-xml
+                                         'input `(,@checkbox ,@checked))))
+                          '((on    . ((checked . "")))
+                            (off   . ())
+                            (trans . ())))))
+
+    (blc-put org-html-postamble-format
+             org-export-default-language
+             `(,(blc-dom-to-xml 'p '((class . modification)) "Updated: %C")))))
 
 (use-package org-mime
   :ensure)

@@ -17,7 +17,9 @@
   (require 'subr-x)
   (require 'thunk))
 
-(autoload 'xdg-user-dir "xdg")
+(autoload 'dom-node       "dom")
+(autoload 'shr-dom-to-xml "shr")
+(autoload 'xdg-user-dir   "xdg")
 
 (defgroup blc ()
   "Conveniences for blc."
@@ -137,6 +139,12 @@ returns results."
       ((pred blc-true-list-p) (mapcar  sed tree))
       (`(,head . ,tail)       (apply #'cons (mapcar sed `(,head ,tail))))
       (_                      tree))))
+
+;;; DOM
+
+(defun blc-dom-to-xml (tag &optional attributes &rest children)
+  "Return DOM node with TAG, ATTRIBUTES and CHILDREN as XML."
+  (shr-dom-to-xml (apply #'dom-node tag attributes children)))
 
 ;;; Datetimes
 
