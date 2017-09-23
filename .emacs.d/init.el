@@ -603,7 +603,7 @@ and `orgstruct-mode' never seems to enter the SUBTREE state."
 (defun blc--org-agenda-day-1 (n sign iter origin)
   "Subroutine of `blc--org-agenda-day'."
   (while (unless (zerop n)
-           (and-let* ((day (funcall iter (funcall origin) 'org-date-line)))
+           (when-let* ((day (funcall iter (funcall origin) 'org-date-line)))
              (goto-char day)
              (beginning-of-line)
              (setq n (- n sign))))))
