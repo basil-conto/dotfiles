@@ -1093,7 +1093,6 @@ With prefix argument SELECT, call `tile-select' instead."
    ([remap find-library            ] . counsel-find-library)
    ([remap imenu                   ] . counsel-imenu)
    ([remap info-lookup-symbol      ] . counsel-info-lookup-symbol)
-   ([remap isearch-forward         ] . counsel-grep-or-swiper)
    ([remap load-library            ] . counsel-load-library)
    ([remap load-theme              ] . counsel-load-theme)
    ([remap menu-bar-open           ] . counsel-tmm)
@@ -1101,6 +1100,7 @@ With prefix argument SELECT, call `tile-select' instead."
    ([remap org-set-tags-command    ] . counsel-org-tag)
    ([remap pop-mark                ] . counsel-mark-ring)
    ([remap yank-pop                ] . counsel-yank-pop)
+   ("C-s" . counsel-grep-or-swiper)
    :map
    ctl-x-map
    ("C-l" . counsel-locate)
