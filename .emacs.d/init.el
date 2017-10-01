@@ -111,6 +111,9 @@ why-are-you-changing-gc-cons-threshold/'.")
   org-directory
   org-entities
   org-entities-user
+  org-export-default-language
+  org-html-checkbox-types
+  org-html-postamble-format
   recentf-list
   term-raw-map
   tile-cycler
@@ -153,7 +156,8 @@ why-are-you-changing-gc-cons-threshold/'.")
              ibuffer-push-filter)
   (ibuffer   ibuffer-buf-matches-predicates
              ibuffer-update)
-  (ielm      inferior-emacs-lisp-mode))
+  (ielm      inferior-emacs-lisp-mode)
+  (ox-html   org-html-publish-to-html))
 
 ;;; Variables
 
@@ -2489,7 +2493,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    org-global-properties
    `(("Effort_ALL"
       . ,(concat
-          "0 " (mapconcat #'org-minutes-to-clocksum-string
+          "0 " (mapconcat #'org-duration-from-minutes
                           (mapcan (lambda (step)
                                     (number-sequence step (* step 3) step))
                                   '(15 60))
