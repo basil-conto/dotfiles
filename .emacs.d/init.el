@@ -716,6 +716,12 @@ With prefix argument SELECT, call `tile-select' instead."
   "Make FCI rule lighter than background under `zenburn'."
   (setq-default fci-rule-color (blc-zenburn-assoc 'zenburn-bg+1)))
 
+(defun blc-zenburn-fontify-hackernews ()
+  "Customise `hackernews' faces under `zenburn'."
+  (set-face-foreground 'hackernews-link nil)
+  (set-face-attribute 'hackernews-comment-count nil
+                      :inherit 'link-visited :underline nil))
+
 (defun blc-zenburn-darken-ivy ()
   "Darken background of `ivy' matches under `zenburn'."
   (seq-mapn #'set-face-background
@@ -747,10 +753,11 @@ With prefix argument SELECT, call `tile-select' instead."
   (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
   (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
 
-  (blc-hook (:hooks fci-mode-hook :fns (blc-zenburn-brighten-fci))
-            (:hooks ivy-mode-hook :fns (blc-zenburn-darken-ivy))
-            (:hooks org-load-hook :fns (blc-zenburn-fontify-org-todo
-                                        blc-zenburn-hide-org-clock))))
+  (blc-hook (:hooks fci-mode-hook        :fns (blc-zenburn-brighten-fci))
+            (:hooks hackernews-mode-hook :fns (blc-zenburn-fontify-hackernews))
+            (:hooks ivy-mode-hook        :fns (blc-zenburn-darken-ivy))
+            (:hooks org-load-hook        :fns (blc-zenburn-fontify-org-todo
+                                               blc-zenburn-hide-org-clock))))
 
 
 ;;;; MISCELLANEA
