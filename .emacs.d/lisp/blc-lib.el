@@ -156,29 +156,17 @@ returns results."
   "Like `format-time-string', but in RFC-2822 format."
   (format-time-string "%a, %d %b %Y %T %z" time zone))
 
-;;; Processes
-
-(defun blc-process-success-p (proc)
-  "Determine whether PROC exited successfully."
-  (and (eq (process-status proc) 'exit)
-       (zerop (process-exit-status proc))))
-
-(defun blc-dropbox-status ()
-  "Print status of external dropbox daemon."
-  (interactive)
-  (shell-command "dropbox status" "*Dropbox Status*"))
-
-(defun blc-dropbox-start ()
-  "Start external dropbox daemon."
-  (interactive)
-  (async-shell-command "dropbox start" "*Dropbox Control*"))
-
-(defun blc-dropbox-stop ()
-  "Stop external dropbox daemon."
-  (interactive)
-  (async-shell-command "dropbox stop" "*Dropbox Control*"))
-
 ;;; Files
+
+(defmacro blc-with-contents (path &rest body)
+  "Evaluate BODY in a buffer with the contents of file PATH.
+Return result of last form in BODY or nil if PATH is unreadable."
+  (declare (indent 1))
+  (macroexp-let2 nil path path
+    `(when (file-readable-p ,path)
+       (with-temp-buffer
+         (insert-file-contents ,path)
+         ,@body))))
 
 (defun blc-file (&rest paths)
   "Join PATHS as a file truename."
@@ -210,6 +198,20 @@ relevant major-mode."
   (find-file (make-temp-file prefix nil (and suffix
                                              (not (string-blank-p suffix))
                                              (concat "." suffix)))))
+
+(defalias 'blc-mbsync-maildirs
+  (thunk-delay
+   (blc-with-contents "~/.mbsyncrc"
+     (let (maildirs)
+       (while (blc-search-forward (rx bol "MaildirStore"))
+         (when (blc-search-forward
+                (rx bol "Path" (+ space) (group (+ (not space))) eol))
+           (let ((maildir (match-string-no-properties 1)))
+             (push `(,(file-name-nondirectory (directory-file-name maildir))
+                     . ,(expand-file-name maildir))
+                   maildirs))))
+       (nreverse maildirs))))
+  "Thunk with alist of maildirs to dirnames in ~/.mbsyncrc.")
 
 (defvar blc-opusenc-switches '("--bitrate" "128" "--quiet")
   "List of `opusenc' switches for `blc-opusenc-flac'. ")
@@ -246,6 +248,42 @@ relevant major-mode."
                                 (funcall sentinel)
                               (lwarn 'blc :debug "opusenc: %s" event)))))))
       files ()))))
+
+;;; Processes
+
+(defun blc-process-success-p (proc)
+  "Determine whether PROC exited successfully."
+  (and (eq (process-status proc) 'exit)
+       (zerop (process-exit-status proc))))
+
+(defun blc-dropbox-status ()
+  "Print status of external dropbox daemon."
+  (interactive)
+  (shell-command "dropbox status" "*Dropbox Status*"))
+
+(defun blc-dropbox-start ()
+  "Start external dropbox daemon."
+  (interactive)
+  (async-shell-command "dropbox start" "*Dropbox Control*"))
+
+(defun blc-dropbox-stop ()
+  "Stop external dropbox daemon."
+  (interactive)
+  (async-shell-command "dropbox stop" "*Dropbox Control*"))
+
+(defvar blc-mbsync-history ()
+  "Completion history for mbsync commands issued.")
+
+(defun blc-mbsync (&rest args)
+  "Call mbsync with ARGS asynchronously via a shell.
+When called interactively, the user is prompted with completion
+for a channel to synchronise. Otherwise, ARGS should form a list
+of strings to be shell-quoted and passed to mbsync."
+  (interactive `(,(let ((dirs `("--all" ,@(map-keys (blc-mbsync-maildirs)))))
+                    (completing-read "Synchronise mbsync channel: " dirs nil
+                                     'confirm nil 'blc-mbsync-history dirs))))
+  (let ((cmd (mapconcat #'shell-quote-argument `("mbsync" ,@args) " ")))
+    (async-shell-command cmd (format "*%s*" cmd))))
 
 ;;; Buffers
 

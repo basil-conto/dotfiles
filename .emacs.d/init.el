@@ -2337,9 +2337,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package matlab
   :ensure matlab-mode)
 
-(use-package mbsync
-  :ensure)
-
 (use-package meme
   :commands meme meme-file)
 

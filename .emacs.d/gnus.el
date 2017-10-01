@@ -61,17 +61,6 @@
 
 ;;; Utilities
 
-(defalias 'blc-mbsync-maildirs
-  (thunk-delay
-   (blc-with-contents "~/.mbsyncrc"
-     (let (maildirs)
-       (while (blc-search-forward (rx bol "MaildirStore"))
-         (when (blc-search-forward
-                (rx bol "Path" (+ space) (group (+ (not space))) eol))
-           (push (expand-file-name (match-string-no-properties 1)) maildirs)))
-       (nreverse (delete-dups maildirs)))))
-  "Thunk with list of unique maildir dirnames in ~/.mbsyncrc.")
-
 (defun blc-download (&optional url file)
   "Download contents of URL to a file named FILE.
 Wraps `w3m-download' or emulates it when unavailable, working
@@ -131,15 +120,14 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-update-message-archive-method     t
  gnus-secondary-select-methods
  `(,@(seq-map-indexed
-      (lambda (maildir i)
-        (let ((user (file-name-nondirectory (directory-file-name maildir))))
-          `(nnimap ,user
-                   (nnimap-address         ,(format-network-address
-                                             `[127 1 0 ,(1+ i)]))
-                   (nnimap-record-commands t)
-                   (nnimap-stream          network)
-                   (nnimap-user            ,user)
-                   (nnir-search-engine     imap))))
+      (pcase-lambda (`(,user) i)
+        `(nnimap ,user
+                 (nnimap-address         ,(format-network-address
+                                           `[127 1 0 ,(1+ i)]))
+                 (nnimap-record-commands t)
+                 (nnimap-stream          network)
+                 (nnimap-user            ,user)
+                 (nnir-search-engine     imap)))
       (blc-mbsync-maildirs))
    ;; FIXME: Firewall
    (nntp "news.gwene.org"
@@ -211,7 +199,8 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-verbose-backends                  10
 
  ;; nnir
- nnir-notmuch-remove-prefix             (regexp-opt (blc-mbsync-maildirs)))
+ nnir-notmuch-remove-prefix
+ (regexp-opt (map-values (blc-mbsync-maildirs))))
 
 ;;; Hooks
 
