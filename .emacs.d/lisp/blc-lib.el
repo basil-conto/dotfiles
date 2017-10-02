@@ -277,12 +277,13 @@ relevant major-mode."
 (defun blc-mbsync (&rest args)
   "Call mbsync with ARGS asynchronously via a shell.
 When called interactively, the user is prompted with completion
-for a channel to synchronise. Otherwise, ARGS should form a list
-of strings to be shell-quoted and passed to mbsync."
-  (interactive `(,(let ((dirs `("--all" ,@(map-keys (blc-mbsync-maildirs)))))
-                    (completing-read "Synchronise mbsync channel: " dirs nil
-                                     'confirm nil 'blc-mbsync-history dirs))))
-  (let ((cmd (mapconcat #'shell-quote-argument `("mbsync" ,@args) " ")))
+for multiple channels to synchronise. Otherwise, ARGS should form
+a list of shell-quoted strings to pass to mbsync."
+  (interactive
+   (let ((dirs `("--all" ,@(map-keys (blc-mbsync-maildirs)))))
+     (completing-read-multiple "Synchronise mbsync channels: " dirs nil
+                               'confirm nil 'blc-mbsync-history dirs)))
+  (let ((cmd (string-join `("mbsync" ,@args) " ")))
     (async-shell-command cmd (format "*%s*" cmd))))
 
 ;;; Buffers
