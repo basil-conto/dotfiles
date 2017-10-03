@@ -800,6 +800,9 @@ With prefix argument SELECT, call `tile-select' instead."
  ;; callproc
  shell-file-name                 "/bin/sh"
 
+ ;; doc
+ text-quoting-style              'grave
+
  ;; frame
  frame-resize-pixelwise          t
 
