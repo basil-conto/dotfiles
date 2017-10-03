@@ -211,7 +211,8 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (:hooks gnus-exit-gnus-hook              :fns blc-gnus-kill-logs)
   (:hooks gnus-group-catchup-group-hook    :fns gnus-group-set-timestamp)
   (:hooks gnus-group-mode-hook             :fns gnus-topic-mode)
-  (:hooks gnus-select-group-hook           :fns gnus-group-set-timestamp))
+  (:hooks gnus-select-group-hook           :fns gnus-group-set-timestamp)
+  (:hooks gnus-summary-mode-hook           :fns hl-line-mode))
 
 ;;; Deferrals
 
