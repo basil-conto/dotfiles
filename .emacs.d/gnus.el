@@ -47,9 +47,12 @@
               gnus-demon-scan-news)
   (gnus-group gnus-group-set-timestamp
               gnus-group-timestamp)
-  (gnus-sum   gnus-article-sort-by-date
+  (gnus-sum   gnus-article-sort-by-most-recent-date
+              gnus-article-sort-by-number
               gnus-gather-threads-by-references
               gnus-thread-sort-by-date
+              gnus-thread-sort-by-most-recent-date
+              gnus-thread-sort-by-number
               gnus-user-date)
   (gnus-topic gnus-current-topic
               gnus-topic-fold
@@ -170,8 +173,14 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-save-newsrc-file                  nil
 
  ;; gnus-sum
+ gnus-article-sort-functions
+ `(,#'gnus-article-sort-by-number
+   ,#'gnus-article-sort-by-most-recent-date)
  gnus-auto-select-first                 nil
  gnus-auto-select-next                  nil
+ gnus-subthread-sort-functions
+ `(,#'gnus-thread-sort-by-number
+   ,#'gnus-thread-sort-by-date)
  gnus-sum-thread-tree-false-root        ""
  gnus-sum-thread-tree-leaf-with-other   " ├➤ "
  gnus-sum-thread-tree-root              ""
@@ -181,6 +190,9 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-summary-gather-subject-limit      'fuzzy
  gnus-summary-next-group-on-exit        nil
  gnus-summary-thread-gathering-function #'gnus-gather-threads-by-references
+ gnus-thread-sort-functions
+ `(,#'gnus-thread-sort-by-number
+   ,#'gnus-thread-sort-by-most-recent-date)
  gnus-user-date-format-alist            ; Max. length 10
  `(((gnus-seconds-today)                . "%R")
    ((float-time
@@ -238,12 +250,6 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 
      gnus-visible-headers
      (blc-rx `(| (regexp ,to) (regexp ,gnus-visible-headers))))))
-
-(with-eval-after-load 'gnus-sum
-  (map-do (lambda (fns fn)
-            (add-to-list fns fn t))
-          `((gnus-article-sort-functions . ,#'gnus-article-sort-by-date)
-            (gnus-thread-sort-functions  . ,#'gnus-thread-sort-by-date))))
 
 (with-eval-after-load 'gnus-topic
   (define-key
