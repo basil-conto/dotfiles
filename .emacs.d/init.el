@@ -2211,7 +2211,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   magit-repolist-column-dirty
   :bind (:map
          ctl-x-map
-         ("g" . magit-status))
+         ("g"   . magit-status)
+         ("M-g" . magit-dispatch-popup)
+         :map
+         mode-specific-map
+         ("M-g" . magit-file-popup))
 
   :init
   (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
@@ -2285,7 +2289,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
      (blc-sed-tree (rx "-n" (group (+ digit))) "32" magit-log-arguments t t 1)))
 
   ;; Modes
-  (global-magit-file-mode)
   (magit-wip-after-apply-mode)
   (magit-wip-after-save-mode)
   (magit-wip-before-change-mode))
