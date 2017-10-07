@@ -1477,8 +1477,7 @@ With prefix argument SELECT, call `tile-select' instead."
                 ffap-rfc-path                 "https://ietf.org/rfc/rfc%s.txt")
 
   :config
-  (add-to-list 'ffap-rfc-directories
-               (blc-dir (blc-user-dir "DOCUMENTS") "rfc")))
+  (add-to-list 'ffap-rfc-directories (blc-dir user-emacs-directory "rfc")))
 
 (use-package fic-mode
   :ensure
