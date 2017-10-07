@@ -2250,6 +2250,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    #'magit-display-buffer-same-window-except-diff-v1
    magit-list-refs-sortby                  "-creatordate"
    magit-prefer-remote-upstream            t
+   magit-process-finish-apply-ansi-colors  t
    magit-remote-add-set-remote.pushDefault 'ask)
 
   ;; Always highlight tabs
