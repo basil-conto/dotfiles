@@ -103,6 +103,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   ffap-alist
   ffap-file-finder
   ghc-doc-hackage-format
+  gnus-inhibit-startup-message
   ivy-format-function
   ivy-height
   js2-mode-map
@@ -494,6 +495,41 @@ suitable for assigning to `ffap-file-finder'."
   ;; Benefit over setq: displays debugging message
   (set-fill-column 68))
 
+(defun blc--gnus-switch-buffer (action)
+  "Call ACTION on first desirable Gnus buffer found.
+Return result of ACTION. See `blc-gnus' for a definition of
+desirable."
+  (and-let* ((buf (seq-some (lambda (var)
+                              (and-let* (((boundp var))
+                                         (buf (symbol-value var))
+                                         (buf (get-buffer buf))
+                                         ((buffer-live-p buf))
+                                         ((> (buffer-size buf) 0)))
+                                buf))
+                            '(gnus-article-buffer
+                              gnus-summary-buffer
+                              gnus-group-buffer))))
+    (funcall action buf)))
+
+(defun blc-gnus ()
+  "Display first desirable Gnus buffer found in selected window.
+If none of the article, summary or group buffer are found, in
+order of descending priority, start `gnus'."
+  (interactive)
+  (unless (blc--gnus-switch-buffer #'switch-to-buffer)
+    (gnus)))
+
+(defun blc-gnus-other-window ()
+  "Like `blc-gnus', but use another window."
+  (interactive)
+  (let (break) ; Infloop should never happen, but avoid famous last words
+    (while (not (or (blc--gnus-switch-buffer #'switch-to-buffer-other-window)
+                    break))
+      (setq break t)
+      (save-window-excursion
+        (let ((gnus-inhibit-startup-message t))
+          (gnus))))))
+
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
   (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
@@ -849,7 +885,10 @@ With prefix argument SELECT, call `tile-select' instead."
    ("\C-p"                    . #'blc-open-previous-line)
    ("7"                       . #'blc-transpose-split)
    ("B"                       . #'blc-bury-buffer)
+   ("M"                       . #'blc-gnus)
    ("l"                       . #'blc-echo-fast-line-count))
+  (ctl-x-4-map
+   ("M"                       . #'blc-gnus-other-window))
   (ctl-x-5-map
    ("3"                       . #'blc-make-graphic-display))
   (esc-map

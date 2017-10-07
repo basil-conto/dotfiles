@@ -194,6 +194,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  ;; gnus-util
  gnus-add-timestamp-to-message          'log
  gnus-verbose                           10
+ gnus-widen-article-window              t
 
  ;; nnheader
  gnus-verbose-backends                  10
