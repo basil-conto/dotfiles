@@ -2813,6 +2813,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :config
   (setq-default prolog-system 'swi))
 
+(use-package pulseaudio-control
+  :ensure t)
+
 (use-package python
   :config
   (map-do
