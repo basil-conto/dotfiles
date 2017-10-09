@@ -1398,6 +1398,12 @@ With prefix argument SELECT, call `tile-select' instead."
     :keybinding "w")
   (engine-mode))
 
+(use-package enwc
+  :ensure
+  :init
+  (setq-default enwc-ask-to-save-interfaces nil
+                enwc-default-backend        'nm))
+
 (use-package eshell
   :init
   (add-hook 'eshell-output-filter-functions #'eshell-truncate-buffer))
