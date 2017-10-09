@@ -1759,6 +1759,7 @@ With prefix argument SELECT, call `tile-select' instead."
                                        git-rebase-mode-hook
                                        ibuffer-mode-hook
                                        ivy-occur-mode-hook
+                                       ledger-report-mode-hook
                                        org-agenda-mode-hook
                                        tabulated-list-mode-hook))))
 
