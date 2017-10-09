@@ -922,6 +922,9 @@ With prefix argument SELECT, call `tile-select' instead."
   :init
   (setq-default alert-default-style 'notifications))
 
+(use-package apache-mode
+  :ensure)
+
 (use-package apt-sources
   :disabled
   :mode (("\\.sources\\'"                   . apt-sources-mode)
