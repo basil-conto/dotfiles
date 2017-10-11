@@ -206,6 +206,16 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
                    choices)
            args)))
 
+;; files
+(define-advice save-buffers-kill-emacs
+    (:around (kill &rest args) blc-confirm-daemon)
+  "Ensure `confirm-kill-emacs' is bound when `daemonp'."
+  (let ((confirm-kill-emacs (or confirm-kill-emacs
+                                (and (daemonp)
+                                     (lambda (&rest _)
+                                       (y-or-n-p "Really kill daemon? "))))))
+    (apply kill args)))
+
 ;; hi-lock
 (define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
   "Exempt derived modes from hi-lock highlighting.
@@ -1507,6 +1517,7 @@ With prefix argument SELECT, call `tile-select' instead."
   :ensure)
 
 (use-package files
+  :bind (([remap save-buffers-kill-terminal] . save-buffers-kill-emacs))
   :init
   (setq-default
    auto-save-visited-interval auto-save-timeout
