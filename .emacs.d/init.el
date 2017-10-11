@@ -3135,6 +3135,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   (setq-default tls-checktrust 'ask))
 
+(use-package tooltip
+  :init
+  (setq-default tooltip-resize-echo-area t))
+
 (use-package top-mode
   :ensure)
 
