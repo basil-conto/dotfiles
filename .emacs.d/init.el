@@ -2275,6 +2275,18 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    magit-process-finish-apply-ansi-colors  t
    magit-remote-add-set-remote.pushDefault 'ask)
 
+  ;; Add signature revision header
+  (when-let* ((width (string-match-p "%" magit-revision-headers-format)))
+    (setq-default
+     magit-revision-headers-format
+     (string-join `(,@(split-string magit-revision-headers-format "\n" t)
+                    ,@(map-apply (apply-partially #'format
+                                                  (format "%%-%ds%%s" width))
+                                 '(("Signature:" . "%GS")
+                                   (""           . "%GK")))
+                    "")
+                  "\n")))
+
   ;; Always highlight tabs
   (blc-put magit-diff-highlight-indentation "" 'tabs)
 
@@ -2291,8 +2303,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
   ;; Arguments
   (map-do #'add-to-list
-          '((magit-merge-arguments  . "--ff-only"    )
-            (magit-rebase-arguments . "--interactive")))
+          '((magit-log-arguments    . "--show-signature")
+            (magit-merge-arguments  . "--ff-only"       )
+            (magit-rebase-arguments . "--interactive"   )))
 
   ;; Inline format reformatting
   (let ((fmtre (rx ?% (group (? (in ?+ ?-)) (* digit)) (in ?U ?n)))
