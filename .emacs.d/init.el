@@ -2707,7 +2707,14 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (with-eval-after-load 'org-agenda
     (map-do (apply-partially #'define-key org-agenda-mode-map)
             `(("\M-n" . ,#'blc-org-agenda-day-forward)
-              ("\M-p" . ,#'blc-org-agenda-day-backward))))
+              ("\M-p" . ,#'blc-org-agenda-day-backward)))
+
+    (if-let* ((key "n")
+              (cmd (seq-take (blc-elt org-agenda-custom-commands key) 2))
+              ((= (length cmd) 2)))
+        (blc-put org-agenda-custom-commands key
+                 `(,@cmd () ,(blc-file org-directory "agenda.html")))
+      (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'")))
 
   (with-eval-after-load 'ox-html
     (map-put org-html-checkbox-types
