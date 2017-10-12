@@ -76,9 +76,10 @@ why-are-you-changing-gc-cons-threshold/'.")
                                    '(bind-key
                                      delight
                                      use-package
-                                     zenburn-theme))))
-    (when (y-or-n-p (format "Install missing packages %s?" missing))
-      (mapc #'package-install missing))))
+                                     zenburn-theme)))
+              ((y-or-n-p (format "Install missing packages %s?" missing))))
+    (package-refresh-contents)
+    (mapc #'package-install missing)))
 
 (require 'bind-key)
 (eval-when-compile
