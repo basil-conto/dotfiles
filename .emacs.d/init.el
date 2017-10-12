@@ -2049,12 +2049,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    ivy-extra-directories       ()
    ivy-fixed-height-minibuffer t
    ivy-format-function         #'ivy-format-function-arrow
-   ;; Do not match start of input for counsel, man or org commands
+   ;; Do not match start of input for counsel or org commands
    ivy-initial-inputs-alist
    (map-remove (lambda (cmd _)
-                 (or (memq cmd '(man woman))
-                     (string-match-p (rx bos (| "org" "counsel") ?-)
-                                     (symbol-name cmd))))
+                 (string-match-p (rx bos (| "org" "counsel") ?-)
+                                 (symbol-name cmd)))
                ivy-initial-inputs-alist)
    ivy-on-del-error-function   #'ignore
    ivy-use-virtual-buffers     t)
