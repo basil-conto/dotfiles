@@ -1983,10 +1983,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   (blc-hook
     (:hooks c-mode-common-hook :fns irony-mode)
-    (:hooks    irony-mode-hook :fns irony-cdb-autosetup-compile-options))
-  :config
-  (setq-default irony-server-build-dir
-                (blc-dir irony-server-source-dir "build")))
+    (:hooks    irony-mode-hook :fns irony-cdb-autosetup-compile-options)))
 
 (use-package irony-eldoc
   :ensure
