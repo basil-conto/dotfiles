@@ -213,6 +213,79 @@ relevant major-mode."
        (nreverse maildirs))))
   "Thunk with alist of maildirs to dirnames in ~/.mbsyncrc.")
 
+(defvar blc-mbsync-history ()
+  "Completion history for mbsync commands issued.")
+
+(defun blc--mbsync-crm (prompt)
+  "Read multiple mbsync channels with PROMPT.
+Candidates offered are the keys of `blc-mbsync-maildirs', as well
+as the catch-all value `--all', making them all valid arguments
+for the mbsync executable."
+  (let ((dirs `("--all" ,@(map-keys (blc-mbsync-maildirs)))))
+    (completing-read-multiple
+     prompt dirs nil 'confirm nil 'blc-mbsync-history dirs)))
+
+(defun blc--mbsync-folders (&rest args)
+  "Return a list of subdirectories of maildirs ARGS.
+See `blc--mbsync-folders' for valid ARGS."
+  (let ((maildirs (blc-mbsync-maildirs)))
+    (seq-filter #'file-accessible-directory-p
+                (mapcan (lambda (maildir)
+                          (directory-files
+                           maildir t directory-files-no-dot-files-regexp))
+                        (mapcar (apply-partially #'blc-elt maildirs)
+                                (if (member "--all" args)
+                                    (map-keys maildirs)
+                                  args))))))
+
+(defun blc--mbsync-rename (window alist)
+  "Rename files according to ALIST with WINDOW selected.
+Prompt for confirmation before proceeding with the (FROM . TO)
+rename in ALIST.
+
+This is a subroutine of `blc-mbsync-deduplicate' and intended as
+the QUIT-FUNCTION of `with-temp-buffer-window' or similar."
+  (with-selected-window window
+    (if-let* ((n (length alist))
+              ((> n 0))
+              ((y-or-n-p (format "Rename %d files? " n))))
+        (dotimes-with-progress-reporter (i n)
+            (format "Renaming %d files..." n)
+          (pcase-let ((`(,from . ,to) (pop alist)))
+            (rename-file from to)))
+      (kill-buffer-and-window))))
+
+(defun blc-mbsync-deduplicate (&rest args)
+  "Deduplicate maildir UIDs in all subdirectories of ARGS.
+The user is shown a transcript of pending rename operations and
+asked to confirm their execution.
+
+See `blc--mbsync-crm' for valid ARGS."
+  (interactive (blc--mbsync-crm "Deduplicate mbsync maildirs: "))
+  (with-current-buffer-window
+   "*blc-mbsync-dups*" () #'blc--mbsync-rename
+   (let* ((folders  (apply #'blc--mbsync-folders args))
+          (nfolders (length folders))
+          renames)
+     (dotimes-with-progress-reporter (i nfolders (nreverse renames))
+         (format "Scanning %d folders..." nfolders)
+       (let ((map (make-hash-table :test #'equal)))
+         (dolist (file (directory-files-recursively (pop folders) ""))
+           (when-let* (((string-match (rx ?/ (| "cur" "new" "tmp") ?/ (+ nonl)
+                                          ",U=" (group (+ digit)))
+                                      file))
+                       (uid (match-string 1 file)))
+             (let ((dups (gethash uid map)))
+               (unless (member file dups)
+                 (puthash uid (cons file dups) map)))))
+         (maphash (lambda (_ dups)
+                    (dolist (dup (butlast (sort dups #'file-newer-than-file-p)))
+                      (let ((new (replace-regexp-in-string
+                                  (rx ",U=" (+ (not (in ?,)))) "" dup t t)))
+                        (insert (format "Rename %s\n    -> %s\n" dup new))
+                        (push (cons dup new) renames))))
+                  map))))))
+
 (defvar blc-opusenc-switches '("--bitrate" "128" "--quiet")
   "List of `opusenc' switches for `blc-opusenc-flac'. ")
 
@@ -271,18 +344,12 @@ relevant major-mode."
   (interactive)
   (async-shell-command "dropbox stop" "*Dropbox Control*"))
 
-(defvar blc-mbsync-history ()
-  "Completion history for mbsync commands issued.")
-
 (defun blc-mbsync (&rest args)
   "Call mbsync with ARGS asynchronously via a shell.
 When called interactively, the user is prompted with completion
 for multiple channels to synchronise. Otherwise, ARGS should form
 a list of shell-quoted strings to pass to mbsync."
-  (interactive
-   (let ((dirs `("--all" ,@(map-keys (blc-mbsync-maildirs)))))
-     (completing-read-multiple "Synchronise mbsync channels: " dirs nil
-                               'confirm nil 'blc-mbsync-history dirs)))
+  (interactive (blc--mbsync-crm "Synchronise mbsync channels: "))
   (let ((cmd (string-join `("mbsync" ,@args) " ")))
     (async-shell-command cmd (format "*%s*" cmd))))
 
