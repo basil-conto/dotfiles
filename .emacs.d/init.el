@@ -1584,6 +1584,11 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package free-keys
   :ensure)
 
+(use-package generic-x
+  :commands samba-generic-mode
+  :init
+  (setq-default generic-use-find-file-hook nil))
+
 (use-package ggtags
   :ensure
   :bind (:map
