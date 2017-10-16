@@ -929,13 +929,13 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package apache-mode
   :ensure)
 
-(use-package apt-sources
-  :disabled
-  :mode (("\\.sources\\'"                   . apt-sources-mode)
-         ("sources\\.list\\'"               . apt-sources-mode)
-         ("sources\\.list\\.d/.+\\.list\\'" . apt-sources-mode))
+(use-package apt-sources-list
+  :ensure
+  :mode (("\\.sources\\'"                   . apt-source-list-mode)
+         ("sources\\.list\\'"               . apt-source-list-mode)
+         ("sources\\.list\\.d/.+\\.list\\'" . apt-source-list-mode))
   :init
-  (add-hook 'apt-sources-mode-hook #'blc-turn-off-electric-indent-local))
+  (add-hook 'apt-sources-list-mode-hook #'blc-turn-off-electric-indent-local))
 
 (use-package apt-utils
   :disabled
