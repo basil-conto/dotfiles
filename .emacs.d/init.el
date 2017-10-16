@@ -152,6 +152,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   (tile          tile-get-name))
 
 (blc-autoloads
+  (eww       eww-open-in-new-buffer)
   (gnus      gnus-find-subscribed-addresses)
   (gnus-util gnus-extract-address-components)
   (ibuf-ext  ibuffer-pop-filter
@@ -206,6 +207,16 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
                              (car (mail-header-parse-address choice))))
                    choices)
            args)))
+
+;; eww
+(defun blc-eww-suggest-uri--advice (eww uri)
+  "Call EWW with URI suggested as default.
+URI is returned by the `interactive-form' of `eww'."
+  (let ((eww-suggest-uris `(,(lambda () uri))))
+    (funcall eww)))
+
+(define-symbol-prop
+  #'blc-eww-suggest-uri--advice 'interactive-form (interactive-form #'eww))
 
 ;; files
 (define-advice save-buffers-kill-emacs
@@ -1439,9 +1450,12 @@ With prefix argument SELECT, call `tile-select' instead."
          ("p" .         previous-line)
          ("w" . blc-eww-bookmark-save))
   :init
+  (advice-add #'eww-open-in-new-buffer :around #'blc-eww-suggest-uri--advice)
+
   (setq-default
    eww-search-prefix
    "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=")
+
   :config
   (delight #'eww-mode "🕸" :major))
 
