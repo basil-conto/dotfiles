@@ -1242,7 +1242,7 @@ With prefix argument SELECT, call `tile-select' instead."
   :ensure)
 
 (use-package debian-changelog-mode
-  :ensure)
+  :disabled)
 
 (use-package debpaste
   :ensure)
