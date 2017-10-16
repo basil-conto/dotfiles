@@ -1202,10 +1202,6 @@ With prefix argument SELECT, call `tile-select' instead."
   :init
   (add-hook 'projectile-mode-hook #'counsel-projectile-on))
 
-(use-package crontab-mode
-  :ensure
-  :mode "\\.cron\\(?:tab\\)??\\'" "cron\\(?:tab\\)??\\.")
-
 (use-package csharp-mode
   :ensure)
 
