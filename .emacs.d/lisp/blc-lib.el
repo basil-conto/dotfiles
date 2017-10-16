@@ -295,32 +295,28 @@ See `blc--mbsync-crm' for valid ARGS."
                                        (blc-user-dir "MUSIC") nil t)))
   (let* ((len   0)
          (files (let (files)
-                  (dolist (flac (directory-files-recursively dir "\\.flac\\'"))
-                    (let ((opus (blc-sed "\\.flac\\'" ".opus" flac t t)))
-                      (when (file-newer-than-file-p flac opus)
-                        (push `(,(setq len (1+ len)) ,flac , opus) files))))
-                  files))
+                  (dolist (flac (directory-files-recursively dir "\\.flac\\'")
+                                files)
+                    (when-let* ((opus (blc-sed "\\.flac\\'" ".opus" flac t t))
+                                ((file-newer-than-file-p flac opus)))
+                      (push `[,(setq len (1+ len)) ,flac , opus] files)))))
          (rep   (make-progress-reporter
-                 (format "Transcoding %d flacs..." len) 0 len))
-         (buf   (get-buffer-create "*opusenc*")))
-    (blc-safe-funcall
-     (seq-reduce
-      (pcase-lambda (sentinel `(,i ,flac ,opus))
-        (lambda ()
-          (if (= i len)
-              (progress-reporter-done rep)
-            (progress-reporter-update rep i))
-          (make-process
-           :connection-type 'pipe
-           :name     "opusenc"
-           :buffer   buf
-           :command  `("opusenc" ,@blc-opusenc-switches ,flac ,opus)
-           :sentinel (and sentinel
-                          (lambda (proc event)
-                            (if (blc-process-success-p proc)
-                                (funcall sentinel)
-                              (lwarn 'blc :debug "opusenc: %s" event)))))))
-      files ()))))
+                 (format "Transcoding %d flac(s)..." len) 0 len)))
+    (funcall (seq-reduce
+              (pcase-lambda (sentinel `[,i ,flac ,opus])
+                (lambda ()
+                  (make-process
+                   :connection-type 'pipe
+                   :name     "opusenc"
+                   :buffer   "*opusenc*"
+                   :command  `("opusenc" ,@blc-opusenc-switches ,flac ,opus)
+                   :sentinel (lambda (proc event)
+                               (if (not (blc-process-success-p proc))
+                                   (lwarn 'blc :error "opusenc: %s" event)
+                                 (progress-reporter-update rep i)
+                                 (funcall sentinel))))))
+              files
+              (apply-partially #'progress-reporter-done rep)))))
 
 ;;; Processes
 
