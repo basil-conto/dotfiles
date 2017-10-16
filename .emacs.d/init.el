@@ -1041,6 +1041,9 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package better-shell
   :ensure)
 
+(use-package bibtex-utils
+  :ensure)
+
 (use-package "bindings"
   :init
   (setq-default mode-line-percent-position '(-3 "%o")))
