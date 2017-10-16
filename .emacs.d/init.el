@@ -2163,6 +2163,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package json-mode
   :ensure)
 
+(use-package latex-extra
+  :ensure)
+
 (use-package ledger-mode
   :ensure
   :functions ledger-reports-add
