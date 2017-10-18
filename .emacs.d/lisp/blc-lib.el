@@ -225,6 +225,11 @@ for the mbsync executable."
     (completing-read-multiple
      prompt dirs nil 'confirm nil 'blc-mbsync-history dirs)))
 
+(defun blc--mbsync-uid (file)
+  "Return maildir UID of FILE or nil."
+  (and (string-match (rx ",U=" (group (+ digit))) file)
+       (match-string 1 file)))
+
 (defun blc--mbsync-folders (&rest args)
   "Return a list of subdirectories of maildirs ARGS.
 See `blc--mbsync-folders' for valid ARGS."
@@ -271,10 +276,7 @@ See `blc--mbsync-crm' for valid ARGS."
          (format "Scanning %d folders..." nfolders)
        (let ((map (make-hash-table :test #'equal)))
          (dolist (file (directory-files-recursively (pop folders) ""))
-           (when-let* (((string-match (rx ?/ (| "cur" "new" "tmp") ?/ (+ nonl)
-                                          ",U=" (group (+ digit)))
-                                      file))
-                       (uid (match-string 1 file)))
+           (when-let* ((uid (blc--mbsync-uid file)))
              (let ((dups (gethash uid map)))
                (unless (member file dups)
                  (puthash uid (cons file dups) map)))))
@@ -285,6 +287,26 @@ See `blc--mbsync-crm' for valid ARGS."
                         (insert (format "Rename %s\n    -> %s\n" dup new))
                         (push (cons dup new) renames))))
                   map))))))
+
+(defun blc-mbsync-max-uid (folder &optional here)
+  "Return largest maildir UID string under FOLDER.
+With optional prefix argument HERE non-nil, insert result at
+point. When called interactively, print result in echo area."
+  (interactive
+   `(,(read-directory-name "Find max UID under folder: "
+                           (blc-parent-dir (cdar (blc-mbsync-maildirs)))
+                           nil t)
+     ,current-prefix-arg))
+  (funcall (cond (here #'insert)
+                 ((called-interactively-p 'interactive)
+                  (apply-partially #'message "Max. UID: %s"))
+                 (t #'identity))
+           (number-to-string
+            (apply #'max
+                   `(0 ,@(blc-keep (lambda (file)
+                                     (and-let* ((uid (blc--mbsync-uid file)))
+                                       (string-to-number uid)))
+                                   (directory-files-recursively folder "")))))))
 
 (defvar blc-opusenc-switches '("--bitrate" "128" "--quiet")
   "List of `opusenc' switches for `blc-opusenc-flac'. ")
