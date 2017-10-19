@@ -42,8 +42,16 @@ blc-notmuch: blc-lib $(call libouts,blc-notmuch)
 .PHONY: gnus
 gnus: $(libs) $(call srcouts,gnus)
 
+.PHONY: clean-gnus
+clean-gnus:
+	$(RM) $(call srcouts,gnus)
+
 .PHONY: init
 init: $(filter-out blc-notmuch,$(libs)) $(call srcouts,init)
+
+.PHONY: clean-init
+clean-init:
+	$(RM) $(call srcouts,init)
 
 .PHONY: profile
 profile: ELFLAGS := -nw
@@ -52,8 +60,8 @@ profile:
 		--funcall profile-dotemacs
 
 .PHONY: clean
-clean:
-	$(RM) $(call libouts,) $(call srcouts,)
+clean: clean-gnus clean-init
+	$(RM) $(call libouts,)
 
 .PHONY: distclean
 distclean: clean
