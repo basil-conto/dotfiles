@@ -125,12 +125,14 @@ why-are-you-changing-gc-cons-threshold/'.")
   (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
 
 (blc-declare-fns
+  (bbdb-com      bbdb-search)
   (bbdb-mua      bbdb-mua-summary-unify)
   (cc-cmds       c-toggle-comment-style)
   (cc-defs       c-langelem-pos)
   (csv-mode      csv-align-fields)
   (doc-view      doc-view-start-process)
   (esh-mode      eshell-truncate-buffer)
+  (eudcb-bbdb    eudc-bbdb-format-query)
   (eww           eww-copy-page-url
                  eww-html-p)
   (hi-lock       hi-lock-set-pattern)
@@ -153,6 +155,8 @@ why-are-you-changing-gc-cons-threshold/'.")
   (tile          tile-get-name))
 
 (blc-autoloads
+  (bbdb      bbdb-record-address
+             bbdb-record-phone)
   (gnus      gnus-find-subscribed-addresses)
   (gnus-util gnus-extract-address-components)
   (ibuf-ext  ibuffer-pop-filter
@@ -207,6 +211,24 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
                              (car (mail-header-parse-address choice))))
                    choices)
            args)))
+
+;; eudcb-bbdb
+(define-advice eudc-bbdb-field (:filter-return (field) blc-bbdb-shim)
+  "Translate BBDB FIELD to current name."
+  (pcase field
+    ('company 'organization)
+    ('phones  'phone)
+    (_        field)))
+
+(define-advice eudc-bbdb-format-query (:filter-return (spec) blc-nowarn-nonce)
+  "Silence `bbdb-search' obsolete API warning and self-destruct."
+  (let ((name 'eudc-bbdb-format-query@blc-nowarn))
+    (cond ((keywordp (car spec))
+           (lwarn 'blc :warning "`%s' is unneeded" name))
+          ((not (function-get #'bbdb-search 'bbdb-outdated))
+           (function-put #'bbdb-search 'bbdb-outdated t)))
+    (advice-remove #'eudc-bbdb-format-query name))
+  spec)
 
 ;; eww
 (defun blc-eww-suggest-uri--advice (eww uri)
@@ -1061,7 +1083,18 @@ With prefix argument SELECT, call `tile-select' instead."
    (regexp-opt (mapcar (lambda (addr)
                          (car (split-string addr "@")))
                        (blc-msmtp-addresses))
-               'words)))
+               'words))
+
+  (map-do (lambda (old new)
+            (unless (fboundp old)
+              (defalias old new)))
+          `((bbdb-record-addresses . ,#'bbdb-record-address)
+            (bbdb-record-phones    . ,#'bbdb-record-phone  )))
+
+  (unless (fboundp 'bbdb-record-notes)
+    (defun bbdb-record-notes (record)
+      "Return notes xfield of RECORD."
+      (bbdb-record-xfield record 'notes))))
 
 (use-package better-shell
   :ensure)
