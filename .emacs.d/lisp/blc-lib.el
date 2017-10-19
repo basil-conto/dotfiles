@@ -407,6 +407,13 @@ Uses `blc-fast-line-number', which see."
          (after   (- total before)))
     (message "Buffer has %d lines (%d + %d)" total before after)))
 
+(defun blc-derived-buffers (&rest modes)
+  "Return subset of `buffer-list' derived from MODES."
+  (seq-filter (lambda (buf)
+                (with-current-buffer buf
+                  (apply #'derived-mode-p modes)))
+              (buffer-list)))
+
 (defun blc-bury-buffer (&optional buffer-or-name unbury)
   "Un/bury buffer.
 With prefix argument UNBURY, call `unbury-buffer'. Otherwise pass

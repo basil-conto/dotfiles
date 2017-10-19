@@ -136,7 +136,8 @@ why-are-you-changing-gc-cons-threshold/'.")
   (hi-lock       hi-lock-set-pattern)
   (ibuf-ext      ibuffer-switch-to-saved-filter-groups)
   (ibuffer       ibuffer-current-buffer)
-  (man           Man-goto-section)
+  (man           Man-goto-section
+                 Man-mode)
   (mail-parse    mail-header-parse-address)
   (mailcap       mailcap-extension-to-mime)
   (message       message-field-value
@@ -629,6 +630,24 @@ Return the name of the buffer as a string or `nil'."
 (defun blc-ledger-frame-width ()
   "Return available `frame-width' as a string."
   (number-to-string (blc-but-fringes (frame-width))))
+
+(defun blc--man-other-buffer (&optional prev)
+  "Switch to next `man' buffer (previous if PREV is non-nil)."
+  (let ((bufs (funcall (if prev #'nreverse #'identity)
+                       (blc-derived-buffers #'Man-mode))))
+    (switch-to-buffer (or (cadr (memq (current-buffer) bufs))
+                          (car bufs))
+                      t)))
+
+(defun blc-man-next-buffer ()
+  "Switch to next `man' buffer."
+  (interactive)
+  (blc--man-other-buffer))
+
+(defun blc-man-previous-buffer ()
+  "Switch to previous `man' buffer."
+  (interactive)
+  (blc--man-other-buffer t))
 
 (defun blc-msmtp-addresses ()
   "Return list of unique addresses in ~/.msmtprc."
@@ -2417,6 +2436,14 @@ Filter `starred-name' is implied unless symbol `nostar' present."
             "SECONDEXPANSION"))
 
     (set-default targets (sort (symbol-value targets) #'string-lessp))))
+
+(use-package man
+  :bind (:map
+         Man-mode-map
+         ("]" . blc-man-next-buffer)
+         ("[" . blc-man-previous-buffer))
+  :init
+  (setq-default Man-notify-method 'aggressive))
 
 (use-package markdown-mode
   :ensure
