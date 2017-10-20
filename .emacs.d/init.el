@@ -173,6 +173,16 @@ why-are-you-changing-gc-cons-threshold/'.")
 
 ;;; Advice
 
+;; battery
+(define-advice battery-linux-sysfs (:filter-return (alist) blc-unicodify)
+  "Transcribe AC line status in ALIST to Unicode."
+  (let ((key ?L))
+    (map-put alist key (pcase (map-elt alist key)
+                         ("AC"  "🔌")
+                         ("BAT" "🔋")
+                         (_     "¿?"))))
+  alist)
+
 ;; cc-align
 (define-advice c-lineup-arglist (:before-until (langelem) blc-c++-lambda-indent)
   "Return indentation offset for C++11 lambda arguments.
@@ -1050,7 +1060,7 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package battery
   :init
-  (setq-default battery-mode-line-format "🔋%b%p%% ")
+  (setq-default battery-mode-line-format "%L%p%% ")
   (display-battery-mode))
 
 (use-package bbdb
