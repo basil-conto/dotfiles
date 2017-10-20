@@ -635,7 +635,8 @@ Return the name of the buffer as a string or `nil'."
                          . ,name)))
                    (blc-derived-buffers #'Info-mode)))
             ((cdr bufs)))
-      (blc-elt bufs (completing-read "Info buffer: " bufs))
+      (blc-elt bufs (completing-read
+                     "Info buffer: " (seq-sort-by #'car #'string-lessp bufs)))
     (cdar bufs)))
 
 (defun blc-info (&optional buffer)
