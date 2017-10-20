@@ -95,6 +95,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 (blc-declare-vars
   Info-standalone
   LaTeX-clean-intermediate-suffixes
+  Man--sections
   TeX-command-list
   bbdb-mua-summary-mark
   bbdb-mua-summary-unify-format-letter
@@ -138,8 +139,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   (hi-lock       hi-lock-set-pattern)
   (ibuf-ext      ibuffer-switch-to-saved-filter-groups)
   (ibuffer       ibuffer-current-buffer)
-  (man           Man-goto-section
-                 Man-mode)
+  (man           Man-mode)
   (mail-parse    mail-header-parse-address)
   (mailcap       mailcap-extension-to-mime)
   (message       message-field-value
@@ -297,6 +297,11 @@ This is much less accurate but also much more performant than
     (:after (&rest _) blc-delete-trailing-space)
   "Delete trailing whitespace after function call insertion."
   (delete-horizontal-space t))
+
+;; man
+(define-advice Man-goto-page (:after (&rest _) blc-reverse-sections)
+  "Reverse `Man--sections' to maintain natural order."
+  (setq Man--sections (nreverse Man--sections)))
 
 ;; org-agenda
 (define-advice org-agenda-finalize (:after (&rest _) blc-pad-dates)
@@ -2103,11 +2108,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   ;; Default matching behaviour
   (map-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
 
-  ;; Reverse parsed order
-  (mapc (lambda (caller)
-          (map-put ivy-sort-functions-alist caller #'blc-sort-reverse))
-        `(,#'Info-complete-menu-item
-          ,#'Man-goto-section))
+  ;; Fix ordering
+  (map-do (lambda (sort caller)
+            (map-put ivy-sort-functions-alist caller sort))
+          `((,#'blc-sort-reverse . ,#'Info-complete-menu-item)
+            (,#'string-lessp     . ,#'counsel-M-x)))
 
   ;; Faces
   (map-do (lambda (child parent)
