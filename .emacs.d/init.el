@@ -617,7 +617,7 @@ Return the name of the buffer as a string or `nil'."
                            (id   (buffer-local-value
                                   'mode-line-buffer-identification buf)))
                        `(,(concat name (substring-no-properties (cadr id)))
-                         . name)))
+                         . ,name)))
                    (blc-derived-buffers #'Info-mode)))
             ((cdr bufs)))
       (blc-elt bufs (completing-read "Info buffer: " bufs))
