@@ -175,7 +175,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 
 ;; battery
 (define-advice battery-linux-sysfs (:filter-return (alist) blc-unicodify)
-  "Transcribe AC line status in ALIST to Unicode."
+  "Transcribe Linux sysfs AC line status in ALIST to Unicode."
   (let ((key ?L))
     (map-put alist key (pcase (map-elt alist key)
                          ("AC"  "🔌")
@@ -2690,14 +2690,12 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    org-capture-templates
    `(("t" . ("Task" entry (file+olp "" "Tasks")
              ,(string-join '("* %?"     ; Final point
-                             "%A"       ; Annotation with description prompt
                              "%i")      ; Active region contents
                            "\n")
              :prepend t :unnarrowed t))
      ("s" . ("Show" entry (file+olp "" "Projects" "Show")
              ,(string-join '("* %?"
                              "%x"       ; X clipboard contents
-                             "%A"
                              "%i")
                            "\n")
              :prepend t :unnarrowed t))
