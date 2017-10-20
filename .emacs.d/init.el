@@ -1427,7 +1427,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package elisp-mode
   :init
-  (add-hook 'emacs-lisp-mode-hook #'blc-rainbow-mode)
+  (blc-hook (:hooks emacs-lisp-mode-hook :fns (blc-rainbow-mode
+                                               blc-turn-on-lexical-binding)))
   :config
   (delight `((      ,#'emacs-lisp-mode "(ε)" :major)
              (,#'lisp-interaction-mode "(ι)" :major))))
