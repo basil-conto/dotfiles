@@ -1,4 +1,4 @@
-;;; .gnus.el --- gnus init file for blc -*- lexical-binding: t -*-
+;;; gnus.el --- gnus init file for blc -*- lexical-binding: t -*-
 
 ;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
 ;; Homepage: https://github.com/basil-conto/dotfiles
@@ -261,4 +261,4 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    `((nnir-engines               . (blc-notmuch ,#'nnir-run-blc-notmuch ()))
      (nnir-imap-search-arguments . ("gmail" . "X-GM-RAW")))))
 
-;;; .gnus.el ends here
+;;; gnus.el ends here
