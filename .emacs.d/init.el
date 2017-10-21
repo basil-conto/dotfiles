@@ -2305,8 +2305,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package magit
   :ensure
   :functions
+  blc-magit-insert-revision-gpg
   magit-add-section-hook
   magit-display-buffer-same-window-except-diff-v1
+  magit-insert-revision-headers
   magit-repolist-column-dirty
   :bind (:map
          ctl-x-map
@@ -2320,6 +2322,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
 
   :config
+  (load (blc-file user-emacs-directory "magit"))
+
   (delight
    '((git-rebase-mode                 "±𝄢"  :major     )
      (magit-blame-mode                "🖜"  magit-blame)
@@ -2352,18 +2356,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    magit-process-finish-apply-ansi-colors  t
    magit-remote-add-set-remote.pushDefault 'ask)
 
-  ;; Add signature revision header
-  (when-let* ((width (string-match-p "%" magit-revision-headers-format)))
-    (setq-default
-     magit-revision-headers-format
-     (string-join `(,@(split-string magit-revision-headers-format "\n" t)
-                    ,@(map-apply (apply-partially #'format
-                                                  (format "%%-%ds%%s" width))
-                                 '(("Signature:" . "%GS")
-                                   (""           . "%GK")))
-                    "")
-                  "\n")))
-
   ;; Always highlight tabs
   (blc-put magit-diff-highlight-indentation "" 'tabs)
 
@@ -2373,6 +2365,12 @@ Filter `starred-name' is implied unless symbol `nostar' present."
            'magit-status-headers-hook fn 'magit-insert-head-branch-header))
         '(magit-insert-remote-header
           magit-insert-repo-header))
+
+  ;; Add signature revision headers
+  (magit-add-section-hook 'magit-revision-sections-hook
+                          #'blc-magit-insert-revision-gpg
+                          #'magit-insert-revision-headers
+                          t)
 
   ;; Repo list: insert dirty column in third position
   (blc-insert-at

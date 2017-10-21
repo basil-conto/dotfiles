@@ -47,7 +47,7 @@ clean-gnus:
 	$(RM) $(call srcouts,gnus)
 
 .PHONY: init
-init: $(filter-out blc-notmuch,$(libs)) $(call srcouts,init)
+init: $(filter-out blc-notmuch,$(libs)) magit.elc $(call srcouts,init)
 
 .PHONY: clean-init
 clean-init:
@@ -61,7 +61,7 @@ profile:
 
 .PHONY: clean
 clean: clean-gnus clean-init
-	$(RM) $(call libouts,)
+	$(RM) magit.elc $(call libouts,)
 
 .PHONY: distclean
 distclean: clean
