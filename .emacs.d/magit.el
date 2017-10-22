@@ -12,6 +12,9 @@
 
 (require 'map)
 (require 'package)
+(eval-when-compile
+  (require 'subr-x))
+
 (eval-and-compile
   (unless package--initialized
     (package-initialize)))

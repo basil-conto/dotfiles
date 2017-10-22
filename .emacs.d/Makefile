@@ -6,7 +6,7 @@
 # Files
 
 libs := blc-lib blc-macs blc-notmuch
-srcs := gnus init
+srcs := gnus init magit
 
 libdir := lisp/
 pkgdir := elpa/
@@ -28,7 +28,13 @@ EL ?= emacs
 .NOTPARALLEL:
 
 .PHONY: all
-all: $(srcs)
+all: libs sources
+
+.PHONY: libs
+libs: $(libs)
+
+.PHONY: sources
+sources: $(srcs)
 
 .PHONY: blc-lib
 blc-lib: $(call libouts,blc-lib)
@@ -47,11 +53,18 @@ clean-gnus:
 	$(RM) $(call srcouts,gnus)
 
 .PHONY: init
-init: $(filter-out blc-notmuch,$(libs)) magit.elc $(call srcouts,init)
+init: $(filter-out blc-notmuch,$(libs)) $(call srcouts,init)
 
 .PHONY: clean-init
 clean-init:
 	$(RM) $(call srcouts,init)
+
+.PHONY: magit
+magit: init $(call srcouts,magit)
+
+.PHONY: clean-magit
+clean-magit:
+	$(RM) $(call srcouts,magit)
 
 .PHONY: profile
 profile: ELFLAGS := -nw
@@ -60,8 +73,8 @@ profile:
 		--funcall profile-dotemacs
 
 .PHONY: clean
-clean: clean-gnus clean-init
-	$(RM) magit.elc $(call libouts,)
+clean: clean-gnus clean-init clean-magit
+	$(RM) $(call libouts,)
 
 .PHONY: distclean
 distclean: clean
