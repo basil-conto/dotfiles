@@ -1379,6 +1379,8 @@ With prefix argument SELECT, call `tile-select' instead."
             ("pdf"      . ("pdf")))))
 
 (use-package dired-aux
+  :init
+  (setq-default dired-create-destination-dirs 'ask)
   :config
   (mapc (lambda (pair)
           (add-to-list 'dired-compress-files-alist pair))
