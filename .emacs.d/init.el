@@ -3209,7 +3209,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package time
   :init
-  (let ((fmt "%a %d %b %R %z"))
+  (let ((fmt "%a %d %b %R %:::z"))
     (setq-default
      display-time-format                 fmt
      display-time-load-average-threshold 0
