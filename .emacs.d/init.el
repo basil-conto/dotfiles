@@ -336,13 +336,19 @@ Offer all entities found in `org-entities-user' and
        (/= ?_ (string-to-char entity))))))
 
 ;; package
-(define-advice package-install (:before (&rest _) blc-async-bytecomp)
+(define-advice package-install (:before (pkg &rest _) blc-async-bytecomp)
   "Install `async' and enable `async-bytecomp-package-mode'."
-  (use-package async
-    :ensure
-    :init
-    (setq-default async-bytecomp-allowed-packages '(all))
-    (async-bytecomp-package-mode)))
+  (unless (or (bound-and-true-p async-bytecomp-package-mode)
+              (string-equal 'async (funcall (if (package-desc-p pkg)
+                                                #'package-desc-name
+                                              #'identity)
+                                            pkg)))
+    (use-package async-bytecomp
+      :ensure async
+      :commands async-bytecomp-package-mode
+      :init
+      (setq-default async-bytecomp-allowed-packages '(all))
+      (async-bytecomp-package-mode))))
 
 ;; recentf
 (define-advice recentf-save-list (:around (save &rest args) blc-save-safely)
@@ -1696,6 +1702,7 @@ With prefix argument SELECT, call `tile-select' instead."
   :ensure)
 
 (use-package git-commit
+  :ensure
   :init
   (add-to-list 'auto-mode-alist
                `(,git-commit-filename-regexp . ,#'git-commit-setup))
