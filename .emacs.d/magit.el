@@ -58,4 +58,8 @@ c84c3bc7007d0d4bcacfeb2c0e42ac27'."
         (magit-insert-section (gpg raw)
           (insert (propertize raw 'face face) "\n\n"))))))
 
+;; Local Variables:
+;; byte-compile-dynamic: t
+;; End:
+
 ;;; magit.el ends here
