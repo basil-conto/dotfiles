@@ -34,9 +34,7 @@
   "Map GPG sign types to their description and face.")
 
 (defun blc-magit-insert-revision-gpg (rev)
-  "Insert GPG information about REV into revision buffer.
-Adapted from URL `https://gist.github.com/fice-t/\
-c84c3bc7007d0d4bcacfeb2c0e42ac27'."
+  "Insert GPG information about REV into revision buffer."
   (pcase-let* ((`(,(app string-to-char type) ,signer ,key
                   ,(app (pcase--flip string-trim-right "\n+") raw))
                 (with-temp-buffer
