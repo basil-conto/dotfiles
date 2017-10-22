@@ -533,7 +533,7 @@ function at URL
                  #'split-window-below)))
     (delete-window)
     (funcall split)
-    (switch-to-buffer nil)))
+    (pop-to-buffer-same-window nil)))
 
 (defun blc-split-window (&optional window)
   "Split WINDOW in a way suitable for `display-buffer'.

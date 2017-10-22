@@ -572,14 +572,14 @@ desirable."
 If none of the article, summary or group buffer are found, in
 order of descending priority, start `gnus'."
   (interactive)
-  (unless (blc--gnus-switch-buffer #'switch-to-buffer)
+  (unless (blc--gnus-switch-buffer #'pop-to-buffer-same-window)
     (gnus)))
 
 (defun blc-gnus-other-window ()
   "Like `blc-gnus', but use another window."
   (interactive)
   (let (break) ; Infloop should never happen, but avoid famous last words
-    (while (not (or (blc--gnus-switch-buffer #'switch-to-buffer-other-window)
+    (while (not (or (blc--gnus-switch-buffer #'pop-to-buffer)
                     break))
       (setq break t)
       (save-window-excursion
@@ -672,9 +672,9 @@ Return the name of the buffer as a string or `nil'."
   "Switch to next `man' buffer (previous if PREV is non-nil)."
   (let ((bufs (funcall (if prev #'nreverse #'identity)
                        (blc-derived-buffers #'Man-mode))))
-    (switch-to-buffer (or (cadr (memq (current-buffer) bufs))
-                          (car bufs))
-                      t)))
+    (pop-to-buffer-same-window (or (cadr (memq (current-buffer) bufs))
+                                   (car bufs))
+                               t)))
 
 (defun blc-man-next-buffer ()
   "Switch to next `man' buffer."
