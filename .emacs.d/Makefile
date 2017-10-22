@@ -5,7 +5,7 @@
 
 # Files
 
-libs := blc-lib blc-macs blc-notmuch
+libs := blc-lib blc-macs blc-notmuch blc-pass
 srcs := gnus init magit
 
 libdir := lisp/
@@ -45,8 +45,11 @@ blc-macs: blc-lib $(call libouts,blc-macs)
 .PHONY: blc-notmuch
 blc-notmuch: blc-lib $(call libouts,blc-notmuch)
 
+.PHONY: blc-pass
+blc-pass: blc-lib blc-macs $(call libouts,blc-pass)
+
 .PHONY: gnus
-gnus: $(libs) $(call srcouts,gnus)
+gnus: $(filter-out blc-pass,$(libs)) $(call srcouts,gnus)
 
 .PHONY: clean-gnus
 clean-gnus:

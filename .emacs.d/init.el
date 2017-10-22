@@ -157,6 +157,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 (blc-autoloads
   (bbdb      bbdb-record-address
              bbdb-record-phone)
+  (blc-pass  blc-pass-backend-parse)
   (gnus      gnus-find-subscribed-addresses)
   (gnus-util gnus-extract-address-components)
   (ibuf-ext  ibuffer-pop-filter
@@ -1039,15 +1040,11 @@ With prefix argument SELECT, call `tile-select' instead."
   ;; Add SMTPS
   (map-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587"))
 
+  (add-hook 'auth-source-backend-parser-functions #'blc-pass-backend-parse)
+
   (setq-default auth-source-cache-expiry (blc-mins-to-secs 15)
                 auth-source-debug        'trivia
-                auth-sources             '(password-store)))
-
-(use-package auth-source-pass
-  :commands auth-source-pass-backend-parse
-  :init
-  (add-hook 'auth-source-backend-parser-functions
-            #'auth-source-pass-backend-parse))
+                auth-sources             '(blc-pass)))
 
 (use-package autorevert
   :delight auto-revert-mode "↻")
