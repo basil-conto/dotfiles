@@ -2541,7 +2541,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    message-make-forward-subject-function #'message-forward-subject-fwd
    message-send-mail-function            #'message-send-mail-with-sendmail
    message-sendmail-envelope-from        'header
-   message-signature                     user-full-name
+   message-signature                     (car (split-string user-full-name))
    message-wide-reply-confirm-recipients t))
 
 (use-package minimap
