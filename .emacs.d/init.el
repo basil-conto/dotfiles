@@ -512,7 +512,8 @@ description of the arguments to this function."
 This likens `counsel-find-file' to `find-file' more and makes it
 suitable for assigning to `ffap-file-finder'."
   (interactive)
-  (find-buffer-visiting (counsel-find-file)))
+  (set-buffer (or (find-buffer-visiting (counsel-find-file))
+                  (other-buffer nil t))))
 
 (defun blc-csv-align-all-fields ()
   "Align all fields in the current CSV buffer."
@@ -1551,19 +1552,12 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package ffap
   :commands ffap-gnus-hook
-  ;; For some reason remaps do not work
-  :bind (:map
-         ctl-x-map
-         ("d"   .     dired-at-point)
-         ("C-f" . find-file-at-point)
-         :map
-         ctl-x-4-map
-         ("d"   . ffap-dired-other-window)
-         ("C-f" .       ffap-other-window)
-         :map
-         ctl-x-5-map
-         ("d"   . ffap-dired-other-frame)
-         ("C-f" .       ffap-other-frame))
+  :bind (([remap                  dired] .          dired-at-point)
+         ([remap              find-file] .      find-file-at-point)
+         ([remap     dired-other-window] . ffap-dired-other-window)
+         ([remap find-file-other-window] .       ffap-other-window)
+         ([remap      dired-other-frame] .  ffap-dired-other-frame)
+         ([remap  find-file-other-frame] .        ffap-other-frame))
 
   :init
   (blc-hook (:fns ffap-gnus-hook :hooks (gnus-summary-mode-hook
