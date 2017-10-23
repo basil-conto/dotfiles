@@ -2086,7 +2086,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package ivy
   :ensure
   :delight ivy-mode
-  :commands ivy--regex-ignore-order ivy-format-function-arrow ivy-set-sources
+  :commands
+  ivy--regex-ignore-order
+  ivy-completion-in-region
+  ivy-format-function-arrow
+  ivy-set-sources
   :bind (([remap switch-to-buffer] . ivy-switch-buffer)
          ([remap switch-to-buffer-other-window]
           . ivy-switch-buffer-other-window)
@@ -2103,8 +2107,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
   :init
   ;; Autoloading
-  (setq-default completing-read-function #'ivy-completing-read)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'ivy-mode)
+  (setq-default completing-read-function      #'ivy-completing-read
+                completion-in-region-function #'ivy-completion-in-region)
 
   :config
   ;; Default matching behaviour
@@ -2140,9 +2144,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                                  (symbol-name cmd)))
                ivy-initial-inputs-alist)
    ivy-on-del-error-function   #'ignore
-   ivy-use-virtual-buffers     t)
-
-  (ivy-mode))
+   ivy-use-virtual-buffers     t))
 
 (use-package ivy-bibtex
   :ensure
