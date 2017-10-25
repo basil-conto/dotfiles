@@ -3149,6 +3149,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (add-hook 'sx-question-list-mode-hook #'blc-sx-question-list-fontify)
   (setq-default sx-question-mode-comments-format "%s:\n   %s\n"))
 
+(use-package sx-question-list
+  :bind (:map
+         sx-question-list-mode-map
+         ([remap sx-question-list-hide] . describe-mode)))
+
 (use-package systemd
   :ensure)
 
