@@ -354,12 +354,10 @@ Offer all entities found in `org-entities-user' and
 ;; recentf
 (define-advice recentf-save-list (:around (save &rest args) blc-save-safely)
   "Save silently only if sole Emacs instance."
-  (when (> 2 (seq-count (lambda (pid)
-                          (string-match-p
-                           "emacs" (map-elt (process-attributes pid) 'comm "")))
-                        (list-system-processes)))
-    (let ((save-silently t))
-      (apply save args))))
+  (when-let* (((> 2 (seq-count (apply-partially #'string-match-p "\\`emacs")
+                               (blc-system-procs-by-attr 'comm ""))))
+              (save-silently t))
+    (apply save args)))
 
 
 ;;; Package utilities
