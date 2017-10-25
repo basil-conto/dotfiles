@@ -762,6 +762,9 @@ Strings FROM override the default `f' format spec."
 (defvar blc-dropbox-timers ()
   "List of active timers for `blc-dropbox-mode'.")
 
+(defvar blc-dropbox-interval (blc-mins-to-secs 15)
+  "Number of seconds between dropbox start/stop runs.")
+
 (define-minor-mode blc-dropbox-mode
   "Periodically start/stop dropbox with timers."
   :global t
@@ -770,7 +773,7 @@ Strings FROM override the default `f' format spec."
         (if blc-dropbox-mode
             (map-apply (lambda (off fn)
                          (run-at-time (blc-mins-to-secs off)
-                                      (blc-mins-to-secs 10)
+                                      blc-dropbox-interval
                                       fn))
                        `((1 . ,#'blc-dropbox-start)
                          (2 . ,#'blc-dropbox-stop)))
