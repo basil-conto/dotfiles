@@ -1655,7 +1655,9 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package frame
   :init
-  (blc-with-every-frame #'blc-turn-off-cursor-blink))
+  (blc-with-every-frame #'blc-turn-off-cursor-blink)
+  (setq-default window-divider-default-right-width 2)
+  (window-divider-mode))
 
 (use-package free-keys
   :ensure)
