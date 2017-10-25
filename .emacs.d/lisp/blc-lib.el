@@ -17,9 +17,11 @@
   (require 'subr-x)
   (require 'thunk))
 
-(autoload 'dom-node       "dom")
-(autoload 'shr-dom-to-xml "shr")
-(autoload 'xdg-user-dir   "xdg")
+(autoload 'comint-output-filter "comint")
+(autoload 'dom-node             "dom")
+(autoload 'shell-mode           "shell")
+(autoload 'shr-dom-to-xml       "shr")
+(autoload 'xdg-user-dir         "xdg")
 
 (defgroup blc ()
   "Conveniences for blc."
@@ -149,7 +151,7 @@ returns results."
 ;;; Datetimes
 
 (defun blc-mins-to-secs (mins)
-  "Convert number of seconds in MINS."
+  "Return number of seconds in MINS."
   (* 60 mins))
 
 (defun blc-rfc2822 (&optional time zone)
@@ -347,20 +349,51 @@ point. When called interactively, print result in echo area."
   (and (eq (process-status proc) 'exit)
        (zerop (process-exit-status proc))))
 
-(defun blc-dropbox-status ()
-  "Print status of external dropbox daemon."
-  (interactive)
-  (shell-command "dropbox status" "*Dropbox Status*"))
+(defun blc-system-procs-by-attr (attr &optional def)
+  "Return ATTR or DEF of all running processes."
+  (mapcar (lambda (pid)
+            (map-elt (process-attributes pid) attr def))
+          (list-system-processes)))
 
-(defun blc-dropbox-start ()
-  "Start external dropbox daemon."
-  (interactive)
-  (async-shell-command "dropbox start" "*Dropbox Control*"))
+(defun blc--dropbox (shell &rest args)
+  "Call external dropbox daemon with ARGS.
+Use `shell-command' when SHELL is non-nil."
+  (if-let* ((nom "dropbox")
+            (cmd `(,nom ,@args))
+            (buf (get-buffer-create (format "*%s*" nom)))
+            (shell))
+      (shell-command (string-join cmd " ") buf)
+    (with-current-buffer buf
+      (insert (propertize (format-time-string "%F %T") 'font-lock-face 'shadow)
+              ?\n)
+      (make-process :name            nom
+                    :buffer          buf
+                    :command         cmd
+                    :connection-type 'pty
+                    :filter          #'comint-output-filter)
+      (unless (derived-mode-p #'shell-mode)
+        (shell-mode)))))
 
-(defun blc-dropbox-stop ()
-  "Stop external dropbox daemon."
-  (interactive)
-  (async-shell-command "dropbox stop" "*Dropbox Control*"))
+(defun blc-dropbox-status (&optional shell)
+  "Print status of external dropbox daemon.
+Use `shell-command' when called interactively."
+  (interactive "p")
+  (blc--dropbox shell "status"))
+
+(defun blc-dropbox-start (&optional shell)
+  "Start external dropbox daemon.
+Use `async-shell-command' when called interactively."
+  (interactive "p")
+  (when (or shell
+            (not (seq-some (apply-partially #'string-match-p "\\`dropbox\\'")
+                           (blc-system-procs-by-attr 'comm ""))))
+    (blc--dropbox shell "start" "&")))
+
+(defun blc-dropbox-stop (&optional shell)
+  "Stop external dropbox daemon.
+Use `async-shell-command' when called interactively."
+  (interactive "p")
+  (blc--dropbox shell "stop" "&"))
 
 (defun blc-mbsync (&rest args)
   "Call mbsync with ARGS asynchronously via a shell.
@@ -725,6 +758,23 @@ Strings FROM override the default `f' format spec."
              #'font-lock-remove-keywords)
            nil
            (blc-rainbow--faces)))
+
+(defvar blc-dropbox-timers ()
+  "List of active timers for `blc-dropbox-mode'.")
+
+(define-minor-mode blc-dropbox-mode
+  "Periodically start/stop dropbox with timers."
+  :global t
+  :group  'blc
+  (setq blc-dropbox-timers
+        (if blc-dropbox-mode
+            (map-apply (lambda (off fn)
+                         (run-at-time (blc-mins-to-secs off)
+                                      (blc-mins-to-secs 10)
+                                      fn))
+                       `((1 . ,#'blc-dropbox-start)
+                         (2 . ,#'blc-dropbox-stop)))
+          (ignore (mapc #'cancel-timer blc-dropbox-timers)))))
 
 ;; (defvar blc-sunny-default-height 140
 ;;   "")

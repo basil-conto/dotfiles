@@ -3119,7 +3119,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
     (setq initial-scratch-message fortune))
 
   (blc-hook (:hooks window-setup-hook :append t :fns (blc-report-init-time
-                                                      blc-gc-thresh-restore))))
+                                                      blc-gc-thresh-restore
+                                                      blc-dropbox-mode))))
 
 (use-package subword
   :delight subword-mode
