@@ -1078,7 +1078,8 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package battery
   :init
-  (setq-default battery-mode-line-format "%L%p%% ")
+  (setq-default battery-load-critical    15
+                battery-mode-line-format "%L%p%% ")
   (display-battery-mode))
 
 (use-package bbdb
