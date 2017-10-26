@@ -304,6 +304,16 @@ This is much less accurate but also much more performant than
   "Reverse `Man--sections' to maintain natural order."
   (setq Man--sections (nreverse Man--sections)))
 
+;; mpc
+(define-advice mpc (:around (mpc) blc-with-dedicated-window)
+  "Temporarily dedicate selected window to its buffer."
+  (let* ((win  (selected-window))
+         (flag (window-dedicated-p win)))
+    (set-window-dedicated-p win t)
+    (unwind-protect
+        (call-interactively mpc)
+      (set-window-dedicated-p win flag))))
+
 ;; org-agenda
 (define-advice org-agenda-finalize (:after (&rest _) blc-pad-dates)
   "Display double spacing before org agenda view date lines.
@@ -2573,6 +2583,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package mml-sec
   :init
   (setq-default mml-secure-verbose t))
+
+(use-package mpc
+  :config
+  (map-delete mpc-frame-alist 'font))
 
 (use-package "mule-cmds"
   :init
