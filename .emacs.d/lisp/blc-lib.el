@@ -765,19 +765,28 @@ Strings FROM override the default `f' format spec."
 (defvar blc-dropbox-interval (blc-mins-to-secs 15)
   "Number of seconds between dropbox start/stop runs.")
 
+(defun blc-turn-off-dropbox-mode ()
+  "Disable `blc-dropbox-mode'."
+  (blc-dropbox-mode 0))
+
 (define-minor-mode blc-dropbox-mode
   "Periodically start/stop dropbox with timers."
   :global t
   :group  'blc
-  (setq blc-dropbox-timers
-        (if blc-dropbox-mode
-            (map-apply (lambda (off fn)
-                         (run-at-time (blc-mins-to-secs off)
-                                      blc-dropbox-interval
-                                      fn))
-                       `((1 . ,#'blc-dropbox-start)
-                         (2 . ,#'blc-dropbox-stop)))
-          (ignore (mapc #'cancel-timer blc-dropbox-timers)))))
+  (if blc-dropbox-mode
+      (progn
+        (setq blc-dropbox-timers
+              (map-apply (lambda (off fn)
+                           (run-at-time (blc-mins-to-secs off)
+                                        blc-dropbox-interval
+                                        fn))
+                         `((1 . ,#'blc-dropbox-start)
+                           (2 . ,#'blc-dropbox-stop))))
+        (add-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode))
+    (remove-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode)
+    (while blc-dropbox-timers
+      (cancel-timer (pop blc-dropbox-timers)))
+    (blc-dropbox-stop)))
 
 ;; (defvar blc-sunny-default-height 140
 ;;   "")
