@@ -314,9 +314,10 @@ This is much less accurate but also much more performant than
   "Temporarily dedicate selected window to its buffer."
   (let* ((win  (selected-window))
          (flag (window-dedicated-p win)))
-    (set-window-dedicated-p win t)
     (unwind-protect
-        (call-interactively mpc)
+        (progn
+          (set-window-dedicated-p win t)
+          (call-interactively mpc))
       (set-window-dedicated-p win flag))))
 
 ;; org-agenda
