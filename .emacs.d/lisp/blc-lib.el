@@ -762,7 +762,7 @@ Strings FROM override the default `f' format spec."
 (defvar blc-dropbox-timers ()
   "List of active timers for `blc-dropbox-mode'.")
 
-(defvar blc-dropbox-interval (blc-mins-to-secs 15)
+(defvar blc-dropbox-interval (blc-mins-to-secs 30)
   "Number of seconds between dropbox start/stop runs.")
 
 (defun blc-turn-off-dropbox-mode ()
