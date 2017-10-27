@@ -126,14 +126,11 @@ why-are-you-changing-gc-cons-threshold/'.")
   (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
 
 (blc-declare-fns
-  (bbdb-com      bbdb-search)
-  (bbdb-mua      bbdb-mua-summary-unify)
   (cc-cmds       c-toggle-comment-style)
   (cc-defs       c-langelem-pos)
   (csv-mode      csv-align-fields)
   (doc-view      doc-view-start-process)
   (esh-mode      eshell-truncate-buffer)
-  (eudcb-bbdb    eudc-bbdb-format-query)
   (eww           eww-copy-page-url
                  eww-html-p)
   (hi-lock       hi-lock-set-pattern)
@@ -155,8 +152,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   (tile          tile-get-name))
 
 (blc-autoloads
-  (bbdb      bbdb-record-address
-             bbdb-record-phone)
+  (bbdb-mua  bbdb-mua-summary-unify)
   (blc-pass  blc-pass-backend-parse)
   (gnus      gnus-find-subscribed-addresses)
   (gnus-util gnus-extract-address-components)
@@ -184,6 +180,47 @@ why-are-you-changing-gc-cons-threshold/'.")
                          (_     "¿?"))))
   alist)
 
+;; bbdb-com
+(defun blc--bbdb-unify (&rest addresses)
+  "Feed ADDRESSES to `bbdb-mua-summary-unify'.
+Return a list of addresses formatted as \"NAME\" <ADDRESS>."
+  (let ((mark (blc-rx `(: bos (in ?\s ,@(blc-as-list bbdb-mua-summary-mark))))))
+    (mapcar (lambda (addr)
+              (format "\"%s\" <%s>"
+                      (blc-sed mark "" (bbdb-mua-summary-unify addr))
+                      (car (mail-header-parse-address addr))))
+            addresses)))
+
+(defun blc--completion-base-string ()
+  "Return string bound by `completion-base-position'."
+  (apply #'buffer-substring-no-properties
+         (mapcar (lambda (fn)
+                   (or (funcall fn completion-base-position) (point)))
+                 `(,#'car ,#'cadr))))
+
+(define-advice bbdb-complete-mail
+    (:around (complete &rest args) blc-completing-read)
+  "Replace *Completions* buffer with `completing-read'.
+Feed candidates to `bbdb-mua-summary-unify' before completion."
+  (let* (cands
+         (alice #'display-completion-list)
+         (eve   (lambda (completions)
+                  (setq cands (apply #'blc--bbdb-unify completions))))
+         (temp-buffer-show-function
+          (lambda (buf)
+            (kill-buffer buf)
+            (choose-completion-string (completing-read
+                                       "Address: " cands nil 'confirm
+                                       (blc--completion-base-string)
+                                       'blc-bbdb-mail-history)
+                                      (current-buffer)
+                                      completion-base-position))))
+    (unwind-protect
+        (progn
+          (advice-add alice :before eve)
+          (apply complete args))
+      (advice-remove alice eve))))
+
 ;; cc-align
 (define-advice c-lineup-arglist (:before-until (langelem) blc-c++-lambda-indent)
   "Return indentation offset for C++11 lambda arguments.
@@ -208,38 +245,6 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
-
-;; eudc
-(define-advice eudc-select (:around (select choices &rest args) blc-bbdb-unify)
-  "Feed CHOICES to `bbdb-mua-summary-unify' before completion."
-  (require 'bbdb-mua)
-  (require 'mail-parse)
-  (let ((mark (blc-rx `(: bos (in ?\s ,@(blc-as-list bbdb-mua-summary-mark))))))
-    (apply select
-           (mapcar (lambda (choice)
-                     (format "\"%s\" <%s>"
-                             (blc-sed mark "" (bbdb-mua-summary-unify choice))
-                             (car (mail-header-parse-address choice))))
-                   choices)
-           args)))
-
-;; eudcb-bbdb
-(define-advice eudc-bbdb-field (:filter-return (field) blc-bbdb-shim)
-  "Translate BBDB FIELD to current name."
-  (pcase field
-    ('company 'organization)
-    ('phones  'phone)
-    (_        field)))
-
-(define-advice eudc-bbdb-format-query (:filter-return (spec) blc-nowarn-nonce)
-  "Silence `bbdb-search' obsolete API warning and self-destruct."
-  (let ((name 'eudc-bbdb-format-query@blc-nowarn))
-    (cond ((keywordp (car spec))
-           (lwarn 'blc :warning "`%s' is unneeded" name))
-          ((not (function-get #'bbdb-search 'bbdb-outdated))
-           (function-put #'bbdb-search 'bbdb-outdated t)))
-    (advice-remove #'eudc-bbdb-format-query name))
-  spec)
 
 ;; eww
 (defun blc-eww-suggest-uri--advice (eww uri)
@@ -1089,12 +1094,11 @@ With prefix argument SELECT, call `tile-select' instead."
     (:hooks gnus-started-hook :fns blc-bbdb-set-gnus-summary-line-format)
     (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus))
 
-  (setq-default bbdb-complete-mail-allow-cycling t
-                bbdb-default-country             nil
-                bbdb-name-format                 'last-first
-                bbdb-phone-style                 nil
-                bbdb-pop-up-window-size          t
-                bbdb-read-name-format            'first-last)
+  (setq-default bbdb-default-country    nil
+                bbdb-name-format        'last-first
+                bbdb-phone-style        nil
+                bbdb-pop-up-window-size t
+                bbdb-read-name-format   'first-last)
 
   :config
   (map-do #'add-to-list
@@ -1112,18 +1116,7 @@ With prefix argument SELECT, call `tile-select' instead."
    (regexp-opt (mapcar (lambda (addr)
                          (car (split-string addr "@")))
                        (blc-msmtp-addresses))
-               'words))
-
-  (map-do (lambda (old new)
-            (unless (fboundp old)
-              (defalias old new)))
-          `((bbdb-record-addresses . ,#'bbdb-record-address)
-            (bbdb-record-phones    . ,#'bbdb-record-phone  )))
-
-  (unless (fboundp 'bbdb-record-notes)
-    (defun bbdb-record-notes (record)
-      "Return notes xfield of RECORD."
-      (bbdb-record-xfield record 'notes))))
+               'words)))
 
 (use-package better-shell
   :ensure)
@@ -1505,18 +1498,6 @@ With prefix argument SELECT, call `tile-select' instead."
   :config
   (setq-default ess-default-style   'DEFAULT
                 ess-indent-from-lhs nil))
-
-(use-package eudc
-  :after message
-  :init
-  (add-hook 'gnus-load-hook #'eudc-load-eudc)
-  (setq-default
-   eudc-protocol                'bbdb
-   eudc-inline-expansion-format '("\"%s %s\" <%s>" firstname name email)
-   eudc-inline-query-format     '((email)
-                                  (name)
-                                  (firstname)
-                                  (firstname name))))
 
 (use-package ewmctrl
   :ensure)
@@ -2546,6 +2527,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
               '((message-citation-line-format
                  "On %a, %b %d %Y, at %R, %f wrote:\n")))
    message-confirm-send                  t
+   message-expand-name-databases
+   (delq 'eudc message-expand-name-databases)
    message-fill-column                   60
    message-from-style                    'angles
    message-forward-before-signature      nil
