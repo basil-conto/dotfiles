@@ -2302,6 +2302,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package list-unicode-display
   :ensure)
 
+(use-package logview
+  :ensure)
+
 (use-package lorem-ipsum
   :ensure)
 
