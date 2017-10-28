@@ -106,6 +106,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   ffap-file-finder
   ghc-doc-hackage-format
   gnus-inhibit-startup-message
+  gnus-newsgroup-name
   ivy-format-function
   ivy-height
   js2-mode-map
@@ -133,6 +134,8 @@ why-are-you-changing-gc-cons-threshold/'.")
   (esh-mode      eshell-truncate-buffer)
   (eww           eww-copy-page-url
                  eww-html-p)
+  (gnus-msg      gnus-setup-message)
+  (gnus-util     gnus-alive-p)
   (hi-lock       hi-lock-set-pattern)
   (ibuf-ext      ibuffer-switch-to-saved-filter-groups)
   (ibuffer       ibuffer-current-buffer)
@@ -262,6 +265,27 @@ URI is returned by the `interactive-form' of `eww'."
                                      (lambda (&rest _)
                                        (y-or-n-p "Really kill daemon? "))))))
     (apply kill args)))
+
+;; gnus-msg
+(define-advice gnus-msg-mail (:override (&rest args) blc-gnus-msg-mail)
+  "Like `gnus-msg-mail', but heed SWITCH-FUNCTION argument."
+  (if (gnus-alive-p)
+      (pcase-let ((`(,to ,subj ,heads ,cont ,switch ,yank ,send ,return) args)
+                  (buf (current-buffer))
+                  (nom gnus-newsgroup-name))
+        (save-window-excursion
+          (unwind-protect
+              (progn
+                (setq gnus-newsgroup-name "")
+                (gnus-setup-message 'message
+                  (message-mail to subj heads cont nil yank send return)))
+            (with-current-buffer buf
+              (setq gnus-newsgroup-name nom)))
+          (setq buf (current-buffer)))
+        (funcall (or switch #'switch-to-buffer) buf)
+        t)
+    (message "Gnus not running; using plain Message mode")
+    (apply #'message-mail args)))
 
 ;; hi-lock
 (define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
