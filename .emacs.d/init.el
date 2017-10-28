@@ -907,6 +907,9 @@ With prefix argument SELECT, call `tile-select' instead."
   (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
   (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
 
+  (setq-default gnus-logo-colors (mapcar #'blc-zenburn-assoc
+                                         '(zenburn-blue-4 zenburn-blue)))
+
   (blc-hook (:hooks fci-mode-hook :fns (blc-zenburn-brighten-fci))
             (:hooks ivy-mode-hook :fns (blc-zenburn-darken-ivy))
             (:hooks org-load-hook :fns (blc-zenburn-fontify-org-todo
