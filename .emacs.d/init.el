@@ -1869,6 +1869,7 @@ With prefix argument SELECT, call `tile-select' instead."
           display-time-world-mode
           erc-mode
           eshell-mode
+          newsticker-treeview-item-mode
           term-mode))
 
   (let* ((mode    'hi-lock-mode)
@@ -1887,6 +1888,7 @@ With prefix argument SELECT, call `tile-select' instead."
                                        ibuffer-mode-hook
                                        ivy-occur-mode-hook
                                        ledger-report-mode-hook
+                                       newsticker-treeview-list-mode
                                        org-agenda-mode-hook
                                        tabulated-list-mode-hook))))
 
@@ -2634,6 +2636,33 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
 (use-package neato-graph-bar
   :ensure)
+
+(use-package newsticker
+  :init
+  (setq-default
+   newsticker-date-format          "(%F %a %R %:::z)"
+   newsticker-treeview-date-format "%F %R %:::z "
+   newsticker-treeview-own-frame   t
+   newsticker-url-list
+   '(("HN"
+      "https://hnrss.org/frontpage")
+     ("LWN"
+      "https://lwn.net/headlines/rss")
+     ("NYT"
+      "https://nytimes.com/services/xml/rss/userland/HomePage.xml")
+     ("NYT Tech"
+      "https://nytimes.com/services/xml/rss/userland/Technology.xml")
+     ("QotD"
+      "https://feeds.feedburner.com/quotationspage/qotd")
+     ("Spiegel"
+      "http://spiegel.de/schlagzeilen/tops/index.rss")
+     ("Spiegel Net"
+      "http://spiegel.de/netzwelt/index.rss")
+     ("Spiegel Sci"
+      "http://spiegel.de/wissenschaft/index.rss")
+     ("Wired"
+      "https://wired.com/feed/rss"))
+   newsticker-url-list-defaults    ()))
 
 (use-package nodejs-repl
   :ensure)
