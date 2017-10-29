@@ -632,6 +632,23 @@ order of descending priority, start `gnus'."
         (let ((gnus-inhibit-startup-message t))
           (gnus))))))
 
+(defun blc-gnus-delete-frame ()
+  "Delete all frames with parameter `blc-gnus' non-nil."
+  (interactive)
+  (mapc #'delete-frame
+        (filtered-frame-list (lambda (frame)
+                               (frame-parameter frame 'blc-gnus)))))
+
+(defun blc-gnus-other-frame ()
+  "Like `blc-gnus', but use another frame.
+Suspending or exiting Gnus deletes that frame."
+  (interactive)
+  (select-frame (make-frame '((name     . "Gnus")
+                              (blc-gnus . t))))
+  (blc-gnus)
+  (blc-hook (:fns blc-gnus-delete-frame :hooks (gnus-suspend-gnus-hook
+                                                gnus-after-exiting-gnus-hook))))
+
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
   (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
@@ -1006,7 +1023,8 @@ With prefix argument SELECT, call `tile-select' instead."
   (ctl-x-4-map
    ("M"                       . #'blc-gnus-other-window))
   (ctl-x-5-map
-   ("3"                       . #'blc-make-graphic-display))
+   ("3"                       . #'blc-make-graphic-display)
+   ("M"                       . #'blc-gnus-other-frame))
   (esc-map
    ("R"                       . #'redraw-display))
   (goto-map
