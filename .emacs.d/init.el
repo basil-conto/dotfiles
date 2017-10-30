@@ -1140,11 +1140,12 @@ With prefix argument SELECT, call `tile-select' instead."
     (:hooks gnus-started-hook :fns blc-bbdb-set-gnus-summary-line-format)
     (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus))
 
-  (setq-default bbdb-default-country    nil
-                bbdb-name-format        'last-first
-                bbdb-phone-style        nil
-                bbdb-pop-up-window-size t
-                bbdb-read-name-format   'first-last)
+  (setq-default bbdb-complete-mail-allow-cycling t
+                bbdb-default-country             nil
+                bbdb-name-format                 'last-first
+                bbdb-phone-style                 nil
+                bbdb-pop-up-window-size          t
+                bbdb-read-name-format            'first-last)
 
   :config
   (map-do #'add-to-list
