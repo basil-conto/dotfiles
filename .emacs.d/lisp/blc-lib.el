@@ -707,6 +707,10 @@ Strings FROM override the default `f' format spec."
   "Locally enable lexical binding."
   (setq lexical-binding t))
 
+(defun blc-turn-on-double-space-sentence-ends ()
+  "Locally enable `sentence-end-double-space'."
+  (setq-local sentence-end-double-space t))
+
 (defun blc-turn-off-prettify-symbols (&rest _)
   "Disable `prettify-symbols-mode'."
   (interactive)

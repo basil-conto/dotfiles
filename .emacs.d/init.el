@@ -2559,7 +2559,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          message-mode-map
          ("C-c C-f f" . blc-message-set-msmtp-from))
   :init
-  (blc-hook (:hooks message-mode-hook  :fns blc-message-header-fontify)
+  (blc-hook (:hooks message-mode-hook
+                    :fns (blc-message-header-fontify
+                          blc-turn-on-double-space-sentence-ends))
             (:hooks message-setup-hook :fns footnote-mode)
             (:hooks message-subscribed-address-functions
                     :fns gnus-find-subscribed-addresses))
