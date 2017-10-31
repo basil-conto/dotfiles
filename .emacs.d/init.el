@@ -149,6 +149,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   (org           org-goto
                  org-set-property
                  org-time-stamp-format)
+  (org-capture   org-capture-goto-last-stored)
   (org-pcomplete org-thing-at-point)
   (term          term-char-mode
                  term-line-mode)
@@ -359,6 +360,13 @@ This is defined as advice instead of being added to
         (put-text-property (line-end-position 0)
                            (line-beginning-position)
                            'display "\n\n")))))
+
+;; org-capture
+(define-advice org-capture-refile (:after (&rest _) blc-org-save)
+  "Save target buffer of `org-capture-refile'."
+  (save-window-excursion
+    (org-capture-goto-last-stored)
+    (save-buffer)))
 
 ;; org-pcomplete
 (define-advice pcomplete/org-mode/tex (:override () blc-complete-entity)
