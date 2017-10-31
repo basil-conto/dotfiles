@@ -1692,6 +1692,14 @@ With prefix argument SELECT, call `tile-select' instead."
   :init
   (setq-default font-lock-maximum-decoration t))
 
+(use-package footnote
+  :init
+  (add-hook 'message-setup-hook #'footnote-mode)
+  (setq-default footnote-body-tag-spacing 1
+                footnote-mode-line-string ""
+                footnote-section-tag      ""
+                footnote-spaced-footnotes nil))
+
 (use-package frame
   :init
   (blc-with-every-frame #'blc-turn-off-cursor-blink)
@@ -2562,7 +2570,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   (blc-hook (:hooks message-mode-hook
                     :fns (blc-message-header-fontify
                           blc-turn-on-double-space-sentence-ends))
-            (:hooks message-setup-hook :fns footnote-mode)
             (:hooks message-subscribed-address-functions
                     :fns gnus-find-subscribed-addresses))
 
