@@ -3132,6 +3132,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                 shr-hr-line ?─
                 shr-width   blc-chars-per-line))
 
+(use-package sicp
+  :ensure)
+
 (use-package simple
   :commands turn-on-auto-fill
   :bind (([remap delete-horizontal-space] .   cycle-spacing)
