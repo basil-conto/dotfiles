@@ -19,6 +19,7 @@
 
 (autoload 'comint-output-filter "comint")
 (autoload 'dom-node             "dom")
+(autoload 'notifications-notify "notifications")
 (autoload 'shell-mode           "shell")
 (autoload 'shr-dom-to-xml       "shr")
 (autoload 'xdg-user-dir         "xdg")
@@ -791,6 +792,30 @@ Strings FROM override the default `f' format spec."
     (while blc-dropbox-timers
       (cancel-timer (pop blc-dropbox-timers)))
     (blc-dropbox-stop)))
+
+(defvar blc-tomato-timer ()
+  "Active timer for `blc-tomato-mode'.")
+
+(defvar blc-tomato-interval (blc-mins-to-secs 20)
+  "Number of seconds between `blc-tomato' runs.")
+
+(defun blc-tomato (start)
+  "Send a notification about elapsed time since START."
+  (notifications-notify
+   :title "🍅"
+   :body  (format-seconds "%H %z%M" (float-time (time-subtract nil start)))))
+
+(define-minor-mode blc-tomato-mode
+  "Run `blc-tomato' every `blc-tomato-interval'."
+  :global t
+  :group  'blc
+  (setq blc-tomato-timer
+        (if blc-tomato-mode
+            (run-at-time blc-tomato-interval
+                         blc-tomato-interval
+                         #'blc-tomato
+                         (current-time))
+          (ignore (cancel-timer blc-tomato-timer)))))
 
 ;; (defvar blc-sunny-default-height 140
 ;;   "")
