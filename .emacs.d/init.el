@@ -97,7 +97,6 @@ why-are-you-changing-gc-cons-threshold/'.")
   LaTeX-clean-intermediate-suffixes
   Man--sections
   TeX-command-list
-  bbdb-mua-summary-mark
   bbdb-mua-summary-unify-format-letter
   c-mode-base-map
   dired-guess-shell-alist-user
@@ -156,7 +155,6 @@ why-are-you-changing-gc-cons-threshold/'.")
   (tile          tile-get-name))
 
 (blc-autoloads
-  (bbdb-mua  bbdb-mua-summary-unify)
   (blc-pass  blc-pass-backend-parse)
   (gnus      gnus-find-subscribed-addresses)
   (gnus-util gnus-extract-address-components)
@@ -184,32 +182,19 @@ why-are-you-changing-gc-cons-threshold/'.")
                          (_     "¿?"))))
   alist)
 
-;; bbdb-com
-(defun blc--bbdb-unify (&rest addresses)
-  "Feed ADDRESSES to `bbdb-mua-summary-unify'.
-Return a list of addresses formatted as \"NAME\" <ADDRESS>."
-  (let ((mark (blc-rx `(: bos (in ?\s ,@(blc-as-list bbdb-mua-summary-mark))))))
-    (mapcar (lambda (addr)
-              (format "\"%s\" <%s>"
-                      (blc-sed mark "" (bbdb-mua-summary-unify addr))
-                      (car (mail-header-parse-address addr))))
-            addresses)))
-
+;;bbdb-com
 (defun blc--completion-base-string ()
   "Return string bound by `completion-base-position'."
-  (apply #'buffer-substring-no-properties
-         (mapcar (lambda (fn)
-                   (or (funcall fn completion-base-position) (point)))
-                 `(,#'car ,#'cadr))))
+  (buffer-substring-no-properties (car completion-base-position)
+                                  (or (cadr completion-base-position)
+                                      (point))))
 
-(define-advice bbdb-complete-mail
-    (:around (complete &rest args) blc-completing-read)
-  "Replace *Completions* buffer with `completing-read'.
-Feed candidates to `bbdb-mua-summary-unify' before completion."
+(define-advice bbdb-complete-mail (:around (complete &rest args) blc-minibuffer)
+  "Replace *Completions* buffer with `completing-read'."
   (let* (cands
          (alice #'display-completion-list)
-         (eve   (lambda (completions)
-                  (setq cands (apply #'blc--bbdb-unify completions))))
+         (eve   (lambda (addrs)
+                  (setq cands addrs)))
          (temp-buffer-show-function
           (lambda (buf)
             (kill-buffer buf)
