@@ -1054,9 +1054,9 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (use-package apt-sources-list
   :ensure
-  :mode (("\\.sources\\'"                   . apt-source-list-mode)
-         ("sources\\.list\\'"               . apt-source-list-mode)
-         ("sources\\.list\\.d/.+\\.list\\'" . apt-source-list-mode))
+  :mode (("\\.sources\\'"                   . apt-sources-list-mode)
+         ("sources\\.list\\'"               . apt-sources-list-mode)
+         ("sources\\.list\\.d/.+\\.list\\'" . apt-sources-list-mode))
   :init
   (add-hook 'apt-sources-list-mode-hook #'blc-turn-off-electric-indent-local))
 
