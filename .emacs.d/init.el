@@ -1653,6 +1653,7 @@ With prefix argument SELECT, call `tile-select' instead."
                                             prog-mode-hook
                                             text-mode-hook))
             (:fns turn-off-fci-mode :hooks (lisp-interaction-mode-hook
+                                            message-mode-hook
                                             org-mode-hook
                                             visual-line-mode-hook))))
 
@@ -2576,10 +2577,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                   user-mail-address          (car addresses)))
 
   (setq-default
-   message-cite-style
-   (map-merge 'list message-cite-style-thunderbird
-              '((message-citation-line-format
-                 "On %a, %b %d %Y, at %R, %f wrote:\n")))
    message-confirm-send                  t
    message-expand-name-databases
    (delq 'eudc message-expand-name-databases)
@@ -2587,10 +2584,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    message-from-style                    'angles
    message-forward-before-signature      nil
    message-make-forward-subject-function #'message-forward-subject-fwd
+   message-mail-alias-type               nil
    message-send-mail-function            #'message-send-mail-with-sendmail
    message-sendmail-envelope-from        'header
-   message-signature                     (car (split-string user-full-name))
-   message-wide-reply-confirm-recipients t))
+   message-signature                     (car (split-string user-full-name))))
 
 (use-package minimap
   :ensure
