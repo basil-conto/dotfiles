@@ -627,9 +627,10 @@ order of descending priority, start `gnus'."
 (defun blc-gnus-delete-frame ()
   "Delete all frames with parameter `blc-gnus' non-nil."
   (interactive)
-  (mapc #'delete-frame
-        (filtered-frame-list (lambda (frame)
-                               (frame-parameter frame 'blc-gnus)))))
+  (when (> (length (frame-list)) 1)
+    (mapc #'delete-frame
+          (filtered-frame-list (lambda (frame)
+                                 (frame-parameter frame 'blc-gnus))))))
 
 (defun blc-gnus-other-frame ()
   "Like `blc-gnus', but use another frame.
