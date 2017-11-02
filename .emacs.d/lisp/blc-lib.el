@@ -531,7 +531,7 @@ See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
   "Like `move-to-column', but extend short lines if needed."
   (move-to-column col t))
 
-(define-symbol-prop
+(function-put
  #'blc-move-to-column 'interactive-form (interactive-form #'move-to-column))
 
 (defun blc-indent-relative (&optional below)

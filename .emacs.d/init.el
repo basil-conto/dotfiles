@@ -464,8 +464,7 @@ See `browse-url' for an explanation of the arguments."
   (pcase-let ((`(,browser . ,filter) (blc-print-url--selector url)))
     (apply browser (funcall filter url) args)))
 
-(define-symbol-prop
- #'blc-print-url 'interactive-form (interactive-form #'browse-url))
+(function-put #'blc-print-url 'interactive-form (interactive-form #'browse-url))
 
 (defvar blc-hackage-url-format
   "https://hackage.haskell.org/package/%s/docs/%s.html"
@@ -522,7 +521,7 @@ description of the arguments to this function."
                           (completing-read prompt blc-browser-alist nil t))))
       (apply browser url args))))
 
-(define-symbol-prop
+(function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
 (defun blc-system-tz ()
@@ -962,7 +961,7 @@ With prefix argument SELECT, call `tile-select' instead."
 (advice-add #'yes-or-no-p :override #'y-or-n-p)
 
 ;; Like a free bird
-(define-symbol-prop #'narrow-to-region 'disabled nil)
+(function-put #'narrow-to-region 'disabled nil)
 
 (setq-default
  ;; buffer
@@ -1572,8 +1571,8 @@ With prefix argument SELECT, call `tile-select' instead."
   :config
   (delight #'eww-mode "🕸" :major)
 
-  (define-symbol-prop
-    #'blc-eww-suggest-uri--advice 'interactive-form (interactive-form #'eww))
+  (function-put
+   #'blc-eww-suggest-uri--advice 'interactive-form (interactive-form #'eww))
   (advice-add #'eww-open-in-new-buffer :around #'blc-eww-suggest-uri--advice))
 
 (use-package exec-path-from-shell
