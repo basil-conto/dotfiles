@@ -3300,6 +3300,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
      display-time-world-time-format      fmt))
   (display-time))
 
+(use-package timer-list
+  :init
+  (function-put #'list-timers 'disabled nil))
+
 (use-package tls
   :init
   (setq-default tls-checktrust 'ask))
