@@ -2590,7 +2590,10 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    message-signature                     (car (split-string user-full-name))))
 
 (use-package mines
-  :ensure)
+  :ensure
+  :init
+  (setq-default mines-empty-cell-char   ?\s
+                mines-flagged-cell-char ?⚑))
 
 (use-package minimap
   :ensure
