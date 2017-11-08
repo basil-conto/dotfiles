@@ -3068,12 +3068,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package regex-tool
   :ensure)
 
-(use-package remember
-  :bind (("<f7>" . remember-notes)
-         ("<f8>" . remember-notes-save-and-bury-buffer))
-  :config
-  (setq-default remember-notes-initial-major-mode #'org-mode))
-
 (use-package restclient
   :ensure t
   :init
