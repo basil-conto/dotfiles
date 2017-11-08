@@ -2589,6 +2589,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    message-sendmail-envelope-from        'header
    message-signature                     (car (split-string user-full-name))))
 
+(use-package mines
+  :ensure)
+
 (use-package minimap
   :ensure
   :config
