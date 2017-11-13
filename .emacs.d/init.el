@@ -3125,7 +3125,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ([remap             upcase-word] .     upcase-dwim)
          :map
          goto-map
-         ("e" . first-error))
+         ("e" . first-error)
+         :map
+         mode-specific-map
+         ("M-n" .     next-logical-line)
+         ("M-p" . previous-logical-line))
 
   :init
   (setq-default async-shell-command-display-buffer nil
