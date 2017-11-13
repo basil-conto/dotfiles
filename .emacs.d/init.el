@@ -1257,10 +1257,10 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package chess
   :ensure
   :config
-  (let ((dir (package-desc-dir (cadr (assq 'chess package-alist)))))
-    (setq-default
-     chess-images-default-size blc-chars-per-line
-     chess-images-directory    (blc-dir dir "pieces" "xboard"))))
+  (setq-default
+   chess-images-default-size blc-chars-per-line
+   chess-images-directory
+   (blc-dir (blc-package-dir 'chess) "pieces" "xboard")))
 
 (use-package cmake-mode
   :ensure)
