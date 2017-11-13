@@ -817,6 +817,38 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (org-set-property
    "captured" (format-time-string (org-time-stamp-format t t))))
 
+(defun blc-package-dir (pkg)
+  "Return installation directory of external PKG or nil."
+  (and-let* ((dsc (cadr (assoc-string pkg package-alist)))
+             (dir (package-desc-dir dsc))
+             ((stringp dir)))
+    dir))
+
+(defun blc--package-read-dir ()
+  "Read a package name and return its directory.
+Return `package-user-dir' if no directory is found."
+  (or (blc-package-dir
+       (completing-read "Package name: "
+                        (sort (map-keys package-alist) #'string-lessp)
+                        nil t nil 'blc-package-history))
+      package-user-dir))
+
+(defun blc-package-find (pkg)
+  "Visit installation directory of PKG name with `dired'.
+Visit `package-user-dir' if such a directory is not found."
+  (interactive `(,(blc--package-read-dir)))
+  (dired pkg))
+
+(defun blc-package-find-other-window (pkg)
+  "Like `blc-package-find', but use another window."
+  (interactive `(,(blc--package-read-dir)))
+  (dired-other-window pkg))
+
+(defun blc-package-find-other-frame (pkg)
+  "Like `blc-package-find', but use another frame."
+  (interactive `(,(blc--package-read-dir)))
+  (dired-other-frame pkg))
+
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
   (interactive)
