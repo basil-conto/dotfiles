@@ -880,7 +880,7 @@ With prefix argument SELECT, call `tile-select' instead."
 
 (defun blc-zenburn-assoc (colour)
   "Return the `zenburn' value associated with COLOUR."
-  (blc-elt zenburn-default-colors-alist colour nil #'string-equal))
+  (blc-elt zenburn-default-colors-alist colour #'string-equal))
 
 (defun blc-zenburn-brighten-fci ()
   "Make FCI rule lighter than background under `zenburn'."
@@ -1937,7 +1937,7 @@ With prefix argument SELECT, call `tile-select' instead."
     (setq-default calendar-holidays
                   (blc-sed-tree (regexp-opt (map-keys lut))
                                 (lambda (day)
-                                  (blc-elt lut day nil #'blc-string-equal))
+                                  (cdr (assoc-string day lut t)))
                                 calendar-holidays))))
 
 (use-package htmlize

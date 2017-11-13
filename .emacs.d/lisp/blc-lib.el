@@ -49,10 +49,6 @@
                                  (funcall type item)
                                  (seq-drop seq index)))))
 
-(defun blc-string-equal (s1 s2)
-  "Like `string-equal', but case-insensitive."
-  (eq t (compare-strings s1 nil nil s2 nil nil t)))
-
 (defun blc-keep (fn seq &optional copy)
   "Map FN over SEQ and return list of non-nil results.
 SEQ is modified destructively unless COPY is non-nil."
@@ -62,7 +58,7 @@ SEQ is modified destructively unless COPY is non-nil."
                `(,result)))
            seq))
 
-(defun blc-elt (map key &optional default testfn)
+(defun blc-elt (map key &optional testfn default)
   "Like `map-elt', but TESTFN defaults to `equal'."
   (declare (pure t))
   (map-elt map key default (or testfn #'equal)))
