@@ -901,6 +901,12 @@ With prefix argument SELECT, call `tile-select' instead."
             (google-contacts-givenname  . font-lock-keyword-face)
             (google-contacts-header     . font-lock-string-face ))))
 
+(defun blc-hackernews-fontify ()
+  "Customise `hackernews-mode' faces."
+  (map-do #'face-remap-add-relative
+          '((hackernews-comment-count :inherit link-visited :underline nil)
+            (hackernews-link          :inherit link         :underline nil))))
+
 (defun blc-message-header-fontify ()
   "Customise `message-mode' header faces."
   (face-remap-add-relative 'message-header-name 'font-lock-builtin-face))
@@ -1848,7 +1854,9 @@ With prefix argument SELECT, call `tile-select' instead."
    hacker-typer-show-hackerman t))
 
 (use-package hackernews
-  :ensure)
+  :ensure
+  :init
+  (add-hook 'hackernews-mode-hook #'blc-hackernews-fontify))
 
 (use-package haskell-mode
   :ensure
