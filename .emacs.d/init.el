@@ -1401,7 +1401,9 @@ With prefix argument SELECT, call `tile-select' instead."
   :disabled)
 
 (use-package debbugs
-  :ensure)
+  :ensure
+  :init
+  (setq-default debbugs-gnu-trunk-directory source-directory))
 
 (use-package debian-changelog-mode
   :disabled)
