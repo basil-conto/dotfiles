@@ -10,7 +10,7 @@ import Text.Printf                  ( printf )
 -- Third-party
 import Data.Default                 ( def )
 import Graphics.X11.Types           ( mod4Mask, noModMask, shiftMask, xK_a, xK_s
-                                    -- , xK_Print
+                                    , xK_Print
                                     )
 import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioLowerVolume
                                     , xF86XK_AudioMicMute
@@ -88,6 +88,11 @@ main = xmonad $ additionalKeys def
      , terminal           = "x-terminal-emulator"
      } $
 
+     mapPairs ((noModMask,), safeSpawn')
+              [ (xK_Print, ["scrot"])
+              ]
+
+     ++
      mapPairs ((noModMask,), pamixer)
               [ (xF86XK_AudioLowerVolume, [ "--decrease", volStep ])
               , (xF86XK_AudioRaiseVolume, [ "--increase", volStep ])
