@@ -537,13 +537,15 @@ description of the arguments to this function."
     (setq comment-start "//"
           comment-end   "")))
 
-(defun blc-counsel-find-file ()
-  "Like `counsel-find-file', but return buffer, not filename.
+(defun blc-counsel-find-file (&optional file)
+  "Like `counsel-find-file', but return buffer, not name of FILE.
 This likens `counsel-find-file' to `find-file' more and makes it
 suitable for assigning to `ffap-file-finder'."
   (interactive)
-  (set-buffer (or (find-buffer-visiting (counsel-find-file))
-                  (other-buffer nil t))))
+  (if file
+      (find-file file)
+    (set-buffer (or (find-buffer-visiting (counsel-find-file))
+                    (other-buffer nil t)))))
 
 (defun blc-csv-align-all-fields ()
   "Align all fields in the current CSV buffer."
