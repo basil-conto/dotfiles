@@ -1348,8 +1348,7 @@ With prefix argument SELECT, call `tile-select' instead."
   (setq-default
    counsel-find-file-at-point           t
    counsel-git-grep-skip-counting-lines t
-   ;; Search with smart case and shell expansion
-   counsel-grep-base-command            "ag --nocolor \"%s\" %s"
+   counsel-grep-base-command            "ag --nocolor %s %s" ; Smart case
    counsel-org-goto-display-tags        t
    counsel-org-goto-display-todo        t
    counsel-org-goto-face-style          'verbatim)
