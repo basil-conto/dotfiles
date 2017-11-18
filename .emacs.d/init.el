@@ -2358,6 +2358,11 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                                      "register %(account)")
                                    " ")))
 
+(use-package lisp
+  :bind (:map
+         esc-map
+         ("z" . raise-sexp)))
+
 (use-package lisp-mode
   :init
   (add-hook 'lisp-mode-hook #'blc-turn-off-electric-indent-local))
