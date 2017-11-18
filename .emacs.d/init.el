@@ -914,9 +914,9 @@ With prefix argument SELECT, call `tile-select' instead."
 (defun blc-sx-question-list-fontify ()
   "Customise `sx-question-list-mode' title faces."
   (map-do (lambda (child parent)
-            (set-face-attribute child nil :inherit parent :underline nil))
+            (face-remap-add-relative child `(:inherit ,parent :underline nil)))
           '((sx-question-list-read-question   . link-visited)
-            (sx-question-list-unread-question . link        ))))
+            (sx-question-list-unread-question . link))))
 
 (defun blc-zenburn-assoc (colour)
   "Return the `zenburn' value associated with COLOUR."
@@ -949,8 +949,8 @@ With prefix argument SELECT, call `tile-select' instead."
   "Use less obtrusive org mode-line clock faces under `zenburn'."
   (set-face-attribute 'org-mode-line-clock-overrun nil
                       :inherit    'org-mode-line-clock
-                      :foreground nil
-                      :background nil))
+                      :foreground 'unspecified
+                      :background 'unspecified))
 
 (defun blc-enable-zenburn-hook ()
   "Setup `zenburn' to taste."
