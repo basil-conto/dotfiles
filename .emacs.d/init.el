@@ -2361,7 +2361,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package lisp
   :bind (:map
          esc-map
-         ("z" . raise-sexp)))
+         ("C-z" . raise-sexp)))
 
 (use-package lisp-mode
   :init
