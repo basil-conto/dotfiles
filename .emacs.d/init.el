@@ -2358,7 +2358,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                                      "register %(account)")
                                    " ")))
 
-(use-package lisp
+(use-package "lisp"
   :bind (:map
          esc-map
          ("C-z" . raise-sexp)))
