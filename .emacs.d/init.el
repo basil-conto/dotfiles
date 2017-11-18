@@ -75,8 +75,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   (when-let* ((missing (seq-remove #'package-installed-p
                                    '(bind-key
                                      delight
-                                     use-package
-                                     zenburn-theme)))
+                                     use-package)))
               ((y-or-n-p (format "Install missing packages %s?" missing))))
     (package-refresh-contents)
     (mapc #'package-install missing)))
@@ -119,8 +118,7 @@ why-are-you-changing-gc-cons-threshold/'.")
   org-html-postamble-format
   recentf-list
   term-raw-map
-  tile-cycler
-  zenburn-default-colors-alist)
+  tile-cycler)
 
 (eval-when-compile
   (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
@@ -224,11 +222,6 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            ;; preceded by "," or "(" and with unclosed brace
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
-
-;; custom
-(define-advice enable-theme (:after (theme) blc-run-enable-hook)
-  "Run `blc-enable-THEME-hook'."
-  (blc-safe-funcall (blc-symcat "blc-enable-" theme "-hook")))
 
 ;; em-cmpl
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
@@ -882,84 +875,10 @@ With prefix argument SELECT, call `tile-select' instead."
   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
 
 
-;;; Theme utilities
-
-(defun blc-google-contacts-fontify ()
-  "Customise `google-contacts-mode' faces."
-  (map-do #'face-remap-add-relative
-          '((google-contacts-familyname . font-lock-keyword-face)
-            (google-contacts-givenname  . font-lock-keyword-face)
-            (google-contacts-header     . font-lock-string-face ))))
-
-(defun blc-hackernews-fontify ()
-  "Customise `hackernews-mode' faces."
-  (map-do #'face-remap-add-relative
-          '((hackernews-comment-count :inherit link-visited :underline nil)
-            (hackernews-link          :inherit link         :underline nil))))
-
-(defun blc-message-header-fontify ()
-  "Customise `message-mode' header faces."
-  (face-remap-add-relative 'message-header-name 'font-lock-builtin-face))
-
-(defun blc-sx-question-list-fontify ()
-  "Customise `sx-question-list-mode' title faces."
-  (map-do (lambda (child parent)
-            (face-remap-add-relative child `(:inherit ,parent :underline nil)))
-          '((sx-question-list-read-question   . link-visited)
-            (sx-question-list-unread-question . link))))
-
-(defun blc-zenburn-assoc (colour)
-  "Return the `zenburn' value associated with COLOUR."
-  (blc-elt zenburn-default-colors-alist colour #'string-equal))
-
-(defun blc-zenburn-brighten-fci ()
-  "Make FCI rule lighter than background under `zenburn'."
-  (setq-default fci-rule-color (blc-zenburn-assoc 'zenburn-bg+1)))
-
-(defun blc-zenburn-darken-ivy ()
-  "Darken background of `ivy' matches under `zenburn'."
-  (seq-mapn #'set-face-background
-            (cdr (bound-and-true-p ivy-minibuffer-faces))
-            (mapcar #'blc-zenburn-assoc
-                    '(zenburn-red-4 zenburn-blue-4 zenburn-green-1))))
-
-(defun blc-zenburn-fontify-org-todo ()
-  "Customise `org-todo-keyword-faces' under `zenburn'."
-  (setq-default org-todo-keyword-faces
-                (map-apply (lambda (kw colour)
-                             `(,kw . ,(blc-zenburn-assoc colour)))
-                           '(("NEXT" . zenburn-magenta)
-                             ("EXEC" . zenburn-orange )
-                             ("MEET" . zenburn-yellow )
-                             ("WAIT" . zenburn-cyan   )
-                             ("BALK" . zenburn-fg     )
-                             ("VOID" . zenburn-blue-2 )))))
-
-(defun blc-zenburn-hide-org-clock ()
-  "Use less obtrusive org mode-line clock faces under `zenburn'."
-  (set-face-attribute 'org-mode-line-clock-overrun nil
-                      :inherit    'org-mode-line-clock
-                      :foreground 'unspecified
-                      :background 'unspecified))
-
-(defun blc-enable-zenburn-hook ()
-  "Setup `zenburn' to taste."
-  (set-face-background 'highlight   (blc-zenburn-assoc 'zenburn-bg-1))
-  (set-face-foreground 'line-number (blc-zenburn-assoc 'zenburn-bg+3))
-
-  (setq-default gnus-logo-colors (mapcar #'blc-zenburn-assoc
-                                         '(zenburn-blue-4 zenburn-blue)))
-
-  (blc-hook (:hooks fci-mode-hook :fns (blc-zenburn-brighten-fci))
-            (:hooks ivy-mode-hook :fns (blc-zenburn-darken-ivy))
-            (:hooks org-load-hook :fns (blc-zenburn-fontify-org-todo
-                                        blc-zenburn-hide-org-clock))))
-
-
 ;;;; MISCELLANEA
 
 ;; Custom theme
-(load-theme 'zenburn t)
+(load-theme 'blc-dark t)
 
 ;; Maximise initial frame
 (map-put initial-frame-alist 'fullscreen 'maximized)
@@ -1810,9 +1729,7 @@ With prefix argument SELECT, call `tile-select' instead."
   (setq-default gnutls-min-prime-bits nil))
 
 (use-package google-contacts
-  :ensure
-  :init
-  (add-hook 'google-contacts-mode-hook #'blc-google-contacts-fontify))
+  :ensure)
 
 (use-package google-maps
   :ensure)
@@ -1844,9 +1761,7 @@ With prefix argument SELECT, call `tile-select' instead."
    hacker-typer-show-hackerman t))
 
 (use-package hackernews
-  :ensure
-  :init
-  (add-hook 'hackernews-mode-hook #'blc-hackernews-fontify))
+  :ensure)
 
 (use-package haskell-mode
   :ensure
@@ -2182,13 +2097,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
             (map-put ivy-sort-functions-alist caller sort))
           `((,#'blc-sort-reverse . ,#'Info-complete-menu-item)
             (,#'string-lessp     . ,#'counsel-M-x)))
-
-  ;; Faces
-  (map-do (lambda (child parent)
-            (set-face-attribute child nil :inherit parent))
-          '((ivy-action          . font-lock-keyword-face)
-            (ivy-modified-buffer . font-lock-variable-name-face)
-            (ivy-virtual         . shadow)))
 
   ;; Location suggestions
   (ivy-set-sources 'counsel-locate
@@ -2587,8 +2495,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("C-c C-f f" . blc-message-set-msmtp-from))
   :init
   (blc-hook (:hooks message-mode-hook
-                    :fns (blc-message-header-fontify
-                          blc-turn-on-double-space-sentence-ends))
+                    :fns blc-turn-on-double-space-sentence-ends)
             (:hooks message-subscribed-address-functions
                     :fns gnus-find-subscribed-addresses))
 
@@ -2627,9 +2534,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    minimap-highlight-line  nil
    minimap-recenter-type   'relative
    minimap-width-fraction  0.05
-   minimap-window-location 'right)
-  (set-face-background 'minimap-active-region-background "#696969")
-  (set-face-attribute  'minimap-font-face nil :height 10))
+   minimap-window-location 'right))
 
 (use-package mm-decode
   :functions mm-file-name-replace-whitespace
@@ -3255,7 +3160,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("s n" . sx-inbox-notifications)
          ("s s" . sx-search             ))
   :init
-  (add-hook 'sx-question-list-mode-hook #'blc-sx-question-list-fontify)
   (setq-default sx-question-mode-comments-format "%s:\n   %s\n"))
 
 (use-package sx-question-list

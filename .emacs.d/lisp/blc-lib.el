@@ -813,34 +813,6 @@ Strings FROM override the default `f' format spec."
                          (current-time))
           (ignore (cancel-timer blc-tomato-timer)))))
 
-;; (defvar blc-sunny-default-height 140
-;;   "")
-
-;; (defalias 'blc-toggle-sunny-mode
-;;   (let ((height (face-attribute 'default :height)))
-;;     (lambda (&optional force)
-;;       (interactive "P")
-;;       (message ">>> %s" blc-sunny-mode)
-;;       (if (or force (not blc-sunny-mode))
-;;           (progn (setq height (face-attribute 'default :height))
-;;                  (blc-set-font-height blc-sunny-default-height)
-;;                  (mapc #'disable-theme custom-enabled-themes))
-;;         (blc-set-font-height height)
-;;         (thread-last (lambda (sym)
-;;                        (and (get sym 'theme-settings)
-;;                             (custom-theme-name-valid-p sym)))
-;;           (all-completions "" obarray)
-;;           (mapcar #'intern)
-;;           (mapc #'enable-theme)))))
-;;   "")
-
-;; (define-minor-mode blc-sunny-mode
-;;   "Toggle."
-;;   :lighter "😎"
-;;   :global  t
-;;   :group   'blc
-;;   (blc-toggle-sunny-mode blc-sunny-mode))
-
 ;;; Constants
 
 (defconst blc-chars-per-line 80
