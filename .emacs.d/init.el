@@ -648,16 +648,6 @@ Suspending or exiting Gnus deletes that frame."
   "Highlight missing trailing EOF newlines."
   (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
 
-(defun blc-hledger-accounts (category &optional accounts acct-sep list-sep)
-  "Join ACCOUNTS with their account CATEGORY.
-Return a LIST-SEP-delimited (default \" \") string of account
-prefixed by CATEGORY and ACCT-SEP (default \":\")."
-  (let ((list-sep (or list-sep " "))
-        (acct-sep (or acct-sep ":")))
-    (thread-first (lambda (account)
-                    (string-join `(,category ,account) acct-sep))
-      (mapconcat accounts list-sep))))
-
 (defun blc-ibuffer-ffap ()
   "Like `ibuffer-find-file', but backed by `ffap-file-finder'."
   (interactive)
@@ -1647,7 +1637,6 @@ With prefix argument SELECT, call `tile-select' instead."
   (blc-hook (:fns fic-mode :hooks (conf-mode-hook
                                    ess-mode-hook
                                    haskell-cabal-mode-hook
-                                   hledger-mode-hook
                                    mustache-mode-hook
                                    prog-mode-hook
                                    text-mode-hook)))
@@ -1689,7 +1678,6 @@ With prefix argument SELECT, call `tile-select' instead."
   (blc-hook (:fns turn-on-fci-mode  :hooks (conf-mode-hook
                                             ess-mode-hook
                                             haskell-cabal-mode-hook
-                                            hledger-mode-hook
                                             mustache-mode-hook
                                             prog-mode-hook
                                             text-mode-hook))
@@ -1942,18 +1930,6 @@ With prefix argument SELECT, call `tile-select' instead."
   :bind (:map
          hs-minor-mode-map
          ("C-c C-i" . hs-toggle-hiding)))
-
-(use-package hledger-mode
-  :ensure
-  :mode "\\.journal\\'"
-  :config
-  (setq-default
-   hledger-currency-string "€"
-   hledger-jfile           "~/.hledger.journal"
-   hledger-ratios-essential-expense-accounts
-   (blc-hledger-accounts "expenses" '("housing" "groceries"))
-   hledger-ratios-liquid-asset-accounts
-   (blc-hledger-accounts "assets"   '("boi" "cash"))))
 
 (use-package holidays
   :commands calendar-holiday-list
