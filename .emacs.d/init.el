@@ -1229,6 +1229,7 @@ With prefix argument SELECT, call `tile-select' instead."
    calendar-islamic-all-holidays-flag   t))
 
 (use-package calfw
+  :disabled
   :ensure)
 
 (use-package cc-mode
