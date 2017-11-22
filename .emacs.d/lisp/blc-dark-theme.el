@@ -198,7 +198,6 @@
      (nobreak-hyphen             ((t :inherit    escape-glyph)))
      (region                     ((t :background ,bg-1)))
      (secondary-selection        ((t :background ,bg+2)))
-     (shadow                     ((t :foreground ,bg+3)))
      (show-paren-match           ((t :background ,bg+3 :weight bold)))
      (show-paren-mismatch        ((t :foreground ,red+1
                                      :inherit    show-paren-match)))
