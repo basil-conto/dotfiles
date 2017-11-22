@@ -29,8 +29,4 @@
 
 (provide-theme 'blc-light)
 
-;; Local Variables:
-;; no-byte-compile: t
-;; End:
-
 ;;; blc-light-theme.el ends here

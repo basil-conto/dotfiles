@@ -14,27 +14,56 @@ pkgdir := elpa/
 # Macros
 
 libouts = $(patsubst %,$(libdir)%.elc,$(filter $(1)%,$(libs)))
+thmouts = $(1)*-theme.elc
 srcouts = $(addsuffix .elc,$(filter $(1)%,$(srcs)))
 
 # Emacs Lisp
 
 EL ?= emacs
 
+.SUFFIXES:
+.SUFFIXES: .el .elc
+
 %.elc: %.el
 	$(EL) $(ELFLAGS) --batch --funcall batch-byte-compile $^
+
+%-theme.elc: $(libdir)%-theme.elc
+	install --mode=644 $< .
 
 # Rules
 
 .NOTPARALLEL:
 
 .PHONY: all
-all: libs sources
+all: libs themes sources
+
+.PHONY: clean
+clean: clean-libs clean-themes clean-sources
+
+.PHONY: distclean
+distclean: clean
+	$(RM) --recursive $(pkgdir)
 
 .PHONY: libs
 libs: $(libs)
 
+.PHONY: clean-libs
+clean-libs:
+	$(RM) $(call libouts,)
+
 .PHONY: sources
 sources: $(srcs)
+
+.PHONY: clean-sources
+clean-sources:
+	$(RM) $(call srcouts,)
+
+.PHONY: themes
+themes: $(call thmouts,)
+
+.PHONY: clean-themes
+clean-themes:
+	$(RM) $(call thmouts,$(libdir))
 
 .PHONY: blc-lib
 blc-lib: $(call libouts,blc-lib)
@@ -56,7 +85,7 @@ clean-gnus:
 	$(RM) $(call srcouts,gnus)
 
 .PHONY: init
-init: $(filter-out blc-notmuch,$(libs)) $(call srcouts,init)
+init: $(filter-out blc-notmuch,$(libs)) themes $(call srcouts,init)
 
 .PHONY: clean-init
 clean-init:
@@ -71,14 +100,6 @@ clean-magit:
 
 .PHONY: profile
 profile: ELFLAGS := -nw
-profile:
+profile: themes
 	$(EL) $(ELFLAGS) --quick --load $(addprefix $(libdir),profile-dotemacs.el) \
 		--funcall profile-dotemacs
-
-.PHONY: clean
-clean: clean-gnus clean-init clean-magit
-	$(RM) $(call libouts,)
-
-.PHONY: distclean
-distclean: clean
-	$(RM) --recursive $(pkgdir)

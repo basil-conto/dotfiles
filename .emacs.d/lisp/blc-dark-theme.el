@@ -861,8 +861,4 @@
 
 (provide-theme 'blc-dark)
 
-;; Local Variables:
-;; no-byte-compile: nil
-;; End:
-
 ;;; blc-dark-theme.el ends here
