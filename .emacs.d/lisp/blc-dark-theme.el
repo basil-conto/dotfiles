@@ -773,6 +773,11 @@
      (magit-reflog-remote      ((t :foreground ,cyn )))
      (magit-reflog-reset       ((t :foreground ,red )))
 
+     ;; magit-popup
+     (magit-popup-argument ((t :inherit font-lock-function-name-face
+                               :weight  bold)))
+     (magit-popup-key      ((t :inherit font-lock-type-face)))
+
      ;; magit-process
      (magit-process-ng ((t :foreground ,red :inherit magit-section-heading)))
      (magit-process-ok ((t :foreground ,grn :inherit magit-section-heading)))
