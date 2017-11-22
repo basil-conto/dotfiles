@@ -3380,7 +3380,8 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 (use-package whitespace
   :delight global-whitespace-mode
   :init
-  (setq-default whitespace-style '(face tab-mark trailing))
+  (setq-default whitespace-global-modes `(not ,#'shell-mode)
+                whitespace-style        '(face tab-mark trailing))
   (global-whitespace-mode))
 
 (use-package wiki-summary
