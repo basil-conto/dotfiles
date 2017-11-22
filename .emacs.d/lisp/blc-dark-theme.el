@@ -419,6 +419,7 @@
      (org-scheduled-previously    ((t :foreground ,red)))
      (org-scheduled-today         ((t :foreground ,blu+1)))
      (org-sexp-date               ((t :inherit org-date)))
+     (org-special-keyword         ((t :inherit font-lock-comment-face)))
      (org-table                   ((t :foreground ,grn+2)))
      (org-time-grid               ((t :foreground ,ylw-2)))
      (org-todo                    ((t :foreground ,red :weight bold)))
@@ -433,6 +434,16 @@
      (org-habit-overdue-future-face ((t :background ,red-4)))
      (org-habit-ready-face          ((t :background ,grn)))
      (org-habit-ready-future-face   ((t :background ,grn-1)))
+
+     ;; outline
+     (outline-1 ((t :foreground ,orn  )))
+     (outline-2 ((t :foreground ,grn+4)))
+     (outline-3 ((t :foreground ,blu-1)))
+     (outline-4 ((t :foreground ,ylw-2)))
+     (outline-5 ((t :foreground ,cyn  )))
+     (outline-6 ((t :foreground ,grn+2)))
+     (outline-7 ((t :foreground ,red-4)))
+     (outline-8 ((t :foreground ,blu-4)))
 
      ;; re-builder
      (reb-match-0 ((t :background ,mgn :foreground ,bg)))
