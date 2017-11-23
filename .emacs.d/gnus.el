@@ -33,7 +33,6 @@
 (blc-declare-vars
   gnus-article-mode-map
   gnus-directory
-  gnus-header-face-alist
   gnus-level-default-subscribed
   gnus-sorted-header-list
   gnus-startup-file
@@ -160,11 +159,6 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  ;; gnus-notifications
  gnus-notifications-minimum-level       3
 
- ;; gnus-spec
- gnus-face-2                            'font-lock-keyword-face
- gnus-face-3                            'font-lock-string-face
- gnus-face-4                            'font-lock-comment-face
-
  ;; gnus-start
  gnus-activate-level                    gnus-level-default-subscribed
  gnus-check-new-newsgroups              nil
@@ -232,24 +226,16 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 (with-eval-after-load 'gnus-art
   (define-key gnus-article-mode-map "\M-D" #'blc-download)
 
-  (let ((to (rx bol (| "Delivered-To" "To") ?:)))
-    (setq-default
-     gnus-header-face-alist
-     (let ((headers (map-keys gnus-header-face-alist))
-           (faces   (map-values-apply #'cadr gnus-header-face-alist)))
-       (seq-mapn (lambda (header face)
-                   `(,header gnus-header-name ,face))
-                 `(,to                   "^Date:"            ,@headers)
-                 `(font-lock-string-face font-lock-type-face ,@faces)))
+  (setq-default
+   gnus-sorted-header-list
+   (mapcan (lambda (header)
+             `(,header ,@(when (string-equal header "^To:")
+                           (copy-sequence '("^Delivered-To:" "^Reply-To:")))))
+           gnus-sorted-header-list)
 
-     gnus-sorted-header-list
-     (mapcan (lambda (header)
-               `(,header ,@(when (string= header "^To:")
-                             (copy-sequence '("^Delivered-To:" "^Reply-To:")))))
-             gnus-sorted-header-list)
-
-     gnus-visible-headers
-     (blc-rx `(| (regexp ,to) (regexp ,gnus-visible-headers))))))
+   gnus-visible-headers
+   (blc-rx `(| (: bol (| "Delivered-To" "To") ?:)
+               (regexp ,gnus-visible-headers)))))
 
 (with-eval-after-load 'gnus-topic
   (define-key

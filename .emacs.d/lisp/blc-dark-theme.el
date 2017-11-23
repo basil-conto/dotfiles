@@ -63,6 +63,20 @@
      ;; gnus
      (gnus-logo-colors '(,blu-4 ,blu))
 
+     ;; gnus-art
+     (gnus-header-face-alist
+      '(("Date"                  gnus-header-name font-lock-type-face)
+        ("\\(?:Delivered-\\)?To" gnus-header-name font-lock-string-face)
+        ("From"                  gnus-header-name gnus-header-from)
+        ("Newsgroups:.*,"        gnus-header-name gnus-header-newsgroups)
+        ("Subject"               gnus-header-name gnus-header-subject)
+        (""                      gnus-header-name gnus-header-content)))
+
+     ;; gnus-spec
+     (gnus-face-2 'font-lock-keyword-face)
+     (gnus-face-3 'font-lock-string-face )
+     (gnus-face-4 'font-lock-comment-face)
+
      ;; org-faces
      (org-todo-keyword-faces '(("NEXT" . ,mgn  )
                                ("EXEC" . ,orn  )
