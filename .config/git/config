@@ -77,6 +77,9 @@
 [log]
   date               = iso
 
+[mailinfo]
+  scissors           = true
+
 [pager]
   diff               = diff-highlight | pager
   log                = diff-highlight | pager
