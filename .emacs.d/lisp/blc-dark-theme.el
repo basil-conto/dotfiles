@@ -10,6 +10,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (defvar gnus-mode-line-image-cache))
+
 (deftheme blc-dark
   "Zenburn-based theme for blc.")
 
@@ -51,6 +54,18 @@
        (ylw-2 "#D0BF8F")
        (box   (lambda (n) `(:box (:line-width ,n :style released-button))))
        (box-1 (funcall box -1)))
+
+  ;; Miscellanea
+
+  (defun blc-dark-gnus-pointer ()
+    "Fontify gnus-pointer image under `blc-dark'."
+    (when (eq (car-safe gnus-mode-line-image-cache) 'image)
+      (setf (image-property gnus-mode-line-image-cache :color-symbols)
+            `(("#0000ff" . ,blu-4)))))
+
+  (add-hook 'gnus-started-hook 'blc-dark-gnus-pointer)
+
+  ;; User options
 
   (apply
    #'custom-theme-set-variables
@@ -114,6 +129,8 @@
 
      ;; pdf-view
      (pdf-view-midnight-colors '(,fg . ,bg-05))))
+
+  ;; Faces
 
   (apply
    #'custom-theme-set-faces
