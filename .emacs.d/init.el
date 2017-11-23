@@ -140,9 +140,12 @@ why-are-you-changing-gc-cons-threshold/'.")
   (mail-parse    mail-header-parse-address)
   (mailcap       mailcap-extension-to-mime)
   (message       message-field-value
+                 message-goto-body-1
+                 message-goto-signature
                  message-make-from
                  message-replace-header
                  message-user-mail-address)
+  (mml           mml-parse)
   (org           org-goto
                  org-set-property
                  org-time-stamp-format)
@@ -747,6 +750,21 @@ Return the name of the buffer as a string or `nil'."
                                 nil t nil nil user-mail-address)
     (message-make-from nil)
     (message-replace-header "From")))
+
+(defun blc-message-confirm-attach ()
+  "Allow user to quit sending on missing attachment detection."
+  (or (save-excursion
+        (message-goto-body-1)
+        (not (re-search-forward "attach"
+                                (save-excursion
+                                  (message-goto-signature)
+                                  (point))
+                                t)))
+      (map-some (lambda (_part params)
+                  (assq 'disposition params))
+                (mml-parse))
+      (y-or-n-p "Mention of \"attach\" but no attachments; send anyway? ")
+      (keyboard-quit)))
 
 (defun blc-org-cycle ()
   "Call a prefixed `org-cycle'.
@@ -2496,6 +2514,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   (blc-hook (:hooks message-mode-hook
                     :fns blc-turn-on-double-space-sentence-ends)
+            (:hooks message-send-hook :fns blc-message-confirm-attach)
             (:hooks message-subscribed-address-functions
                     :fns gnus-find-subscribed-addresses))
 
