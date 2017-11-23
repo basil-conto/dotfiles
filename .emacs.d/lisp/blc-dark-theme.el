@@ -537,8 +537,8 @@
      ;; External
 
      ;; ace-window
-     (aw-background-face    ((t :background ,bg :foreground ,fg-1)))
-     (aw-leading-char-style ((t :inherit    aw-mode-line-face)))
+     (aw-background-face   ((t :background ,bg :foreground ,fg-1)))
+     (aw-leading-char-face ((t :inherit    aw-mode-line-face)))
 
      ;; avy
      (avy-background-face ((t :background ,bg :foreground ,fg-1)))
