@@ -2864,9 +2864,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
    org-pomodoro-format
    (blc-sed-tree "pomodoro" "🍅" org-pomodoro-format nil t)))
 
-(use-package org-ref
-  :ensure)
-
 (use-package outline
   :bind (:map
          outline-minor-mode-map
