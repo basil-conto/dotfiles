@@ -2059,6 +2059,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :commands irfc-x-list)
 
 (use-package irony
+  :disabled
   :ensure
   :delight irony-mode "🜜"
   :init
@@ -2067,6 +2068,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
     (:hooks    irony-mode-hook :fns irony-cdb-autosetup-compile-options)))
 
 (use-package irony-eldoc
+  :disabled
   :ensure
   :init
   (add-hook 'irony-mode-hook #'irony-eldoc)
