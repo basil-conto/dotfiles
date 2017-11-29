@@ -2118,6 +2118,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
             (,#'string-lessp     . ,#'counsel-M-x)))
 
   ;; Location suggestions
+  (recentf-mode)
   (ivy-set-sources 'counsel-locate
                    '((blc-ivy-recentf)
                      (original-source)))
@@ -2990,7 +2991,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :init
   ;; Do not attempt to `abbreviate-file-name' of Tramp files requiring root
   (setq-default recentf-initialize-file-name-history nil)
-  (add-hook 'ivy-mode-hook #'recentf-mode)
   :config
   (run-at-time t (blc-mins-to-secs 10) 'recentf-save-list))
 
