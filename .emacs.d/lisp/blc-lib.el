@@ -22,6 +22,8 @@
 (autoload 'notifications-notify "notifications")
 (autoload 'shell-mode           "shell")
 (autoload 'shr-dom-to-xml       "shr")
+(autoload 'shr-url-at-point     "shr")
+(autoload 'url-get-url-at-point "url-util")
 (autoload 'xdg-user-dir         "xdg")
 
 (defgroup blc ()
@@ -338,6 +340,34 @@ point. When called interactively, print result in echo area."
                                  (funcall sentinel))))))
               files
               (apply-partially #'progress-reporter-done rep)))))
+
+(defun blc--url-prompt (fmt url)
+  "Truncate URL for viewing and substitute in FMT string.
+Resulting %-occurences are escaped as %%."
+  (let ((url (url-truncate-url-for-viewing url (ash (frame-width) -1))))
+    (blc-sed "%" "%%" (format fmt url) t t)))
+
+(defun blc-download (&optional url _new-window file)
+  "Write contents of URL to FILE.
+Try to detect any raw or image URLs at point when URL is nil.
+FILE is read interactively if nil. If FILE then names an existing
+directory, URL is downloaded to a similarly named file under that
+directory, as per `copy-file' et al. NEW-WINDOW is for
+compatibility with `browse-url' and ignored."
+  (interactive)
+  (if-let* ((url    (or url
+                        (url-get-url-at-point)   ; Raw URL
+                        (shr-url-at-point nil))) ; Link/image
+            (remote (url-file-nondirectory url))
+            (local  (or file
+                        (read-file-name (blc--url-prompt "Copy `%s' to: " url)
+                                        nil nil nil remote)))
+            (file   (apply #'blc-file
+                           local
+                           (and (file-accessible-directory-p local)
+                                `(,remote)))))
+      (url-copy-file url file 0)
+    (user-error "No URL specified or found at point")))
 
 ;;; Processes
 

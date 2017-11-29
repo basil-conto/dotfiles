@@ -22,8 +22,6 @@
 
 (require 'map)
 (require 'seq)
-(require 'shr)
-(require 'url-util)
 (eval-when-compile
   (require 'subr-x)
   (require 'thunk))
@@ -62,18 +60,6 @@
   (blc-notmuch nnir-run-blc-notmuch))
 
 ;;; Utilities
-
-(defun blc-download (&optional url file)
-  "Download contents of URL to a file named FILE.
-Wraps `w3m-download' or emulates it when unavailable, working
-with both raw URLs and links."
-  (interactive "i\nF")
-  (if (fboundp 'w3m-download)
-      (w3m-download url file)
-    (url-copy-file (or url
-                       (url-get-url-at-point)  ; Raw URL
-                       (shr-url-at-point nil)) ; Link/image
-                   file 0)))                   ; Confirm existing file
 
 (defun blc-gnus-user-date (date)
   "Massage DATE before passing it to `gnus-user-date'."

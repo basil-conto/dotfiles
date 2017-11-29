@@ -479,6 +479,7 @@ URL is parsed using the regular expressions found in
 (defvar blc-browser-alist
   `(("EWW"                . ,#'eww-browse-url       )
     ("Firefox"            . ,#'browse-url-firefox   )
+    ("Download"           . ,#'blc-download         )
     ("Print"              . ,#'blc-print-url        )
     ("Emacs IRFC"         . ,#'blc-browse-url-irfc  )
     ("XDG"                . ,#'browse-url-xdg-open  )
@@ -492,15 +493,14 @@ URL is parsed using the regular expressions found in
   "Read WWW browser name to open URL with completion.
 See `blc-browser-alist' for known browsers and `browse-url' for a
 description of the arguments to this function."
-  (let* ((prompt-fmt (if (string-blank-p url)
-                         "Open browser: "
-                       "Open URL `%s' in: "))
-         (prompt-url (url-truncate-url-for-viewing url (ash (frame-width) -1)))
-         (prompt     (blc-sed "%" "%%" (format prompt-fmt prompt-url) t t)))
-    (when-let* ((browser
-                 (blc-elt blc-browser-alist
-                          (completing-read prompt blc-browser-alist nil t))))
-      (apply browser url args))))
+  (when-let* ((prompt (blc--url-prompt (if (string-blank-p url)
+                                           "Open browser: "
+                                         "Open URL `%s' in: ")
+                                       url))
+              (browser
+               (blc-elt blc-browser-alist
+                        (completing-read prompt blc-browser-alist nil t))))
+    (apply browser url args)))
 
 (function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
