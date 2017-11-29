@@ -1121,6 +1121,13 @@ With prefix argument SELECT, call `tile-select' instead."
 (use-package better-shell
   :ensure)
 
+(use-package bibtex
+  :commands bibtex-set-dialect
+  :init
+  (setq-default bibtex-align-at-equal-sign t)
+  :config
+  (bibtex-set-dialect 'biblatex))
+
 (use-package bibtex-utils
   :ensure)
 
