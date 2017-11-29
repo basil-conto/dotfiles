@@ -766,13 +766,6 @@ Return the name of the buffer as a string or `nil'."
       (y-or-n-p "Mention of \"attach\" but no attachments; send anyway? ")
       (keyboard-quit)))
 
-(defun blc-org-cycle ()
-  "Call a prefixed `org-cycle'.
-Without the prefix, visibility cycling in `outline-minor-mode'
-and `orgstruct-mode' never seems to enter the SUBTREE state."
-  (interactive)
-  (org-cycle t))
-
 (defun blc--org-agenda-day-1 (n sign iter origin)
   "Subroutine of `blc--org-agenda-day'."
   (while (unless (zerop n)
@@ -2633,8 +2626,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
          ("l" . org-store-link))
 
   :init
-  (blc-hook (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
-            (:hooks outline-minor-mode-hook          :fns orgstruct-mode))
+  (add-hook 'org-capture-before-finalize-hook #'blc-org-prop-captured)
 
   (setq-default
    org-directory          (blc-dir user-emacs-directory "org")
@@ -2865,8 +2857,9 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   :ensure)
 
 (use-package outline
-  :config
-  (define-key outline-minor-mode-map "\C-c\t" #'blc-org-cycle))
+  :bind (:map
+         outline-minor-mode-map
+         ("C-c TAB" . outline-toggle-children)))
 
 (use-package pacmacs
   :ensure)
