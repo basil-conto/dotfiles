@@ -1274,6 +1274,7 @@ With prefix argument SELECT, call `tile-select' instead."
 
   :config
   (setq-default
+   counsel-describe-function-preselect  #'function-called-at-point
    counsel-find-file-at-point           t
    counsel-git-grep-skip-counting-lines t
    counsel-grep-base-command            "ag --nocolor %s %s" ; Smart case
