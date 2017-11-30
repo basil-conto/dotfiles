@@ -7,10 +7,6 @@
 
 ;;; Code:
 
-(eval-and-compile
-  (add-to-list 'load-path (expand-file-name "mod" user-emacs-directory)))
-(require 'realpath)
-
 (require 'map)
 (require 'seq)
 (eval-when-compile
@@ -171,7 +167,7 @@ Return result of last form in BODY or nil if PATH is unreadable."
 
 (defun blc-file (&rest paths)
   "Join PATHS as a file truename."
-  (realpath-truename
+  (file-truename
    (seq-reduce (lambda (path base)
                  (expand-file-name base path))
                paths
