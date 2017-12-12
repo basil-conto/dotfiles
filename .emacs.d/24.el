@@ -7,6 +7,9 @@
 ;;; delsel
 (delete-selection-mode)
 
+;;; frame
+(blink-cursor-mode 0)
+
 ;;; ielm
 (with-eval-after-load 'ielm
   (defun ielm-indent-line ()
