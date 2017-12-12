@@ -15,8 +15,6 @@
   (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
 
 (require 'blc-lib)
-(eval-when-compile
-  (require 'blc-macs))
 
 (require 'auth-source)
 (require 'seq)

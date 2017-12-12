@@ -13,6 +13,9 @@
   (require 'subr-x)
   (require 'thunk))
 
+(eval-when-compile
+  (declare-function fci-mode "ext:fill-column-indicator"))
+
 (autoload 'comint-output-filter "comint")
 (autoload 'dom-node             "dom")
 (autoload 'notifications-notify "notifications")
@@ -28,6 +31,18 @@
 
 ;;; Sequences
 
+(eval-and-compile
+  (pcase-defmacro plist (&rest args)
+    "Build a `pcase' pattern matching property list elements.
+ARGS should itself form a plist whose values are bound to
+elements of the `pcase' expression corresponding to its keys.
+Lookup is performed using `plist-get', which always succeeds, so
+this is more useful for destructuring than pattern matching."
+    `(and (pred seqp)
+          ,@(mapcar (pcase-lambda ((seq key var))
+                      `(app (pcase--flip plist-get ,key) ,var))
+                    (seq-partition args 2)))))
+
 (defun blc-true-list-p (object)
   "Like `format-proper-list-p', but faster."
   (declare (pure t))
@@ -38,22 +53,13 @@
   (declare (pure t))
   (funcall (if (listp object) #'identity #'list) object))
 
-(defun blc-insert-at (symbol item index)
-  "Insert ITEM into sequence SYMBOL at INDEX."
-  (let* ((seq  (symbol-value symbol))
-         (type (if (listp seq) #'list (type-of seq))))
-    (set symbol (seq-concatenate type
-                                 (seq-take seq index)
-                                 (funcall type item)
-                                 (seq-drop seq index)))))
-
 (defun blc-keep (fn seq &optional copy)
   "Map FN over SEQ and return list of non-nil results.
 SEQ is modified destructively unless COPY is non-nil."
   (funcall (if copy #'seq-mapcat #'mapcan)
            (lambda (item)
              (and-let* ((result (funcall fn item)))
-               `(,result)))
+               (list result)))
            seq))
 
 (defun blc-elt (map key &optional testfn default)
@@ -64,47 +70,6 @@ SEQ is modified destructively unless COPY is non-nil."
 (defmacro blc-put (map key value &optional testfn)
   "Like `map-put', but TESTFN defaults to `equal'."
   `(map-put ,map ,key ,value ,(or testfn '#'equal)))
-
-;;; Symbols
-
-(defun blc-symcat (&rest objects)
-  "Concatenate unquoted printed OBJECTS as a symbol."
-  (intern (mapconcat (lambda (obj)
-                       (prin1-to-string obj t))
-                     objects
-                     "")))
-
-(defun blc-standard-value (var)
-  "Return `standard-value' property of symbol VAR."
-  (eval (car (plist-get (symbol-plist var) 'standard-value))))
-
-;;; Functions
-
-(defun blc-safe-funcall (fn &rest args)
-  "Call FN with ARGS if FN is a valid function."
-  (and (functionp fn)
-       (apply #'funcall fn args)))
-
-(defun blc--mapargs (map fns &rest args)
-  "Apply FNS to ARGS using MAP."
-  (funcall map
-           (lambda (fn)
-             (apply fn args))
-           fns))
-
-(defun blc-funcs (fns &rest args)
-  "Apply FNS to ARGS for side effects only."
-  (apply #'blc--mapargs #'mapc fns args))
-
-(defun blc-funcalls (fns &rest args)
-  "Apply FNS to ARGS and return list of results.
-Like `run-hook-with-args', but works during initialisation and
-returns results."
-  (apply #'blc--mapargs #'mapcar fns args))
-
-(defun blc-turn-off (&rest fns)
-  "Call all FNS with argument 0."
-  (blc-funcs fns 0))
 
 ;;; Regular expressions
 
@@ -118,14 +83,6 @@ returns results."
   "Like `re-search-forward', but unbounded and silent."
   (re-search-forward regexp nil t))
 
-(defun blc-matches (needle haystack &rest nums)
-  "Return matched groups NUMS of NEEDLE in HAYSTACK."
-  (save-match-data
-    (mapcar (lambda (num)
-              (match-string-no-properties num haystack))
-            (and (string-match needle haystack)
-                 nums))))
-
 (defun blc-sed-tree (regexp rep tree &optional fixedcase literal subexp)
   "Like `blc-sed', but performed recursively on TREE."
   (let ((sed (lambda (node &optional leaf)
@@ -134,7 +91,7 @@ returns results."
     (pcase tree
       ((pred stringp)         (funcall sed tree t))
       ((pred blc-true-list-p) (mapcar  sed tree))
-      (`(,head . ,tail)       (apply #'cons (mapcar sed `(,head ,tail))))
+      (`(,head . ,tail)       (apply #'cons (mapcar sed (list head tail))))
       (_                      tree))))
 
 ;;; DOM
@@ -178,7 +135,7 @@ Return result of last form in BODY or nil if PATH is unreadable."
   (file-name-as-directory (apply #'blc-file paths)))
 
 (defun blc-parent-dir (path)
-  "Return parent directory of PATH."
+  "Return parent directory of absolute PATH."
   (file-name-directory (directory-file-name path)))
 
 (defun blc-user-dir (dir)
@@ -196,6 +153,27 @@ relevant major-mode."
                                              (not (string-blank-p suffix))
                                              (concat "." suffix)))))
 
+(defun blc-system-location ()
+  "Return location in `/etc/timezone' or nil."
+  (blc-with-contents "/etc/timezone"
+    (and (blc-search-forward (rx (group (+ nonl)) (? ?\n) eos))
+         (cadr (split-string (match-string 1) "/" t)))))
+
+(defalias 'blc-msmtp-addresses
+  (thunk-delay
+   (blc-with-contents "~/.msmtprc"
+     (let (addresses)
+       (while (blc-search-forward
+               (rx bol "account" (+ space) (group (+ (not space))) eol))
+         (when (blc-search-forward
+                (rx bol "from" (+ space)
+                    (group (+ (not space)) ?@ (+ (not space))
+                           ?. (+ (not space)))
+                    eol))
+           (push (match-string 1) addresses)))
+       (nreverse addresses))))
+  "Return list of unique addresses in ~/.msmtprc.")
+
 (defalias 'blc-mbsync-maildirs
   (thunk-delay
    (blc-with-contents "~/.mbsyncrc"
@@ -204,21 +182,18 @@ relevant major-mode."
          (when (blc-search-forward
                 (rx bol "Path" (+ space) (group (+ (not space))) eol))
            (let ((maildir (match-string-no-properties 1)))
-             (push `(,(file-name-nondirectory (directory-file-name maildir))
-                     . ,(expand-file-name maildir))
+             (push (cons (file-name-nondirectory (directory-file-name maildir))
+                         (expand-file-name maildir))
                    maildirs))))
        (nreverse maildirs))))
   "Thunk with alist of maildirs to dirnames in ~/.mbsyncrc.")
-
-(defvar blc-mbsync-history ()
-  "Completion history for mbsync commands issued.")
 
 (defun blc--mbsync-crm (prompt)
   "Read multiple mbsync channels with PROMPT.
 Candidates offered are the keys of `blc-mbsync-maildirs', as well
 as the catch-all value `--all', making them all valid arguments
 for the mbsync executable."
-  (let ((dirs `("--all" ,@(map-keys (blc-mbsync-maildirs)))))
+  (let ((dirs (cons "--all" (map-keys (blc-mbsync-maildirs)))))
     (completing-read-multiple
      prompt dirs nil 'confirm nil 'blc-mbsync-history dirs)))
 
@@ -290,17 +265,17 @@ See `blc--mbsync-crm' for valid ARGS."
 With optional prefix argument HERE non-nil, insert result at
 point. When called interactively, print result in echo area."
   (interactive
-   `(,(read-directory-name "Find max UID under folder: "
-                           (blc-parent-dir (cdar (blc-mbsync-maildirs)))
-                           nil t)
-     ,current-prefix-arg))
-  (funcall (cond (here #'insert)
-                 ((called-interactively-p 'interactive)
-                  (apply-partially #'message "Max. UID: %s"))
-                 (t #'identity))
-           (number-to-string
-            (apply #'max
-                   `(0 ,@(blc-keep (lambda (file)
+   (list (read-directory-name "Find max UID under folder: "
+                              (blc-parent-dir (cdar (blc-mbsync-maildirs)))
+                              nil t)
+         current-prefix-arg))
+  (funcall
+   (cond (here #'insert)
+         ((called-interactively-p 'interactive)
+          (apply-partially #'message "Max. UID: %s"))
+         (t #'identity))
+   (number-to-string
+    (apply #'max (cons 0 (blc-keep (lambda (file)
                                      (and-let* ((uid (blc--mbsync-uid file)))
                                        (string-to-number uid)))
                                    (directory-files-recursively folder "")))))))
@@ -310,15 +285,15 @@ point. When called interactively, print result in echo area."
 
 (defun blc-opusenc-flac (dir)
   "Recursively transcode all flac files under DIR to opus."
-  (interactive `(,(read-directory-name "Transcode flacs under directory: "
-                                       (blc-user-dir "MUSIC") nil t)))
+  (interactive (list (read-directory-name "Transcode flacs under directory: "
+                                          (blc-user-dir "MUSIC") nil t)))
   (let* ((len   0)
          (files (let (files)
                   (dolist (flac (directory-files-recursively dir "\\.flac\\'")
                                 files)
                     (when-let* ((opus (blc-sed "\\.flac\\'" ".opus" flac t t))
                                 ((file-newer-than-file-p flac opus)))
-                      (push `[,(setq len (1+ len)) ,flac , opus] files)))))
+                      (push (vector (setq len (1+ len)) flac opus) files)))))
          (rep   (make-progress-reporter
                  (format "Transcoding %d flac(s)..." len) 0 len)))
     (funcall (seq-reduce
@@ -361,7 +336,7 @@ compatibility with `browse-url' and ignored."
             (file   (apply #'blc-file
                            local
                            (and (file-accessible-directory-p local)
-                                `(,remote)))))
+                                (list remote)))))
       (url-copy-file url file 0)
     (user-error "No URL specified or found at point")))
 
@@ -382,7 +357,7 @@ compatibility with `browse-url' and ignored."
   "Call external dropbox daemon with ARGS.
 Use `shell-command' when SHELL is non-nil."
   (if-let* ((nom "dropbox")
-            (cmd `(,nom ,@args))
+            (cmd (cons nom args))
             (buf (get-buffer-create (format "*%s*" nom)))
             (shell))
       (shell-command (string-join cmd " ") buf)
@@ -424,7 +399,7 @@ When called interactively, the user is prompted with completion
 for multiple channels to synchronise. Otherwise, ARGS should form
 a list of shell-quoted strings to pass to mbsync."
   (interactive (blc--mbsync-crm "Synchronise mbsync channels: "))
-  (let ((cmd (string-join `("mbsync" ,@args) " ")))
+  (let ((cmd (string-join (cons "mbsync" args) " ")))
     (async-shell-command cmd (format "*%s*" cmd))))
 
 ;;; Buffers
@@ -496,7 +471,7 @@ BUFFER-OR-NAME to `bury-buffer'."
   (setq buffer-read-only t)
   (buffer-disable-undo)
   (fundamental-mode)
-  (blc-turn-off #'font-lock-mode))
+  (blc-turn-off #'fci-mode #'font-lock-mode))
 
 (defun blc-strip-large-buffer ()
   "Conditionally call `blc-strip-buffer'.
@@ -567,13 +542,6 @@ exchange current and next lines."
     (indent-relative))
   (when below (blc-move-line-up)))
 
-(defun blc-align-punctuation ()
-  "Horizontally align mode-specific punctuation in region."
-  (interactive)
-  (unless (use-region-p)
-    (mark-paragraph))
-  (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)\\s."))
-
 ;;; Windows
 
 (defun blc-transpose-split ()
@@ -590,22 +558,6 @@ function at URL
     (delete-window)
     (funcall split)
     (pop-to-buffer-same-window nil)))
-
-(defun blc-split-window (&optional window)
-  "Split WINDOW in a way suitable for `display-buffer'.
-Like `split-window-sensibly' (which see), but prioritise
-horizontal over vertical splitting."
-  (when-let* ((window (or window (selected-window)))
-              (split  (or (and (window-splittable-p window t)
-                               #'split-window-right)
-                          (and (or (window-splittable-p window)
-                                   (and (frame-root-window-p window)
-                                        (not (window-minibuffer-p window))
-                                        (let ((split-height-threshold 0))
-                                          (window-splittable-p window))))
-                               #'split-window-below))))
-    (with-selected-window window
-      (funcall split))))
 
 (defvar blc-small-scroll-step 6
   "Number of lines constituting a small scroll.")
@@ -634,7 +586,9 @@ Display is determined by the environment variable DISPLAY."
 
 (defun blc-with-every-frame (&rest fns)
   "Run abnormal hooks in current frame and with every new one."
-  (blc-funcs fns (selected-frame))
+  (let ((frame (selected-frame)))
+    (dolist (fn fns)
+      (funcall fn frame)))
   (mapc (apply-partially #'add-hook 'after-make-frame-functions) fns))
 
 (defun blc-but-fringes (width &rest subtrahends)
@@ -646,8 +600,8 @@ Display is determined by the environment variable DISPLAY."
 When called interactively without a prefix argument, or when
 FRAME is nil, set font height for the current as well as all new
 frames."
-  (interactive `(,(read-face-attribute 'default :height)
-                 ,(and current-prefix-arg (selected-frame))))
+  (interactive (list (read-face-attribute 'default :height)
+                     (and current-prefix-arg (selected-frame))))
   (let ((font (format "%s-%d" (face-attribute 'default :family) (/ height 10))))
     (funcall (if frame
                  (apply-partially #'modify-frame-parameters frame)
@@ -655,6 +609,47 @@ frames."
              `((font . ,font)))))
 
 ;;; Settings
+
+(defmacro blc-hook (&rest plists)
+  "Add functions to hooks using `add-hook'.
+Elements of PLISTS should form a plist with the following
+recognised keys corresponding to the arguments of `add-hook':
+
+:hooks HOOKS -- HOOKS is either a single hook variable or a list
+thereof.
+
+:fns FNS -- FNS is either a single function to be added to HOOKS
+or a list thereof.
+
+:append APPEND -- See `add-hook'.
+
+:local LOCAL -- See `add-hook'."
+  (declare (indent 0))
+  (macroexp-progn
+   (mapcan (pcase-lambda ((plist :hooks  hooks  :fns   fns
+                                 :append append :local local))
+             (mapcan (lambda (hook)
+                       (mapcar (lambda (fn)
+                                 `(add-hook ',hook #',fn ,append ,local))
+                               (blc-as-list fns)))
+                     (blc-as-list hooks)))
+           plists)))
+
+(defmacro blc-define-keys (&rest alist)
+  "Bind multiple keys per multiple keymaps.
+Elements of ALIST should have the form (KEYMAP . BINDINGS), where
+KEYMAP is an expression evaluating to a keymap. For each element
+of the alist BINDINGS of the form (KEY . DEF), `define-key' is
+called on KEYMAP, KEY and DEF."
+  (declare (indent 0))
+  (macroexp-progn
+   (map-apply (lambda (map bindings)
+                (macroexp-let2 nil map map
+                  (macroexp-progn
+                   (map-apply (lambda (key def)
+                                `(define-key ,map ,key ,def))
+                              bindings))))
+              alist)))
 
 (defvar blc-locations
   '(("Athens"
@@ -692,11 +687,15 @@ overrides them."
             (or (plist-get props :tz)
                 (subst-char-in-string ?\s ?_ location)))))
 
-(defun blc-turn-off-cursor-blink (&optional frame &rest _)
-  "Disable `blink-cursor-mode'."
-  (and (display-graphic-p frame)
-       blink-cursor-mode
-       (blc-turn-off #'blink-cursor-mode)))
+(defun blc-standard-value (var)
+  "Return `standard-value' property of symbol VAR."
+  (eval (car (plist-get (symbol-plist var) 'standard-value))))
+
+(defun blc-turn-off (&rest fns)
+  "Call all FNS, if valid functions, with argument 0."
+  (dolist (fn fns)
+    (when (functionp fn)
+      (funcall fn 0))))
 
 (defun blc-turn-off-electric-indent-local (&rest _)
   "Disable `electric-indent-local-mode'."
@@ -710,6 +709,10 @@ overrides them."
 (defun blc-turn-off-indent-tabs ()
   "Locally disable tab indentation."
   (setq indent-tabs-mode nil))
+
+(defun blc-restore-tab-width ()
+  "Restore `standard-value' of `tab-width'."
+  (setq tab-width (blc-standard-value 'tab-width)))
 
 (defun blc-gnus-summary-line-format (&rest from)
   "Return format string suitable for `gnus-summary-line-format'.
@@ -739,11 +742,6 @@ Strings FROM override the default `f' format spec."
   (interactive)
   (blc-turn-off #'prettify-symbols-mode))
 
-(defun blc-turn-off-scroll-bar (&optional frame &rest _)
-  "Disable scroll bar in FRAME."
-  (with-selected-frame frame
-    (blc-turn-off #'toggle-scroll-bar)))
-
 (defun blc-sort-reverse (_x _y)
   "Predicate that the order of X and Y should be swapped."
   t)
@@ -756,11 +754,40 @@ Strings FROM override the default `f' format spec."
 
 ;;; Modes
 
+(defvar blc-dropbox-timers ()
+  "List of active timers for `blc-dropbox-mode'.")
+
+(defvar blc-dropbox-interval (blc-mins-to-secs 30)
+  "Number of seconds between dropbox start/stop runs.")
+
+(defun blc-turn-off-dropbox-mode ()
+  "Disable `blc-dropbox-mode'."
+  (blc-turn-off #'blc-dropbox-mode))
+
+(define-minor-mode blc-dropbox-mode
+  "Periodically start/stop dropbox with timers."
+  :global t
+  :group  'blc
+  (if blc-dropbox-mode
+      (progn
+        (setq blc-dropbox-timers
+              (map-apply (lambda (off fn)
+                           (run-at-time (blc-mins-to-secs off)
+                                        blc-dropbox-interval
+                                        fn))
+                         `((1 . ,#'blc-dropbox-start)
+                           (2 . ,#'blc-dropbox-stop))))
+        (add-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode))
+    (remove-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode)
+    (while blc-dropbox-timers
+      (cancel-timer (pop blc-dropbox-timers)))
+    (blc-dropbox-stop)))
+
 (defalias 'blc-rainbow--faces
   (thunk-delay
    (mapcar
     (lambda (face)
-      `(,(blc-rx `(: symbol-start ,(symbol-name face) symbol-end)) . ,face))
+      (cons (blc-rx `(: symbol-start ,(symbol-name face) symbol-end)) face))
     '(font-lock-builtin-face
       font-lock-comment-delimiter-face
       font-lock-comment-face
@@ -785,35 +812,6 @@ Strings FROM override the default `f' format spec."
              #'font-lock-remove-keywords)
            nil
            (blc-rainbow--faces)))
-
-(defvar blc-dropbox-timers ()
-  "List of active timers for `blc-dropbox-mode'.")
-
-(defvar blc-dropbox-interval (blc-mins-to-secs 30)
-  "Number of seconds between dropbox start/stop runs.")
-
-(defun blc-turn-off-dropbox-mode ()
-  "Disable `blc-dropbox-mode'."
-  (blc-dropbox-mode 0))
-
-(define-minor-mode blc-dropbox-mode
-  "Periodically start/stop dropbox with timers."
-  :global t
-  :group  'blc
-  (if blc-dropbox-mode
-      (progn
-        (setq blc-dropbox-timers
-              (map-apply (lambda (off fn)
-                           (run-at-time (blc-mins-to-secs off)
-                                        blc-dropbox-interval
-                                        fn))
-                         `((1 . ,#'blc-dropbox-start)
-                           (2 . ,#'blc-dropbox-stop))))
-        (add-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode))
-    (remove-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode)
-    (while blc-dropbox-timers
-      (cancel-timer (pop blc-dropbox-timers)))
-    (blc-dropbox-stop)))
 
 (defvar blc-tomato-timer ()
   "Active timer for `blc-tomato-mode'.")
@@ -846,6 +844,9 @@ Strings FROM override the default `f' format spec."
 
 ;;; Variables
 
+(defvar blc-bib-file "~/.bib.bib"
+  "Default user BibTeX file.")
+
 (defvar blc-repos-dir (blc-dir user-emacs-directory "repos")
   "Directory containing symlinks to user Git repositories.")
 
@@ -853,9 +854,5 @@ Strings FROM override the default `f' format spec."
   "List of buffer names associated with Gnus logs.")
 
 (provide 'blc-lib)
-
-;; Local Variables:
-;; byte-compile-dynamic: t
-;; End:
 
 ;;; blc-lib.el ends here

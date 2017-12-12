@@ -100,7 +100,7 @@ Like `message', but each line is prefixed with a timestamp."
                               (substring art 0 (string-match-p ":" art))
                               group nil)))
                  (blc-notmuch--log-vars line dir art group name num)
-                 `[,name ,num 0])))
+                 (vector name num 0))))
            (let* ((lines (apply #'process-lines cmd))
                   (files (seq-filter #'file-readable-p lines)))
              (blc-notmuch--log-vars lines files)

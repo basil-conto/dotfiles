@@ -17,47 +17,42 @@
   (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
 
 (require 'blc-lib)
-(eval-when-compile
-  (require 'blc-macs))
 
 (require 'map)
 (require 'seq)
 (eval-when-compile
-  (require 'subr-x)
-  (require 'thunk))
+  (require 'subr-x))
 
 ;;; Byte-compiler declarations
 
-(blc-declare-vars
-  gnus-article-mode-map
-  gnus-directory
-  gnus-level-default-subscribed
-  gnus-sorted-header-list
-  gnus-startup-file
-  gnus-tmp-group
-  gnus-topic-mode-map
-  gnus-visible-headers
-  nnir-imap-search-arguments)
+(eval-when-compile
+  (defvar gnus-article-mode-map)
+  (defvar gnus-directory)
+  (defvar gnus-level-default-subscribed)
+  (defvar gnus-sorted-header-list)
+  (defvar gnus-startup-file)
+  (defvar gnus-tmp-group)
+  (defvar gnus-topic-mode-map)
+  (defvar gnus-visible-headers)
+  (defvar nnir-imap-search-arguments)
 
-(blc-declare-fns
-  (gnus-demon gnus-demon-add-handler
-              gnus-demon-scan-news)
-  (gnus-group gnus-group-set-timestamp
-              gnus-group-timestamp)
-  (gnus-sum   gnus-article-sort-by-most-recent-date
-              gnus-article-sort-by-number
-              gnus-gather-threads-by-references
-              gnus-thread-sort-by-date
-              gnus-thread-sort-by-most-recent-date
-              gnus-thread-sort-by-number
-              gnus-user-date)
-  (gnus-topic gnus-current-topic
-              gnus-topic-fold
-              gnus-topic-goto-topic
-              gnus-topic-mode))
+  (declare-function gnus-demon-add-handler                "gnus-demon")
+  (declare-function gnus-demon-scan-news                  "gnus-demon")
+  (declare-function gnus-group-set-timestamp              "gnus-group")
+  (declare-function gnus-group-timestamp                  "gnus-group")
+  (declare-function gnus-article-sort-by-most-recent-date "gnus-sum")
+  (declare-function gnus-article-sort-by-number           "gnus-sum")
+  (declare-function gnus-gather-threads-by-references     "gnus-sum")
+  (declare-function gnus-thread-sort-by-date              "gnus-sum")
+  (declare-function gnus-thread-sort-by-most-recent-date  "gnus-sum")
+  (declare-function gnus-thread-sort-by-number            "gnus-sum")
+  (declare-function gnus-user-date                        "gnus-sum")
+  (declare-function gnus-current-topic                    "gnus-topic")
+  (declare-function gnus-topic-fold                       "gnus-topic")
+  (declare-function gnus-topic-goto-topic                 "gnus-topic")
+  (declare-function gnus-topic-mode                       "gnus-topic"))
 
-(blc-autoloads
-  (blc-notmuch nnir-run-blc-notmuch))
+(autoload 'nnir-run-blc-notmuch "blc-notmuch")
 
 ;;; Utilities
 

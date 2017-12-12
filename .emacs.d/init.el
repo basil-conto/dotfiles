@@ -8,7 +8,14 @@
 
 ;;;; BOOTSTRAPPING
 
-;;; Performance & dependencies
+;;; Performance
+
+(defalias 'blc-report-init-time
+  (let ((file load-file-name))
+    (lambda ()
+      (message "Loading %s...done (%.3fs)" file
+               (float-time (time-subtract after-init-time before-init-time)))))
+  "Print 3 d.p. `emacs-init-time' after `load'-style message.")
 
 (defalias 'blc-gc-thresh-restore
   (let ((thresh gc-cons-threshold))
@@ -25,155 +32,52 @@ why-are-you-changing-gc-cons-threshold/'.")
   (blc-gc-thresh-maximise)
 
   ;; Include user libraries
-  (mapc (lambda (dir)
-          (add-to-list 'load-path (expand-file-name dir user-emacs-directory)))
-        '("lisp" "mod"))
+  (dolist (dir '("lisp" "mod"))
+    (add-to-list 'load-path (expand-file-name dir user-emacs-directory)))
 
-  ;; Startup speedup
-  (when (require 'realpath nil t)
-    (advice-add #'file-truename :override #'realpath-truename)))
+  (condition-case err
+      (when (require 'realpath)
+        (advice-add #'file-truename :override #'realpath-truename))
+    (error (lwarn 'external :error "%S" err))))
+
+;;; Dependencies
 
 ;; User
 (require 'blc-lib)
-(eval-when-compile
-  (require 'blc-macs))
+(require 'blc-pkg)
 
 ;; Built-in
 (require 'map)
-(require 'package)
 (require 'seq)
 (eval-when-compile
   (require 'subr-x))
 
-;; Profiling
-(defalias 'blc-report-init-time
-  (let ((file load-file-name))
-    (lambda ()
-      (thread-last (float-time (time-subtract after-init-time before-init-time))
-        (message "Loading %s...done (%.3fs)" file))))
-  "`use-package'-style `emacs-init-time' to 3 decimal places.")
-
-;;; Packaging
-
-(eval-and-compile
-  ;; Sandbox this nuisance
-  (advice-add #'package--save-selected-packages :override #'ignore)
-
-  (setq-default package-menu-hide-low-priority t)
-
-  ;; Archives
-  (seq-do-indexed (pcase-lambda (`(,id . ,url) i)
-                    (blc-put package-archives           id url)
-                    (blc-put package-archive-priorities id (1+ i)))
-                  '(("melpa" . "https://melpa.org/packages/")
-                    ("org"   . "http://orgmode.org/elpa/")))
-
-  ;; Locate and activate packages
-  (package-initialize)
-
-  ;; Third-party dependencies
-  (when-let* ((missing (seq-remove #'package-installed-p
-                                   '(bind-key
-                                     delight
-                                     use-package)))
-              ((y-or-n-p (format "Install missing packages %s?" missing))))
-    (package-refresh-contents)
-    (mapc #'package-install missing)))
-
-(require 'bind-key)
-(eval-when-compile
-  (setq-default use-package-always-defer t
-                use-package-verbose      'debug)
-  (require 'use-package))
+(autoload 'apt-utils-search               "apt-utils" nil t)
+(autoload 'apt-utils-show-package         "apt-utils" nil t)
+(autoload 'blc-pass-backend-parse         "blc-pass")
+(autoload 'deb-view-dired-view            "deb-view" nil t)
+(autoload 'deb-view-mode                  "deb-view" nil t)
+(autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
+(autoload 'ffap-gnus-hook                 "ffap")
+(autoload 'turn-off-fci-mode              "fill-column-indicator" nil t)
+(autoload 'flex-mode                      "flex-mode" nil t)
+(autoload 'samba-generic-mode             "generic-x" nil t)
+(autoload 'gnus-find-subscribed-addresses "gnus")
+(autoload 'turn-on-hi-lock-if-enabled     "hi-lock")
+(autoload 'ivy-completion-in-region       "ivy")
+(autoload 'meme                           "meme" nil t)
+(autoload 'meme-file                      "meme" nil t)
+(autoload 'projectile-command-map         "projectile" nil t 'keymap)
 
 
-;;;; DEFINITIONS
+;;;; ADVICE
 
-;;; Byte-compiler declarations
+;;; fns.c
 
-(blc-declare-vars
-  Info-standalone
-  LaTeX-clean-intermediate-suffixes
-  Man--sections
-  TeX-command-list
-  bbdb-mua-summary-unify-format-letter
-  c-mode-base-map
-  dired-guess-shell-alist-user
-  doc-view-resolution
-  ffap-alist
-  ffap-file-finder
-  ghc-doc-hackage-format
-  gnus-inhibit-startup-message
-  gnus-newsgroup-name
-  ivy-format-function
-  ivy-height
-  js2-mode-map
-  json-mode-map
-  org-default-notes-file
-  org-directory
-  org-entities
-  org-entities-user
-  org-export-default-language
-  org-html-checkbox-types
-  org-html-postamble-format
-  recentf-list
-  term-raw-map
-  tile-cycler)
+(advice-add #'yes-or-no-p :override #'y-or-n-p)
 
-(eval-when-compile
-  (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
+;;; battery
 
-(blc-declare-fns
-  (cc-cmds       c-toggle-comment-style)
-  (cc-defs       c-langelem-pos)
-  (csv-mode      csv-align-fields)
-  (doc-view      doc-view-start-process)
-  (esh-mode      eshell-truncate-buffer)
-  (eww           eww-copy-page-url
-                 eww-html-p)
-  (gnus-msg      gnus-setup-message)
-  (gnus-util     gnus-alive-p)
-  (hi-lock       hi-lock-set-pattern)
-  (ibuf-ext      ibuffer-switch-to-saved-filter-groups)
-  (ibuffer       ibuffer-current-buffer)
-  (man           Man-mode)
-  (mail-parse    mail-header-parse-address)
-  (mailcap       mailcap-extension-to-mime)
-  (message       message-field-value
-                 message-goto-body-1
-                 message-goto-signature
-                 message-make-from
-                 message-replace-header
-                 message-user-mail-address)
-  (mml           mml-parse)
-  (org           org-goto
-                 org-set-property
-                 org-time-stamp-format)
-  (org-capture   org-capture-goto-last-stored)
-  (org-pcomplete org-thing-at-point)
-  (term          term-char-mode
-                 term-line-mode)
-  (tile          tile-get-name))
-
-(blc-autoloads
-  (blc-pass  blc-pass-backend-parse)
-  (gnus      gnus-find-subscribed-addresses)
-  (gnus-util gnus-extract-address-components)
-  (ibuf-ext  ibuffer-pop-filter
-             ibuffer-push-filter)
-  (ibuffer   ibuffer-buf-matches-predicates
-             ibuffer-update)
-  (ielm      inferior-emacs-lisp-mode)
-  (ox-html   org-html-publish-to-html))
-
-;;; Variables
-
-(defvar blc-bib-file "~/.bib.bib"
-  "Default user BibTeX file.")
-
-;;; Advice
-
-;; battery
 (define-advice battery-linux-sysfs (:filter-return (alist) blc-unicodify)
   "Transcribe Linux sysfs AC line status in ALIST to Unicode."
   (let ((key ?L))
@@ -183,12 +87,7 @@ why-are-you-changing-gc-cons-threshold/'.")
                          (_     "¿?"))))
   alist)
 
-;;bbdb-com
-(defun blc--completion-base-string ()
-  "Return string bound by `completion-base-position'."
-  (buffer-substring-no-properties (car completion-base-position)
-                                  (or (cadr completion-base-position)
-                                      (point))))
+;;; bbdb-com
 
 (define-advice bbdb-complete-mail (:around (complete &rest args) blc-minibuffer)
   "Replace *Completions* buffer with `completing-read'."
@@ -199,19 +98,23 @@ why-are-you-changing-gc-cons-threshold/'.")
          (temp-buffer-show-function
           (lambda (buf)
             (kill-buffer buf)
-            (choose-completion-string (completing-read
-                                       "Address: " cands nil 'confirm
-                                       (blc--completion-base-string)
-                                       'blc-bbdb-mail-history)
-                                      (current-buffer)
-                                      completion-base-position))))
+            (choose-completion-string
+             (completing-read "Address: " cands nil 'confirm
+                              (buffer-substring
+                               (car completion-base-position)
+                               (or (cadr completion-base-position)
+                                   (point)))
+                              'blc-bbdb-mail-history)
+             (current-buffer)
+             completion-base-position))))
     (unwind-protect
         (progn
           (advice-add alice :before eve)
           (apply complete args))
       (advice-remove alice eve))))
 
-;; cc-align
+;;; cc-align
+
 (define-advice c-lineup-arglist (:before-until (langelem) blc-c++-lambda-indent)
   "Return indentation offset for C++11 lambda arguments.
 Currently keeps offset unchanged by returning 0 for lambdas
@@ -226,19 +129,27 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
 
-;; em-cmpl
+;;; em-cmpl
+
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
 
-;; eww
+;;; eww
+
 (defun blc-eww-suggest-uri--advice (eww uri)
   "Call EWW with URI suggested as default.
 URI is returned by the `interactive-form' of `eww'."
-  (let ((eww-suggest-uris `(,(lambda () uri))))
+  (let ((eww-suggest-uris (list (lambda () uri))))
     (funcall eww)))
 
-;; files
+(with-eval-after-load 'eww
+  (function-put
+   #'blc-eww-suggest-uri--advice 'interactive-form (interactive-form #'eww))
+  (advice-add #'eww-open-in-new-buffer :around #'blc-eww-suggest-uri--advice))
+
+;;; files
+
 (define-advice save-buffers-kill-emacs
     (:around (kill &rest args) blc-confirm-daemon)
   "Ensure `confirm-kill-emacs' is bound when `daemonp'."
@@ -248,37 +159,48 @@ URI is returned by the `interactive-form' of `eww'."
                                        (y-or-n-p "Really kill daemon? "))))))
     (apply kill args)))
 
-;; gnus-msg
+;;; gnus-msg
+
 (define-advice gnus-msg-mail (:override (&rest args) blc-gnus-msg-mail)
   "Like `gnus-msg-mail', but heed SWITCH-FUNCTION argument."
   (if (gnus-alive-p)
-      (pcase-let ((`(,to ,subj ,heads ,cont ,switch ,yank ,send ,return) args)
-                  (buf (current-buffer))
-                  (nom gnus-newsgroup-name))
-        (save-window-excursion
-          (unwind-protect
-              (progn
-                (setq gnus-newsgroup-name "")
-                (gnus-setup-message 'message
-                  (message-mail to subj heads cont nil yank send return)))
-            (with-current-buffer buf
-              (setq gnus-newsgroup-name nom)))
-          (setq buf (current-buffer)))
-        (funcall (or switch #'switch-to-buffer) buf)
-        t)
+      (seq-let (to subj heads cont switch yank send return) args
+        (let ((buf (current-buffer))
+              (nom gnus-newsgroup-name))
+          (save-window-excursion
+            (unwind-protect
+                (progn
+                  (setq gnus-newsgroup-name "")
+                  (gnus-setup-message 'message
+                    (message-mail to subj heads cont nil yank send return)))
+              (with-current-buffer buf
+                (setq gnus-newsgroup-name nom)))
+            (setq buf (current-buffer)))
+          (funcall (or switch #'switch-to-buffer) buf)
+          t))
     (message "Gnus not running; using plain Message mode")
     (apply #'message-mail args)))
 
-;; hi-lock
+;;; hi-lock
+
 (define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
   "Exempt derived modes from hi-lock highlighting.
 Include every major mode derived from the current
 `hi-lock-exclude-modes' in that blacklist."
-  (let ((modes 'hi-lock-exclude-modes))
-    (when (apply #'derived-mode-p (symbol-value modes))
-      (add-to-list modes major-mode))))
+  (when (apply #'derived-mode-p hi-lock-exclude-modes)
+    (add-to-list 'hi-lock-exclude-modes major-mode)))
 
-;; ivy-bibtex
+;;; ibuffer
+
+(define-advice ibuffer (:filter-args (args) blc-ibuffer)
+  "Like `ibuffer', but prefer default `ibuffer-filter-groups'."
+  (seq-let (other name quals nosel shrink filters &rest tail) args
+    (nconc (list other name quals nosel shrink
+                 (or filters (default-value 'ibuffer-filter-groups)))
+           tail)))
+
+;;; ivy-bibtex
+
 (define-advice bibtex-completion-format-entry
     (:around (fmt entry width) blc-narrow)
   "Decrease `ivy-bibtex' entry width due to other formatting.
@@ -289,12 +211,42 @@ into account."
            (blc-but-fringes
             width (string-width (funcall ivy-format-function '(""))))))
 
-;; ledger-complete
+;;; ledger-complete
+
 (define-advice ledger-pcomplete (:override (&rest _) blc-completion-at-point)
   "Use default inline completion."
   (completion-at-point))
 
-;; mail-extr
+;;; magit-diff
+
+(define-advice magit-diff-show-or-scroll
+    (:around (fn &rest args) blc-visible-frames)
+  "Show and scroll Magit diff buffer across frames."
+  (let ((get-win #'get-buffer-window)
+        (visible-frames (lambda (get &optional buf _frames)
+                          (funcall get buf 'visible))))
+    (unwind-protect
+        (progn
+          (advice-add get-win :around visible-frames)
+          (apply fn args))
+      (advice-remove get-win visible-frames))))
+
+;;; magit-log
+
+(define-advice magit-log-maybe-update-revision-buffer-1
+    (:around (fn) blc-all-frames)
+  "Update Magit log buffer across frames."
+  (let ((get-buf #'magit-mode-get-buffer)
+        (all-frames (lambda (get mode &optional create _frame value)
+                      (funcall get mode create nil value))))
+    (unwind-protect
+        (progn
+          (advice-add get-buf :around all-frames)
+          (funcall fn))
+      (advice-remove get-buf all-frames))))
+
+;;; mail-extr
+
 (define-advice mail-extract-address-components
     (:before-until (address &optional all) blc-delegate-gnus)
   "Try to cut corners with `gnus-extract-address-components'.
@@ -304,29 +256,40 @@ This is much less accurate but also much more performant than
        (stringp address)
        (gnus-extract-address-components address)))
 
-;; make-mode
-(define-advice makefile-insert-gmake-function
-    (:after (&rest _) blc-delete-trailing-space)
-  "Delete trailing whitespace after function call insertion."
+;;; make-mode
+
+(defun blc-delete-hspace-backward (&rest _)
+  "Delete horizontal whitespace before point."
   (delete-horizontal-space t))
 
-;; man
-(define-advice Man-goto-page (:after (&rest _) blc-reverse-sections)
-  "Reverse `Man--sections' to maintain natural order."
-  (setq Man--sections (nreverse Man--sections)))
+(mapc (lambda (fn)
+        (advice-add fn :after #'blc-delete-hspace-backward))
+      (list #'makefile-insert-gmake-function
+            #'makefile-insert-target-ref))
 
-;; mpc
-(define-advice mpc (:around (mpc) blc-with-dedicated-window)
-  "Temporarily dedicate selected window to its buffer."
+;;; mpc
+
+(define-advice mpc (:around (mpc) blc-ensure-dedicated)
+  "Start mpd and temporarily dedicate selected window."
   (let* ((win  (selected-window))
-         (flag (window-dedicated-p win)))
+         (flag (window-dedicated-p win))
+         (cmds (blc-system-procs-by-attr 'comm)))
+    ;; Fire ze missiles
+    (when-let* ((cmd "mpd")
+                ((not (member cmd cmds))))
+      (call-process cmd))
+    (when-let* ((cmd "mpDris2")
+                ((not (member cmd cmds))))
+      (call-process-shell-command (concat cmd " &")))
+    ;; Hold on to your butts
     (unwind-protect
         (progn
           (set-window-dedicated-p win t)
           (call-interactively mpc))
       (set-window-dedicated-p win flag))))
 
-;; org-agenda
+;;; org-agenda
+
 (define-advice org-agenda-finalize (:after (&rest _) blc-pad-dates)
   "Display double spacing before org agenda view date lines.
 This is defined as advice instead of being added to
@@ -342,14 +305,16 @@ This is defined as advice instead of being added to
                            (line-beginning-position)
                            'display "\n\n")))))
 
-;; org-capture
+;;; org-capture
+
 (define-advice org-capture-refile (:after (&rest _) blc-org-save)
   "Save target buffer of `org-capture-refile'."
   (save-window-excursion
     (org-capture-goto-last-stored)
     (save-buffer)))
 
-;; org-pcomplete
+;;; org-pcomplete
+
 (define-advice pcomplete/org-mode/tex (:override () blc-complete-entity)
   "Perform Org entity completion via `completion-in-region'.
 Offer all entities found in `org-entities-user' and
@@ -365,22 +330,8 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
-;; package
-(define-advice package-install (:before (pkg &rest _) blc-async-bytecomp)
-  "Install `async' and enable `async-bytecomp-package-mode'."
-  (unless (or (bound-and-true-p async-bytecomp-package-mode)
-              (string-equal 'async (funcall (if (package-desc-p pkg)
-                                                #'package-desc-name
-                                              #'identity)
-                                            pkg)))
-    (use-package async-bytecomp
-      :ensure async
-      :commands async-bytecomp-package-mode
-      :init
-      (setq-default async-bytecomp-allowed-packages '(all))
-      (async-bytecomp-package-mode))))
+;;; recentf
 
-;; recentf
 (define-advice recentf-save-list (:around (save &rest args) blc-save-safely)
   "Save silently only if sole Emacs instance."
   (when-let* (((> 2 (seq-count (apply-partially #'string-match-p "\\`emacs")
@@ -389,13 +340,17 @@ Offer all entities found in `org-entities-user' and
     (apply save args)))
 
 
-;;; Package utilities
+;;;; DEFINITIONS
+
+;;; bbdb
 
 (defun blc-bbdb-set-gnus-summary-line-format ()
   "Prepare `gnus-summary-line-format' for `bbdb' unification."
   (setq-default
    gnus-summary-line-format
    (blc-gnus-summary-line-format "u" bbdb-mua-summary-unify-format-letter)))
+
+;;; browse-url
 
 (defun blc-print-url--lpr (url &rest _)
   "Asynchronously print URL using `lpr-command'.
@@ -410,12 +365,12 @@ mind, which is passed `lpr-switches' and URL as arguments."
   "Print URL using `wkhtmltopdf'.
 The contents of URL are converted to a temporary PDF file by
 `wkhtmltopdf' before printing the result with
-`blc-print-url--lpr'. "
+`blc-print-url--lpr'."
   (let ((name "WebKit Print")
         (temp (make-temp-file "blc-" nil ".pdf")))
     (make-process
      :name            name
-     :command         `("wkhtmltopdf" ,url ,temp)
+     :command         (list "wkhtmltopdf" url temp)
      :connection-type 'pipe
      :sentinel
      (lambda (proc event)
@@ -431,13 +386,13 @@ The contents of URL are converted to a temporary PDF file by
             ((url-handler-file-remote-p url)))
       (if (string-match-p
            (regexp-opt '("application/pdf" "application/postscript")) mimetype)
-          `(,#'blc-print-url--lpr . ,#'url-file-local-copy)
-        `(,#'blc-print-url--webkit . ,#'identity))
+          (cons #'blc-print-url--lpr #'url-file-local-copy)
+        (cons #'blc-print-url--webkit #'identity))
     (if (eww-html-p mimetype)
-        `(,#'blc-print-url--webkit . ,#'identity)
-      `(,#'blc-print-url--lpr
-        . ,(lambda (url)
-             (url-filename (url-generic-parse-url url)))))))
+        (cons #'blc-print-url--webkit #'identity)
+      (cons #'blc-print-url--lpr
+            (lambda (url)
+              (url-filename (url-generic-parse-url url)))))))
 
 (defun blc-print-url (url &rest args)
   "Print contents of URL.
@@ -455,10 +410,13 @@ names, respectively.")
 
 (defun blc-browse-url-ghc-doc (url &rest args)
   "Pass latest version of Hackage package URL to `browse-url'."
-  (let ((matches (thread-first
-                     (blc-sed "%s" "\\(.+\\)" ghc-doc-hackage-format t t)
-                   (blc-matches url 1 3))))
-    (apply #'browse-url (apply #'format blc-hackage-url-format matches) args)))
+  (when (string-match (blc-sed "%s" (rx (group (+ nonl)))
+                               ghc-doc-hackage-format t t)
+                      url)
+    (apply #'browse-url
+           (apply #'format blc-hackage-url-format
+                  (mapcar #'match-string (list 1 3)))
+           args)))
 
 (defun blc-browse-url-irfc (url &rest _)
   "Visit RFC URL via `irfc-visit'.
@@ -471,9 +429,9 @@ URL is parsed using the regular expressions found in
                                `(regexp ,re)))
                            (map-apply #'rassq `((irfc-mode . ,auto-mode-alist)
                                                 (ffap-rfc  . ,ffap-alist))))))
-      (pcase (blc-matches (blc-rx `(| ,@res)) (url-file-nondirectory url) 1)
-        (`(,num) (irfc-visit (string-to-number num)))
-        (_       (user-error "Invalid RFC URL: %s" url)))
+      (if (string-match (blc-rx `(| ,@res)) (url-file-nondirectory url))
+          (irfc-visit (string-to-number (match-string 1)))
+        (user-error "Invalid RFC URL: %s" url))
     (user-error "Regexp not found for RFC URL: %s" url)))
 
 (defvar blc-browser-alist
@@ -505,26 +463,7 @@ description of the arguments to this function."
 (function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
-(defun blc-system-tz ()
-  "Return contents of `/etc/timezone' or nil."
-  (blc-with-contents "/etc/timezone"
-    (and (blc-search-forward (rx (group (+ nonl)) (? ?\n) eos))
-         (match-string-no-properties 1))))
-
-(defun blc-system-location ()
-  "Return location of `blc-system-tz' or nil."
-  (and-let* ((tz (blc-system-tz)))
-    (cadr (split-string tz "/" t))))
-
-(defun blc-solar-set-location (&optional location)
-  "Reconcile solar calendar with LOCATION from `blc-locations'."
-  (interactive `(,(completing-read "Location: " blc-locations nil t nil ()
-                                   (blc-system-location))))
-  (pcase (blc-elt blc-locations location)
-    ((plist :country country :lat lat :long long)
-     (setq-default calendar-latitude      lat
-                   calendar-longitude     long
-                   calendar-location-name (format "%s, %s" location country)))))
+;;; cc-mode
 
 (defun blc-turn-on-c++-comments ()
   "Default to C++-style line comments."
@@ -532,6 +471,8 @@ description of the arguments to this function."
       (c-toggle-comment-style -1)
     (setq comment-start "//"
           comment-end   "")))
+
+;;; counsel
 
 (defun blc-counsel-find-file (&optional file)
   "Like `counsel-find-file', but return buffer, not name of FILE.
@@ -543,9 +484,13 @@ suitable for assigning to `ffap-file-finder'."
     (set-buffer (or (find-buffer-visiting (counsel-find-file))
                     (other-buffer nil t)))))
 
+;;; csv-mode
+
 (defun blc-csv-align-all-fields ()
   "Align all fields in the current CSV buffer."
   (csv-align-fields nil (point-min) (point-max)))
+
+;;; doc-view
 
 (defun blc-doc-view-pdf-to-png (pdf png page callback)
   "MuPDF-backed PDF to PNG converter function for DocView."
@@ -556,8 +501,10 @@ suitable for assigning to `ffap-file-finder'."
      "-o" ,png
      "-r" ,(number-to-string (round doc-view-resolution))
      ,pdf
-     ,@(and page `(,(number-to-string page))))
+     ,@(and page (list (number-to-string page))))
    callback))
+
+;;; eww
 
 (defun blc-eww-bookmark-save ()
   "Copy the URL of the current bookmark into the kill ring."
@@ -567,10 +514,15 @@ suitable for assigning to `ffap-file-finder'."
       (eww-copy-page-url)
     (user-error "No bookmark on the current line")))
 
+;;; flycheck
+
 (defun blc-turn-off-flycheck (&rest _)
   "Disable `flycheck-mode'."
   (interactive)
-  (blc-turn-off #'flycheck-mode))
+  (when (bound-and-true-p flycheck-mode)
+    (blc-turn-off #'flycheck-mode)))
+
+;;; git-commit, git-rebase
 
 (defun blc-kill-git-buffer ()
   "Kill current git commit message or rebase todo list buffer."
@@ -586,6 +538,8 @@ suitable for assigning to `ffap-file-finder'."
   "Set local `fill-column' for `git-commit-mode' buffers."
   ;; Benefit over setq: displays debugging message
   (set-fill-column 68))
+
+;;; gnus
 
 (defun blc--gnus-switch-buffer (action)
   "Call ACTION on first desirable Gnus buffer found.
@@ -625,7 +579,7 @@ order of descending priority, start `gnus'."
 (defun blc-gnus-delete-frame ()
   "Delete all frames with parameter `blc-gnus' non-nil."
   (interactive)
-  (when (> (length (frame-list)) 1)
+  (when (cdr (frame-list))
     (mapc #'delete-frame
           (filtered-frame-list (lambda (frame)
                                  (frame-parameter frame 'blc-gnus))))))
@@ -640,9 +594,13 @@ Suspending or exiting Gnus deletes that frame."
   (blc-hook (:fns blc-gnus-delete-frame :hooks (gnus-suspend-gnus-hook
                                                 gnus-after-exiting-gnus-hook))))
 
+;;; hi-lock
+
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
   (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
+
+;;; ibuffer
 
 (defun blc-ibuffer-ffap ()
   "Like `ibuffer-find-file', but backed by `ffap-file-finder'."
@@ -653,18 +611,12 @@ Suspending or exiting Gnus deletes that frame."
          (default-directory (buffer-local-value 'default-directory buffer)))
     (call-interactively ffap-file-finder)))
 
-(defvar blc-ibuffer-default-group "default"
-  "Name of default saved ibuffer filter group.")
-
-(defun blc-turn-on-ibuffer-filter-groups ()
-  "Enable default ibuffer filter groups.
-See `blc-ibuffer-default-group'."
-  (ibuffer-switch-to-saved-filter-groups blc-ibuffer-default-group))
+;;; ielm
 
 (defun blc-ielm-other-window ()
   "Call `ielm' in another window."
   (interactive)
-  (let ((display-buffer-alist `(("" () (inhibit-same-window . t)))))
+  (let ((display-buffer-alist '(("" () (inhibit-same-window . t)))))
     (call-interactively #'ielm)))
 
 (defun blc-info-read-buffer ()
@@ -675,22 +627,24 @@ Return the name of the buffer as a string or `nil'."
                      (let ((name (buffer-name buf))
                            (id   (buffer-local-value
                                   'mode-line-buffer-identification buf)))
-                       `(,(concat name (substring-no-properties (cadr id)))
-                         . ,name)))
+                       (cons (concat name (substring-no-properties (cadr id)))
+                             name)))
                    (blc-derived-buffers #'Info-mode)))
             ((cdr bufs)))
       (blc-elt bufs (completing-read
                      "Info buffer: " (seq-sort-by #'car #'string-lessp bufs)))
     (cdar bufs)))
 
+;;; info
+
 (defun blc-info (&optional buffer)
   "Call `info' on interactively completed BUFFER."
-  (interactive `(,(blc-info-read-buffer)))
+  (interactive (list (blc-info-read-buffer)))
   (info nil buffer))
 
 (defun blc-info-other-window (&optional buffer)
   "Call `info-other-window' on interactively completed BUFFER."
-  (interactive `(,(blc-info-read-buffer)))
+  (interactive (list (blc-info-read-buffer)))
   (info-other-window nil buffer))
 
 (defun blc-info-kill ()
@@ -700,17 +654,25 @@ Return the name of the buffer as a string or `nil'."
       (save-buffers-kill-emacs)
     (quit-window t)))
 
+;;; isearch
+
 (defun blc-isearch-delight ()
   "Shorten lighter of `isearch-mode'."
   (setq isearch-mode "🔍"))
 
+;;; ivy
+
 (defun blc-ivy-recentf (&optional count)
   "Return first COUNT or `ivy-height'/2 items in `recentf-list'."
-  (seq-take recentf-list (or count (ash ivy-height -1))))
+  (seq-take (bound-and-true-p recentf-list) (or count (ash ivy-height -1))))
+
+;;; ledger
 
 (defun blc-ledger-frame-width ()
   "Return available `frame-width' as a string."
   (number-to-string (blc-but-fringes (frame-width))))
+
+;;; man
 
 (defun blc--man-other-buffer (&optional prev)
   "Switch to next `man' buffer (previous if PREV is non-nil)."
@@ -730,21 +692,10 @@ Return the name of the buffer as a string or `nil'."
   (interactive)
   (blc--man-other-buffer t))
 
-(defun blc-msmtp-addresses ()
-  "Return list of unique addresses in ~/.msmtprc."
-  (blc-with-contents "~/.msmtprc"
-    (let (addresses)
-      (while (blc-search-forward
-              (rx bol "account" (+ space) (group (+ (not space))) eol))
-        (when (blc-search-forward
-               (rx bol "from" (+ space)
-                   (group (+ (not space)) ?@ (+ (not space))
-                          ?. (+ (not space))) eol))
-          (push (match-string-no-properties 1) addresses)))
-      (nreverse addresses))))
+;;; message
 
 (defun blc-message-set-msmtp-from ()
-  "Replace From header with address read from ~/.msmtprc."
+  "Replace From header with address read from `~/.msmtprc'."
   (interactive)
   (thread-last (completing-read "From address: " (blc-msmtp-addresses)
                                 nil t nil nil user-mail-address)
@@ -766,6 +717,8 @@ Return the name of the buffer as a string or `nil'."
       (y-or-n-p "Mention of \"attach\" but no attachments; send anyway? ")
       (keyboard-quit)))
 
+;;; org
+
 (defun blc--org-agenda-day-1 (n sign iter origin)
   "Subroutine of `blc--org-agenda-day'."
   (while (unless (zerop n)
@@ -778,8 +731,8 @@ Return the name of the buffer as a string or `nil'."
   "Move N agenda date lines forward (backward if N is negative)."
   (apply #'blc--org-agenda-day-1 n (cl-signum n)
          (if (natnump n)
-             `(,#'next-single-property-change ,#'line-end-position)
-           `(,#'previous-single-property-change ,#'line-beginning-position))))
+             (list #'next-single-property-change #'line-end-position)
+           (list #'previous-single-property-change #'line-beginning-position))))
 
 (defun blc-org-agenda-day-backward (n)
   "Like `previous-line', but for `org' agenda date lines."
@@ -800,12 +753,12 @@ Defaults to `org-directory' and `org-default-notes-file'."
 
 (defun blc-org-find-file (&optional file)
   "Like `find-file', but defaults to `org-directory' files."
-  (interactive `(,(blc-org-read-file)))
+  (interactive (list (blc-org-read-file)))
   (find-file file))
 
 (defun blc-org-find-file-other-window (&optional file)
   "Like `blc-org-find-file', but opens another window."
-  (interactive `(,(blc-org-read-file)))
+  (interactive (list (blc-org-read-file)))
   (find-file-other-window file))
 
 (defun blc-org-prop-captured ()
@@ -813,37 +766,25 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (org-set-property
    "captured" (format-time-string (org-time-stamp-format t t))))
 
-(defun blc-package-dir (pkg)
-  "Return installation directory of external PKG or nil."
-  (and-let* ((dsc (cadr (assoc-string pkg package-alist)))
-             (dir (package-desc-dir dsc))
-             ((stringp dir)))
-    dir))
+;;; python
 
-(defun blc--package-read-dir ()
-  "Read a package name and return its directory.
-Return `package-user-dir' if no directory is found."
-  (or (blc-package-dir
-       (completing-read "Package name: "
-                        (sort (map-keys package-alist) #'string-lessp)
-                        nil t nil 'blc-package-history))
-      package-user-dir))
+(defun blc-python-pep-8-comments ()
+  "Adapt `comment-inline-offset' to PEP-8 recommendations."
+  (setq-local comment-inline-offset 2))
 
-(defun blc-package-find (pkg)
-  "Visit installation directory of PKG name with `dired'.
-Visit `package-user-dir' if such a directory is not found."
-  (interactive `(,(blc--package-read-dir)))
-  (dired pkg))
+;;; solar
 
-(defun blc-package-find-other-window (pkg)
-  "Like `blc-package-find', but use another window."
-  (interactive `(,(blc--package-read-dir)))
-  (dired-other-window pkg))
+(defun blc-solar-set-location (&optional location)
+  "Reconcile solar calendar with LOCATION from `blc-locations'."
+  (interactive (list (completing-read "Location: " blc-locations nil t nil ()
+                                      (blc-system-location))))
+  (pcase-let (((plist :country country :lat lat :long long)
+               (blc-elt blc-locations location)))
+    (setq-default calendar-latitude      lat
+                  calendar-longitude     long
+                  calendar-location-name (format "%s, %s" location country))))
 
-(defun blc-package-find-other-frame (pkg)
-  "Like `blc-package-find', but use another frame."
-  (interactive `(,(blc--package-read-dir)))
-  (dired-other-frame pkg))
+;;; term
 
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
@@ -852,27 +793,7 @@ Visit `package-user-dir' if such a directory is not found."
       (term-line-mode)
     (term-char-mode)))
 
-(defun blc-configure-beamer ()
-  "Configure LaTeX Beamer intermediate suffixes."
-  (add-to-list 'LaTeX-clean-intermediate-suffixes "\\.vrb"))
-
-(defun blc-configure-latexmk ()
-  "Configure Latexmk commands and intermediate suffixes."
-  (add-to-list 'LaTeX-clean-intermediate-suffixes "\\.fdb_latexmk")
-
-  (let* ((exe "latexmk")
-         (nom (setq-default TeX-command-default (capitalize exe))))
-
-    (dolist (pvc '(nil t))
-      (let* ((nom (format "%s%s"     nom (if pvc " PVC" "")))
-             (cmd (format "%s%s %%t" exe (if pvc "-pvc -view=none" "")))
-             (dsc (format "Run %s"   nom)))
-        (blc-put TeX-command-list nom      ; Command name
-                 `(,cmd                    ; Non-expanded shell command
-                   TeX-run-command         ; Process handler
-                   nil                     ; Confirm expanded shell command
-                   (latex-mode LaTeX-mode) ; Applicable modes
-                   :help ,dsc))))))        ; Command
+;;; tile
 
 (defun blc-tile (&optional select)
   "Tile windows with `tile' and report new strategy.
@@ -881,226 +802,1211 @@ With prefix argument SELECT, call `tile-select' instead."
   (funcall (if select #'tile-select #'tile))
   (message "%s" (tile-get-name (eieio-oref tile-cycler 'current-strategy))))
 
+;;; visual-fill-column
+
+(defun blc-visual-auto-fill-column ()
+  "Reconcile `visual-fill-column-mode' with `auto-fill-mode'.
+Keep `visual-fill-column-width' larger than `fill-column' for
+less jumpy auto-filling."
+  (setq visual-fill-column-width (+ fill-column 20)))
+
+;;; xref-js2
+
 (defun blc-xref-js2-install-backend ()
   "Locally install `xref-js2-xref-backend'."
   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
 
 
-;;;; MISCELLANEA
-
-;; Custom theme
-(load-theme 'blc-dark t)
-
-;; Maximise initial frame
-(map-put initial-frame-alist 'fullscreen 'maximized)
-
-;; Disable menu and tool bars
-(mapc (lambda (param)
-        (map-put default-frame-alist param 0))
-      '(menu-bar-lines tool-bar-lines))
-
-;; Set default font under X
-(map-put (map-elt window-system-default-frame-alist 'x)
-         'font "DejaVu Sans Mono-8")
-
-;; Ask short questions
-(advice-add #'yes-or-no-p :override #'y-or-n-p)
-
-;; Like a free bird
-(function-put #'narrow-to-region 'disabled nil)
+;;;; VARIABLES
 
 (setq-default
- ;; buffer
- fill-column                     blc-chars-per-line
- indicate-buffer-boundaries      t
- mode-line-format                (blc-sed-tree " +" " " mode-line-format)
- tab-width                       2
+ ;; buffer.c
+ fill-column                            blc-chars-per-line
+ indicate-buffer-boundaries             t
+ mode-line-format                       (blc-sed-tree " +" " " mode-line-format)
+ tab-width                              2
 
- ;; callint
- mark-even-if-inactive           nil
+ ;; callint.c
+ mark-even-if-inactive                  nil
 
- ;; callproc
- shell-file-name                 "/bin/sh"
+ ;; callproc.c
+ shell-file-name                        "/bin/sh"
 
- ;; doc
- text-quoting-style              'grave
+ ;; doc.c
+ text-quoting-style                     'grave
+
+ ;; frame.c
+ default-frame-alist                    '((menu-bar-lines . 0))
+ frame-resize-pixelwise                 t
+
+ ;; indent.c
+ indent-tabs-mode                       nil
+
+ ;; window.c
+ fast-but-imprecise-scrolling           t
+ recenter-redisplay                     nil
+ scroll-preserve-screen-position        t
+ window-combination-resize              t
+
+ ;; xdisp.c
+ auto-hscroll-mode                      'current-line
+ highlight-nonselected-windows          t
+ line-number-display-limit-width        (ash blc-chars-per-line 3)
+ scroll-conservatively                  most-positive-fixnum
+ scroll-margin                          1
+ scroll-step                            1
+
+ ;; xfns.c
+ x-gtk-use-system-tooltips              nil
+
+ ;; ag
+ ag-highlight-search                    t
+
+ ;; alert
+ alert-default-style                    'notifications
+
+ ;; asm-mode
+ asm-comment-char                       ?#
+
+ ;; auth-source
+ auth-source-cache-expiry               (blc-mins-to-secs 15)
+ auth-source-debug                      'trivia
+ auth-sources                           '(blc-pass)
+
+ ;; avy
+ avy-all-windows                        'all-frames
+ avy-background                         t
+
+ ;; battery
+ battery-load-critical                  20
+ battery-mode-line-format               "%L%p%% "
+
+ ;; bbdb
+ bbdb-complete-mail-allow-cycling       t
+ bbdb-default-country                   nil
+ bbdb-name-format                       'last-first
+ bbdb-phone-style                       nil
+ bbdb-pop-up-window-size                t
+ bbdb-read-name-format                  'first-last
+
+ ;; bibtex
+ bibtex-align-at-equal-sign             t
+
+ ;; bindings
+ mode-line-percent-position             '(-3 "%o")
+
+ ;; bookmark
+ bookmark-save-flag                     1
+ bookmark-search-delay                  0
+
+ ;; browse-url
+ browse-url-browser-function            #'blc-browse-url
+
+ ;; calendar
+ calendar-date-style                    'iso
+ calendar-christian-all-holidays-flag   t
+ calendar-islamic-all-holidays-flag     t
+
+ ;; chess
+ chess-images-default-size              blc-chars-per-line
+
+ ;; compile
+ compilation-message-face               'default
+ compilation-scroll-output              'first-error
+ compile-command                        "make"
+
+ ;; copyright
+ copyright-names-regexp                 (regexp-quote user-full-name)
+
+ ;; counsel
+ counsel-describe-function-preselect    #'ivy-function-called-at-point
+ counsel-find-file-at-point             t
+ counsel-git-grep-skip-counting-lines   t
+ counsel-grep-base-command              "ag --nocolor %s %s" ; Smart case
+ counsel-mode-map                       ()                   ; Control remaps
+ counsel-org-goto-display-tags          t
+ counsel-org-goto-display-todo          t
+ counsel-org-goto-face-style            'verbatim
+ counsel-yank-pop-filter                #'identity
+ ffap-file-finder                       #'blc-counsel-find-file
+
+ ;; csv-mode
+ csv-align-style                        'auto
+
+ ;; cus-edit
+ custom-unlispify-menu-entries          nil
+ custom-unlispify-tag-names             nil
+
+ ;; debbugs
+ debbugs-gnu-trunk-directory            source-directory
+
+ ;; diary-lib
+ diary-comment-start                    ";"
+ diary-number-of-entries                3
+
+ ;; dired
+ dired-auto-revert-buffer               t
+ dired-dwim-target                      t
+ dired-listing-switches                 (string-join
+                                         '("--almost-all"
+                                           "--classify"
+                                           "--group-directories-first"
+                                           "--human-readable"
+                                           "-l")
+                                         " ")
+ dired-recursive-copies                 'always
+
+ ;; dired-aux
+ dired-create-destination-dirs          'ask
+
+ ;; disaster
+ disaster-objdump
+ "objdump -D -M att -Sl --no-show-raw-insn"
+
+ ;; doc-view
+ doc-view-conversion-refresh-interval   nil
+ doc-view-pdf->png-converter-function   #'blc-doc-view-pdf-to-png
+
+ ;; dropbox
+ dropbox-locale                         "en_IE"
+ dropbox-verbose                        t
+
+ ;; ebib
+ ebib-bibtex-dialect                    'biblatex
+ ebib-use-timestamp                     t
+
+ ;; emms
+ emms-volume-change-function            #'emms-volume-pulse-change
+
+ ;; enwc
+ enwc-ask-to-save-interfaces            nil
+ enwc-default-backend                   'nm
+
+ ;; ess
+ ess-default-style                      'DEFAULT
+ ess-indent-from-lhs                    nil
+
+ ;; eww
+ eww-search-prefix
+ "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q="
+
+ ;; ffap
+ dired-at-point-require-prefix          t
+ ffap-require-prefix                    t
+ ffap-rfc-path                          "https://ietf.org/rfc/rfc%s.txt"
+
+ ;; files
+ auto-save-visited-interval             auto-save-timeout
+ backup-by-copying                      t
+ backup-directory-alist                 '(("" . "~/.backup/"))
+ delete-old-versions                    t
+ directory-free-space-args              "-hP"
+ find-file-visit-truename               t
+ kept-new-versions                      4
+ kept-old-versions                      2
+ mode-require-final-newline             nil
+ version-control                        t
+
+ ;; fill-column-indicator
+ fci-rule-column                        blc-chars-per-line
+
+ ;; font-lock
+ font-lock-maximum-decoration           t
+
+ ;; footnote
+ footnote-body-tag-spacing              1
+ footnote-mode-line-string              ""
+ footnote-section-tag                   ""
+ footnote-spaced-footnotes              nil
 
  ;; frame
- frame-resize-pixelwise          t
+ window-divider-default-right-width     2
+
+ ;; generic-x
+ generic-use-find-file-hook             nil
+
+ ;; ggtags
+ ggtags-enable-navigation-keys          nil
+
+ ;; ghc
+ ghc-doc-browser-function               #'blc-browse-url-ghc-doc
+
+ ;; git-annex
+ git-annex-commit                       nil
+
+ ;; git-commit
+ git-commit-summary-max-length          50
+ global-git-commit-mode                 nil
+
+ ;; gnus
+ gnus-home-directory                    user-emacs-directory
+ gnus-init-file                         (expand-file-name
+                                         "gnus" gnus-home-directory)
+
+ ;; gnus-desktop-notify
+ gnus-desktop-notify-groups             'gnus-desktop-notify-explicit
+ gnus-desktop-notify-format             "%3n: %G"
+ gnus-desktop-notify-function           #'gnus-desktop-notify-send
+
+ ;; gnutls
+ gnutls-min-prime-bits                  nil
+
+ ;; gscholar-bibtex
+ gscholar-bibtex-database-file          blc-bib-file
+
+ ;; hacker-typer
+ hacker-typer-show-hackerman            t
+
+ ;; haskell-mode
+ haskell-completing-read-function       #'completing-read
+ haskell-indent-offset                  2
+ haskell-notify-p                       t
+ haskell-process-log                    t
+ haskell-process-suggest-hoogle-imports t
+ haskell-process-suggest-remove-import-lines
+ t
+
+ ;; helm-make
+ helm-make-cache-targets                t
+ helm-make-completion-method            'ivy
+ helm-make-list-target-method           'qp
+ helm-make-require-match                nil
+
+ ;; holidays
+ holiday-bahai-holidays                 ()
+ holiday-oriental-holidays              ()
+
+ ;; htmlize
+ htmlize-css-name-prefix                "htmlize-"
+ htmlize-html-charset                   "utf-8"
+ htmlize-html-major-mode                #'mhtml-mode
+
+ ;; ibuf-ext
+ ibuffer-filter-groups
+ '(("Book   " (or (derived-mode . bookmark-bmenu-mode)
+                  (derived-mode . bookmark-edit-annotation-mode)
+                  (and (name . "Bookmark Annotation")
+                       (starred-name))))
+   ("Code   " (and (or (derived-mode . prog-mode)
+                       (derived-mode . conf-mode))
+                   (not (saved . "package"))
+                   (not (saved . "REPL"))))
+   ("Custom " (derived-mode . Custom-mode))
+   ("Dired  " (derived-mode . dired-mode))
+   ("Git    "  (or (derived-mode . magit-mode)
+                   (derived-mode . magit-repolist-mode)))
+   ("Gnus   " (or (saved . "gnus")
+                  (derived-mode . gnus-server-mode)
+                  (predicate . (equal (bound-and-true-p gnus-dribble-buffer)
+                                      (buffer-name)))))
+   ("Help   " (or (predicate . (apply #'derived-mode-p
+                                      ibuffer-help-buffer-modes))
+                  (and (name . "Ivy Help")
+                       (starred-name))))
+   ("Image  " (derived-mode . image-mode))
+   ("Log    " (or (derived-mode . TeX-output-mode)
+                  (derived-mode . compilation-mode)
+                  (derived-mode . ivy-occur-mode)
+                  (derived-mode . messages-buffer-mode)
+                  (derived-mode . tags-table-mode)
+                  (predicate . (seq-some
+                                (apply-partially #'equal (buffer-name))
+                                (append blc-gnus-log-buffers
+                                        (blc-as-list
+                                         (bound-and-true-p dired-log-buffer)))))
+                  (and (starred-name)
+                       (or (name . "Backtrace")
+                           (name . "Warnings")
+                           (name . "WoMan-Log")))))
+   ("PDF    " (derived-mode . pdf-view-mode))
+   ("Package" (and (saved . "package")
+                   (not (saved . "REPL"))))
+   ("Process" (and (name . "Async Shell Command")
+                   (starred-name)))
+   ("REPL   " (saved . "REPL"))
+   ("SX     " (or (derived-mode . sx-compose-mode)
+                  (derived-mode . sx-question-list-mode)
+                  (derived-mode . sx-question-mode)
+                  (and (name . "sx temp buffer")
+                       (starred-name))))
+   ("TeX    " (saved . "TeX"))
+   ("Text   " (saved . "text document"))
+   ("Web    " (saved . "web")))
+ ibuffer-old-time                       12
+ ibuffer-show-empty-filter-groups       nil
+
+ ;; ibuffer
+ ibuffer-always-compile-formats         t
+ ibuffer-default-sorting-mode           'alphabetic
+ ibuffer-jump-offer-only-visible-buffers
+ t
+ ibuffer-use-other-window               t
+
+ ;; ido
+ ido-enable-flex-matching               t
+
+ ;; ielm
+ ielm-noisy                             nil
+ ielm-prompt                            "(>) "
 
  ;; indent
- indent-tabs-mode                nil
+ indent-line-function                   #'insert-tab
+
+ ;; irony-eldoc
+ irony-eldoc-use-unicode                t
+
+ ;; isearch
+ isearch-allow-scroll                   t
+
+ ;; ivy
+ ivy-action-wrap                        t
+ ivy-count-format                       "(%d/%d) "
+ ivy-extra-directories                  ()
+ ivy-format-function                    #'ivy-format-function-arrow
+ ivy-on-del-error-function              #'ignore
+ ivy-use-virtual-buffers                t
+ ivy-virtual-abbreviate                 'full
+
+ ;; ivy-bibtex
+ bibtex-completion-display-formats
+ '((t . "\
+${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
+
+ ;; jit-lock
+ jit-lock-stealth-load                  60
+ jit-lock-stealth-time                   4
+
+ ;; js
+ js-indent-level                        4
+ js-switch-indent-offset                js-indent-level
+
+ ;; js-2
+ js2-allow-rhino-new-expr-initializer   nil
+ js2-bounce-indent-p                    t
+ js2-global-externs                     '("define" "location")
+ js2-highlight-level                    3
+ js2-include-node-externs               t
+ js2-mode-assume-strict                 t
+ js2-skip-preprocessor-directives       t
+
+ ;; ledger-mode
+ ledger-post-amount-alignment-at        :decimal
+ ledger-report-auto-refresh-sticky-cursor
+ t
+ ledger-report-use-header-line          t
+ ledger-use-iso-dates                   t
+
+ ;; lpr
+ lpr-add-switches                       nil
+ lpr-command                            "hp-print"
+
+ ;; magit-branch
+ magit-branch-popup-show-variables      t
+
+ ;; magit-diff
+ magit-diff-adjust-tab-width            t
+ magit-revision-use-hash-sections       'quickest
+
+ ;; magit-git
+ magit-list-refs-sortby                 "-creatordate"
+ magit-prefer-remote-upstream           t
+
+ ;; magit-mode
+ magit-display-buffer-function
+ #'magit-display-buffer-same-window-except-diff-v1
+
+ ;; magit-process
+ magit-process-finish-apply-ansi-colors t
+
+ ;; magit-remote
+ magit-remote-add-set-remote.pushDefault
+ 'ask
+
+ ;; magit-repos
+ magit-repository-directories           `((,blc-repos-dir . 2))
+
+ ;; make-mode
+ makefile-macro-assign                  " := "
+ makefile-pickup-everything-picks-up-filenames-p
+ t
+ makefile-tab-after-target-colon        nil
+
+ ;; man
+ Man-notify-method                      'aggressive
+
+ ;; markdown-mode
+ markdown-fontify-code-blocks-natively  t
+ markdown-header-scaling                t
+
+ ;; message
+ message-confirm-send                   t
+ message-from-style                     'angles
+ message-forward-before-signature       nil
+ message-make-forward-subject-function  #'message-forward-subject-fwd
+ message-mail-alias-type                nil
+ message-send-mail-function             #'message-send-mail-with-sendmail
+ message-sendmail-envelope-from         'header
+ message-signature                      (car (split-string user-full-name))
+
+ ;; mines
+ mines-empty-cell-char                  ?\s
+ mines-flagged-cell-char                ?⚑
+
+ ;; minibuffer
+ completing-read-function               #'ivy-completing-read
+ completion-in-region-function          #'ivy-completion-in-region
+
+ ;; minimap
+ minimap-highlight-line                 nil
+ minimap-recenter-type                  'relative
+ minimap-width-fraction                 0.05
+ minimap-window-location                'right
+
+ ;; mm-decode
+ mm-decrypt-option                      'ask
+ mm-external-terminal-program           "x-terminal-emulator"
+ mm-html-blocked-images                 nil
+ mm-inline-large-images                 'resize
+ mm-sign-option                         'guided
+ mm-text-html-renderer                  'gnus-w3m
+ mm-verify-option                       'always
+
+ ;; mml-sec
+ mml-secure-verbose                     t
+
+ ;; mpc
+ mpc-frame-alist                        '((tool-bar-lines . 1))
+
+ ;; mule-cmds
+ default-input-method                   "greek"
+
+ ;; mwheel
+ mwheel-tilt-scroll-p                   t
+
+ ;; newsticker
+ newsticker-date-format                 "(%F %a %R %:::z)"
+ newsticker-treeview-date-format        "%F %R %:::z "
+ newsticker-treeview-own-frame          t
+ newsticker-url-list
+ '(("HN"
+    "https://hnrss.org/frontpage")
+   ("LWN"
+    "https://lwn.net/headlines/rss")
+   ("NYT"
+    "https://nytimes.com/services/xml/rss/userland/HomePage.xml")
+   ("NYT Tech"
+    "https://nytimes.com/services/xml/rss/userland/Technology.xml")
+   ("QotD"
+    "https://feeds.feedburner.com/quotationspage/qotd")
+   ("Spiegel"
+    "http://spiegel.de/schlagzeilen/tops/index.rss")
+   ("Spiegel Net"
+    "http://spiegel.de/netzwelt/index.rss")
+   ("Spiegel Sci"
+    "http://spiegel.de/wissenschaft/index.rss")
+   ("Wired"
+    "https://wired.com/feed/rss"))
+ newsticker-url-list-defaults           ()
+
+ ;; ob-python
+ org-babel-python-command               "python3"
+
+ ;; org
+ org-directory                          (blc-dir user-emacs-directory "org")
+ org-default-notes-file                 (blc-file org-directory "notes.org")
+
+ org-M-RET-may-split-line               nil
+ org-agenda-files                       (expand-file-name "agenda-index"
+                                                          org-directory)
+ org-archive-location                   (format "%s::" (blc-file org-directory
+                                                                 "archive.org"))
+ org-catch-invisible-edits              'smart
+ org-columns-default-format
+ "%ITEM %TODO %1PRIORITY %TAGS %Effort{:} %CLOCKSUM"
+ org-ctrl-k-protect-subtree             t
+ org-goto-interface                     'outline-path-completion
+ org-goto-max-level                     10
+ org-hierarchical-todo-statistics       nil
+ org-highlight-latex-and-related        '(entities latex script)
+ org-log-done                           'note
+ org-log-into-drawer                    t
+ org-log-redeadline                     'note
+ org-log-reschedule                     'note
+ org-modules                            '(org-bibtex
+                                          org-bookmark
+                                          org-docview
+                                          org-eshell
+                                          org-eww
+                                          org-gnus
+                                          org-id
+                                          org-info
+                                          org-man)
+ org-outline-path-complete-in-steps     nil
+ org-property-format                    "%-20s %s"
+ org-refile-allow-creating-parent-nodes 'confirm
+ org-refile-targets                     `((org-agenda-files
+                                           . (:maxlevel . ,org-goto-max-level)))
+ org-refile-use-outline-path            'file
+ org-reverse-note-order                 t
+ org-special-ctrl-a/e                   t
+ org-startup-indented                   t
+ org-todo-keywords
+ '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
+         "DONE(d!)" "VOID(v@)"))
+ org-treat-S-cursor-todo-selection-as-state-change
+ nil
+ org-use-speed-commands                 t
+
+ ;; org-agenda
+ org-agenda-todo-ignore-with-date       t
+ org-agenda-todo-list-sublevels         nil
+ org-agenda-window-setup                'other-frame
+
+ ;; org-capture
+ org-capture-bookmark                   nil
+
+ ;; org-clock
+ org-clock-idle-time                    10
+ org-clock-persist                      'history
+
+ ;; org-footnote
+ org-footnote-section                   nil
+
+ ;; org-list
+ org-checkbox-hierarchical-statistics   nil
+ org-list-demote-modify-bullet          '(("+" . "-") ("-" . "+"))
+ org-list-use-circular-motion           t
+
+ ;; ox
+ org-export-coding-system               'utf-8
+
+ ;; ox-html
+ org-html-checkbox-type                 'html
+ org-html-doctype                       "html5"
+ org-html-html5-fancy                   t
+ org-html-htmlize-output-type           'css
+ org-html-metadata-timestamp-format     "%F %a %R %Z"
+ org-html-validation-link               ""
+
+ ;; ox-publish
+ org-publish-use-timestamps-flag        nil
+
+ ;; paragraphs
+ sentence-end-double-space              nil
+
+ ;; password-cache
+ password-cache                         nil
+
+ ;; pcomplete
+ pcomplete-ignore-case                  t
+
+ ;; pdf-view
+ pdf-view-display-size                  'fit-page
+
+ ;; proced
+ proced-auto-update-flag                t
+
+ ;; projectile
+ projectile-completion-system           'ivy
+ projectile-find-dir-includes-top-level t
+ ;; Delight mode but not project name
+ projectile-mode-line
+ '(:eval (format "[%s]" (if (file-remote-p default-directory)
+                            "📡"
+                          (projectile-project-name))))
+
+ ;; prolog
+ prolog-system                          'swi
+
+ ;; recentf
+ ;; Do not attempt to `abbreviate-file-name' of root Tramp files
+ recentf-initialize-file-name-history   nil
+
+ ;; reftex
+ reftex-cite-format                     ebib-bibtex-dialect
+ reftex-comment-citations               t
+ reftex-plug-into-AUCTeX                t
+ reftex-revisit-to-follow               t
+
+ ;; sendmail
+ sendmail-program                       "msmtp"
+
+ ;; server
+ server-kill-new-buffers                nil
+
+ ;; sh-script
+ sh-basic-offset                        2
+ sh-indentation                         2
+
+ ;; shell
+ explicit-shell-file-name               (or (getenv "ESHELL")
+                                            (getenv "SHELL")
+                                            "/bin/bash")
+
+ ;; shr
+ shr-bullet                             "• "
+ shr-hr-line                            ?─
+ shr-width                              blc-chars-per-line
+
+ ;; simple
+ async-shell-command-display-buffer     nil
+ indicate-unused-lines                  t
+ kill-do-not-save-duplicates            t
+ kill-whole-line                        t
+ mail-user-agent                        'gnus-user-agent
+ next-error-recenter                    '(4)
+ read-mail-command                      'gnus
+ yank-pop-change-selection              t
+
+ ;; solar
+ calendar-time-display-form
+ '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")")))
+
+ ;; speedbar
+ speedbar-show-unknown-files            t
+ speedbar-update-flag                   nil
+ speedbar-use-images                    t
+ speedbar-vc-do-check                   nil
+
+ ;; sr-speedbar
+ sr-speedbar-auto-refresh               nil
+
+ ;; startup
+ inhibit-default-init                   t
+ inhibit-startup-screen                 t
+ initial-scratch-message
+ (or (blc-with-contents (or (getenv "COWTUNE_FILE") "~/.cowtune")
+       (let ((pmin (point-min-marker))
+             (pmax (point-max-marker))
+             (comment-start ";;")
+             (comment-empty-lines t)
+             delete-trailing-lines)
+         (comment-region             pmin pmax)
+         (delete-trailing-whitespace pmin pmax)
+         (buffer-substring           pmin pmax)))
+     initial-scratch-message)
+
+ ;; swiper
+ swiper-goto-start-of-match             t
+
+ ;; sx
+ sx-question-mode-comments-format       "%s:\n   %s\n"
+
+ ;; tex
+ TeX-auto-save                          t
+ TeX-engine                             'xetex
+ TeX-parse-self                         t
+ TeX-PDF-mode                           t
+
+ ;; tex-style
+ LaTeX-csquotes-open-quote              "\\enquote{"
+ LaTeX-csquotes-close-quote             "}"
+
+ ;; time
+ display-time-format                    "%a %d %b %R %:::z"
+ display-time-load-average-threshold    0
+ display-time-mail-string               "✉"
+ display-time-world-list
+ (map-apply (lambda (loc props)
+              (list (apply #'blc--location-to-tz loc props) loc))
+            blc-locations)
+ display-time-world-time-format         display-time-format
+
+ ;; tls
+ tls-checktrust                         'ask
+
+ ;; tooltip
+ tooltip-resize-echo-area               t
+
+ ;; tramp
+ tramp-default-method                   "rsync"
+
+ ;; uniquify
+ uniquify-after-kill-buffer-p           nil
+ uniquify-buffer-name-style             'forward
+ uniquify-min-dir-content               1
+ uniquify-trailing-separator-p          t
+
+ ;; vc-hooks
+ vc-handled-backends                    '(Git)
+
+ ;; warnings
+ warning-minimum-log-level              :debug
+
+ ;; wdired
+ wdired-allow-to-change-permissions     t
+
+ ;; webjump
+ webjump-sites
+ '(("Book Depository"
+    . [simple-query "https://bookdepository.com/"
+                    "https://bookdepository.com/search?searchTerm=hi"
+                    ""])
+   ("Emacs Wiki"
+    . [simple-query "https://emacswiki.org/"
+                    "https://emacswiki.org/cgi-bin/wiki/"
+                    ""])
+   ("GitHub"
+    . [mirrors      "https://github.com/"
+                    "https://github.com/basil-conto"
+                    "https://github.com/issues"
+                    "https://github.com/notifications"
+                    "https://github.com/pulls"
+                    "https://github.com/search"])
+   ("Google Definition"
+    . [simple-query "https://encrypted.google.com/"
+                    "https://encrypted.google.com/search?q=define+"
+                    "&ie=utf-8&oe=utf-8"])
+   ("Google Encrypted"
+    . [simple-query "https://encrypted.google.com/"
+                    "https://encrypted.google.com/search?q="
+                    "&ie=utf-8&oe=utf-8"])
+   ("Google Scholar"
+    . [simple-query "https://scholar.google.com/"
+                    "https://scholar.google.com/scholar?q="
+                    ""])
+   ("Hoogle"
+    . [simple-query "https://haskell.org/hoogle/"
+                    "https://haskell.org/hoogle/?hoogle="
+                    ""])
+   ("IMDB"
+    . [simple-query "http://imdb.com/"
+                    "http://imdb.com/find?q="
+                    ""])
+   ("Imgur"
+    .               "http://imgur.com/")
+   ("Stack Overflow"
+    . [simple-query "https://stackoverflow.com/"
+                    "https://stackoverflow.com/search?q="
+                    ""])
+   ("Wikipedia"
+    . [simple-query "https://en.wikipedia.org/"
+                    "https://en.wikipedia.org/w/index.php?search="
+                    ""]))
+
+ ;; whitespace
+ whitespace-global-modes                (list 'not #'shell-mode)
+ whitespace-style                       '(face tab-mark trailing)
+
+ ;; windmove
+ windmove-window-distance-delta         2
+ windmove-wrap-around                   t
 
  ;; window
- recenter-redisplay              nil
- scroll-preserve-screen-position t
- window-combination-resize       t
+ frame-auto-hide-function               #'delete-frame
+ pop-up-frames                          'graphic-only
+ scroll-error-top-bottom                t
+ split-window-keep-point                nil
 
- ;; xdisp
- auto-hscroll-mode               'current-line
- highlight-nonselected-windows   t
- line-number-display-limit-width (ash blc-chars-per-line 3)
- scroll-conservatively           most-positive-fixnum
- scroll-margin                   1
- scroll-step                     1
+ ;; wttrin
+ wttrin-default-accept-language         '("Accept-Language" . "el,en,*")
+ wttrin-default-cities
+ (cons "Moon" (map-apply
+               (pcase-lambda (loc (app (apply #'blc--country-xref) country))
+                 (format "%s, %s" loc (plist-get country :name)))
+               blc-locations)))
 
- ;; xfns
- x-gtk-use-system-tooltips       nil)
+
+;;;; HOOKS
 
-;;; Bindings
+(blc-hook
+  ;; auctex
+  (:hooks TeX-after-compilation-finished-functions
+          :fns TeX-revert-document-buffer)
+
+  ;; auth-source
+  (:hooks auth-source-backend-parser-functions :fns blc-pass-backend-parse)
+
+  ;; bbdb
+  (:hooks gnus-started-hook :fns blc-bbdb-set-gnus-summary-line-format)
+  (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus)
+
+  ;; bug-reference
+  (:hooks prog-mode-hook :fns bug-reference-prog-mode)
+  (:hooks text-mode-hook :fns bug-reference-mode)
+
+  ;; cc-mode
+  (:hooks c-mode-common-hook :fns (blc-turn-on-c++-comments
+                                   hs-minor-mode))
+
+  ;; counsel-projectile
+  (:hooks projectile-mode-hook :fns counsel-projectile-on)
+
+  ;; csv-mode
+  (:hooks csv-mode-hook :fns blc-csv-align-all-fields)
+
+  ;; dafny-mode
+  (:hooks dafny-mode-hook :fns blc-turn-off-prettify-symbols)
+
+  ;; electric
+  (:fns blc-turn-off-electric-indent-local :hooks (apt-sources-list-mode-hook
+                                                   conf-mode-hook
+                                                   dafny-mode-hook
+                                                   haskell-cabal-mode-hook
+                                                   haskell-mode-hook
+                                                   js2-mode-hook
+                                                   lisp-mode-hook
+                                                   restclient-mode-hook
+                                                   text-mode-hook))
+
+  ;; elisp-mode
+  (:hooks emacs-lisp-mode-hook :fns (blc-rainbow-mode
+                                     blc-turn-on-lexical-binding))
+
+  ;; eshell
+  (:hooks eshell-output-filter-functions :fns eshell-truncate-buffer)
+
+  ;; executable
+  (:hooks after-save-hook
+          :fns executable-make-buffer-file-executable-if-script-p)
+
+  ;; ffap
+  (:hooks ffap-gnus-hook :hooks (gnus-article-mode-hook
+                                 gnus-summary-mode-hook))
+
+  ;; fic-mode
+  (:fns fic-mode :hooks (conf-mode-hook
+                         ess-mode-hook
+                         haskell-cabal-mode-hook
+                         mustache-mode-hook
+                         prog-mode-hook
+                         text-mode-hook))
+
+  ;; files
+  (:hooks find-file-hook :fns blc-strip-large-buffer)
+
+  ;; fill-column-indicator
+  (:fns turn-on-fci-mode  :hooks (conf-mode-hook
+                                  ess-mode-hook
+                                  haskell-cabal-mode-hook
+                                  mustache-mode-hook
+                                  prog-mode-hook
+                                  text-mode-hook))
+  (:fns turn-off-fci-mode :hooks (lisp-interaction-mode-hook
+                                  message-mode-hook
+                                  org-mode-hook
+                                  visual-line-mode-hook))
+
+  ;; flycheck
+  (:hooks flycheck-mode-hook :fns blc-turn-off-flycheck)
+
+  ;; footnote
+  (:hooks message-setup-hook :fns footnote-mode)
+
+  ;; ghc
+  (:hooks haskell-mode-hook :fns ghc-init)
+
+  ;; git-commit
+  (:hooks git-commit-setup-hook :fns (blc-git-commit-set-fill-column
+                                      blc-turn-on-double-space-sentence-ends
+                                      bug-reference-mode))
+
+  ;; gitconfig-mode
+  (:hooks gitconfig-mode-hook :fns blc-turn-off-indent-tabs)
+
+  ;; gnus
+  (:hooks gnus-load-hook    :fns blc-gc-thresh-maximise)
+  (:hooks gnus-started-hook :fns blc-gc-thresh-restore )
+
+  ;; haskell-mode
+  (:hooks haskell-mode-hook :fns (haskell-indent-mode
+                                  interactive-haskell-mode))
+
+  ;; help-mode
+  (:hooks help-mode-hook :fns blc-restore-tab-width)
+
+  ;; hi-lock
+  (:hooks hi-lock-mode-hook :fns blc-hi-lock-no-eof-nl)
+
+  ;; hl-line
+  (:fns hl-line-mode :hooks (dired-mode-hook
+                             git-rebase-mode-hook
+                             ibuffer-mode-hook
+                             ivy-occur-mode-hook
+                             ledger-report-mode-hook
+                             newsticker-treeview-list-mode
+                             org-agenda-mode-hook
+                             tabulated-list-mode-hook))
+
+  ;; ibuf-ext
+  (:hooks ibuffer-mode-hook :fns ibuffer-auto-mode)
+
+  ;; ielm
+  (:hooks ielm-mode-hook :fns blc-turn-on-lexical-binding)
+
+  ;; irony
+  (:hooks irony-mode-hook :fns (irony-cdb-autosetup-compile-options
+                                irony-eldoc))
+
+  ;; isearch
+  (:hooks isearch-mode-hook :fns blc-isearch-delight)
+
+  ;; js2-mode
+  (:hooks js2-mode-hook :fns (js2-highlight-unused-variables-mode
+                              js2-refactor-mode
+                              blc-xref-js2-install-backend))
+
+  ;; message
+  (:hooks message-mode-hook :fns blc-turn-on-double-space-sentence-ends)
+  (:hooks message-send-hook :fns blc-message-confirm-attach)
+  (:hooks message-subscribed-address-functions
+          :fns gnus-find-subscribed-addresses)
+
+  ;; mm-decode
+  (:hooks mm-file-name-rewrite-functions :hooks mm-file-name-replace-whitespace)
+
+  ;; org
+  (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
+
+  ;; paren-face
+  (:hooks prog-mode-hook :fns global-paren-face-mode)
+
+  ;; pascal
+  (:hooks pascal-mode-hook :fns blc-turn-on-c++-comments)
+
+  ;; pdf-tools
+  (:hooks doc-view-mode-hook :fns pdf-tools-install)
+
+  ;; python
+  (:hooks python-mode-hook :fns blc-python-pep-8-comments)
+
+  ;; reftex
+  (:hooks LaTeX-mode-hook :fns turn-on-reftex)
+
+  ;; sass-mode
+  (:hooks sass-mode-hook :fns blc-turn-on-c++-comments)
+
+  ;; simple
+  (:fns turn-on-auto-fill :hooks (bookmark-edit-annotation-mode
+                                  LaTeX-mode-hook
+                                  org-mode-hook))
+
+  ;; startup
+  (:hooks window-setup-hook :append t :fns (blc-report-init-time
+                                            blc-gc-thresh-restore))
+
+  ;; text-mode
+  (:hooks text-mode-hook :fns blc-indent-relative-first-indent-point)
+
+  ;; with-editor
+  (:fns blc-kill-git-buffer :hooks (with-editor-post-cancel-hook
+                                    with-editor-post-finish-hook))
+
+  ;; writeroom-mode
+  (:hooks writeroom-mode-hook :fns blc-visual-auto-fill-column))
+
+
+;;;; BINDINGS
+
+(define-prefix-command 'blc-jump-map)
+(define-prefix-command 'blc-org-map)
 
 (blc-define-keys
   ((current-global-map)
-   ([S-next]                  . #'blc-small-scroll-up)
-   ([S-prior]                 . #'blc-small-scroll-down)
-   ([f5]                      . #'blc-revert-buffer)
-   ([remap info]              . #'blc-info)
-   ([remap info-other-window] . #'blc-info-other-window)
-   ([remap zap-to-char]       . #'zap-up-to-char))
+   ("\C-s"                                . #'counsel-grep-or-swiper)
+   ([?\M-+]                               . #'er/expand-region)
+   ([?\M-o]                               . #'ace-window)
+   ([S-next]                              . #'blc-small-scroll-up)
+   ([S-prior]                             . #'blc-small-scroll-down)
+   ([S-up]                                . #'windmove-up)
+   ([S-down]                              . #'windmove-down)
+   ([S-left]                              . #'windmove-left)
+   ([S-right]                             . #'windmove-right)
+   ([f2]                                  . #'blc-tile)
+   ([f5]                                  . #'blc-revert-buffer)
+   ([remap bookmark-jump]                 . #'counsel-bookmark)
+   ([remap capitalize-word]               . #'capitalize-dwim)
+   ([remap delete-horizontal-space]       . #'cycle-spacing)
+   ([remap describe-bindings]             . #'counsel-descbinds)
+   ([remap describe-function]             . #'counsel-describe-function)
+   ([remap describe-variable]             . #'counsel-describe-variable)
+   ([remap dired]                         . #'dired-at-point)
+   ([remap dired-other-window]            . #'ffap-dired-other-window)
+   ([remap dired-other-frame]             . #'ffap-dired-other-frame)
+   ([remap downcase-word]                 . #'downcase-dwim)
+   ([remap execute-extended-command]      . #'counsel-M-x)
+   ([remap fill-paragraph]                . #'unfill-toggle)
+   ([remap find-file]                     . #'find-file-at-point)
+   ([remap find-file-other-window]        . #'ffap-other-window)
+   ([remap find-file-other-frame]         . #'ffap-other-frame)
+   ([remap find-library]                  . #'counsel-find-library)
+   ([remap imenu]                         . #'counsel-imenu)
+   ([remap info]                          . #'blc-info)
+   ([remap info-other-window]             . #'blc-info-other-window)
+   ([remap info-lookup-symbol]            . #'counsel-info-lookup-symbol)
+   ([remap list-buffers]                  . #'ibuffer)
+   ([remap load-library]                  . #'counsel-load-library)
+   ([remap load-theme]                    . #'counsel-load-theme)
+   ([remap menu-bar-open]                 . #'counsel-tmm)
+   ([remap org-goto]                      . #'counsel-org-goto)
+   ([remap org-set-tags-command]          . #'counsel-org-tag)
+   ([remap pop-global-mark]               . #'counsel-mark-ring)
+   ([remap save-buffers-kill-terminal]    . #'save-buffers-kill-emacs)
+   ([remap switch-to-buffer]              . #'ivy-switch-buffer)
+   ([remap switch-to-buffer-other-window] . #'ivy-switch-buffer-other-window)
+   ([remap upcase-word]                   . #'upcase-dwim)
+   ([remap yank-pop]                      . #'counsel-yank-pop)
+   ([remap zap-to-char]                   . #'zap-up-to-char))
+
   (mode-specific-map
-   ("\C-r"                    . #'blc-rename-buffer)
-   ("C"                       . #'copy-from-above-command)
-   ("e"                       . #'ielm)
-   ("4e"                      . #'blc-ielm-other-window)
-   ("P"                       . #'blc-align-punctuation)
-   ("b"                       . #'blc-org-find-file)
-   ("4b"                      . #'blc-org-find-file-other-window)
-   ("i"                       . #'blc-indent-relative))
+   ("\C-r"                                . #'blc-rename-buffer)
+   ([?\M-g]                               . #'magit-file-popup)
+   ([?\M-n]                               . #'next-logical-line)
+   ([?\M-p]                               . #'previous-logical-line)
+   ("/"                                   . #'define-word-at-point)
+   ("C"                                   . #'copy-from-above-command)
+   ("b"                                   . #'blc-org-find-file)
+   ("4b"                                  . #'blc-org-find-file-other-window)
+   ("e"                                   . #'ielm)
+   ("4e"                                  . #'blc-ielm-other-window)
+   ("i"                                   . #'blc-indent-relative)
+   ("j"                                   . #'blc-jump-map)
+   ("o"                                   . #'blc-org-map)
+   ("p"                                   . #'projectile-command-map)
+   ("s"                                   . #'sx-switchto-map)
+   ("u"                                   . #'counsel-unicode-char))
+
+  (blc-jump-map
+   ("a"                                   . #'counsel-ag)
+   ("b"                                   . #'ibuffer-jump)
+   ("d"                                   . #'counsel-dired-jump)
+   ("e"                                   . #'ebib)
+   ("f"                                   . #'counsel-file-jump)
+   ("g"                                   . #'counsel-git)
+   ("r"                                   . #'ivy-resume)
+   ("w"                                   . #'webjump))
+
+  (blc-org-map
+   ("a"                                   . #'org-agenda)
+   ("c"                                   . #'org-capture)
+   ("l"                                   . #'org-store-link))
+
   (ctl-x-map
-   ("\C-n"                    . #'blc-open-next-line)
-   ("\C-p"                    . #'blc-open-previous-line)
-   ("7"                       . #'blc-transpose-split)
-   ("B"                       . #'blc-bury-buffer)
-   ("M"                       . #'blc-gnus)
-   ("l"                       . #'blc-echo-fast-line-count))
+   ("\C-j"                                . #'dired-jump)
+   ("\C-l"                                . #'counsel-locate)
+   ("\C-n"                                . #'blc-open-next-line)
+   ("\C-p"                                . #'blc-open-previous-line)
+   ([?\M-g]                               . #'magit-dispatch-popup)
+   ("/"                                   . #'engine-mode-prefixed-map)
+   ("7"                                   . #'blc-transpose-split)
+   ("B"                                   . #'blc-bury-buffer)
+   ("M"                                   . #'blc-gnus)
+   ("g"                                   . #'magit-status)
+   ("l"                                   . #'blc-echo-fast-line-count)
+   ("t"                                   . #'sr-speedbar-toggle))
+
   (ctl-x-4-map
-   ("M"                       . #'blc-gnus-other-window))
+   ("\C-j"                                . #'dired-jump-other-window)
+   ("M"                                   . #'blc-gnus-other-window))
+
   (ctl-x-5-map
-   ("3"                       . #'blc-make-graphic-display)
-   ("M"                       . #'blc-gnus-other-frame))
+   ("3"                                   . #'blc-make-graphic-display)
+   ("M"                                   . #'blc-gnus-other-frame))
+
+  (ctl-x-r-map
+   ("4b"                                  . #'bookmark-jump-other-window))
+
   (esc-map
-   ("R"                       . #'redraw-display))
+   ("\C-z"                                . #'raise-sexp)
+   ("R"                                   . #'redraw-display)
+   ("]"                                   . #'avy-goto-word-or-subword-1))
+
   (goto-map
-   ("\t"                      . #'blc-move-to-column)))
+   ("\t"                                  . #'blc-move-to-column)
+   ("e"                                   . #'first-error)
+   ("f"                                   . #'avy-goto-line))
+
+  (help-map
+   ("\C-j"                                . #'counsel-faces)
+   ("\C-m"                                . #'discover-my-major)
+   ("\C-f"                                . #'find-function)
+   ("4f"                                  . #'find-function-other-window)
+   ("4\C-f"                               . #'find-function-other-window)
+   ("5f"                                  . #'find-function-other-frame)
+   ("5\C-f"                               . #'find-function-other-frame)
+   ("\C-k"                                . #'find-function-on-key)
+   ("4k"                                  . #'find-function-on-key-other-window)
+   ("4\C-k"                               . #'find-function-on-key-other-window)
+   ("5k"                                  . #'find-function-on-key-other-frame)
+   ("5\C-k"                               . #'find-function-on-key-other-frame)
+   ("\C-v"                                . #'find-variable)
+   ("4\C-v"                               . #'find-variable-other-window)
+   ("5\C-v"                               . #'find-variable-other-frame))
+
+  (isearch-mode-map
+   ([?\C-']                               . #'avy-isearch)))
 
 
 ;;;; PACKAGES
 
-(use-package 2048-game
-  :ensure)
+;;; editfns.c
+(function-put #'narrow-to-region 'disabled nil)
 
-(use-package abbrev
-  :delight abbrev-mode)
+;;; ace-window
 
-(use-package ace-window
-  :ensure
-  :bind* ("M-o" . ace-window)
-  :config
+(with-eval-after-load 'ace-window
   (ace-window-display-mode))
 
-(use-package ag
-  :ensure
-  :config
-  (setq-default ag-highlight-search t)
+;;; ag
+
+(with-eval-after-load 'ag
   (add-to-list 'ag-arguments "--context=5"))
 
-(use-package alert
-  :ensure
-  :init
-  (setq-default alert-default-style 'notifications))
+;;; apt-sources-list
 
-(use-package apache-mode
-  :ensure)
+(add-to-list 'auto-mode-alist
+             (cons (rx (| ".sources"
+                          (: "sources" (? ".list.d/" (+ anything)) ".list"))
+                       eos)
+                   #'apt-sources-list-mode))
 
-(use-package apt-sources-list
-  :ensure
-  :mode (("\\.sources\\'"                   . apt-sources-list-mode)
-         ("sources\\.list\\'"               . apt-sources-list-mode)
-         ("sources\\.list\\.d/.+\\.list\\'" . apt-sources-list-mode))
-  :init
-  (add-hook 'apt-sources-list-mode-hook #'blc-turn-off-electric-indent-local))
+;;; atomic-chrome
 
-(use-package apt-utils
-  :disabled
-  :commands apt-utils-search apt-utils-show-package)
-
-(use-package ascii
-  :ensure)
-
-(use-package ascii-art-to-unicode
-  :ensure)
-
-(use-package asm-mode
-  :config
-  (setq-default asm-comment-char ?#))
-
-(use-package atomic-chrome
-  :ensure
-  :config
-  (setq-default
-   atomic-chrome-extension-type-list
-   (seq-intersection '(ghost-text) atomic-chrome-extension-type-list))
+(with-eval-after-load 'atomic-chrome
+  (setq-default atomic-chrome-extension-type-list '(ghost-text))
   (blc-put atomic-chrome-url-major-mode-alist "github\\.com" #'gfm-mode))
 
-(use-package auctex-latexmk
-  :ensure)
+;;; auctex
 
-(use-package auth-password-store
-  :ensure)
+(with-eval-after-load 'latex
+  (dolist '(suffix '("fdb_latexmk" "vrb"))
+    (add-to-list 'LaTeX-clean-intermediate-suffixes (blc-rx `(: ?. ,suffix)))))
 
-(use-package auth-source
-  :config
-  ;; Add SMTPS
-  (map-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587"))
+(with-eval-after-load 'tex
+  (define-key TeX-mode-map [remap TeX-documentation-texdoc] #'TeX-doc)
 
-  (add-hook 'auth-source-backend-parser-functions #'blc-pass-backend-parse)
+  ;; Set priority of pre-configured PDF viewers
+  (dolist (viewer '("Zathura" "PDF Tools"))
+    (when (assoc viewer TeX-view-program-list-builtin)
+      (push (list 'output-pdf viewer) TeX-view-program-selection)))
 
-  (setq-default auth-source-cache-expiry (blc-mins-to-secs 15)
-                auth-source-debug        'trivia
-                auth-sources             '(blc-pass)))
+  ;; Configure latexmk commands
+  (let* ((exe "latexmk")
+         (nom (setq-default TeX-command-default (capitalize exe))))
 
-(use-package autorevert
-  :delight auto-revert-mode "↻")
+    (dolist (pvc '(nil t))
+      (let* ((nom (format "%s%s"     nom (if pvc " PVC" "")))
+             (cmd (format "%s%s %%t" exe (if pvc "-pvc -view=none" "")))
+             (dsc (format "Run %s"   nom)))
+        (blc-put TeX-command-list nom           ; Command name
+                 (list cmd                      ; Non-expanded shell command
+                       TeX-run-command          ; Process handler
+                       nil                      ; Confirm expanded shell command
+                       '(latex-mode LaTeX-mode) ; Applicable modes
+                       :help dsc))))))          ; Command
 
-(use-package avy
-  :ensure
-  :bind (:map
-         esc-map
-         ("]"   . avy-goto-word-or-subword-1)
-         :map
-         goto-map
-         ("f" . avy-goto-line)
-         :map
-         isearch-mode-map
-         ("C-'" . avy-isearch))
-  :config
-  (setq-default avy-all-windows 'all-frames
-                avy-background  t))
+;;; auth-source
 
-(use-package babel
-  :ensure)
+(with-eval-after-load 'auth-source
+  (map-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587")))
 
-(use-package battery
-  :init
-  (setq-default battery-load-critical    15
-                battery-mode-line-format "%L%p%% ")
-  (display-battery-mode))
+;;; battery
 
-(use-package bbdb
-  :ensure
-  :init
-  (blc-hook
-    (:hooks gnus-started-hook :fns blc-bbdb-set-gnus-summary-line-format)
-    (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus))
+(display-battery-mode)
 
-  (setq-default bbdb-complete-mail-allow-cycling t
-                bbdb-default-country             nil
-                bbdb-name-format                 'last-first
-                bbdb-phone-style                 nil
-                bbdb-pop-up-window-size          t
-                bbdb-read-name-format            'first-last)
+;;; bbdb
 
-  :config
+(with-eval-after-load 'bbdb
   (map-do #'add-to-list
           `(;; Support Eircode
             (bbdb-legal-postcodes
@@ -1118,62 +2024,23 @@ With prefix argument SELECT, call `tile-select' instead."
                        (blc-msmtp-addresses))
                'words)))
 
-(use-package better-shell
-  :ensure)
+;;; bibtex
 
-(use-package bibtex
-  :commands bibtex-set-dialect
-  :init
-  (setq-default bibtex-align-at-equal-sign t)
-  :config
-  (bibtex-set-dialect 'biblatex))
+(with-eval-after-load 'bibtex
+  (bibtex-set-dialect ebib-bibtex-dialect))
 
-(use-package bibtex-utils
-  :ensure)
+;;; blc-dark-theme
 
-(use-package "bindings"
-  :init
-  (setq-default mode-line-percent-position '(-3 "%o")))
+(load-theme 'blc-dark t)
 
-(use-package bison-mode
-  :ensure)
+;;; blc-lib
 
-(use-package bongo
-  :ensure)
+(blc-dropbox-mode)
+(blc-tomato-mode)
 
-(use-package bookmark
-  :bind (:map
-         ctl-x-r-map
-         ("4 b" . bookmark-jump-other-window))
-  :init
-  (setq-default bookmark-save-flag    1
-                bookmark-search-delay 0))
+;;; cc-mode
 
-(use-package browse-url
-  :init
-  (setq-default browse-url-browser-function #'blc-browse-url))
-
-(use-package bug-reference
-  :init
-  (blc-hook (:hooks prog-mode-hook :fns bug-reference-prog-mode)
-            (:hooks text-mode-hook :fns bug-reference-mode)))
-
-(use-package calendar
-  :init
-  (setq-default
-   calendar-date-style                  'iso
-   calendar-christian-all-holidays-flag t
-   calendar-islamic-all-holidays-flag   t))
-
-(use-package calfw
-  :disabled
-  :ensure)
-
-(use-package cc-mode
-  :init
-  (blc-hook (:hooks c-mode-common-hook :fns (blc-turn-on-c++-comments
-                                             hs-minor-mode)))
-  :config
+(with-eval-after-load 'cc-mode
   (let ((name    "blc")
         (base    "linux")
         (offsets '((     access-label . / )
@@ -1190,649 +2057,307 @@ With prefix argument SELECT, call `tile-select' instead."
 
     (map-put c-default-style 'other name)))
 
-(use-package chess
-  :ensure
-  :config
-  (setq-default
-   chess-images-default-size blc-chars-per-line
-   chess-images-directory
-   (blc-dir (blc-package-dir 'chess) "pieces" "xboard")))
+;;; chess
 
-(use-package cmake-mode
-  :ensure)
+(with-eval-after-load 'chess
+  (setq-default chess-images-directory
+                (blc-dir (blc-package-dir 'chess) "pieces" "xboard")))
 
-(use-package comint
-  :config
-  (unbind-key "C-c C-r" comint-mode-map))
+;;; comint
 
-(use-package comment-dwim-2
-  :ensure
-  :bind ([remap comment-dwim] . comment-dwim-2))
+(with-eval-after-load 'comint
+  (define-key comint-mode-map "\C-c\C-r" nil))
 
-(use-package compile
-  :init
-  (setq-default compilation-message-face  'default
-                compilation-scroll-output 'first-error
-                compile-command           "make"))
+;;; conf-mode
 
-(use-package conf-mode
-  :mode ("\\.dirs\\'" . conf-unix-mode)
-  :init
-  (add-hook 'conf-mode-hook #'blc-turn-off-electric-indent-local)
-  :config
-  (delight `((    ,#'conf-colon-mode "🔧[:]"  :major)
-             (  ,#'conf-desktop-mode "🔧[🗔]"  :major)
-             (    ,#'conf-space-mode "🔧[ ]"  :major)
-             (     ,#'conf-unix-mode "🔧[🐧]" :major)
-             (,#'conf-xdefaults-mode "🔧[X]"  :major))))
+(add-to-list 'auto-mode-alist (cons (rx ".dirs" eos) #'conf-unix-mode))
 
-(use-package copyright
-  :init
-  (setq-default copyright-names-regexp (regexp-quote user-full-name)))
+;;; counsel
 
-(use-package counsel
-  :ensure
-  :delight counsel-mode
-
-  :bind
-  (([remap bookmark-jump           ] . counsel-bookmark)
-   ([remap describe-bindings       ] . counsel-descbinds)
-   ([remap describe-function       ] . counsel-describe-function)
-   ([remap describe-variable       ] . counsel-describe-variable)
-   ([remap execute-extended-command] . counsel-M-x)
-   ([remap find-library            ] . counsel-find-library)
-   ([remap imenu                   ] . counsel-imenu)
-   ([remap info-lookup-symbol      ] . counsel-info-lookup-symbol)
-   ([remap load-library            ] . counsel-load-library)
-   ([remap load-theme              ] . counsel-load-theme)
-   ([remap menu-bar-open           ] . counsel-tmm)
-   ([remap org-goto                ] . counsel-org-goto)
-   ([remap org-set-tags-command    ] . counsel-org-tag)
-   ([remap pop-mark                ] . counsel-mark-ring)
-   ([remap yank-pop                ] . counsel-yank-pop)
-   ("C-s" . counsel-grep-or-swiper)
-   :map
-   ctl-x-map
-   ("C-l" . counsel-locate)
-   :map
-   help-map
-   ("C-j" . counsel-faces)
-   :map
-   mode-specific-map
-   ("u"   . counsel-unicode-char)
-   ("j a" . counsel-ag)
-   ("j d" . counsel-dired-jump)
-   ("j f" . counsel-file-jump)
-   ("j g" . counsel-git))
-
-  :init
-  ;; Do not remap keys above with `counsel-mode'
-  (setq-default counsel-mode-map ()
-                ffap-file-finder #'blc-counsel-find-file)
-
-  (advice-add #'org-goto :override #'counsel-org-goto)
-
-  :config
-  (setq-default
-   counsel-describe-function-preselect  #'function-called-at-point
-   counsel-find-file-at-point           t
-   counsel-git-grep-skip-counting-lines t
-   counsel-grep-base-command            "ag --nocolor %s %s" ; Smart case
-   counsel-org-goto-display-tags        t
-   counsel-org-goto-display-todo        t
-   counsel-org-goto-face-style          'verbatim)
-
+(with-eval-after-load 'counsel
   (counsel-mode))
 
-(use-package counsel-gtags
-  :ensure)
+;;; cus-edit
 
-(use-package counsel-projectile
-  :ensure
-  :init
-  (add-hook 'projectile-mode-hook #'counsel-projectile-on))
+(when (file-exists-p
+       (setq-default custom-file
+                     (expand-file-name "custom.el" user-emacs-directory)))
+  (lwarn 'blc :warning "Custom file %s exists but not loaded" custom-file))
 
-(use-package csharp-mode
-  :ensure)
+;;; dash
 
-(use-package cssh
-  :ensure)
-
-(use-package cus-edit
-  :init
-  (when (file-exists-p
-         (setq-default custom-file
-                       (expand-file-name "custom.el" user-emacs-directory)))
-    (lwarn 'blc :warning "Custom file %s exists but not loaded." custom-file)))
-
-(use-package csv-mode
-  :ensure
-  :init
-  (add-hook 'csv-mode-hook #'blc-csv-align-all-fields)
-  :config
-  (setq-default csv-align-style 'auto))
-
-(use-package dafny-mode
-  :ensure boogie-friends
-  :init
-  (blc-hook (:hooks dafny-mode-hook :fns (blc-turn-off-electric-indent-local
-                                          blc-turn-off-flycheck
-                                          blc-turn-off-prettify-symbols))))
-
-(use-package dash
-  :ensure
-  :functions dash-enable-font-lock
-  :config
+(with-eval-after-load 'dash
   (dash-enable-font-lock))
 
-(use-package deb-view
-  :disabled)
+;;; deb-view
 
-(use-package debbugs
-  :ensure
-  :init
-  (setq-default debbugs-gnu-trunk-directory source-directory))
+(add-to-list 'auto-mode-alist (cons (rx ".deb" eos) #'deb-view-mode))
+(with-eval-after-load 'dired
+  (require 'deb-view))
 
-(use-package debian-changelog-mode
-  :disabled)
+;;; delight
 
-(use-package debpaste
-  :ensure)
+(delight
+ '(;; abbrev
+   (abbrev-mode nil abbrev)
 
-(use-package define-word
-  :ensure
-  :bind (:map
-         mode-specific-map
-         ("/" . define-word-at-point)))
+   ;; autorevert
+   (auto-revert-mode "↻" autorevert)
 
-(use-package delsel
-  :init
-  (delete-selection-mode))
+   ;; conf-mode
+   (    conf-colon-mode "🔧[:]"  :major)
+   (  conf-desktop-mode "🔧[🗔]"  :major)
+   (    conf-space-mode "🔧[ ]"  :major)
+   (     conf-unix-mode "🔧[🐧]" :major)
+   (conf-xdefaults-mode "🔧[X]"  :major)
 
-(use-package diary-lib
-  :init
-  (setq-default
-   diary-comment-start     ";"
-   diary-number-of-entries 3))
+   ;; counsel
+   (counsel-mode nil counsel)
 
-(use-package dictionary
-  :ensure)
+   ;; eldoc
+   (eldoc-mode nil eldoc)
 
-(use-package dired
-  :defines dired-omit-files
-  :bind (:map
-         ctl-x-map
-         ("C-j" . dired-jump)
-         :map
-         ctl-x-4-map
-         ("C-j" . dired-jump-other-window))
+   ;; elisp-mode
+   (      emacs-lisp-mode "(ε)" :major)
+   (lisp-interaction-mode "(ι)" :major)
 
-  :init
-  (setq-default
-   dired-auto-revert-buffer t
-   dired-dwim-target        t
-   dired-listing-switches   (string-join '("--almost-all"
-                                           "--classify"
-                                           "--group-directories-first"
-                                           "--human-readable"
-                                           "-l")
-                                         " ")
-   dired-recursive-copies   'always)
+   ;; eww
+   (eww-mode "🕸" :major)
 
-  :config
-  (require 'dired-x)
+   ;; haskell-mode
+   (haskell-indent-mode      nil haskell-indent)
+   (haskell-mode
+    (:eval (if (bound-and-true-p interactive-haskell-mode) "λ>" "λ"))
+    :major)
+   (interactive-haskell-mode nil haskell)
 
-  (setq-default
-   dired-omit-files
-   (blc-rx `(| (: bos ?. (not (in ?.))) (regexp ,dired-omit-files))))
+   ;; ielm
+   (inferior-emacs-lisp-mode "(>)" :major)
 
-  (map-do (lambda (cmd suffs)
-            (thread-first dired-guess-shell-alist-user
-              (blc-put (blc-rx `(: ?. (| ,@suffs) eos)) `(,cmd))))
-          '(("localc"   . ("ods" "xls" "xlsx"))
-            ("lowriter" . ("doc" "docx" "odt"))
-            ("mpv"      . ("mkv" "mp4" "webm"))
-            ("pdf"      . ("pdf")))))
+   ;; info
+   (Info-mode "📘" :major)
 
-(use-package dired-aux
-  :init
-  (setq-default dired-create-destination-dirs 'ask)
-  :config
-  (mapc (lambda (pair)
-          (add-to-list 'dired-compress-files-alist pair))
+   ;; irony
+   (irony-mode "🜜" irony)
+
+   ;; ivy
+   (ivy-mode nil ivy)
+
+   ;; js2-mode
+   (js2-mode "jsⅡ" :major)
+
+   ;; js2-refactor
+   (js2-refactor-mode nil js2-refactor)
+
+   ;; magit
+   (git-rebase-mode                 "±𝄢"  :major     )
+   (magit-blame-mode                "🖜"   magit-blame)
+   (magit-cherry-mode               "±🍒" :major     )
+   (magit-diff-mode                 "±±"  :major     )
+   (magit-log-mode                  "±㏒" :major     )
+   (magit-log-select-mode           "±㏒" :major     )
+   (magit-merge-preview-mode        "±⛙"  :major     )
+   (magit-mode                      "±"   :major     )
+   (magit-process-mode              "±👷" :major     )
+   (magit-reflog-mode               "±🚑" :major     )
+   (magit-refs-mode                 "±⚖"  :major     )
+   (magit-repolist-mode             "±🖧"  :major     )
+   (magit-revision-mode             "±¶"  :major     )
+   (magit-stash-mode                "±︷" :major     )
+   (magit-stashes-mode              "±︷" :major     )
+   (magit-status-mode               "±"   :major     )
+   (magit-submodule-list-mode       "±%"  :major     )
+   (magit-wip-after-apply-mode      ""    magit-wip  )
+   (magit-wip-after-save-local-mode ""    magit-wip  )
+   (magit-wip-before-change-mode    ""    magit-wip  )
+
+   ;; make-mode
+   (makefile-automake-mode "⛏.am" :major)
+   (makefile-mode          "⛏"    :major)
+   (makefile-gmake-mode    "⛏GNU" :major)
+
+   ;; markdown-mode
+   (     gfm-mode "🐙" :major)
+   (markdown-mode "🡇"  :major)
+
+   ;; message
+   (message-mode "🖹" :major)
+
+   ;; rainbow-mode
+   (rainbow-mode "🌈" rainbow-mode)
+
+   ;; subword
+   (subword-mode nil subword)
+
+   ;; view
+   (view-mode "👓" view)
+
+   ;; whitespace
+   (global-whitespace-mode nil whitespace)
+
+   ;; wrap-region
+   (wrap-region-mode nil wrap-region)))
+
+;;; delsel
+
+(delete-selection-mode)
+
+;;; dired-aux
+
+(with-eval-after-load 'dired-aux
+  (mapc (apply-partially #'add-to-list 'dired-compress-files-alist)
         '(("\\.tar\\.7z\\'" . "tar -c %i | 7zr a -si %o")
           ("\\.7z\\'"       . "7zr a %o %i"))))
 
-(use-package disaster
-  :ensure
-  :init
-  (with-eval-after-load 'cc-mode
-    (bind-key "C-c d" #'disaster c-mode-base-map))
-  :config
-  (setq-default disaster-objdump "objdump -D -M att -Sl --no-show-raw-insn"))
+;;; dired-x
 
-(use-package discover-my-major
-  :ensure
-  :bind ("C-h C-m" . discover-my-major))
+(with-eval-after-load 'dired
+  (require 'dired-x)
 
-(use-package doc-view
-  :init
-  (setq-default doc-view-conversion-refresh-interval nil
-                doc-view-pdf->png-converter-function #'blc-doc-view-pdf-to-png))
+  (setq-default dired-omit-files (blc-rx `(| (: bos ?. (not (in ?.)))
+                                             (regexp ,dired-omit-files))))
 
-(use-package dropbox
-  :ensure
-  :init
-  (setq-default dropbox-locale  "en_IE"
-                dropbox-verbose t))
+  (map-do (lambda (cmd suffs)
+            (blc-put dired-guess-shell-alist-user
+                     (blc-rx `(: ?. (| ,@suffs) eos)) (list cmd)))
+          '(("localc"   "ods" "xls" "xlsx")
+            ("lowriter" "doc" "docx" "odt")
+            ("mpv"      "mkv" "mp4" "webm")
+            ("pdf"      "pdf"))))
 
-(use-package ducpel
-  :ensure)
+;;; disaster
 
-(use-package ebib
-  :ensure
-  :bind (:map
-         mode-specific-map
-         ("E" . ebib))
-  :config
-  (setq-default
-   ebib-bibtex-dialect 'biblatex
-   ebib-use-timestamp  t)
+(with-eval-after-load 'cc-mode
+  (define-key c-mode-base-map "\C-cd" #'disaster))
 
+;;; ebib
+
+(with-eval-after-load 'ebib
   (add-to-list 'ebib-preload-bib-files blc-bib-file))
 
-(use-package eldoc
-  :delight eldoc-mode)
+;;; engine-mode
 
-(use-package elisp-mode
-  :init
-  (blc-hook (:hooks emacs-lisp-mode-hook :fns (blc-rainbow-mode
-                                               blc-turn-on-lexical-binding)))
-  :config
-  (delight `((      ,#'emacs-lisp-mode "(ε)" :major)
-             (,#'lisp-interaction-mode "(ι)" :major))))
+(with-eval-after-load 'engine-mode
+  ;; No eager autoloaded macro expansion
+  (eval
+   '(progn
+      (defengine book-depository
+        "https://bookdepository.com/search?searchTerm=%s"
+        :keybinding "b")
+      (defengine google-def
+        "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=define+%s"
+        :keybinding "d")
+      (defengine google-enc
+        "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=%s"
+        :keybinding "g")
+      (defengine google-sch
+        "https://scholar.google.com/scholar?q=%s"
+        :keybinding "s")
+      (defengine hoogle
+        "https://haskell.org/hoogle/?hoogle=%s"
+        :keybinding "h")
+      (defengine imdb
+        "http://imdb.com/find?q=%s"
+        :keybinding "i")
+      (defengine stack-overflow
+        "https://stackoverflow.com/search?q=%s"
+        :keybinding "v")
+      (defengine wikipedia
+        "https://en.wikipedia.org/w/index.php?search=%s"
+        :keybinding "w"))
+   lexical-binding)
 
-(use-package embrace
-  :ensure)
-
-(use-package emms
-  :ensure
-  :init
-  (setq-default emms-volume-change-function #'emms-volume-pulse-change))
-
-(use-package engine-mode
-  :ensure
-  :commands engine/execute-search engine/get-query
-  :init
-  (autoload 'engine-mode-prefixed-map "engine-mode" nil nil 'keymap)
-  (define-key ctl-x-map "/" 'engine-mode-prefixed-map)
-  :config
-  (defengine book-depository
-    "https://bookdepository.com/search?searchTerm=%s"
-    :keybinding "b")
-  (defengine google-def
-    "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=define+%s"
-    :keybinding "d")
-  (defengine google-enc
-    "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=%s"
-    :keybinding "g")
-  (defengine google-sch
-    "https://scholar.google.com/scholar?q=%s"
-    :keybinding "s")
-  (defengine hoogle
-    "https://haskell.org/hoogle/?hoogle=%s"
-    :keybinding "h")
-  (defengine imdb
-    "http://imdb.com/find?q=%s"
-    :keybinding "i")
-  (defengine stack-overflow
-    "https://stackoverflow.com/search?q=%s"
-    :keybinding "v")
-  (defengine wikipedia
-    "https://en.wikipedia.org/w/index.php?search=%s"
-    :keybinding "w")
   (engine-mode))
 
-(use-package enwc
-  :ensure
-  :init
-  (setq-default enwc-ask-to-save-interfaces nil
-                enwc-default-backend        'nm))
+;;; eww
 
-(use-package eshell
-  :init
-  (add-hook 'eshell-output-filter-functions #'eshell-truncate-buffer))
+(with-eval-after-load 'eww
+  (blc-define-keys
+    (eww-bookmark-mode-map
+     ("n" . #'next-line)
+     ("p" . #'previous-line)
+     ("w" . #'blc-eww-bookmark-save))))
 
-(use-package ess
-  :ensure
-  :config
-  (setq-default ess-default-style   'DEFAULT
-                ess-indent-from-lhs nil))
+;;; exec-path-from-shell
 
-(use-package ewmctrl
-  :ensure)
-
-(use-package eww
-  :commands eww-open-in-new-buffer
-  :bind (:map
-         eww-bookmark-mode-map
-         ("n" .             next-line)
-         ("p" .         previous-line)
-         ("w" . blc-eww-bookmark-save))
-  :init
-  (setq-default
-   eww-search-prefix
-   "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=")
-
-  :config
-  (delight #'eww-mode "🕸" :major)
-
-  (function-put
-   #'blc-eww-suggest-uri--advice 'interactive-form (interactive-form #'eww))
-  (advice-add #'eww-open-in-new-buffer :around #'blc-eww-suggest-uri--advice))
-
-(use-package exec-path-from-shell
-  :ensure
-  :config
-  (mapc (lambda (var)
-          (add-to-list 'exec-path-from-shell-variables var))
+(with-eval-after-load 'exec-path-from-shell
+  (mapc (apply-partially #'add-to-list 'exec-path-from-shell-variables)
         '("SSH_AGENT_PID" "SSH_AUTH_SOCK")))
 
-(use-package executable
-  :init
-  (add-hook 'after-save-hook
-            #'executable-make-buffer-file-executable-if-script-p))
+;;; ffap
 
-(use-package expand-region
-  :ensure
-  :bind ("M-+" . er/expand-region))
-
-(use-package eyebrowse
-  :ensure)
-
-(use-package ffap
-  :commands ffap-gnus-hook
-  :bind (([remap                  dired] .          dired-at-point)
-         ([remap              find-file] .      find-file-at-point)
-         ([remap     dired-other-window] . ffap-dired-other-window)
-         ([remap find-file-other-window] .       ffap-other-window)
-         ([remap      dired-other-frame] .  ffap-dired-other-frame)
-         ([remap  find-file-other-frame] .        ffap-other-frame))
-
-  :init
-  (blc-hook (:fns ffap-gnus-hook :hooks (gnus-summary-mode-hook
-                                         gnus-article-mode-hook)))
-
-  (setq-default dired-at-point-require-prefix t
-                ffap-require-prefix           t
-                ffap-rfc-path                 "https://ietf.org/rfc/rfc%s.txt")
-
-  :config
+(with-eval-after-load 'ffap
   (add-to-list 'ffap-rfc-directories (blc-dir user-emacs-directory "rfc")))
 
-(use-package fic-mode
-  :ensure
-  :init
-  (blc-hook (:fns fic-mode :hooks (conf-mode-hook
-                                   ess-mode-hook
-                                   haskell-cabal-mode-hook
-                                   mustache-mode-hook
-                                   prog-mode-hook
-                                   text-mode-hook)))
-  :config
-  (mapc (lambda (word)
-          (add-to-list 'fic-highlighted-words word))
+;;; fic-mode
+
+(with-eval-after-load 'fic-mode
+  (mapc (apply-partially #'add-to-list 'fic-highlighted-words)
         '("HACK" "KLUDGE" "NOTE" "WARN")))
 
-(use-package figlet
-  :ensure)
+;;; files
 
-(use-package files
-  :bind (([remap save-buffers-kill-terminal] . save-buffers-kill-emacs))
-  :init
-  (setq-default
-   auto-save-visited-interval auto-save-timeout
-   backup-by-copying          t         ; Do not clobber symlinks
-   backup-directory-alist               ; Backup/auto-save directory
-   '(("." . "~/.backup/"))
-   delete-old-versions        t
-   directory-free-space-args  "-hP"
-   find-file-visit-truename   t
-   kept-new-versions          4
-   kept-old-versions          2
-   mode-require-final-newline nil       ; Do not silently append EOF NL
-   version-control            t)        ; Versioned backups
+(add-to-list 'safe-local-variable-values
+             '(eval . (when buffer-file-name (view-mode))))
+(auto-save-visited-mode)
 
-  (add-to-list 'safe-local-variable-values
-               '(eval . (when buffer-file-name (view-mode))))
+;;; flex-mode
 
-  (auto-save-visited-mode))
+(add-to-list 'auto-mode-alist (cons (rx ".lex" eos) #'flex-mode))
 
-(use-package fill-column-indicator
-  :ensure
-  :commands turn-off-fci-mode
-  :init
-  (setq-default fci-rule-column blc-chars-per-line)
+;;; frame
 
-  (blc-hook (:fns turn-on-fci-mode  :hooks (conf-mode-hook
-                                            ess-mode-hook
-                                            haskell-cabal-mode-hook
-                                            mustache-mode-hook
-                                            prog-mode-hook
-                                            text-mode-hook))
-            (:fns turn-off-fci-mode :hooks (lisp-interaction-mode-hook
-                                            message-mode-hook
-                                            org-mode-hook
-                                            visual-line-mode-hook))))
+(window-divider-mode)
 
-(use-package find-file
-  :init
-  (add-hook 'find-file-hook #'blc-strip-large-buffer))
+;;; ggtags
 
-(use-package find-func
-  :bind
-  (("C-h C-f"   . find-function)
-   ("C-h 4 C-f" . find-function-other-window)
-   ("C-h 5 C-f" . find-function-other-frame)
-   ("C-h C-k"   . find-function-on-key)
-   ("C-h 4 C-k" . find-function-on-key-other-window)
-   ("C-h 5 C-k" . find-function-on-key-other-frame)
-   ("C-h C-v"   . find-variable)
-   ("C-h 4 C-v" . find-variable-other-window)
-   ("C-h 5 C-v" . find-variable-other-frame)))
+(with-eval-after-load 'ggtags
+  (blc-define-keys
+    (ggtags-mode-map
+     ([?\M-\]]) ; `ggtags-find-reference'
+     ([?\M-F]  . #'ggtags-find-reference))))
 
-(use-package fireplace
-  :ensure)
+;;; git-annex
 
-(use-package flex-mode
-  :mode "\\.lex\\'")
+(with-eval-after-load 'dired
+  (require 'git-annex))
 
-(use-package flx
-  :ensure)
+;;; git-commit
 
-(use-package font-lock
-  :init
-  (setq-default font-lock-maximum-decoration t))
+(add-to-list 'auto-mode-alist
+             (cons git-commit-filename-regexp #'git-commit-setup))
 
-(use-package footnote
-  :init
-  (add-hook 'message-setup-hook #'footnote-mode)
-  (setq-default footnote-body-tag-spacing 1
-                footnote-mode-line-string ""
-                footnote-section-tag      ""
-                footnote-spaced-footnotes nil))
-
-(use-package frame
-  :init
-  (blc-with-every-frame #'blc-turn-off-cursor-blink)
-  (setq-default window-divider-default-right-width 2)
-  (window-divider-mode))
-
-(use-package free-keys
-  :ensure)
-
-(use-package generic-x
-  :commands samba-generic-mode
-  :init
-  (setq-default generic-use-find-file-hook nil))
-
-(use-package ggtags
-  :ensure
-  :bind (:map
-         ggtags-mode-map
-         ("M-F" . ggtags-find-reference))
-  :commands ggtags-find-reference
-  :config
-  (unbind-key "M-]" ggtags-mode-map)    ; `ggtags-find-reference'
-  (setq-default ggtags-enable-navigation-keys nil))
-
-(use-package ghc
-  :ensure
-  :init
-  (add-hook 'haskell-mode-hook #'ghc-init)
-  (setq-default ghc-doc-browser-function #'blc-browse-url-ghc-doc))
-
-(use-package git-annex
-  :ensure
-  :after dired
-  :init
-  (setq-default git-annex-commit nil))
-
-(use-package gitattributes-mode
-  :ensure)
-
-(use-package git-commit
-  :ensure
-  :init
-  (add-to-list 'auto-mode-alist
-               `(,git-commit-filename-regexp . ,#'git-commit-setup))
-
-  (blc-hook (:hooks git-commit-setup-hook :fns (blc-git-commit-set-fill-column
-                                                bug-reference-mode)))
-
-  (setq-default git-commit-summary-max-length 50
-                global-git-commit-mode        nil)
-
-  :config
+(with-eval-after-load 'git-commit
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line))
 
-(use-package gitconfig-mode
-  :ensure
-  :init
-  (add-hook 'gitconfig-mode-hook #'blc-turn-off-indent-tabs))
+;;; gscholar-bibtex
 
-(use-package gitignore-mode
-  :ensure)
+(with-eval-after-load 'gscholar-bibtex
+  (setq-default gscholar-bibtex-default-source
+                (map-contains-key gscholar-bibtex-available-sources
+                                  "Google Scholar")))
 
-(use-package gnus
-  :init
-  ;; Shave a few startup seconds
-  (blc-hook (:hooks gnus-load-hook    :fns blc-gc-thresh-maximise)
-            (:hooks gnus-started-hook :fns blc-gc-thresh-restore))
+;;; hacker-typer
 
-  (setq-default
-   gnus-home-directory user-emacs-directory
-   gnus-init-file      (expand-file-name "gnus" gnus-home-directory)))
-
-(use-package gnus-desktop-notify
-  :ensure
-  :init
-  (add-hook 'gnus-startup-hook #'gnus-desktop-notify-mode)
-  :config
-  (setq-default gnus-desktop-notify-groups   'gnus-desktop-notify-explicit
-                gnus-desktop-notify-format   "%3n: %G"
-                gnus-desktop-notify-function 'gnus-desktop-notify-send))
-
-(use-package gnutls
-  :init
-  (setq-default gnutls-min-prime-bits nil))
-
-(use-package google-contacts
-  :ensure)
-
-(use-package google-maps
-  :ensure)
-
-(use-package google-this
-  :ensure)
-
-(use-package gscholar-bibtex
-  :ensure
-  :config
-  (setq-default
-   gscholar-bibtex-database-file  blc-bib-file
-   gscholar-bibtex-default-source
-   (map-contains-key gscholar-bibtex-available-sources "Google Scholar")))
-
-(use-package hacker-typer
-  :ensure
-  :config
+(with-eval-after-load 'hacker-typer
   (require 'mm-util)
   (setq-default
    hacker-typer-files
-   (mapcar (lambda (file)
-             (concat "file://" file))
-           (directory-files (blc-dir source-directory "src") t "\\.c\\'" t))
+   (mapcar (apply-partially #'concat "file://")
+           (directory-files (blc-dir source-directory "src") t (rx ".c" eos) t))
    hacker-typer-random-range
-   (mapcar (lambda (bound)
-             (ash bound 1))
-           hacker-typer-random-range)
-   hacker-typer-show-hackerman t))
+   (mapcar (apply-partially #'* 2)
+           hacker-typer-random-range)))
 
-(use-package hackernews
-  :ensure)
+;;; haskell-mode
 
-(use-package haskell-mode
-  :ensure
-  :bind (:map
-         haskell-mode-map
-         ([remap haskell-hoogle] . haskell-hayoo))
+(with-eval-after-load 'haskell-mode
+  (define-key haskell-mode-map [remap haskell-hoogle] #'haskell-hayoo))
 
-  :init
-  (setq-default
-   haskell-completing-read-function            #'completing-read
-   haskell-indent-offset                       2
-   haskell-notify-p                            t
-   haskell-process-log                         t
-   haskell-process-suggest-hoogle-imports      t
-   haskell-process-suggest-remove-import-lines t)
+;;; hi-lock
 
-  (blc-hook
-    (:hooks haskell-cabal-mode-hook :fns blc-turn-off-electric-indent-local)
-    (:hooks haskell-mode-hook       :fns (blc-turn-off-electric-indent-local
-                                          haskell-indent-mode
-                                          interactive-haskell-mode)))
-
-  :config
-  (delight `((,#'haskell-indent-mode)
-             (,#'haskell-mode
-              (:eval (if (interactive-haskell-mode)
-                         "λ>"
-                       "λ"))
-              :major)
-             (,#'interactive-haskell-mode))))
-
-(use-package hayoo
-  :ensure)
-
-(use-package helm-make
-  :ensure
-  :init
-  (setq-default
-   helm-make-cache-targets      t
-   helm-make-completion-method  'ivy
-   helm-make-list-target-method 'qp
-   helm-make-require-match      nil))
-
-(use-package hi-lock
-  :commands turn-on-hi-lock-if-enabled
-  :init
-  (add-hook 'hi-lock-mode-hook #'blc-hi-lock-no-eof-nl)
-  (global-hi-lock-mode)
-
-  :config
-  (mapc (lambda (mode)
-          (add-to-list 'hi-lock-exclude-modes mode))
+(with-eval-after-load 'hi-lock
+  (mapc (apply-partially #'add-to-list 'hi-lock-exclude-modes)
         '(comint-mode
           completion-list-mode
           display-time-world-mode
@@ -1841,44 +2366,26 @@ With prefix argument SELECT, call `tile-select' instead."
           newsticker-treeview-item-mode
           term-mode))
 
-  (let* ((mode    'hi-lock-mode)
-         (lighter (map-elt minor-mode-alist mode)))
-    (map-put minor-mode-alist mode (blc-sed-tree " .+" "⛯" lighter))))
+  (map-put minor-mode-alist 'hi-lock-mode
+           (blc-sed-tree " .+" "⛯" (map-elt minor-mode-alist 'hi-lock-mode))))
 
-(use-package highlight-escape-sequences
-  :ensure
-  :init
-  (turn-on-hes-mode))
+(global-hi-lock-mode)
 
-(use-package hl-line
-  :init
-  (blc-hook (:fns hl-line-mode :hooks (dired-mode-hook
-                                       git-rebase-mode-hook
-                                       ibuffer-mode-hook
-                                       ivy-occur-mode-hook
-                                       ledger-report-mode-hook
-                                       newsticker-treeview-list-mode
-                                       org-agenda-mode-hook
-                                       tabulated-list-mode-hook))))
+;;; hideshow
 
-(use-package hideshow
-  :bind (:map
-         hs-minor-mode-map
-         ("C-c C-i" . hs-toggle-hiding)))
+(with-eval-after-load 'hideshow
+  (define-key hs-minor-mode-map "\C-c\t" #'hs-toggle-hiding))
 
-(use-package holidays
-  :commands calendar-holiday-list
-  :init
-  (setq-default
-   holiday-bahai-holidays    ()
-   holiday-oriental-holidays ())
-  :config
+;;; highlight-escape-sequences
+
+(turn-on-hes-mode)
+
+;;; holidays
+
+(with-eval-after-load 'holidays
   ;; Remove redundant full-stops
-  (mapc (lambda (sym)
-          (set-default
-           sym (blc-sed-tree "St\\(\\.\\)" "" (symbol-value sym) t t 1)))
-        '(calendar-holidays
-          holiday-general-holidays))
+  (dolist (sym '(calendar-holidays holiday-general-holidays))
+    (set-default sym (blc-sed-tree "St\\(\\.\\)" "" (symbol-value sym) t t 1)))
 
   ;; Maximise Unicode usage
   (let ((lut '(("Christmas"        . "🎄")
@@ -1894,222 +2401,64 @@ With prefix argument SELECT, call `tile-select' instead."
                                   (cdr (assoc-string day lut t)))
                                 calendar-holidays))))
 
-(use-package htmlize
-  :ensure
-  :init
-  (setq-default htmlize-css-name-prefix "htmlize-"
-                htmlize-html-charset    "utf-8"
-                htmlize-html-major-mode #'mhtml-mode))
+;;; ibuf-ext
 
-(use-package ibuf-ext
-  :commands ibuffer-auto-mode
-  :bind (([remap list-buffers] . ibuffer)
-         :map
-         ibuffer-mode-map
-         ([remap ibuffer-find-file] . blc-ibuffer-ffap)
-         :map
-         mode-specific-map
-         ("j b" . ibuffer-jump))
-  :init
-  (blc-hook (:hooks ibuffer-mode-hook :fns (ibuffer-auto-mode
-                                            blc-turn-on-ibuffer-filter-groups)))
-
-  :config
-  (define-ibuffer-filter modes
-      "Filter by multiple parent major mode QUALIFIERs."
-    (:description "derived major modes")
-    (with-current-buffer buf
-      (apply #'derived-mode-p (blc-as-list qualifier))))
-
-  (define-ibuffer-filter names
-      "Filter by multiple string or variable QUALIFIERs.
-Filter `starred-name' is implied unless symbol `nostar' present."
-    (:description "buffer names")
-    (let ((names (blc-keep (lambda (name)
-                             (funcall (if (and (symbolp name) (boundp name))
-                                          #'symbol-value
-                                        #'identity)
-                                      name))
-                           (blc-as-list qualifier)
-                           t)))
-      (and (or (memq 'nostar names)
-               (funcall (caddr (assq 'starred-name ibuffer-filtering-alist))
-                        buf qualifier))
-           (let ((re (regexp-opt
-                      (blc-keep (lambda (name)
-                                  (funcall (pcase name
-                                             ((pred stringp) #'identity)
-                                             ((pred bufferp) #'buffer-name)
-                                             (_              #'ignore))
-                                           name))
-                                (delq 'nostar names)))))
-             (unless (string-empty-p re)
-               (ibuffer-buf-matches-predicates buf `(,re)))))))
-
-  ;; Define before use
-  (mapc (lambda (filter)
-          (add-to-list 'ibuffer-saved-filters filter))
+(with-eval-after-load 'ibuf-ext
+  (mapc (apply-partially #'add-to-list 'ibuffer-saved-filters)
         `(("package" (directory . ,(regexp-opt
-                                    (mapcar #'expand-file-name
-                                            `(,(blc-parent-dir data-directory)
-                                              ,source-directory
-                                              ,package-user-dir)))))
-          ("REPL"    (modes . (eshell-mode
-                               inferior-emacs-lisp-mode
-                               lisp-interaction-mode)))))
+                                    (mapcar
+                                     #'expand-file-name
+                                     (list (blc-parent-dir data-directory)
+                                           source-directory
+                                           package-user-dir)))))
+          ("REPL"    (or (derived-mode . eshell-mode)
+                         (derived-mode . inferior-emacs-lisp-mode)
+                         (derived-mode . lisp-interaction-mode))))))
+
+;;; ibuffer
+
+(with-eval-after-load 'ibuffer
+  (define-key ibuffer-mode-map [remap ibuffer-find-file] #'blc-ibuffer-ffap)
+
+  (mapc (apply-partially #'add-to-list 'ibuffer-help-buffer-modes)
+        '(Man-mode woman-mode)))
+
+;;; info
+
+(with-eval-after-load 'info
+  (define-key Info-mode-map "k" #'blc-info-kill))
+
+;;; irfc
+
+(add-to-list 'auto-mode-alist
+             (cons (blc-rx `(: ,@(mapcar (lambda (c) `(in ,(upcase c) ,c))
+                                         "rfc")
+                               (group (+ digit)) ".txt" eos))
+                   #'irfc-mode))
+
+(with-eval-after-load 'irfc
+  (require 'ffap)
+
+  (blc-define-keys
+    (irfc-mode-map
+     ([remap scroll-down] . #'scroll-down-command)
+     ([remap scroll-up]   . #'scroll-up-command)
+     ("\C-?"              . #'scroll-down-command)))
 
   (setq-default
-   ibuffer-always-compile-formats          t
-   ibuffer-default-sorting-mode            'alphabetic
-   ibuffer-jump-offer-only-visible-buffers t
-   ibuffer-old-time                        12
-   ibuffer-saved-filter-groups
-   `((,blc-ibuffer-default-group
-      ("Book" (or (modes . (bookmark-bmenu-mode
-                            bookmark-edit-annotation-mode))
-                  (names . "Bookmark Annotation")))
-      ("Code" (and (modes . (conf-mode
-                             prog-mode))
-                   (not (saved . "package"))
-                   (not (saved . "REPL"))))
-      ("Cus"  (modes . Custom-mode))
-      ("Dir"  (modes . dired-mode))
-      ("Doc"  (or (modes . (apropos-mode
-                            help-mode
-                            Info-mode
-                            Man-mode
-                            woman-mode))
-                  (names . "Ivy Help")))
-      ("Gnus" (or (saved . "gnus")
-                  (modes . gnus-server-mode)
-                  (names . (nostar
-                            gnus-dribble-buffer))))
-      ("Git"  (modes . (magit-mode
-                        magit-repolist-mode)))
-      ("Img"  (modes . image-mode))
-      ("Log"  (or (modes . (TeX-output-mode
-                            compilation-mode
-                            ivy-occur-mode
-                            messages-buffer-mode
-                            tags-table-mode))
-                  (names . ("Backtrace"
-                            "Warnings"
-                            "WoMan-Log"
-                            blc-gnus-log-buffers
-                            dired-log-buffer
-                            doc-view-conversion-buffer))))
-      ("PDF"  (modes . pdf-view-mode))
-      ("Pkg"  (and (saved . "package")
-                   (not (saved . "REPL"))))
-      ("Proc" (names . "Async Shell Command"))
-      ("REPL" (saved . "REPL"))
-      ("SX"   (or (modes . (sx-compose-mode
-                            sx-question-list-mode
-                            sx-question-mode))
-                  (names . "sx temp buffer")))
-      ("TeX"  (saved . "TeX"))
-      ("Text" (saved . "text document"))
-      ("Web"  (saved . "web"))))
-   ibuffer-show-empty-filter-groups        nil
-   ibuffer-use-other-window                t))
+   irfc-directory         (seq-find #'identity ffap-rfc-directories)
+   irfc-download-base-url (url-file-directory  ffap-rfc-path)))
 
-(use-package ido
-  :init
-  (setq-default ido-enable-flex-matching t))
+;;; ivy
 
-(use-package idris-mode
-  :ensure)
+(with-eval-after-load 'ivy
+  (blc-define-keys
+    (ivy-minibuffer-map
+     ([?\M-D] . #'ivy-dispatching-done))
+    (ivy-occur-mode-map
+     ("n"     . #'ivy-occur-next-line)
+     ("p"     . #'ivy-occur-previous-line)))
 
-(use-package ielm
-  :init
-  (add-hook 'ielm-mode-hook #'blc-turn-on-lexical-binding)
-  :config
-  (let ((lighter "(>)"))
-    (delight #'inferior-emacs-lisp-mode lighter :major)
-    (setq-default ielm-noisy  nil
-                  ielm-prompt (format "%s " lighter))))
-
-(use-package "indent"
-  :init
-  (setq-default indent-line-function #'insert-tab))
-
-(use-package info
-  :bind (:map
-         Info-mode-map
-         ("k" . blc-info-kill))
-  :config
-  (delight #'Info-mode "📘" :major))
-
-(use-package interleave
-  :ensure)
-
-(use-package irfc
-  :ensure
-  :mode ("[rR][fF][cC]\\([[:digit:]]+?\\)\\.txt\\'" . irfc-mode)
-  :bind (:map
-         irfc-mode-map
-         ("DEL" . scroll-down))
-  :config
-  (when (require 'ffap nil t)
-    (setq-default
-     irfc-directory         (seq-find #'identity ffap-rfc-directories)
-     irfc-download-base-url (url-file-directory  ffap-rfc-path))))
-
-(use-package irfc-x
-  :commands irfc-x-list)
-
-(use-package irony
-  :disabled
-  :ensure
-  :delight irony-mode "🜜"
-  :init
-  (blc-hook
-    (:hooks c-mode-common-hook :fns irony-mode)
-    (:hooks    irony-mode-hook :fns irony-cdb-autosetup-compile-options)))
-
-(use-package irony-eldoc
-  :disabled
-  :ensure
-  :init
-  (add-hook 'irony-mode-hook #'irony-eldoc)
-  (setq-default irony-eldoc-use-unicode t))
-
-(use-package "isearch"
-  :init
-  (setq-default isearch-allow-scroll t)
-  (add-hook 'isearch-mode-hook #'blc-isearch-delight))
-
-(use-package isearch-prop
-  :ensure)
-
-(use-package ivy
-  :ensure
-  :delight ivy-mode
-  :commands
-  ivy--regex-ignore-order
-  ivy-completion-in-region
-  ivy-format-function-arrow
-  ivy-set-sources
-  :bind (([remap switch-to-buffer] . ivy-switch-buffer)
-         ([remap switch-to-buffer-other-window]
-          . ivy-switch-buffer-other-window)
-         :map
-         mode-specific-map
-         ("r"   . ivy-resume)
-         :map
-         ivy-minibuffer-map
-         ("M-D" . ivy-dispatching-done)
-         :map
-         ivy-occur-mode-map
-         ("n"   . ivy-occur-next-line)
-         ("p"   . ivy-occur-previous-line))
-
-  :init
-  ;; Autoloading
-  (setq-default completing-read-function      #'ivy-completing-read
-                completion-in-region-function #'ivy-completion-in-region)
-
-  :config
   ;; Default matching behaviour
   (map-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
 
@@ -2125,133 +2474,57 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                    '((blc-ivy-recentf)
                      (original-source)))
 
-  (setq-default
-   ivy-count-format            "(%d/%d) "
-   ivy-extra-directories       ()
-   ivy-fixed-height-minibuffer t
-   ivy-format-function         #'ivy-format-function-arrow
    ;; Do not match start of input for counsel or org commands
+  (setq-default
    ivy-initial-inputs-alist
    (map-remove (lambda (cmd _)
                  (string-match-p (rx bos (| "org" "counsel") ?-)
                                  (symbol-name cmd)))
-               ivy-initial-inputs-alist)
-   ivy-on-del-error-function   #'ignore
-   ivy-use-virtual-buffers     t))
+               ivy-initial-inputs-alist)))
 
-(use-package ivy-bibtex
-  :ensure
-  :commands bibtex-completion-format-entry
-  :config
+;;; ivy-bibtex
+
+(with-eval-after-load 'ivy-bibtex
   (map-do #'add-to-list
           `((bibtex-completion-additional-search-fields . "date")
-            (bibtex-completion-bibliography             . ,blc-bib-file)))
+            (bibtex-completion-bibliography             . ,blc-bib-file))))
 
-  (setq-default
-   bibtex-completion-display-formats
-   `((t . ,(string-join
-            '("${author:30}"
-              "${date:4}"
-              "${title:*}"
-              "${=has-pdf=:1}${=has-note=:1}"
-              "${=type=:14}")
-            " ")))))
+;;; jq-mode
 
-(use-package ivy-hydra
-  :ensure)
+(with-eval-after-load 'json-mode
+  (define-key json-mode-map "\C-c\C-q" #'jq-interactively))
 
-(use-package ivy-pages
-  :ensure)
+;;; js
 
-(use-package ivy-pass
-  :ensure)
+(with-eval-after-load 'js
+  (setq-default js-enabled-frameworks
+                (seq-intersection '(dojo javascript prototype)
+                                  js-enabled-frameworks)))
 
-(use-package ivy-rich
-  :disabled
-  :ensure
-  :after ivy
-  :functions ivy-set-display-transformer
-  :commands ivy-rich-switch-buffer-transformer
-  :config
-  (ivy-set-display-transformer #'ivy-switch-buffer
-                               #'ivy-rich-switch-buffer-transformer))
+;;; js2-mode
 
-(use-package jade
-  :disabled
-  :ensure
-  :commands jade-interaction-mode
-  :init
-  (add-hook 'js2-mode-hook #'jade-interaction-mode))
+(map-do (lambda (alist re)
+          (add-to-list alist (cons re #'js2-mode)))
+        `((auto-mode-alist        . ,(rx ".js" eos))
+          (interpreter-mode-alist . ,(rx (| "node" "nodejs")))))
 
-(use-package jit-lock
-  :init
-  (setq-default
-   jit-lock-stealth-load 60
-   jit-lock-stealth-time  4))
+(with-eval-after-load 'js2-mode
+  (blc-define-keys
+    (js2-mode-map
+     ("\r" . #'js2-line-break)
+     ([?\M-.]))))
 
-(use-package jq-mode
-  :ensure
-  :init
-  (with-eval-after-load 'json-mode
-    (define-key json-mode-map "\C-c\C-q" #'jq-interactively)))
+;;; js2-refactor
 
-(use-package js
-  :config
-  (setq-default
-   js-enabled-frameworks
-   (seq-intersection '(dojo javascript prototype) js-enabled-frameworks)
-   js-indent-level         4
-   js-switch-indent-offset 4))
+(with-eval-after-load 'js2-refactor
+  (js2r-add-keybindings-with-prefix "\C-c\C-m"))
 
-(use-package js2-mode
-  :ensure
-  :mode "\\.js\\'"
-  :interpreter "node" "nodejs"
-  :functions js2-line-break
-  :init
-  (setq-default js2-bounce-indent-p t)
+;;; ledger-mode
 
-  (blc-hook (:hooks js2-mode-hook :fns (js2-highlight-unused-variables-mode
-                                        blc-turn-off-electric-indent-local)))
+(add-to-list 'auto-mode-alist (cons (rx ".ledger" eos) #'ledger-mode))
 
-  :config
-  (delight #'js2-mode "jsⅡ" :major)
-
-  (define-key js2-mode-map "\r" #'js2-line-break)
-
-  (setq-default
-   js2-allow-rhino-new-expr-initializer nil
-   js2-global-externs                   '("define" "location")
-   js2-highlight-level                  3
-   js2-include-node-externs             t
-   js2-mode-assume-strict               t
-   js2-skip-preprocessor-directives     t))
-
-(use-package js2-refactor
-  :ensure
-  :delight js2-refactor-mode
-  :init
-  (add-hook 'js2-mode-hook #'js2-refactor-mode)
-  :config
-  (js2r-add-keybindings-with-prefix "C-c C-m"))
-
-(use-package json-mode
-  :ensure)
-
-(use-package latex-extra
-  :ensure)
-
-(use-package ledger-mode
-  :ensure
-  :functions ledger-reports-add
-  :mode "\\.ledger\\'"
-  :config
-  (setq-default
-   ledger-default-date-format               ledger-iso-date-format
-   ledger-post-amount-alignment-at          :decimal
-   ledger-report-auto-refresh-sticky-cursor t
-   ledger-report-use-header-line            t
-   ledger-use-iso-dates                     t)
+(with-eval-after-load 'ledger-mode
+  (setq-default ledger-default-date-format ledger-iso-date-format)
 
   (blc-put ledger-report-format-specifiers
            "frame-width"
@@ -2265,187 +2538,24 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                                      "register %(account)")
                                    " ")))
 
-(use-package "lisp"
-  :bind (:map
-         esc-map
-         ("C-z" . raise-sexp)))
+;;; lunar
 
-(use-package lisp-mode
-  :init
-  (add-hook 'lisp-mode-hook #'blc-turn-off-electric-indent-local))
-
-(use-package list-processes+
-  :ensure)
-
-(use-package list-unicode-display
-  :ensure)
-
-(use-package logview
-  :ensure)
-
-(use-package lorem-ipsum
-  :ensure)
-
-(use-package lpr
-  :init
-  (setq-default lpr-add-switches nil
-                lpr-command      "hp-print"))
-
-(use-package lunar
-  :config
+(with-eval-after-load 'lunar
   (setq-default
    lunar-phase-names
    (mapcar (lambda (name)
              (char-to-string (char-from-name (concat name " symbol") t)))
            lunar-phase-names)))
 
-(use-package know-your-http-well
-  :ensure)
+;;; magit
 
-(use-package macrostep
-  :ensure)
+(with-eval-after-load 'magit
+  (require 'blc-magit))
 
-(use-package magit
-  :ensure
-  :functions
-  blc-magit-insert-revision-gpg
-  magit-add-section-hook
-  magit-display-buffer-same-window-except-diff-v1
-  magit-insert-revision-headers
-  magit-repolist-column-dirty
-  :bind (:map
-         ctl-x-map
-         ("g"   . magit-status)
-         ("M-g" . magit-dispatch-popup)
-         :map
-         mode-specific-map
-         ("M-g" . magit-file-popup))
+;;; make-mode
 
-  :init
-  (setq-default magit-repository-directories `((,blc-repos-dir . 2)))
-
-  :config
-  (load (blc-file user-emacs-directory "magit"))
-
-  (delight
-   '((git-rebase-mode                 "±𝄢"  :major     )
-     (magit-blame-mode                "🖜"  magit-blame)
-     (magit-cherry-mode               "±🍒" :major     )
-     (magit-diff-mode                 "±±"  :major     )
-     (magit-log-mode                  "±㏒" :major     )
-     (magit-log-select-mode           "±㏒" :major     )
-     (magit-merge-preview-mode        "±⛙"  :major     )
-     (magit-mode                      "±"   :major     )
-     (magit-process-mode              "±👷" :major     )
-     (magit-reflog-mode               "±🚑" :major     )
-     (magit-refs-mode                 "±⚖"  :major     )
-     (magit-repolist-mode             "±🖧" :major     )
-     (magit-revision-mode             "±¶"  :major     )
-     (magit-stash-mode                "±︷" :major     )
-     (magit-stashes-mode              "±︷" :major     )
-     (magit-status-mode               "±"   :major     )
-     (magit-submodule-list-mode       "±%"  :major     )
-     (magit-wip-after-apply-mode      ""    magit-wip  )
-     (magit-wip-after-save-local-mode ""    magit-wip  )
-     (magit-wip-before-change-mode    ""    magit-wip  )))
-
-  ;; Misc.
-  (setq-default
-   magit-branch-popup-show-variables       t
-   magit-display-buffer-function
-   #'magit-display-buffer-same-window-except-diff-v1
-   magit-list-refs-sortby                  "-creatordate"
-   magit-prefer-remote-upstream            t
-   magit-process-finish-apply-ansi-colors  t
-   magit-remote-add-set-remote.pushDefault 'ask)
-
-  ;; Always highlight tabs
-  (blc-put magit-diff-highlight-indentation "" 'tabs)
-
-  ;; Status buffer
-  (mapc (lambda (fn)
-          (magit-add-section-hook
-           'magit-status-headers-hook fn 'magit-insert-head-branch-header))
-        '(magit-insert-remote-header
-          magit-insert-repo-header))
-
-  ;; Add signature revision headers
-  (magit-add-section-hook 'magit-revision-sections-hook
-                          #'blc-magit-insert-revision-gpg
-                          #'magit-insert-revision-headers
-                          t)
-
-  ;; Repo list: insert dirty column in third position
-  (blc-insert-at
-   'magit-repolist-columns `("D" 1 ,#'magit-repolist-column-dirty ()) 2)
-
-  ;; Arguments
-  (map-do #'add-to-list
-          '((magit-log-arguments    . "--show-signature")
-            (magit-merge-arguments  . "--ff-only"       )
-            (magit-rebase-arguments . "--interactive"   )))
-
-  ;; Inline format reformatting
-  (let ((fmtre (rx ?% (group (? (in ?+ ?-)) (* digit)) (in ?U ?n)))
-        case-fold-search)
-
-    ;; Align refs with wider columns
-    (mapc (lambda (fmt)
-            (set-default fmt (blc-sed fmtre "-40" (symbol-value fmt) t t 1)))
-          '(magit-refs-local-branch-format
-            magit-refs-remote-branch-format
-            magit-refs-symref-format
-            magit-refs-tags-format))
-
-    ;; Limit number of commits in log
-    (setq-default
-     magit-log-arguments
-     (blc-sed-tree (rx "-n" (group (+ digit))) "32" magit-log-arguments t t 1)))
-
-  ;; Modes
-  (magit-wip-after-apply-mode)
-  (magit-wip-after-save-mode)
-  (magit-wip-before-change-mode))
-
-(use-package magit-annex
-  :ensure)
-
-(use-package magit-gh-pulls
-  :disabled
-  :ensure                               ; gh.el doesn't speak ssh?
-  :commands turn-on-magit-gh-pulls
-  :init
-  (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls))
-
-(use-package magithub
-  :disabled
-  :ensure
-  :after magit
-  :commands magithub-feature-autoinject
-  :init
-  (setq-default magithub-api-timeout    4
-                magithub-debug-mode     t
-                ;; KLUDGE: Enable magithub in a sandboxed state
-                magithub-hub-executable "")
-  :config
-  ;; KLUDGE: Allow magithub to be enabled on next
-  ;;         `magithub-toggle-pull-requests' or
-  ;;         `magithub-toggle-issues'.
-  (custom-reevaluate-setting 'magithub-hub-executable)
-  (magithub-feature-autoinject t))
-
-(use-package make-mode
-  :bind (:map
-         makefile-mode-map
-         ("C-c $" . makefile-insert-macro-ref))
-  :config
-  (delight `((,#'makefile-automake-mode "⛏.am" :major)
-             (,#'makefile-mode          "⛏"    :major)
-             (,#'makefile-gmake-mode    "⛏GNU" :major)))
-
-  (setq-default makefile-macro-assign                           " := "
-                makefile-pickup-everything-picks-up-filenames-p t
-                makefile-tab-after-target-colon                 nil)
+(with-eval-after-load 'make-mode
+  (define-key makefile-mode-map "\C-c$" #'makefile-insert-macro-ref)
 
   ;; Expand GNU functions
   (map-do (lambda (fn args)
@@ -2468,8 +2578,7 @@ Filter `starred-name' is implied unless symbol `nostar' present."
   ;; Expand special targets
   (let ((targets 'makefile-special-targets-list))
     ;; Remove old-fashioned suffix rules
-    (set targets (seq-remove (lambda (target)
-                               (string-match-p "\\." target))
+    (set targets (seq-remove (apply-partially #'string-match-p (rx "."))
                              (symbol-value targets)))
 
     (mapc (lambda (target)
@@ -2487,43 +2596,18 @@ Filter `starred-name' is implied unless symbol `nostar' present."
 
     (set-default targets (sort (symbol-value targets) #'string-lessp))))
 
-(use-package man
-  :bind (:map
-         Man-mode-map
-         ("]" . blc-man-next-buffer)
-         ("[" . blc-man-previous-buffer))
-  :init
-  (setq-default Man-notify-method 'aggressive))
+;;; man
 
-(use-package markdown-mode
-  :ensure
-  :init
-  (setq-default markdown-fontify-code-blocks-natively t
-                markdown-header-scaling               t)
-  :config
-  (delight `((     ,#'gfm-mode "🐙" :major)
-             (,#'markdown-mode "🡇"  :major))))
+(with-eval-after-load 'man
+  (blc-define-keys
+    (Man-mode-map
+     ("]" . #'blc-man-next-buffer)
+     ("[" . #'blc-man-previous-buffer))))
 
-(use-package matlab
-  :ensure matlab-mode)
+;;; message
 
-(use-package meme
-  :commands meme meme-file)
-
-(use-package message
-  :functions message-forward-subject-fwd message-send-mail-with-sendmail
-  :bind (:map
-         message-mode-map
-         ("C-c C-f f" . blc-message-set-msmtp-from))
-  :init
-  (blc-hook (:hooks message-mode-hook
-                    :fns blc-turn-on-double-space-sentence-ends)
-            (:hooks message-send-hook :fns blc-message-confirm-attach)
-            (:hooks message-subscribed-address-functions
-                    :fns gnus-find-subscribed-addresses))
-
-  :config
-  (delight #'message-mode "🖹" :major)
+(with-eval-after-load 'message
+  (define-key message-mode-map "\C-c\C-ff" #'blc-message-set-msmtp-from)
 
   (add-to-list 'message-required-mail-headers 'To)
 
@@ -2531,133 +2615,26 @@ Filter `starred-name' is implied unless symbol `nostar' present."
     (setq-default message-alternative-emails (regexp-opt addresses)
                   user-mail-address          (car addresses)))
 
-  (setq-default
-   message-confirm-send                  t
-   message-expand-name-databases
-   (delq 'eudc message-expand-name-databases)
-   message-fill-column                   60
-   message-from-style                    'angles
-   message-forward-before-signature      nil
-   message-make-forward-subject-function #'message-forward-subject-fwd
-   message-mail-alias-type               nil
-   message-send-mail-function            #'message-send-mail-with-sendmail
-   message-sendmail-envelope-from        'header
-   message-signature                     (car (split-string user-full-name))))
+  (setq-default message-expand-name-databases
+                (delq 'eudc message-expand-name-databases)))
 
-(use-package mines
-  :ensure
-  :init
-  (setq-default mines-empty-cell-char   ?\s
-                mines-flagged-cell-char ?⚑))
+;;; mm-decode
 
-(use-package minimap
-  :ensure
-  :config
-  (setq-default
-   minimap-highlight-line  nil
-   minimap-recenter-type   'relative
-   minimap-width-fraction  0.05
-   minimap-window-location 'right))
+(with-eval-after-load 'mm-decode
+  (setq-default mm-default-directory (blc-user-dir "DOWNLOAD")))
 
-(use-package mm-decode
-  :functions mm-file-name-replace-whitespace
-  :config
-  (add-hook 'mm-file-name-rewrite-functions #'mm-file-name-replace-whitespace)
+;;; mpc
 
-  (setq-default
-   mm-decrypt-option            'ask
-   mm-default-directory         (blc-user-dir "DOWNLOAD")
-   mm-external-terminal-program "x-terminal-emulator"
-   mm-html-blocked-images       nil
-   mm-inline-large-images       'resize
-   mm-sign-option               'guided
-   mm-text-html-renderer        'gnus-w3m
-   mm-verify-option             'always))
-
-(use-package mml-sec
-  :init
-  (setq-default mml-secure-verbose t))
-
-(use-package mpc
-  :config
+(with-eval-after-load 'mpc
   (map-delete mpc-frame-alist 'font))
 
-(use-package "mule-cmds"
-  :init
-  (setq-default default-input-method "greek"))
+;;; org
 
-(use-package mustache-mode
-  :ensure)
-
-(use-package mwheel
-  :init
-  (setq-default mwheel-tilt-scroll-p t))
-
-(use-package neato-graph-bar
-  :ensure)
-
-(use-package newsticker
-  :init
-  (setq-default
-   newsticker-date-format          "(%F %a %R %:::z)"
-   newsticker-treeview-date-format "%F %R %:::z "
-   newsticker-treeview-own-frame   t
-   newsticker-url-list
-   '(("HN"
-      "https://hnrss.org/frontpage")
-     ("LWN"
-      "https://lwn.net/headlines/rss")
-     ("NYT"
-      "https://nytimes.com/services/xml/rss/userland/HomePage.xml")
-     ("NYT Tech"
-      "https://nytimes.com/services/xml/rss/userland/Technology.xml")
-     ("QotD"
-      "https://feeds.feedburner.com/quotationspage/qotd")
-     ("Spiegel"
-      "http://spiegel.de/schlagzeilen/tops/index.rss")
-     ("Spiegel Net"
-      "http://spiegel.de/netzwelt/index.rss")
-     ("Spiegel Sci"
-      "http://spiegel.de/wissenschaft/index.rss")
-     ("Wired"
-      "https://wired.com/feed/rss"))
-   newsticker-url-list-defaults    ()))
-
-(use-package nodejs-repl
-  :ensure)
-
-(use-package org
-  :ensure org-plus-contrib
-  :functions org-clock-in-last org-clock-out org-minutes-to-clocksum-string
-
-  :bind (:map
-         mode-specific-map
-         ("a" . org-agenda)
-         ("c" . org-capture)
-         ("l" . org-store-link))
-
-  :init
-  (add-hook 'org-capture-before-finalize-hook #'blc-org-prop-captured)
-
-  (setq-default
-   org-directory          (blc-dir user-emacs-directory "org")
-   org-default-notes-file (blc-file org-directory "notes.org")
-   org-modules            '(org-bibtex
-                            org-bookmark
-                            org-docview
-                            org-eshell
-                            org-eww
-                            org-gnus
-                            org-id
-                            org-info
-                            org-man))
-
-  :config
+(with-eval-after-load 'org
   (require 'dom)
 
-  (mapc (lambda (cmd)
-          (global-set-key (where-is-internal cmd org-mode-map t) cmd))
-        `(,#'org-clock-in-last ,#'org-clock-out))
+  (dolist (cmd '(org-clock-in-last org-clock-out))
+    (global-set-key (where-is-internal cmd org-mode-map t) cmd))
 
   (mapc (lambda (lang)
           (map-put org-babel-load-languages lang t))
@@ -2677,18 +2654,6 @@ Filter `starred-name' is implied unless symbol `nostar' present."
           shell))
 
   (setq-default
-   ;; ob-python
-   org-babel-python-command               "python3"
-
-   ;; org
-   org-agenda-files
-   (expand-file-name "agenda-index" org-directory)
-   org-archive-location
-   (format "%s::" (blc-file org-directory "archive.org"))
-   org-catch-invisible-edits              'smart
-   org-columns-default-format
-   "%ITEM %TODO %1PRIORITY %TAGS %Effort{:} %CLOCKSUM"
-   org-ctrl-k-protect-subtree             t
    org-global-properties
    `(("Effort_ALL"
       . ,(concat
@@ -2697,37 +2662,29 @@ Filter `starred-name' is implied unless symbol `nostar' present."
                                     (number-sequence step (* step 3) step))
                                   '(15 60))
                           " "))))
-   org-goto-interface                     'outline-path-completion
-   org-goto-max-level                     10
-   org-hierarchical-todo-statistics       nil
-   org-highlight-latex-and-related        '(entities latex script)
-   org-log-done                           'note
-   org-log-into-drawer                    t
-   org-log-redeadline                     'note
-   org-log-reschedule                     'note
-   org-lowest-priority                    (+ org-highest-priority 3)
-   org-M-RET-may-split-line               nil
-   org-outline-path-complete-in-steps     nil
-   org-property-format                    "%-20s %s"
-   org-refile-allow-creating-parent-nodes 'confirm
-   org-refile-targets `((org-agenda-files . (:maxlevel . ,org-goto-max-level)))
-   org-refile-use-outline-path            'file
-   org-reverse-note-order                 t
-   org-special-ctrl-a/e                   t
-   org-startup-indented                   t
-   org-todo-keywords
-   '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
-           "DONE(d!)" "VOID(v@)"))
-   org-treat-S-cursor-todo-selection-as-state-change nil
-   org-use-speed-commands                 t
+   org-lowest-priority (+ org-highest-priority 3))
 
-   ;; org-agenda
-   org-agenda-todo-ignore-with-date       t
-   org-agenda-todo-list-sublevels         nil
-   org-agenda-window-setup                'other-window
+  (org-clock-persistence-insinuate))
 
-   ;; org-capture
-   org-capture-bookmark                   nil
+;;; org-agenda
+
+(with-eval-after-load 'org-agenda
+  (blc-define-keys
+    (org-agenda-mode-map
+     ([?\M-n] . #'blc-org-agenda-day-forward)
+     ([?\M-p] . #'blc-org-agenda-day-backward)))
+
+  (if-let* ((key "n")
+            (cmd (seq-take (blc-elt org-agenda-custom-commands key) 2))
+            ((= (length cmd) 2)))
+      (blc-put org-agenda-custom-commands key
+               `(,@cmd () ,(blc-file org-directory "agenda.html")))
+    (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'")))
+
+;;; org-capture
+
+(with-eval-after-load 'org-capture
+  (setq-default
    org-capture-templates
    `(("t" . ("Task" entry (file+olp "" "Tasks")
              ,(string-join '("* %?"     ; Final point
@@ -2760,730 +2717,204 @@ Filter `starred-name' is implied unless symbol `nostar' present."
              :prepend t :unnarrowed t))
      ("p" . ("Playlist" entry (file+olp "ents.org" "Playlist")
              "* %?"
-             :prepend t :unnarrowed t)))
+             :prepend t :unnarrowed t)))))
 
-   ;; org-clock
-   org-clock-idle-time                    10
-   org-clock-persist                      'history
+;;; org-pdfview
 
-   ;; org-footnote
-   org-footnote-section                   nil
+(with-eval-after-load 'org
+  (require 'org-pdfview))
+(with-eval-after-load 'pdf-view
+  (require 'org-pdfview))
 
-   ;; org-list
-   org-checkbox-hierarchical-statistics   nil
-   org-list-demote-modify-bullet          '(("+" . "-") ("-" . "+"))
-   org-list-use-circular-motion           t
+;;; org-pomodoro
 
-   ;; ox
-   org-export-coding-system               'utf-8
+(with-eval-after-load 'org-pomodoro
+  (setq-default org-pomodoro-format
+                (blc-sed-tree "pomodoro" "🍅" org-pomodoro-format nil t)))
 
-   ;; ox-html
-   org-html-checkbox-type                 'html
-   org-html-doctype                       "html5"
+;;; outline
+
+(with-eval-after-load 'outline
+  (define-key outline-minor-mode-map "\C-c\t" #'outline-toggle-children))
+
+;;; ox-html
+
+(with-eval-after-load 'ox-html
+  (setq-default
    org-html-footnotes-section
    (blc-dom-to-xml 'div
                    '((id . footnotes))
                    (dom-node 'h3  '((class .      footnotes)) "%s")
-                   (dom-node 'div '((id    . text-footnotes)) "%s"))
-   org-html-html5-fancy                   t
-   org-html-htmlize-output-type           'css
-   org-html-metadata-timestamp-format     "%F %a %R %Z"
-   org-html-validation-link               ""
+                   (dom-node 'div '((id    . text-footnotes)) "%s")))
 
-   ;; ox-publish
+  (map-put org-html-checkbox-types
+           'html
+           (let ((checkbox '((type     . checkbox)
+                             (disabled . ""))))
+             (map-apply
+              (lambda (state checked)
+                (cons state (blc-dom-to-xml 'input (append checkbox checked))))
+              '((on    . ((checked . "")))
+                (off   . ())
+                (trans . ())))))
+
+  (blc-put org-html-postamble-format
+           org-export-default-language
+           (list (blc-dom-to-xml 'p '((class . modification)) "Updated: %C"))))
+
+;;; ox-publish
+
+(with-eval-after-load 'ox-publish
+  (setq-default
    org-publish-project-alist
-   `(,(let* ((proj "recipes")
-             (pubdir (blc-dir (blc-user-dir "PUBLICSHARE") proj)))
-        `(,proj
-          :base-directory       ,(blc-dir org-directory proj)
-          :publishing-directory ,pubdir
-          :publishing-function  ,#'org-html-publish-to-html
-          :recursive            t
-          :with-author          nil
-          :with-toc             nil
-          :html-postamble       t
-          :html-home/up-format
-          ,(blc-dom-to-xml 'div
-                           '((id . org-div-home-and-up))
-                           (dom-node 'a
-                                     '((accesskey . h)
-                                       (href      . "%s"))
-                                     "&uarr;"))
-          :completion-function
-          (,(lambda (&rest _)
-              (mapc (lambda (file)
-                      (set-file-modes file (pcase file
-                                             ((pred file-regular-p)   #o640)
-                                             ((pred file-directory-p) #o750)
-                                             (_ (file-modes file)))))
-                    (directory-files-recursively pubdir "" t)))))))
-   org-publish-use-timestamps-flag        nil)
+   (list
+    (let* ((proj "recipes")
+           (pubdir (blc-dir (blc-user-dir "PUBLICSHARE") proj)))
+      (list
+       proj
+       :base-directory       (blc-dir org-directory proj)
+       :publishing-directory pubdir
+       :publishing-function  #'org-html-publish-to-html
+       :recursive            t
+       :with-author          nil
+       :with-toc             nil
+       :html-postamble       t
+       :html-home/up-format
+       (blc-dom-to-xml 'div
+                       '((id . org-div-home-and-up))
+                       (dom-node 'a
+                                 '((accesskey . h)
+                                   (href      . "%s"))
+                                 "&uarr;"))
+       :completion-function
+       (list
+        (lambda (&rest _)
+          (mapc (lambda (file)
+                  (set-file-modes file (pcase file
+                                         ((pred file-regular-p)   #o640)
+                                         ((pred file-directory-p) #o750)
+                                         (_ (file-modes file)))))
+                (directory-files-recursively pubdir "" t)))))))))
 
-  (org-clock-persistence-insinuate)
+;;; paren
 
-  (with-eval-after-load 'org-agenda
-    (map-do (apply-partially #'define-key org-agenda-mode-map)
-            `(("\M-n" . ,#'blc-org-agenda-day-forward)
-              ("\M-p" . ,#'blc-org-agenda-day-backward)))
+(show-paren-mode)
 
-    (if-let* ((key "n")
-              (cmd (seq-take (blc-elt org-agenda-custom-commands key) 2))
-              ((= (length cmd) 2)))
-        (blc-put org-agenda-custom-commands key
-                 `(,@cmd () ,(blc-file org-directory "agenda.html")))
-      (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'")))
+;;; pdf-tools
 
-  (with-eval-after-load 'ox-html
-    (map-put org-html-checkbox-types
-             'html
-             (let ((checkbox '((type     . checkbox)
-                               (disabled . ""))))
-               (map-apply (lambda (state checked)
-                            `(,state . ,(blc-dom-to-xml
-                                         'input `(,@checkbox ,@checked))))
-                          '((on    . ((checked . "")))
-                            (off   . ())
-                            (trans . ())))))
+(with-eval-after-load 'pdf-view
+  (define-key pdf-view-mode-map "\C-s" #'isearch-forward))
 
-    (blc-put org-html-postamble-format
-             org-export-default-language
-             `(,(blc-dom-to-xml 'p '((class . modification)) "Updated: %C")))))
+;;; perl-mode
 
-(use-package org-mime
-  :ensure)
+(add-to-list 'auto-mode-alist (cons (rx ".latexmkrc" eos) #'perl-mode))
 
-(use-package org-pdfview
-  :ensure
-  :after org
-  :after pdf-view)
+;;; projectile
 
-(use-package org-pomodoro
-  :ensure
-  :config
-  (setq-default
-   org-pomodoro-format
-   (blc-sed-tree "pomodoro" "🍅" org-pomodoro-format nil t)))
-
-(use-package outline
-  :bind (:map
-         outline-minor-mode-map
-         ("C-c TAB" . outline-toggle-children)))
-
-(use-package pacmacs
-  :ensure)
-
-(use-package palette
-  :ensure)
-
-(use-package paradox
-  :ensure
-  :init
-  (setq-default paradox-execute-asynchronously t
-                paradox-github-token           t))
-
-(use-package "paragraphs"
-  :init
-  (setq-default sentence-end-double-space nil))
-
-(use-package paren
-  :init
-  (show-paren-mode))
-
-(use-package paren-face
-  :ensure
-  :init
-  (add-hook 'prog-mode-hook #'global-paren-face-mode))
-
-(use-package pascal
-  :init
-  (add-hook 'pascal-mode-hook #'blc-turn-on-c++-comments))
-
-(use-package pass
-  :ensure)
-
-(use-package passmm
-  :ensure)
-
-(use-package password-cache
-  :init
-  (setq-default password-cache nil))
-
-(use-package pcomplete
-  :init
-  (setq-default pcomplete-ignore-case t))
-
-(use-package pcre2el
-  :ensure)
-
-(use-package pdf-tools
-  :ensure
-  :bind (:map
-         pdf-view-mode-map
-         ("C-s" . isearch-forward))
-  :init
-  (setq-default pdf-view-display-size 'fit-page)
-  (add-hook 'doc-view-mode-hook #'pdf-tools-install))
-
-(use-package perl-mode
-  :mode "\\.latexmkrc\\'")
-
-(use-package perspective
-  :disabled ; (void-function make-variable-frame-local)
-  :ensure)
-
-(use-package playerctl
-  :ensure)
-
-(use-package pomidor
-  :ensure)
-
-(use-package proced
-  :init
-  (setq-default proced-auto-update-flag t))
-
-(use-package projectile
-  :ensure
-  :functions projectile-add-known-project projectile-save-known-projects
-
-  :init
-  (autoload 'projectile-command-map "projectile" nil t 'keymap)
-  (define-key mode-specific-map "p" 'projectile-command-map)
-
-  :config
+(with-eval-after-load 'projectile
   (when (and (require 'magit-repos nil t) (fboundp 'magit-list-repos))
-    (mapc #'projectile-add-known-project (mapcar #'blc-dir (magit-list-repos)))
-    (projectile-save-known-projects))
-
-  (setq-default
-   projectile-completion-system           'ivy
-   projectile-find-dir-includes-top-level t
-   ;; Delight mode but not project name
-   projectile-mode-line
-   '(:eval (format "[%s]" (if (file-remote-p default-directory)
-                              "📡"
-                            (projectile-project-name)))))
+    (dolist (repo (magit-list-repos) (projectile-save-known-projects))
+      (projectile-add-known-project (blc-dir repo))))
 
   (projectile-mode))
 
-(use-package prolog
-  :mode ("\\.pl\\'" . prolog-mode)
-  :config
-  (setq-default prolog-system 'swi))
+;;; prolog
 
-(use-package pulseaudio-control
-  :ensure t)
+(add-to-list 'auto-mode-alist (cons (rx ".pl" eos) #'prolog-mode))
 
-(use-package python
-  :config
+;;; python
+
+(with-eval-after-load 'python
   (map-do
    (lambda (var cmds)
      (when-let* ((cmd (seq-some #'executable-find cmds)))
        (set-default var cmd)))
-   '((python-check-command     . ("epylint3" "epylint" "pyflakes"))
-     (python-shell-interpreter . ("ipython3" "python3" "ipython" "python")))))
+   '((python-check-command     "epylint3" "epylint" "pyflakes")
+     (python-shell-interpreter "ipython3" "python3" "ipython" "python"))))
 
-(use-package rainbow-mode
-  :ensure
-  :delight rainbow-mode "🌈")
+;;; recentf
 
-(use-package recentf
-  :init
-  ;; Do not attempt to `abbreviate-file-name' of Tramp files requiring root
-  (setq-default recentf-initialize-file-name-history nil)
-  :config
-  (run-at-time t (blc-mins-to-secs 10) 'recentf-save-list))
+(with-eval-after-load 'recentf
+  (run-at-time t (blc-mins-to-secs 10) #'recentf-save-list))
 
-(use-package redtick
-  :ensure
-  :config
-  (setq-default
-   ;; Do not distract with colours - inherit `mode-line' foreground
-   redtick--bars
-   (mapcar (pcase-lambda (`(,interval ,bar _))
-             `(,interval ,bar nil))
-           redtick--bars)
-   redtick-history-file
-   (expand-file-name "redtick-history.txt" user-emacs-directory)))
+;;; reftex
 
-(use-package reftex
-  :init
-  (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
-  :config
-  (add-to-list 'reftex-default-bibliography blc-bib-file)
+(with-eval-after-load 'reftex
+  (add-to-list 'reftex-default-bibliography blc-bib-file))
 
-  (setq-default
-   reftex-cite-format       'biblatex
-   reftex-comment-citations t
-   reftex-plug-into-AUCTeX  t
-   reftex-revisit-to-follow t))
+;;; saveplace
 
-(use-package regex-tool
-  :ensure)
+(save-place-mode)
 
-(use-package restclient
-  :ensure t
-  :init
-  (add-hook 'restclient-mode-hook #'blc-turn-off-electric-indent-local))
+;;; sr-speedbar
 
-(use-package sass-mode
-  :ensure
-  :init
-  (add-hook 'sass-mode-hook #'blc-turn-on-c++-comments))
+(with-eval-after-load 'speedbar
+  (require 'sr-speedbar))
 
-(use-package saveplace
-  :init
-  (save-place-mode))
+;;; simple
 
-(use-package scroll-bar
-  :init
-  (blc-with-every-frame #'blc-turn-off-scroll-bar))
+(column-number-mode)
 
-(use-package sendmail
-  :init
-  (setq-default sendmail-program "msmtp"))
+;;; solar
 
-(use-package server
-  :init
-  (setq-default server-kill-new-buffers nil))
-
-(use-package sh-script
-  :config
-  (setq-default sh-basic-offset 2
-                sh-indentation  2))
-
-(use-package shell
-  :init
-  (setq-default explicit-shell-file-name (or (getenv "ESHELL")
-                                             (getenv "SHELL")
-                                             "/bin/bash")))
-
-(use-package shr
-  :init
-  (setq-default shr-bullet  "• "
-                shr-hr-line ?─
-                shr-width   blc-chars-per-line))
-
-(use-package sicp
-  :ensure)
-
-(use-package simple
-  :commands turn-on-auto-fill
-  :bind (([remap delete-horizontal-space] .   cycle-spacing)
-         ([remap         capitalize-word] . capitalize-dwim)
-         ([remap           downcase-word] .   downcase-dwim)
-         ([remap             upcase-word] .     upcase-dwim)
-         :map
-         goto-map
-         ("e" . first-error)
-         :map
-         mode-specific-map
-         ("M-n" .     next-logical-line)
-         ("M-p" . previous-logical-line))
-
-  :init
-  (setq-default async-shell-command-display-buffer nil
-                indicate-unused-lines              t
-                kill-whole-line                    t
-                mail-user-agent                    'gnus-user-agent
-                next-error-recenter                '(4)
-                read-mail-command                  'gnus)
-
-  (blc-hook (:fns turn-on-auto-fill :hooks (bookmark-edit-annotation-mode-hook
-                                            LaTeX-mode-hook
-                                            org-mode-hook)))
-
-  (column-number-mode))
-
-(use-package skype
-  :ensure)
-
-(use-package sl
-  :ensure)
-
-(use-package slime-volleyball
-  :ensure)
-
-(use-package smart-mode-line
-  :disabled
-  :ensure)
-
-(use-package solar
-  :init
-  (setq-default
-   calendar-time-display-form
-   '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
-  :config
+(with-eval-after-load 'solar
   (when-let* ((loc (blc-system-location)))
     (blc-solar-set-location loc)))
 
-(use-package speedbar
-  :config
-  (setq-default
-   speedbar-show-unknown-files t
-   speedbar-update-flag        nil
-   speedbar-use-images         t
-   speedbar-vc-do-check        nil))
+;;; subword
 
-(use-package sr-speedbar
-  :ensure
-  :after speedbar
-  :bind (:map
-         ctl-x-map
-         ("t" . sr-speedbar-toggle))
-  :config
-  (setq-default sr-speedbar-auto-refresh nil))
+(global-subword-mode)
 
-(use-package "startup"
-  :init
-  (setq inhibit-default-init    t
-        inhibit-startup-screen  t)
+;;; sx
 
-  (when-let* ((fortune
-               (blc-with-contents (or (getenv "COWTUNE_FILE") "~/.cowtune")
-                 (let ((comment-start ";;")
-                       (comment-empty-lines t)
-                       delete-trailing-lines)
-                   (caddr (blc-funcalls `(,#'comment-region
-                                          ,#'delete-trailing-whitespace
-                                          ,#'buffer-substring-no-properties)
-                                        (point-min-marker)
-                                        (point-max-marker)))))))
-    (setq initial-scratch-message fortune))
+(with-eval-after-load 'sx-question-list
+  (define-key sx-question-list-mode-map
+    [remap sx-question-list-hide] #'describe-mode))
 
-  (blc-hook (:hooks window-setup-hook :append t :fns (blc-report-init-time
-                                                      blc-gc-thresh-restore
-                                                      blc-dropbox-mode
-                                                      blc-tomato-mode))))
+;;; term
 
-(use-package subword
-  :delight subword-mode
-  :init
-  (global-subword-mode))
+(with-eval-after-load 'term
+  (dolist (mapsym '(term-mode-map term-raw-map))
+    (dolist (fn '(term-char-mode term-line-mode))
+      (define-key (symbol-value mapsym)
+        (vector 'remap fn) #'blc-toggle-subterm-mode))))
 
-(use-package sudoku
-  :ensure
-  :defines sudoku-builtin-puzzles)
+;;; time
 
-(use-package swiper
-  :ensure
-  :init
-  (setq-default swiper-goto-start-of-match t))
+(display-time)
 
-(use-package sx
-  :ensure
-  :bind (:map
-         mode-specific-map
-         ("s a" . sx-tab-all-questions  )
-         ("s i" . sx-inbox              )
-         ("s m" . sx-tab-meta-or-main   )
-         ("s n" . sx-inbox-notifications)
-         ("s s" . sx-search             ))
-  :init
-  (setq-default sx-question-mode-comments-format "%s:\n   %s\n"))
+;;; timer-list
 
-(use-package sx-question-list
-  :bind (:map
-         sx-question-list-mode-map
-         ([remap sx-question-list-hide] . describe-mode)))
+(function-put #'list-timers 'disabled nil)
 
-(use-package systemd
-  :ensure)
+;;; url
 
-(use-package term
-  :bind (:map
-         term-mode-map
-         ([remap term-char-mode] . blc-toggle-subterm-mode)
-         ([remap term-line-mode] . blc-toggle-subterm-mode)
-         :map
-         term-raw-map
-         ([remap term-char-mode] . blc-toggle-subterm-mode)
-         ([remap term-line-mode] . blc-toggle-subterm-mode)))
-
-(use-package tex
-  :ensure auctex
-  :bind (:map
-         TeX-mode-map
-         ("C-c ?" . TeX-doc))
-  :commands TeX-revert-document-buffer
-  :init
-  (blc-hook (:hooks TeX-after-compilation-finished-functions
-                    :fns TeX-revert-document-buffer)
-            (:hooks LaTeX-mode-hook :fns (blc-configure-beamer
-                                          blc-configure-latexmk)))
-
-  :config
-  (setq-default
-   LaTeX-csquotes-open-quote  "\\enquote{"
-   LaTeX-csquotes-close-quote "}"
-   TeX-auto-save              t
-   TeX-engine                 'xetex
-   TeX-parse-self             t
-   TeX-PDF-mode               t)
-
-  ;; Set priority of pre-configured PDF viewers
-  (mapc (lambda (nom)
-          (push `(output-pdf ,nom) TeX-view-program-selection))
-        (seq-intersection '("Zathura" "PDF Tools")
-                          (map-keys TeX-view-program-list-builtin))))
-
-(use-package text-mode
-  :init
-  (blc-hook (:hooks text-mode-hook :fns (blc-indent-relative-first-indent-point
-                                         blc-turn-off-electric-indent-local))))
-
-(use-package threes
-  :ensure)
-
-(use-package tile
-  :ensure
-  :bind (("<f2>" . blc-tile)))
-
-(use-package time
-  :init
-  (let ((fmt "%a %d %b %R %:::z"))
-    (setq-default
-     display-time-format                 fmt
-     display-time-load-average-threshold 0
-     display-time-mail-string            "✉"
-     display-time-world-list
-     (map-apply (lambda (loc props)
-                  `(,(apply #'blc--location-to-tz loc props) ,loc))
-                blc-locations)
-     display-time-world-time-format      fmt))
-  (display-time))
-
-(use-package timer-list
-  :init
-  (function-put #'list-timers 'disabled nil))
-
-(use-package tls
-  :init
-  (setq-default tls-checktrust 'ask))
-
-(use-package tooltip
-  :init
-  (setq-default tooltip-resize-echo-area t))
-
-(use-package top-mode
-  :ensure)
-
-(use-package tramp
-  :init
-  (setq-default tramp-default-method "rsync"))
-
-(use-package tuareg
-  :ensure)
-
-(use-package typit
-  :ensure)
-
-(use-package unfill
-  :ensure
-  :bind ([remap fill-paragraph] . unfill-toggle))
-
-(use-package uniquify
-  :init
-  (setq-default uniquify-after-kill-buffer-p  nil
-                uniquify-buffer-name-style    'forward
-                uniquify-min-dir-content      1
-                uniquify-trailing-separator-p t))
-
-(use-package url
-  :config
+(with-eval-after-load 'url-cookie
   (add-to-list 'url-cookie-untrusted-urls "economist\\.com"))
 
-(use-package use-package
-  :commands use-package-autoload-keymap)
+;;; web-mode
 
-(use-package vc-hooks
-  :config
-  ;; Git or Magit only
-  (setq-default vc-handled-backends
-                (blc-as-list (assoc-string 'git vc-handled-backends t))))
+(add-to-list 'auto-mode-alist (cons (rx ".mustache" eos) #'web-mode))
 
-(use-package view
-  :delight view-mode "👓")
+;;; whitespace
 
-(use-package visual-fill-column
-  :ensure
-  :init
-  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
+(global-whitespace-mode)
 
-(use-package visual-regexp-steroids
-  :ensure
-  :after pcre2el
-  :config
-  (setq-default vr/match-separator-use-custom-face t))
+;;; winner
 
-(use-package vlf
-  :disabled
-  :ensure)
+(winner-mode)
 
-(use-package w3m
-  :ensure)
+;;; writeroom-mode
 
-(use-package warnings
-  :init
-  (setq-default warning-minimum-log-level :debug))
+(with-eval-after-load 'writeroom-mode
+  (blc-define-keys
+    (writeroom-mode-map
+     ([?\C-\M-<] . #'writeroom-decrease-width)
+     ([?\C-\M->] . #'writeroom-increase-width)
+     ([?\C-\M-=] . #'writeroom-adjust-width))))
 
-(use-package wc-mode
-  :ensure
-  :commands wc-mode
-  :config
-  (setq-default wc-modeline-format "[%tll]"))
+;;; xt-mouse
 
-(use-package wdired
-  :init
-  (setq-default wdired-allow-to-change-permissions t))
-
-(use-package web-mode
-  :ensure
-  :mode ("\\.html\\'" "\\.mustache\\'"))
-
-(use-package webjump
-  :bind (:map
-         mode-specific-map
-         ("j w" . webjump))
-  :config
-  (setq-default
-   webjump-sites
-   '(("Book Depository"
-      . [simple-query "https://bookdepository.com/"
-                      "https://bookdepository.com/search?searchTerm=hi"
-                      ""])
-     ("Emacs Wiki"
-      . [simple-query "https://emacswiki.org/"
-                      "https://emacswiki.org/cgi-bin/wiki/"
-                      ""])
-     ("GitHub"
-      . [mirrors      "https://github.com/"
-                      "https://github.com/basil-conto"
-                      "https://github.com/issues"
-                      "https://github.com/notifications"
-                      "https://github.com/pulls"
-                      "https://github.com/search"])
-     ("Google Definition"
-      . [simple-query "https://encrypted.google.com/"
-                      "https://encrypted.google.com/search?q=define+"
-                      "&ie=utf-8&oe=utf-8"])
-     ("Google Encrypted"
-      . [simple-query "https://encrypted.google.com/"
-                      "https://encrypted.google.com/search?q="
-                      "&ie=utf-8&oe=utf-8"])
-     ("Google Scholar"
-      . [simple-query "https://scholar.google.com/"
-                      "https://scholar.google.com/scholar?q="
-                      ""])
-     ("Hoogle"
-      . [simple-query "https://haskell.org/hoogle/"
-                      "https://haskell.org/hoogle/?hoogle="
-                      ""])
-     ("IMDB"
-      . [simple-query "http://imdb.com/"
-                      "http://imdb.com/find?q="
-                      ""])
-     ("Imgur"
-      .               "http://imgur.com/")
-     ("Stack Overflow"
-      . [simple-query "https://stackoverflow.com/"
-                      "https://stackoverflow.com/search?q="
-                      ""])
-     ("Wikipedia"
-      . [simple-query "https://en.wikipedia.org/"
-                      "https://en.wikipedia.org/w/index.php?search="
-                      ""]))))
-
-(use-package wgrep
-  :ensure)
-
-(use-package whitespace
-  :delight global-whitespace-mode
-  :init
-  (setq-default whitespace-global-modes `(not ,#'shell-mode)
-                whitespace-style        '(face tab-mark trailing))
-  (global-whitespace-mode))
-
-(use-package wiki-summary
-  :ensure)
-
-(use-package windmove
-  :bind
-  (("S-<up>"    . windmove-up   )
-   ("S-<down>"  . windmove-down )
-   ("S-<left>"  . windmove-left )
-   ("S-<right>" . windmove-right))
-  :config
-  (setq-default
-   windmove-window-distance-delta 2
-   windmove-wrap-around           t))
-
-(use-package "window"
-  :init
-  (setq-default
-   display-buffer-reuse-frames     t
-   scroll-error-top-bottom         t
-   split-height-threshold          0
-   split-window-keep-point         nil
-   split-window-preferred-function #'blc-split-window
-   ;; Limit automatic `display-buffer' vertical window splitting
-   window-min-height               20))
-
-(use-package winner
-  :init
-  (winner-mode))
-
-(use-package with-editor
-  :ensure
-  :init
-  ;; Clean up git buffers whether action executed or cancelled
-  (blc-hook (:fns blc-kill-git-buffer :hooks (with-editor-post-cancel-hook
-                                              with-editor-post-finish-hook))))
-
-(use-package wrap-region
-  :ensure
-  :delight wrap-region-mode
-  :commands wrap-region-add-wrapper
-  :config
-  (setq-default
-   wrap-region-only-with-negative-prefix t
-   wrap-region-tag-active-modes          '(html-mode mustache-mode web-mode))
-  (wrap-region-add-wrapper "{{#i18n}}" "{{/i18n}}" "i"))
-
-(use-package writeroom-mode
-  :ensure
-  :bind (:map
-         writeroom-mode-map
-         ("C-M-<" . writeroom-decrease-width)
-         ("C-M->" . writeroom-increase-width)
-         ("C-M-=" . writeroom-adjust-width  ))
-  :config
-  ;; Less jumpy with `auto-fill-mode'
-  (setq visual-fill-column-width (+ fill-column 20)))
-
-(use-package wttrin
-  :ensure
-  :config
-  (setq-default
-   wttrin-default-accept-language
-   `(,(car wttrin-default-accept-language) . "el,en,*")
-   wttrin-default-cities
-   `("Moon" ,@(map-apply
-               (pcase-lambda (loc (app (apply #'blc--country-xref) country))
-                 (format "%s, %s" loc (plist-get country :name)))
-               blc-locations))))
-
-(use-package xref-js2
-  :ensure
-  :init
-  (add-hook 'js2-mode-hook #'blc-xref-js2-install-backend)
-  (with-eval-after-load 'js2-mode
-    (unbind-key "M-." js2-mode-map)))
-
-(use-package xt-mouse
-  :init
-  (blc-with-every-frame #'blc-turn-on-xterm-mouse))
-
-(use-package yaml-mode
-  :ensure)
+(blc-with-every-frame #'blc-turn-on-xterm-mouse)
 
 ;;; init.el ends here

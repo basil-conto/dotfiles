@@ -1,2 +1,15 @@
+!!!  Emacs
+
+emacs.cursorBlink:        0
+emacs.dialog*font:        DejaVu Sans Mono-9
+emacs.font:               DejaVu Sans Mono-8
+emacs.fullscreen:         maximized
+emacs.menu*font:          DejaVu Sans Mono-9
+emacs.menuBar:            0
+emacs.pane.menubar.font:  DejaVu Sans Mono-9
+emacs.scrollBar:          0
+emacs.toolBar:            0
+emacs.verticalScrollBars: off
+
 ! Use LightDM user switcher with XScreenSaver
 xscreensaver.newLoginCommand: dm-tool switch-to-greeter

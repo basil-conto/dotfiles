@@ -1,4 +1,4 @@
-;;; magit.el --- magit init file for blc -*- lexical-binding: t -*-
+;;; blc-magit.el --- magit init file for blc -*- lexical-binding: t -*-
 
 ;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
 ;; Homepage: https://github.com/basil-conto/dotfiles
@@ -10,18 +10,19 @@
 
 ;;; Code:
 
-(require 'map)
-(require 'package)
-(eval-when-compile
-  (require 'subr-x))
-
 (eval-and-compile
-  (unless package--initialized
-    (package-initialize)))
+  (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
+
+(require 'blc-lib)
+(require 'blc-pkg)
 
 (require 'magit)
 (require 'magit-git)
 (require 'magit-section)
+
+(require 'map)
+(eval-when-compile
+  (require 'subr-x))
 
 (defvar blc-magit-gpg-types
   '((?G "VALID"       magit-signature-good)
@@ -59,8 +60,52 @@
         (magit-insert-section (gpg raw)
           (insert (propertize raw 'face face) "\n\n"))))))
 
-;; Local Variables:
-;; byte-compile-dynamic: t
-;; End:
+;; Add signature revision headers
+(magit-add-section-hook 'magit-revision-sections-hook
+                        #'blc-magit-insert-revision-gpg
+                        #'magit-insert-revision-headers
+                        t)
 
-;;; magit.el ends here
+;; Always highlight tabs
+(blc-put magit-diff-highlight-indentation "" 'tabs)
+
+;; Status buffer
+(dolist (fn '(magit-insert-remote-header magit-insert-repo-header))
+  (magit-add-section-hook
+   'magit-status-headers-hook fn 'magit-insert-head-branch-header))
+
+;; Repo list: insert dirty column in third position
+(push (list "D" 1 #'magit-repolist-column-dirty ())
+      (nthcdr 2 magit-repolist-columns))
+
+;; Default arguments
+(map-do #'add-to-list
+        '((magit-log-arguments    . "--show-signature")
+          (magit-merge-arguments  . "--ff-only"       )
+          (magit-rebase-arguments . "--interactive"   )))
+
+;; Inline format reformatting
+(let ((fmtre (rx ?% (group (? (in ?+ ?-)) (* digit)) (in ?U ?n)))
+      case-fold-search)
+
+  ;; Align refs with wider columns
+  (mapc (lambda (fmt)
+          (set-default fmt (blc-sed fmtre "-40" (symbol-value fmt) t t 1)))
+        '(magit-refs-local-branch-format
+          magit-refs-remote-branch-format
+          magit-refs-symref-format
+          magit-refs-tags-format))
+
+  ;; Limit number of commits in log
+  (setq-default
+   magit-log-arguments
+   (blc-sed-tree (rx "-n" (group (+ digit))) "64" magit-log-arguments t t 1)))
+
+;; Modes
+(magit-wip-after-apply-mode)
+(magit-wip-after-save-mode)
+(magit-wip-before-change-mode)
+
+(provide 'blc-magit)
+
+;;; blc-magit.el ends here
