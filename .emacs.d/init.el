@@ -588,8 +588,7 @@ order of descending priority, start `gnus'."
   "Like `blc-gnus', but use another frame.
 Suspending or exiting Gnus deletes that frame."
   (interactive)
-  (select-frame (make-frame '((name     . "Gnus")
-                              (blc-gnus . t))))
+  (select-frame (make-frame '((blc-gnus . t))))
   (blc-gnus)
   (blc-hook (:fns blc-gnus-delete-frame :hooks (gnus-suspend-gnus-hook
                                                 gnus-after-exiting-gnus-hook))))
