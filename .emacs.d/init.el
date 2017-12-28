@@ -288,6 +288,13 @@ This is much less accurate but also much more performant than
           (call-interactively mpc))
       (set-window-dedicated-p win flag))))
 
+;;; org
+
+(define-advice org-read-date (:around (read &rest args) blc-avoid-frames)
+  "Temporarily disable `pop-up-frames'."
+  (let (pop-up-frames)
+    (apply read args)))
+
 ;;; org-agenda
 
 (define-advice org-agenda-finalize (:after (&rest _) blc-pad-dates)
