@@ -2226,13 +2226,15 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (setq-default dired-omit-files (blc-rx `(| (: bos ?. (not (in ?.)))
                                              (regexp ,dired-omit-files))))
 
-  (map-do (lambda (cmd suffs)
+  (map-do (lambda (cmds suffs)
             (blc-put dired-guess-shell-alist-user
-                     (blc-rx `(: ?. (| ,@suffs) eos)) (list cmd)))
-          '(("localc"   "ods" "xls" "xlsx")
-            ("lowriter" "doc" "docx" "odt")
-            ("mpv"      "mkv" "mp4" "webm")
-            ("pdf"      "pdf"))))
+                     (blc-rx `(: ?. (| ,@suffs) eos))
+                     cmds))
+          '((("localc")         "ods" "xls" "xlsx")
+            (("lowriter")       "doc" "docx" "odt")
+            (("mpv")            "mkv" "mp4" "webm")
+            (("mpv" "opusinfo") "opus")
+            (("pdf")            "pdf"))))
 
 ;;; disaster
 
