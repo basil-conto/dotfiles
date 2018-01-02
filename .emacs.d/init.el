@@ -988,6 +988,9 @@ less jumpy auto-filling."
  enwc-ask-to-save-interfaces            nil
  enwc-default-backend                   'nm
 
+ ;; epa
+ epa-pinentry-mode                      'loopback
+
  ;; ess
  ess-default-style                      'DEFAULT
  ess-indent-from-lhs                    nil
