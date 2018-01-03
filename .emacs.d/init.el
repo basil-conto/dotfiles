@@ -1863,8 +1863,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([?\M-p]                               . #'previous-logical-line)
    ("/"                                   . #'define-word-at-point)
    ("C"                                   . #'copy-from-above-command)
-   ("b"                                   . #'blc-org-find-file)
-   ("4b"                                  . #'blc-org-find-file-other-window)
    ("e"                                   . #'ielm)
    ("4e"                                  . #'blc-ielm-other-window)
    ("i"                                   . #'blc-indent-relative)
@@ -1887,6 +1885,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (blc-org-map
    ("a"                                   . #'org-agenda)
    ("c"                                   . #'org-capture)
+   ("f"                                   . #'blc-org-find-file)
+   ("4f"                                  . #'blc-org-find-file-other-window)
    ("l"                                   . #'org-store-link))
 
   (ctl-x-map
