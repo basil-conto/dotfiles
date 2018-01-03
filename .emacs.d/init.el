@@ -915,6 +915,9 @@ less jumpy auto-filling."
  ;; chess
  chess-images-default-size              blc-chars-per-line
 
+ ;; comint
+ comint-terminfo-terminal               "xterm-256color"
+
  ;; compile
  compilation-message-face               'default
  compilation-scroll-output              'first-error
