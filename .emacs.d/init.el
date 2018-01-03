@@ -389,10 +389,9 @@ The contents of URL are converted to a temporary PDF file by
   "Return cons cell with appropriate printer and filter for URL."
   (require 'eww)
   (require 'mailcap)
-  (if-let* ((mimetype (mailcap-extension-to-mime (url-file-extension url)))
+  (if-let* ((mimetype (mailcap-file-name-to-mime-type url))
             ((url-handler-file-remote-p url)))
-      (if (string-match-p
-           (regexp-opt '("application/pdf" "application/postscript")) mimetype)
+      (if (member mimetype '( "application/pdf" "application/postscript"))
           (cons #'blc-print-url--lpr #'url-file-local-copy)
         (cons #'blc-print-url--webkit #'identity))
     (if (eww-html-p mimetype)
