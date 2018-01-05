@@ -55,6 +55,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 (autoload 'apt-utils-search               "apt-utils" nil t)
 (autoload 'apt-utils-show-package         "apt-utils" nil t)
 (autoload 'blc-pass-backend-parse         "blc-pass")
+(autoload 'counsel-projectile-command-map "counsel-projectile" nil t 'keymap)
 (autoload 'deb-view-dired-view            "deb-view" nil t)
 (autoload 'deb-view-mode                  "deb-view" nil t)
 (autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
@@ -67,7 +68,6 @@ why-are-you-changing-gc-cons-threshold/'.")
 (autoload 'ivy-completion-in-region       "ivy")
 (autoload 'meme                           "meme" nil t)
 (autoload 'meme-file                      "meme" nil t)
-(autoload 'projectile-command-map         "projectile" nil t 'keymap)
 
 
 ;;;; ADVICE
@@ -1640,9 +1640,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks c-mode-common-hook :fns (blc-turn-on-c++-comments
                                    hs-minor-mode))
 
-  ;; counsel-projectile
-  (:hooks projectile-mode-hook :fns counsel-projectile-on)
-
   ;; csv-mode
   (:hooks csv-mode-hook :fns blc-csv-align-all-fields)
 
@@ -1871,7 +1868,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("i"                                   . #'blc-indent-relative)
    ("j"                                   . #'blc-jump-map)
    ("o"                                   . #'blc-org-map)
-   ("p"                                   . #'projectile-command-map)
+   ("p"                                   . #'counsel-projectile-command-map)
    ("s"                                   . #'sx-switchto-map)
    ("u"                                   . #'counsel-unicode-char))
 
@@ -2087,6 +2084,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'counsel
   (counsel-mode))
+
+;;; counsel-projectile
+
+(with-eval-after-load 'counsel-projectile
+  (counsel-projectile-mode))
 
 ;;; cus-edit
 
