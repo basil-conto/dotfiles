@@ -27,6 +27,7 @@ export TERM=xterm-256color            # Colours!
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Rubbish (bin)
+[ -d "${HOME}/go/bin"     ] && PATH="${HOME}/go/bin:${PATH}"
 [ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
 [ -d "${LOCAL_DIR}/bin"   ] && PATH="${LOCAL_DIR}/bin:${PATH}"
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
