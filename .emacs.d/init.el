@@ -571,6 +571,8 @@ order of descending priority, start `gnus'."
   (unless (blc--gnus-switch-buffer #'pop-to-buffer-same-window)
     (gnus)))
 
+(defvar gnus-inhibit-startup-message)
+
 (defun blc-gnus-other-window ()
   "Like `blc-gnus', but use another window."
   (interactive)
@@ -799,6 +801,9 @@ Defaults to `org-directory' and `org-default-notes-file'."
     (term-char-mode)))
 
 ;;; tile
+
+(eval-when-compile
+  (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
 
 (defun blc-tile (&optional select)
   "Tile windows with `tile' and report new strategy.
@@ -1977,7 +1982,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; auctex
 
 (with-eval-after-load 'latex
-  (dolist '(suffix '("fdb_latexmk" "vrb"))
+  (dolist (suffix '("fdb_latexmk" "vrb"))
     (add-to-list 'LaTeX-clean-intermediate-suffixes (blc-rx `(: ?. ,suffix)))))
 
 (with-eval-after-load 'tex
@@ -2931,5 +2936,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; xt-mouse
 
 (blc-with-every-frame #'blc-turn-on-xterm-mouse)
+
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars unresolved)
+;; End:
 
 ;;; init.el ends here
