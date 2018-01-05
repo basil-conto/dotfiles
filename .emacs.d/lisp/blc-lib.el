@@ -280,13 +280,15 @@ point. When called interactively, print result in echo area."
                                        (string-to-number uid)))
                                    (directory-files-recursively folder "")))))))
 
-(defun blc-nproc ()
-  "Return number of available processing units in the system."
-  (or (blc-with-contents "/proc/cpuinfo"
-        (how-many (rx bol "processor" (+ space) ?:)))
-      (and-let* ((ret (car (ignore-errors (process-lines "nproc")))))
-        (string-to-number ret))
-      1))
+(defun blc--opusenc-files (dir)
+  "Return mapping of new flac to opus filenames under DIR.
+See `blc-opusenc-flac'."
+  (let ((flacre (rx ?. "flac" eos))
+        files)
+    (dolist (flac (directory-files-recursively dir flacre) files)
+      (when-let* ((opus (blc-sed flacre ".opus" flac t t))
+                  ((file-newer-than-file-p flac opus)))
+        (push (cons flac opus) files)))))
 
 (defvar blc-opusenc-switches '("--bitrate" "128" "--quiet")
   "List of `opusenc' switches for `blc-opusenc-flac'. ")
@@ -294,50 +296,44 @@ point. When called interactively, print result in echo area."
 (defun blc-opusenc-flac (dir)
   "Asynchronously transcode new flac files under DIR to opus.
 Only those flac files which lack a corresponding and as recent
-opus file are transcoded. As many opusenc processes are spawned
-as there are available processing units, and as many Emacs
-threads are spawned as there are files to transcode."
+opus file are transcoded. At any given time, there may exist as
+many opusenc processes as there are available processing units."
   (interactive (list (read-directory-name "Transcode flacs under directory: "
                                           (blc-user-dir "MUSIC") nil t)))
-  (let* (reporter
-         (nfile 0)
-         (nproc (blc-nproc))
-         (mutex (make-mutex))
-         (cv    (make-condition-variable mutex))
-         (start (current-time))
-         (final (lambda ()
-                  (progress-reporter-done reporter)
-                  (message "Elapsed time: %.3fs"
-                           (float-time (time-subtract nil start))))))
-    (dolist (flac (directory-files-recursively dir "\\.flac\\'"))
-      (when-let* ((opus (blc-sed "\\.flac\\'" ".opus" flac t t))
-                  ((file-newer-than-file-p flac opus)))
-        (setq nfile (1+ nfile))
-        (make-thread
-         (lambda ()
-           (with-mutex mutex
-             (while (<= nproc 0)
-               (condition-wait cv))
-             (setq nproc (1- nproc)))
-           (make-process
-            :connection-type 'pipe
-            :name "opusenc"
-            :buffer "*opusenc*"
-            :command `("opusenc" ,@blc-opusenc-switches ,flac ,opus)
-            :sentinel (lambda (proc event)
-                        (if (blc-process-success-p proc)
-                            (with-mutex mutex
-                              (setq nproc (1+ nproc))
-                              (if (zerop (setq nfile (1- nfile)))
-                                  (funcall final)
-                                (progress-reporter-update
-                                 reporter (- (aref (cdr reporter) 2) nfile)))
-                              (condition-notify cv))
-                          (lwarn 'blc :error "opusenc: %s" event))))))))
-    (setq reporter (make-progress-reporter
-                    (format "Transcoding %d flac(s)..." nfile) 0 nfile))
-    (when (zerop nfile)
-      (funcall final))))
+  (let* ((start  (current-time))
+         (files  (blc--opusenc-files dir))
+         (nfile  (length files))
+         (npart  (max 1 (min nfile
+                             (string-to-number (car (process-lines "nproc"))))))
+         (parts  (make-vector npart ()))
+         (journo (make-progress-reporter
+                  (format "Transcoding %d flac(s)..." nfile) 0 nfile)))
+    ;; Partition files across all processors
+    (dotimes (i nfile)
+      (push (pop files) (aref parts (% i npart))))
+    ;; Spawn subprocess chains
+    (setq nfile 0)
+    (dotimes (i npart)
+      (funcall
+       (seq-reduce (pcase-lambda (sentinel `(,flac . ,opus))
+                     (lambda ()
+                       (make-process
+                        :connection-type 'pipe
+                        :name "opusenc"
+                        :buffer "*opusenc*"
+                        :command `("opusenc" ,@blc-opusenc-switches ,flac ,opus)
+                        :sentinel (lambda (proc event)
+                                    (if (not (blc-process-success-p proc))
+                                        (lwarn 'blc :error "opusenc: %s" event)
+                                      (progress-reporter-update
+                                       journo (setq nfile (1+ nfile)))
+                                      (funcall sentinel))))))
+                   (aref parts i)
+                   (lambda ()
+                     (when (>= nfile (aref (cdr journo) 2))
+                       (message "%sdone (%.3fs)"
+                                (aref (cdr journo) 3)
+                                (float-time (time-subtract nil start))))))))))
 
 (defun blc--url-prompt (fmt url)
   "Truncate URL for viewing and substitute in FMT string.
