@@ -996,6 +996,7 @@ less jumpy auto-filling."
 
  ;; ebib
  ebib-bibtex-dialect                    'biblatex
+ ebib-file-associations                 ()
  ebib-use-timestamp                     t
 
  ;; emms
