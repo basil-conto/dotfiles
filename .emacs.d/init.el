@@ -529,6 +529,21 @@ suitable for assigning to `ffap-file-finder'."
      ,@(and page (list (number-to-string page))))
    callback))
 
+;;; ebib
+
+(defun blc-ebib-display-year (field key db)
+  "Return display string for year of KEY in DB.
+In decreasing order of priority, return contents of FIELD,
+attempt parsing year from \"Date\" field, or return the string
+\"XXXX\"."
+  (or (ebib-db-get-field-value field key db t t t)
+      (and-let* ((date (ebib-db-get-field-value "Date" key db t t)))
+        (if-let* ((year (nth 5 (parse-time-string date))))
+            (number-to-string year)
+          (and (string-match (rx (group (= 4 digit)) ?- (= 2 digit)) date)
+               (match-string 1 date))))
+      (make-string 4 ?X)))
+
 ;;; eww
 
 (defun blc-eww-bookmark-save ()
@@ -2269,7 +2284,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; ebib
 
 (with-eval-after-load 'ebib
-  (add-to-list 'ebib-preload-bib-files blc-bib-file))
+  (map-do
+   #'add-to-list
+   `((ebib-field-transformation-functions . ("Year" . ,#'blc-ebib-display-year))
+     (ebib-preload-bib-files              . ,blc-bib-file))))
 
 ;;; engine-mode
 
