@@ -607,6 +607,13 @@ Display is determined by the environment variable DISPLAY."
   (interactive)
   (make-frame-on-display (getenv "DISPLAY")))
 
+(defun blc-delete-frames (param val)
+  "Pass all frames with PARAM `equal' to VAL to `delete-frame'."
+  (when (cdr (frame-list))
+    (mapc #'delete-frame
+          (filtered-frame-list (lambda (frame)
+                                 (equal (frame-parameter frame param) val))))))
+
 (defun blc-with-every-frame (&rest fns)
   "Run abnormal hooks in current frame and with every new one."
   (let ((frame (selected-frame)))

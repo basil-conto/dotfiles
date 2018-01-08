@@ -129,6 +129,19 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
 
+;;; ebib
+
+(define-advice ebib (:before (&rest _) blc-ebib-make-frame)
+  "Make a new frame for `ebib'."
+  (select-frame (make-frame '((blc-ebib . t)))))
+
+(defun blc-ebib-delete-frame--advice (&rest _)
+  "Delete all frames made for `ebib'."
+  (blc-delete-frames 'blc-ebib t))
+
+(dolist (fn (list #'ebib-lower #'ebib-quit))
+  (advice-add fn :after #'blc-ebib-delete-frame--advice))
+
 ;;; em-cmpl
 
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
@@ -587,10 +600,7 @@ order of descending priority, start `gnus'."
 (defun blc-gnus-delete-frame ()
   "Delete all frames with parameter `blc-gnus' non-nil."
   (interactive)
-  (when (cdr (frame-list))
-    (mapc #'delete-frame
-          (filtered-frame-list (lambda (frame)
-                                 (frame-parameter frame 'blc-gnus))))))
+  (blc-delete-frames 'blc-gnus t))
 
 (defun blc-gnus-other-frame ()
   "Like `blc-gnus', but use another frame.
