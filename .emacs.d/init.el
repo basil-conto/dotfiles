@@ -362,6 +362,12 @@ Offer all entities found in `org-entities-user' and
 
 ;;;; DEFINITIONS
 
+;;; auctex
+
+(defun blc-LaTeX-command-default ()
+  "Locally restore `default-value' of `TeX-command-default'."
+  (setq TeX-command-default (default-value 'TeX-command-default)))
+
 ;;; bbdb
 
 (defun blc-bbdb-set-gnus-summary-line-format ()
@@ -1640,6 +1646,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; auctex
   (:hooks TeX-after-compilation-finished-functions
           :fns TeX-revert-document-buffer)
+  (:hooks LaTeX-mode-hook :fns (blc-LaTeX-command-default
+                                turn-on-reftex))
 
   ;; auth-source
   (:hooks auth-source-backend-parser-functions :fns blc-pass-backend-parse)
@@ -1793,9 +1801,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
-
-  ;; reftex
-  (:hooks LaTeX-mode-hook :fns turn-on-reftex)
 
   ;; sass-mode
   (:hooks sass-mode-hook :fns blc-turn-on-c++-comments)
@@ -2014,7 +2019,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
              (dsc (format "Run %s"   nom)))
         (blc-put TeX-command-list nom           ; Command name
                  (list cmd                      ; Non-expanded shell command
-                       TeX-run-command          ; Process handler
+                       #'TeX-run-command        ; Process handler
                        nil                      ; Confirm expanded shell command
                        '(latex-mode LaTeX-mode) ; Applicable modes
                        :help dsc))))))          ; Command
