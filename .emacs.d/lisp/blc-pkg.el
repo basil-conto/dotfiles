@@ -17,7 +17,6 @@
   (require 'subr-x))
 
 (eval-when-compile
-  (defvar package--save-selected-packages)
   (declare-function async-bytecomp-package-mode "ext:async-bytecomp"))
 
 ;; Sandbox this nuisance
@@ -26,10 +25,10 @@
   "Like `package--save-selected-packages', but do not save."
   (when value
     (lwarn 'blc :debug "\
-Old `package--save-selected-packages': %S
-New `package--save-selected-packages': %S"
-           package--save-selected-packages
-           (setq package--save-selected-packages value))))
+Old `package-selected-packages': %S
+New `package-selected-packages': %S"
+           package-selected-packages
+           (setq package-selected-packages value))))
 
 (defun blc-package-install (pkg)
   "Install and do not select PKG with demoted errors."
