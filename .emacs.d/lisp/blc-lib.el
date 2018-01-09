@@ -601,18 +601,20 @@ function at URL
 
 ;;; Frames
 
+(defun blc-make-frame (&optional params)
+  "Like `make-frame', but select the new frame."
+  (select-frame (make-frame params)))
+
 (defun blc-make-graphic-display ()
   "Make a graphical frame.
 Display is determined by the environment variable DISPLAY."
   (interactive)
   (make-frame-on-display (getenv "DISPLAY")))
 
-(defun blc-delete-frames (param val)
-  "Pass all frames with PARAM `equal' to VAL to `delete-frame'."
-  (when (cdr (frame-list))
-    (mapc #'delete-frame
-          (filtered-frame-list (lambda (frame)
-                                 (equal (frame-parameter frame param) val))))))
+(defun blc-delete-spare-frame (&optional frame force)
+  "Delegate to `delete-frame' unless FRAME is alone in terminal."
+  (when (cdr (frames-on-display-list frame))
+    (delete-frame frame force)))
 
 (defun blc-with-every-frame (&rest fns)
   "Run abnormal hooks in current frame and with every new one."

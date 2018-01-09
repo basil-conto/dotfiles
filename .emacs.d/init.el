@@ -132,16 +132,16 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 ;;; ebib
 
-(define-advice ebib (:before (&rest _) blc-ebib-make-frame)
-  "Make a new frame for `ebib'."
-  (select-frame (make-frame '((blc-ebib . t)))))
+(define-advice ebib (:before (&rest _) blc-make-frame)
+  "Make and select a new frame."
+  (blc-make-frame))
 
-(defun blc-ebib-delete-frame--advice (&rest _)
-  "Delete all frames made for `ebib'."
-  (blc-delete-frames 'blc-ebib t))
+(defun blc-delete-spare-frame--advice (&rest _)
+  "Like `blc-delete-spare-frame', but ignore any arguments."
+  (blc-delete-spare-frame))
 
 (dolist (fn (list #'ebib-lower #'ebib-quit))
-  (advice-add fn :after #'blc-ebib-delete-frame--advice))
+  (advice-add fn :after #'blc-delete-spare-frame--advice))
 
 ;;; em-cmpl
 
@@ -619,19 +619,15 @@ order of descending priority, start `gnus'."
         (let ((gnus-inhibit-startup-message t))
           (gnus))))))
 
-(defun blc-gnus-delete-frame ()
-  "Delete all frames with parameter `blc-gnus' non-nil."
-  (interactive)
-  (blc-delete-frames 'blc-gnus t))
-
 (defun blc-gnus-other-frame ()
   "Like `blc-gnus', but use another frame.
 Suspending or exiting Gnus deletes that frame."
   (interactive)
-  (select-frame (make-frame '((blc-gnus . t))))
+  (blc-make-frame)
   (blc-gnus)
-  (blc-hook (:fns blc-gnus-delete-frame :hooks (gnus-suspend-gnus-hook
-                                                gnus-after-exiting-gnus-hook))))
+  (blc-hook
+    (:fns blc-delete-spare-frame :hooks (gnus-suspend-gnus-hook
+                                         gnus-after-exiting-gnus-hook))))
 
 ;;; hi-lock
 
@@ -1642,7 +1638,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  windmove-wrap-around                   t
 
  ;; window
- frame-auto-hide-function               #'delete-frame
+ frame-auto-hide-function               #'blc-delete-spare-frame
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
  split-window-keep-point                nil
