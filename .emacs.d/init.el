@@ -68,6 +68,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 (autoload 'ivy-completion-in-region       "ivy")
 (autoload 'meme                           "meme" nil t)
 (autoload 'meme-file                      "meme" nil t)
+(autoload 'TeX-doc                        "tex" nil t)
 
 
 ;;;; ADVICE
