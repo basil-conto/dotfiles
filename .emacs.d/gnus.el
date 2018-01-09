@@ -27,6 +27,7 @@
 
 (eval-when-compile
   (defvar gnus-article-mode-map)
+  (defvar gnus-buffer-configuration)
   (defvar gnus-directory)
   (defvar gnus-level-default-subscribed)
   (defvar gnus-sorted-header-list)
@@ -221,6 +222,10 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 (with-eval-after-load 'gnus-topic
   (define-key
     gnus-topic-mode-map [remap gnus-topic-indent] #'blc-gnus-topic-fold))
+
+(with-eval-after-load 'gnus-win
+  ;; Display articles in new frame
+  (cl-nsubst 'frame 'vertical (map-elt gnus-buffer-configuration 'article)))
 
 (with-eval-after-load 'nnir
   (map-do
