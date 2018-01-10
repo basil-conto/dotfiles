@@ -259,7 +259,9 @@ Visit `package-user-dir' if such a directory is not found."
 ;; Install missing packages
 (when-let*
     ((missing (seq-remove #'package-installed-p package-selected-packages))
-     ((y-or-n-p (format "Install %d missing packages? " (length missing)))))
+     ((y-or-n-p-with-timeout (format "Install %d missing packages? "
+                                     (length missing))
+                             5 t)))
 
   (package-refresh-contents)
 

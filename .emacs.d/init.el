@@ -173,7 +173,7 @@ URI is returned by the `interactive-form' of `eww'."
   (let ((confirm-kill-emacs (or confirm-kill-emacs
                                 (and (daemonp)
                                      (lambda (&rest _)
-                                       (y-or-n-p "Really kill daemon? "))))))
+                                       (yes-or-no-p "Really kill daemon? "))))))
     (apply kill args)))
 
 ;;; gnus-msg
