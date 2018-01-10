@@ -195,6 +195,15 @@ URI is returned by the `interactive-form' of `eww'."
     (message "Gnus not running; using plain Message mode")
     (apply #'message-mail args)))
 
+;;; gnus-sum
+
+(define-advice gnus-summary-exit (:after (&rest _) blc-gnus-single-group-frame)
+  "Allow only the selected frame to display `gnus-group-buffer'."
+  (dolist (win (get-buffer-window-list gnus-group-buffer nil 'visible))
+    (when-let* ((frame (window-frame win))
+                ((not (eq frame (selected-frame)))))
+      (blc-delete-spare-frame frame))))
+
 ;;; hi-lock
 
 (define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
