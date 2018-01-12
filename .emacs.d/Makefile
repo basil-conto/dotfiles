@@ -5,7 +5,7 @@
 
 ## Files
 
-libs   := $(addprefix blc-,lib magit notmuch pass pkg)
+libs   := $(addprefix blc-,lib magit mbsync notmuch pass pkg)
 libdir := lisp/
 pkgdir := elpa/
 
@@ -54,6 +54,9 @@ blc-lib: $(call libouts,blc-lib)
 .PHONY: blc-magit
 blc-magit: blc-lib blc-pkg $(call libouts,blc-magit)
 
+.PHONY: blc-mbsync
+blc-mbsync: blc-lib $(call libouts,blc-mbsync)
+
 .PHONY: blc-notmuch
 blc-notmuch: blc-lib $(call libouts,blc-notmuch)
 
@@ -73,14 +76,14 @@ clean-libs:
 ## Init files
 
 .PHONY: gnus
-gnus: blc-lib blc-notmuch gnus.elc
+gnus: blc-lib blc-mbsync blc-notmuch gnus.elc
 
 .PHONY: clean-gnus
 clean-gnus:
 	$(RM) gnus.elc
 
 .PHONY: init
-init: themes blc-lib blc-magit blc-pass blc-pkg init.elc
+init: themes blc-lib blc-magit blc-mbsync blc-pass blc-pkg init.elc
 
 .PHONY: clean-init
 clean-init:

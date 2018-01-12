@@ -17,6 +17,7 @@
   (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
 
 (require 'blc-lib)
+(require 'blc-mbsync)
 
 (require 'map)
 (require 'seq)
@@ -112,7 +113,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
                  (nnimap-stream          network)
                  (nnimap-user            ,user)
                  (nnir-search-engine     imap)))
-      (blc-mbsync-maildirs))
+      (blc-mbsync-chandirs))
    ;; FIXME: Firewall
    (nntp "news.gwene.org"
          (nntp-record-commands t)))
@@ -189,7 +190,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 
  ;; nnir
  nnir-notmuch-remove-prefix
- (regexp-opt (map-values (blc-mbsync-maildirs))))
+ (regexp-opt (map-values (blc-mbsync-chandirs))))
 
 ;;; Hooks
 
