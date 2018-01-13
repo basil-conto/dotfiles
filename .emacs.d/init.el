@@ -522,6 +522,16 @@ suitable for assigning to `ffap-file-finder'."
     (set-buffer (or (find-buffer-visiting (counsel-find-file))
                     (other-buffer nil t)))))
 
+(defun blc-counsel-M-x-other-window (cmd)
+  "Open new window before executing CMD.
+Intended as an Ivy action for `counsel-M-x'."
+  (switch-to-buffer-other-window (current-buffer))
+  (when-let* ((cmd (intern-soft cmd)))
+    (setq real-this-command cmd)
+    (setq this-command      cmd)
+    (setq prefix-arg        current-prefix-arg)
+    (command-execute cmd t)))
+
 ;;; csv-mode
 
 (defun blc-csv-align-all-fields ()
@@ -2128,7 +2138,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; counsel
 
 (with-eval-after-load 'counsel
-  (counsel-mode))
+  (counsel-mode)
+
+  (ivy-add-actions #'counsel-M-x
+                   `(("j" ,#'blc-counsel-M-x-other-window "other window"))))
 
 ;;; counsel-projectile
 
