@@ -146,6 +146,12 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 (dolist (fn (list #'ebib-lower #'ebib-quit))
   (advice-add fn :after #'blc-delete-spare-frame--advice))
 
+(define-advice ebib--format-entry (:after (&rest _) blc-bibtex-untabify-entry)
+  "Untabify region between start of last BibTeX entry and point."
+  (untabify (or (save-excursion (re-search-backward bibtex-entry-head nil t))
+                (point))
+            (point)))
+
 ;;; em-cmpl
 
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
