@@ -2126,19 +2126,17 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; cc-mode
 
 (with-eval-after-load 'cc-mode
-  (let ((name    "blc")
-        (base    "linux")
-        (offsets '((     access-label . / )
-                   (       case-label . + )
-                   (      innamespace . 0 )
-                   (      inline-open . 0 )
-                   (    arglist-close . 0 )
-                   (      inher-intro . ++)
-                   (member-init-intro . ++))))
-
-    (c-add-style name `(,base
-                        (c-basic-offset  . 2)
-                        (c-offsets-alist . ,offsets)))
+  (let ((name "blc"))
+    (c-add-style name '("linux"
+                        (c-basic-offset . 2 )
+                        (c-offsets-alist
+                         (access-label      . / )
+                         (arglist-close     . 0 )
+                         (case-label        . + )
+                         (inher-intro       . ++)
+                         (inline-open       . 0 )
+                         (innamespace       . 0 )
+                         (member-init-intro . ++))))
 
     (map-put c-default-style 'other name)))
 
