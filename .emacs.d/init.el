@@ -1023,6 +1023,8 @@ less jumpy auto-filling."
  custom-unlispify-tag-names             nil
 
  ;; debbugs
+ debbugs-gnu-emacs-current-release      "26.1"
+ debbugs-gnu-send-mail-function         #'message-send-mail-with-sendmail
  debbugs-gnu-trunk-directory            source-directory
 
  ;; diary-lib
