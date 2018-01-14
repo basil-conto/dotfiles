@@ -143,6 +143,22 @@ Return result of last form in BODY or nil if PATH is unreadable."
   (and-let* ((file (xdg-user-dir dir)))
     (file-name-as-directory file)))
 
+(defvar blc-dataroot-dir (blc-parent-dir data-directory)
+  "Machine-independent data root directory.")
+
+(defun blc-dataroot-to-src (file)
+  "Map FILE under `blc-dataroot-dir' to `source-directory'.
+Return FILE unchanged if not under `blc-dataroot-dir'."
+  (if (and (stringp file)
+           (file-in-directory-p file blc-dataroot-dir))
+      (expand-file-name (file-relative-name file blc-dataroot-dir)
+                        source-directory)
+    file))
+
+(defalias 'blc-src-path
+  (thunk-delay (mapcar #'blc-dataroot-to-src load-path))
+  "Thunk mapping `blc-dataroot-to-src' over `load-path'.")
+
 (defun blc-switch-to-temp-file (&optional prefix suffix)
   "Create and switch to a temporary file.
 A non-empty filename PREFIX can help identify the file or its

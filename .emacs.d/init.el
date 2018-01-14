@@ -176,6 +176,13 @@ URI is returned by the `interactive-form' of `eww'."
                                        (yes-or-no-p "Really kill daemon? "))))))
     (apply kill args)))
 
+;;; find-func
+
+(define-advice find-function-library (:filter-return (pair) blc-dataroot-to-src)
+  "Pass result through `blc-dataroot-to-src'."
+  (setcdr pair (blc-dataroot-to-src (cdr pair)))
+  pair)
+
 ;;; gnus-msg
 
 (define-advice gnus-msg-mail (:override (&rest args) blc-gnus-msg-mail)
@@ -206,6 +213,15 @@ URI is returned by the `interactive-form' of `eww'."
     (when-let* ((frame (window-frame win))
                 ((not (eq frame (selected-frame)))))
       (blc-delete-spare-frame frame))))
+
+;;; help-fns
+
+(define-advice help-fns-short-filename (:around (abbr file) blc-src-load-path)
+  "Dynamically bind `load-path' with `blc-src-path'."
+  (let ((load-path (blc-src-path)))
+    (funcall abbr file)))
+
+(advice-add #'find-lisp-object-file-name :filter-return #'blc-dataroot-to-src)
 
 ;;; hi-lock
 
@@ -2377,6 +2393,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
              '(eval . (when buffer-file-name (view-mode))))
 (auto-save-visited-mode)
 
+;;; find-func
+
+(with-eval-after-load 'find-func
+  (setq-default find-function-source-path (blc-src-path)))
+
 ;;; flex-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".lex" eos) #'flex-mode))
@@ -2484,7 +2505,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
         `(("package" (directory . ,(regexp-opt
                                     (mapcar
                                      #'expand-file-name
-                                     (list (blc-parent-dir data-directory)
+                                     (list blc-dataroot-dir
                                            source-directory
                                            package-user-dir)))))
           ("REPL"    (or (derived-mode . eshell-mode)
