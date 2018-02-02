@@ -1030,7 +1030,6 @@ less jumpy auto-filling."
 
  ;; counsel
  counsel-describe-function-preselect    #'ivy-function-called-at-point
- counsel-find-file-at-point             t
  counsel-git-grep-skip-counting-lines   t
  counsel-grep-base-command              "ag --nocolor %s %s" ; Smart case
  counsel-mode-map                       ()                   ; Control remaps
@@ -2033,13 +2032,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("f"                                   . #'avy-goto-line))
 
   (help-map
-   ("\C-j"                                . #'counsel-faces)
    ("\C-m"                                . #'discover-my-major)
    ("\C-f"                                . #'find-function)
    ("4f"                                  . #'find-function-other-window)
    ("4\C-f"                               . #'find-function-other-window)
    ("5f"                                  . #'find-function-other-frame)
    ("5\C-f"                               . #'find-function-other-frame)
+   ("\C-j"                                . #'find-face-definition)
+   ("j"                                   . #'counsel-faces)
    ("\C-k"                                . #'find-function-on-key)
    ("4k"                                  . #'find-function-on-key-other-window)
    ("4\C-k"                               . #'find-function-on-key-other-window)
@@ -2581,12 +2581,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; ivy
 
 (with-eval-after-load 'ivy
+  ;; Keys
   (blc-define-keys
-    (ivy-minibuffer-map
-     ([?\M-D] . #'ivy-dispatching-done))
     (ivy-occur-mode-map
      ("n"     . #'ivy-occur-next-line)
      ("p"     . #'ivy-occur-previous-line)))
+
+  (mapc (pcase-lambda (`[,olddef ,newdef ,oldmap])
+          (substitute-key-definition olddef newdef ivy-minibuffer-map oldmap))
+        `([,#'narrow-to-region ,#'ivy-restrict-to-matches ,(current-global-map)]
+          [,#'isearch-yank-word-or-char ,#'ivy-yank-word ,isearch-mode-map]))
 
   ;; Default matching behaviour
   (map-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
