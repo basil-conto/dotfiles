@@ -21,4 +21,3 @@
 #
 # m    h dom mon dow   command
   */30 * *   *   *     [ -x "${HOME}/bin/cowtune" ] && "${HOME}/bin/cowtune"
-  */10 * *   *   *     [ -x /usr/bin/mbsync ] && (/usr/bin/killall --quiet --younger-than 20m mbsync ; /usr/bin/mbsync --all --verbose 2>&1 > "${HOME}/.log/mbsync")
