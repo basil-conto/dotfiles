@@ -969,6 +969,9 @@ less jumpy auto-filling."
  ;; alert
  alert-default-style                    'notifications
 
+ ;; apt-utils
+ apt-utils-show-all-versions            t
+
  ;; asm-mode
  asm-comment-char                       ?#
 
