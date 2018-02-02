@@ -93,7 +93,6 @@
           (set-default fmt (blc-sed fmtre "-40" (symbol-value fmt) t t 1)))
         '(magit-refs-local-branch-format
           magit-refs-remote-branch-format
-          magit-refs-symref-format
           magit-refs-tags-format))
 
   ;; Limit number of commits in log
