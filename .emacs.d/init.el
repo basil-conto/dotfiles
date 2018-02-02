@@ -1925,11 +1925,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (define-prefix-command 'blc-jump-map)
 (define-prefix-command 'blc-org-map)
 
+(fmakunbound 'sx-switchto-map)
+(autoload 'sx-switchto-map "sx-switchto" nil t 'keymap)
+
 (blc-define-keys
   ((current-global-map)
    ("\C-s"                                . #'counsel-grep-or-swiper)
-   ([?\M-+]                               . #'er/expand-region)
-   ([?\M-o]                               . #'ace-window)
+   ([?\C-\S-v]                            . #'scroll-other-window)
    ([S-next]                              . #'blc-small-scroll-up)
    ([S-prior]                             . #'blc-small-scroll-down)
    ([S-up]                                . #'windmove-up)
@@ -1973,7 +1975,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([remap zap-to-char]                   . #'zap-up-to-char))
 
   (mode-specific-map
-   ("\C-r"                                . #'blc-rename-buffer)
    ([?\M-g]                               . #'magit-file-popup)
    ([?\M-n]                               . #'next-logical-line)
    ([?\M-p]                               . #'previous-logical-line)
@@ -1983,6 +1984,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("4e"                                  . #'blc-ielm-other-window)
    ("i"                                   . #'blc-indent-relative)
    ("j"                                   . #'blc-jump-map)
+   ("n"                                   . #'blc-rename-buffer)
    ("o"                                   . #'blc-org-map)
    ("p"                                   . #'counsel-projectile-command-map)
    ("s"                                   . #'sx-switchto-map)
@@ -2032,8 +2034,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   (esc-map
    ("\C-z"                                . #'raise-sexp)
+   ("+"                                   . #'er/expand-region)
    ("R"                                   . #'redraw-display)
-   ("]"                                   . #'avy-goto-word-or-subword-1))
+   ("V"                                   . #'scroll-other-window-down)
+   ("]"                                   . #'avy-goto-word-or-subword-1)
+   ("o"                                   . #'ace-window))
 
   (goto-map
    ("\t"                                  . #'blc-move-to-column)
