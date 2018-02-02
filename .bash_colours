@@ -1,46 +1,50 @@
 # -*- sh -*-
 
-# Reset colours
-RESET='\e[0m'
-# Regular colours
-BLK='\e[0;30m'
-RED='\e[0;31m'
-GRN='\e[0;32m'
-YLW='\e[0;33m'
-BLU='\e[0;34m'
-PRP='\e[0;35m'
-CYN='\e[0;36m'
-WHT='\e[0;37m'
-# Bold colours
-BLK_BF='\e[1;30m'
-RED_BF='\e[1;31m'
-GRN_BF='\e[1;32m'
-YLW_BF='\e[1;33m'
-BLU_BF='\e[1;34m'
-PRP_BF='\e[1;35m'
-CYN_BF='\e[1;36m'
-WHT_BF='\e[1;37m'
-# Underlined colours
-BLK_UL='\e[4;30m'
-RED_UL='\e[4;31m'
-GRN_UL='\e[4;32m'
-YLW_UL='\e[4;33m'
-BLU_UL='\e[4;34m'
-PRP_UL='\e[4;35m'
-CYN_UL='\e[4;36m'
-WHT_UL='\e[4;37m'
-# Background colours
-BLK_BG='\e[40m'
-RED_BG='\e[41m'
-GRN_BG='\e[42m'
-YLW_BG='\e[43m'
-BLU_BG='\e[44m'
-PRP_BG='\e[45m'
-CYN_BG='\e[46m'
-WHT_BG='\e[47m'
+# Whether terminal background is dark
+BLC_DARK=0
 
-bash_colours_unset() {
-  unset RESET BLK RED GRN YLW BLU PRP CYN WHT BLK_BF RED_BF GRN_BF YLW_BF     \
-        BLU_BF PRP_BF CYN_BF WHT_BF BLK_UL RED_UL GRN_UL YLW_UL BLU_UL PRP_UL \
-        CYN_UL WHT_UL BLK_BG RED_BG GRN_BG YLW_BG BLU_BG PRP_BG CYN_BG WHT_BG
-}
+# Global associative array
+declare -A BLC_COLOURS
+
+# Control
+BLC_COLOURS[reset]='\e[0m'
+
+# Foreground
+BLC_COLOURS[blk]='\e[0;30m'
+BLC_COLOURS[red]='\e[0;31m'
+BLC_COLOURS[grn]='\e[0;32m'
+BLC_COLOURS[ylw]='\e[0;33m'
+BLC_COLOURS[blu]='\e[0;34m'
+BLC_COLOURS[prp]='\e[0;35m'
+BLC_COLOURS[cyn]='\e[0;36m'
+BLC_COLOURS[wht]='\e[0;37m'
+
+# Bold
+BLC_COLOURS[blk_bf]='\e[1;30m'
+BLC_COLOURS[red_bf]='\e[1;31m'
+BLC_COLOURS[grn_bf]='\e[1;32m'
+BLC_COLOURS[ylw_bf]='\e[1;33m'
+BLC_COLOURS[blu_bf]='\e[1;34m'
+BLC_COLOURS[prp_bf]='\e[1;35m'
+BLC_COLOURS[cyn_bf]='\e[1;36m'
+BLC_COLOURS[wht_bf]='\e[1;37m'
+
+# Underlined
+BLC_COLOURS[blk_ul]='\e[4;30m'
+BLC_COLOURS[red_ul]='\e[4;31m'
+BLC_COLOURS[grn_ul]='\e[4;32m'
+BLC_COLOURS[ylw_ul]='\e[4;33m'
+BLC_COLOURS[blu_ul]='\e[4;34m'
+BLC_COLOURS[prp_ul]='\e[4;35m'
+BLC_COLOURS[cyn_ul]='\e[4;36m'
+BLC_COLOURS[wht_ul]='\e[4;37m'
+
+# Background
+BLC_COLOURS[blk_bg]='\e[40m'
+BLC_COLOURS[red_bg]='\e[41m'
+BLC_COLOURS[grn_bg]='\e[42m'
+BLC_COLOURS[ylw_bg]='\e[43m'
+BLC_COLOURS[blu_bg]='\e[44m'
+BLC_COLOURS[prp_bg]='\e[45m'
+BLC_COLOURS[cyn_bg]='\e[46m'
+BLC_COLOURS[wht_bg]='\e[47m'

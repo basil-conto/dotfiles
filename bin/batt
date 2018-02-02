@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # FIXME:
 # * Report charging status
@@ -10,16 +10,14 @@
 format () {
   local face=''
   if [ "$1" -le 20 ]; then
-    face="${RED_BF}"
+    face="${BASH_COLOURS[red_bf]}"
   elif [ "$1" -ge 80 ]; then
-    face="${GRN_BF}"
+    face="${BASH_COLOURS[grn_bf]}"
   fi
-  printf '%b%3u%b' "${face}" "$1" "${RESET}"
+  printf '%b%3u%b' "${face}" "$1" "${BLC_COLOURS[reset]}"
 }
 
 for bat in /sys/class/power_supply/BAT*; do
   printf '%s: %s%%\n' "$(basename ${bat})" "$(format $(cat ${bat}/capacity))"
 done
-
-bash_colours_unset
-unset -f bash_colours_unset fontify
+unset bat

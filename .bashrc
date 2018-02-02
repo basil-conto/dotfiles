@@ -44,7 +44,7 @@ shopt -s checkwinsize
 [ -r ~/.bash_completion ] && . ~/.bash_completion
 
 # Colour man pages
-# FIXME: Adapt to zenburn theme
+# FIXME: Use ${BLC_COLOURS}?
 man() {
   env LESS_TERMCAP_mb=$'\E[01;31m'       \
       LESS_TERMCAP_md=$'\E[01;38;5;74m'  \
@@ -58,43 +58,29 @@ man() {
 
 # Prompt
 #
-# ┌[blc@t430-mint] (master) ~/dotfiles [1]
+# ┌[blc@thunk] (master) ~/dotfiles [1]
 # └$
 
-# Set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-  debian_chroot=$(cat /etc/debian_chroot)
-fi
-
-git_ps1() {
+blc_prompt() {
   local rc=$?
-  printf "$(__git_ps1)"
-  return $rc
+  [ "${rc}" -eq 0 ] && rc='' || rc="[${rc}]"
+  [ "${BLC_DARK}" -eq 0 ] && fg=blk_bf || fg=wht_bf
+  fg="${BLC_COLOURS[${fg}]}"
+
+  PS1="\\[${fg}\\]\342\224\214[\\[${BLC_COLOURS[grn_bf]}\\]\\u@\\h${fg}]"
+  PS1+="\\[${BLC_COLOURS[ylw_bf]}\\]\$(__git_ps1)"
+  PS1+="\\[${BLC_COLOURS[blu_bf]}\\] \\w "
+  PS1+="\\[${BLC_COLOURS[red]}\\]${rc}\n\\[${fg}\\]\342\224\224"
+  PS1+="\\[${BLC_COLOURS[blu_bf]}\\]\\$ \\[${BLC_COLOURS[reset]}\\]"
 }
 
-brack_hi='\342\224\214'
-brack_lo='\342\224\224'
-
-# FIXME: Use PROMPT_COMMAND
-PS1="\[${WHT_BF}\]${brack_hi}[\[${GRN_BF}\]\u@\h${WHT_BF}]"
-PS1+="\[${YLW_BF}\]\$(git_ps1)"
-PS1+="\[${BLU_BF}\] \w "
-PS1+="\[${PRP}\]${debian_chroot:+($debian_chroot)}"
-PS1+="\[${RED}\]\$(RC=\$?; [ \$RC -ne 0 ] && printf [\$RC])\n"
-PS1+="\[${WHT_BF}\]${brack_lo}\[${BLU_BF}\]\\$ \[${RESET}\]"
+PROMPT_COMMAND=blc_prompt
 
 # Git sh-prompt options
-for flag in DIRTYSTATE STASHSTATE UPSTREAM; do
-  export "GIT_PS1_SHOW${flag}"=auto
-done
+export GIT_PS1_SHOW{DIRTYSTATE,STASHSTATE,UPSTREAM}=auto
 
 # For gpg-agent
 export GPG_TTY="$(tty)"
-
-# Don't pollute the environment
-bash_colours_unset
-unset brack_hi brack_lo flag
-unset -f bash_colours_unset
 
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
