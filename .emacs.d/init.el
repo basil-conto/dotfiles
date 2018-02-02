@@ -401,6 +401,13 @@ Offer all entities found in `org-entities-user' and
                                  (derived-mode-p #'sx-question-mode)))
                              'never 'visible))
 
+;;; whitespace
+
+(with-eval-after-load 'whitespace
+  (add-function :before-while whitespace-enable-predicate
+                (lambda ()
+                  (not (derived-mode-p #'magit-mode #'shell-mode)))))
+
 
 ;;;; DEFINITIONS
 
@@ -1688,7 +1695,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                     ""]))
 
  ;; whitespace
- whitespace-global-modes                (list 'not #'shell-mode)
  whitespace-style                       '(face tab-mark trailing)
 
  ;; windmove
