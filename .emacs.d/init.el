@@ -1349,6 +1349,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; man
  Man-notify-method                      'aggressive
 
+ ;; map-ynp
+ read-answer-short                      t
+
  ;; markdown-mode
  markdown-fontify-code-blocks-natively  t
  markdown-header-scaling                t
