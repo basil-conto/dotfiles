@@ -392,6 +392,15 @@ Offer all entities found in `org-entities-user' and
               (save-silently t))
     (apply save args)))
 
+;;; sx-question-mode
+
+(define-advice sx-question-mode--get-window (:override () blc-sx-question-win)
+  "Return first SX question window found on any visible frame."
+  (get-window-with-predicate (lambda (win)
+                               (with-selected-window win
+                                 (derived-mode-p #'sx-question-mode)))
+                             'never 'visible))
+
 
 ;;;; DEFINITIONS
 
