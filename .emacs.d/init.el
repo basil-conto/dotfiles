@@ -2116,10 +2116,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'bibtex
   (bibtex-set-dialect ebib-bibtex-dialect))
 
-;;; blc-dark-theme
-
-(load-theme 'blc-dark t)
-
 ;;; blc-lib
 
 (blc-dropbox-mode)
