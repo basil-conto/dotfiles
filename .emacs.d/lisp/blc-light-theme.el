@@ -39,6 +39,9 @@
 
    ;; External
 
+   ;; gscholar-bibtex
+   (gscholar-bibtex-title ((t :inherit bold)))
+
    ;; magit
    (magit-signature-good ((t :foreground "green4")))
 

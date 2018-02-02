@@ -299,6 +299,13 @@ compatibility with `browse-url' and ignored."
       (url-copy-file url file 0)
     (user-error "No URL specified or found at point")))
 
+(defvar blc-bib-dir (blc-dir "~/.bibs")
+  "Default bibliography file directory.")
+
+(defun blc-bib-files ()
+  "Return list of bibliography files under `blc-bib-dir'."
+  (directory-files blc-bib-dir t (rx ".bib" eos)))
+
 ;;; Processes
 
 (defun blc-process-success-p (proc)
@@ -764,9 +771,6 @@ Strings FROM override the default `f' format spec."
   "Target maximum number of characters per line.")
 
 ;;; Variables
-
-(defvar blc-bib-file "~/.bib.bib"
-  "Default user BibTeX file.")
 
 (defvar blc-index-dir (blc-dir user-emacs-directory "index")
   "Directory containing bookmarks, caches, symlinks, etc.")

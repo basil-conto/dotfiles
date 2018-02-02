@@ -111,8 +111,9 @@ Visit `package-user-dir' if such a directory is not found."
    babel
    bbdb
    better-shell
-   bibtex-utils
+   biblio
    bison-mode
+   bog
    bongo
    boogie-friends
 
@@ -135,7 +136,6 @@ Visit `package-user-dir' if such a directory is not found."
    dropbox
    ducpel
 
-   ebib
    el-search
    embrace
    emms

@@ -103,25 +103,6 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
            (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
        0))
 
-;; ebib
-
-(define-advice ebib (:before (&rest _) blc-make-frame)
-  "Make and select a new frame."
-  (blc-make-frame))
-
-(defun blc-delete-spare-frame--advice (&rest _)
-  "Like `blc-delete-spare-frame', but ignore any arguments."
-  (blc-delete-spare-frame))
-
-(dolist (fn (list #'ebib-lower #'ebib-quit))
-  (advice-add fn :after #'blc-delete-spare-frame--advice))
-
-(define-advice ebib--format-entry (:after (&rest _) blc-bibtex-untabify-entry)
-  "Untabify region between start of last BibTeX entry and point."
-  (untabify (or (save-excursion (re-search-backward bibtex-entry-head nil t))
-                (point))
-            (point)))
-
 ;; elisp-mode
 
 (define-advice elisp-completion-at-point (:filter-return (ret) my-elisp-pred)
@@ -602,21 +583,6 @@ Intended as an Ivy action for `counsel-M-x'."
      ,@(and page (list (number-to-string page))))
    callback))
 
-;; ebib
-
-(defun blc-ebib-display-year (field key db)
-  "Return display string for year of KEY in DB.
-In decreasing order of priority, return contents of FIELD,
-attempt parsing year from \"Date\" field, or return the string
-\"XXXX\"."
-  (or (ebib-db-get-field-value field key db t t t)
-      (and-let* ((date (ebib-db-get-field-value "Date" key db t t)))
-        (if-let* ((year (nth 5 (parse-time-string date))))
-            (number-to-string year)
-          (and (string-match (rx (group (= 4 digit)) ?- (= 2 digit)) date)
-               (match-string 1 date))))
-      (make-string 4 ?X)))
-
 ;; eww
 
 (defun blc-eww-bookmark-save ()
@@ -1079,9 +1045,22 @@ less jumpy auto-filling."
 
  ;; bibtex
  bibtex-align-at-equal-sign             t
+ bibtex-autokey-titleword-length        'infty
+ bibtex-autokey-titlewords              1
+ bibtex-autokey-titlewords-stretch      0
+ bibtex-autokey-year-length             4
+ bibtex-autokey-year-title-separator    ""
+ bibtex-entry-kill-ring-max             kill-ring-max
+ bibtex-field-kill-ring-max             kill-ring-max
+ bibtex-maintain-sorted-entries         t
+ bibtex-search-entry-globally           t
 
  ;; bindings
  mode-line-percent-position             '(-3 "%o")
+
+ ;; bog
+ bog-keymap-prefix                      "\C-cb"
+ bog-root-directory                     (blc-parent-dir blc-bib-dir)
 
  ;; bookmark
  bookmark-default-file                  (blc-file blc-index-dir "bookmarks.el")
@@ -1166,11 +1145,6 @@ less jumpy auto-filling."
  dropbox-locale                         "en_IE"
  dropbox-verbose                        t
 
- ;; ebib
- ebib-bibtex-dialect                    'biblatex
- ebib-file-associations                 ()
- ebib-use-timestamp                     t
-
  ;; emms
  emms-volume-change-function            #'emms-volume-pulse-change
 
@@ -1243,9 +1217,6 @@ less jumpy auto-filling."
 
  ;; gnutls
  gnutls-min-prime-bits                  nil
-
- ;; gscholar-bibtex
- gscholar-bibtex-database-file          blc-bib-file
 
  ;; hacker-typer
  hacker-typer-show-hackerman            t
@@ -1628,7 +1599,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  prolog-system                          'swi
 
  ;; reftex
- reftex-cite-format                     ebib-bibtex-dialect
+ reftex-cite-format                     'biblatex
  reftex-comment-citations               t
  reftex-plug-into-AUCTeX                t
  reftex-revisit-to-follow               t
@@ -1866,6 +1837,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  term-mode-hook
                                                  youtube-dl-list-mode-hook))
 
+  ;; bog
+  (:hooks org-mode-hook :fns bog-mode)
+
   ;; bug-reference
   (:hooks prog-mode-hook :fns bug-reference-prog-mode)
   (:hooks text-mode-hook :fns bug-reference-mode)
@@ -1882,6 +1856,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; electric
   (:fns blc-turn-off-electric-indent-local :hooks (apt-sources-list-mode-hook
+                                                   bibtex-mode-hook
                                                    conf-mode-hook
                                                    dafny-mode-hook
                                                    haskell-cabal-mode-hook
@@ -2066,6 +2041,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([?\M-p]                               . #'previous-logical-line)
    ("/"                                   . #'define-word-at-point)
    ("C"                                   . #'copy-from-above-command)
+   ("b"                                   . #'bog-command-map)
    ("e"                                   . #'ielm)
    ("4e"                                  . #'blc-ielm-other-window)
    ("g"                                   . #'blc-github-notifications)
@@ -2080,7 +2056,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (blc-jump-map
    ("b"                                   . #'ibuffer-jump)
    ("d"                                   . #'counsel-dired-jump)
-   ("e"                                   . #'ebib)
    ("f"                                   . #'project-find-file)
    ("l"                                   . #'counsel-locate)
    ("m"                                   . #'magit-find-file)
@@ -2260,10 +2235,19 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                        (blc-msmtp-addresses))
                'words)))
 
+;; biblio-download
+
+(with-eval-after-load 'biblio-download
+  (when (require 'bog nil t)
+    (setq-default biblio-download-directory bog-stage-directory)))
+
 ;; bibtex
 
 (with-eval-after-load 'bibtex
-  (bibtex-set-dialect ebib-bibtex-dialect))
+  (bibtex-set-dialect reftex-cite-format)
+  (map-do #'add-to-list
+          '((bibtex-entry-format . realign)
+            (bibtex-files        . bibtex-file-path))))
 
 ;; cc-mode
 
@@ -2465,14 +2449,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'cc-mode
   (define-key c-mode-base-map "\C-cd" #'disaster))
-
-;; ebib
-
-(with-eval-after-load 'ebib
-  (map-do
-   #'add-to-list
-   `((ebib-field-transformation-functions . ("Year" . ,#'blc-ebib-display-year))
-     (ebib-preload-bib-files              . ,blc-bib-file))))
 
 ;; engine-mode
 
@@ -2742,9 +2718,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; ivy-bibtex
 
 (with-eval-after-load 'ivy-bibtex
-  (map-do #'add-to-list
-          `((bibtex-completion-additional-search-fields . "date")
-            (bibtex-completion-bibliography             . ,blc-bib-file))))
+  (add-to-list 'bibtex-completion-additional-search-fields "date")
+  (mapc (apply-partially #'add-to-list 'bibtex-completion-bibliography)
+        (blc-bib-files))
+
+  (when (require 'bog nil t)
+    (setq-default bibtex-completion-library-path bog-file-directory
+                  bibtex-completion-notes-path   bog-note-directory)))
 
 ;; jq-mode
 
@@ -3100,7 +3080,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; reftex
 
 (with-eval-after-load 'reftex
-  (add-to-list 'reftex-default-bibliography blc-bib-file))
+  (mapc (apply-partially #'add-to-list 'reftex-default-bibliography)
+        (blc-bib-files)))
 
 ;; saveplace
 

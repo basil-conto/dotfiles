@@ -40,6 +40,10 @@ if [ -d "${LOCAL_DIR}/lib" ]; then
   export LD_LIBRARY_PATH="${LOCAL_DIR}/lib:${LD_LIBRARY_PATH}"
 fi
 
+# Books (bib)
+if [ -d "${HOME}/.bibs" ]; then
+  export BIBINPUTS="${HOME}/.bibs:${BIBINPUTS}"
+
 # Pyenv
 if [ -d "${HOME}/.pyenv" ]; then
   export PYENV_ROOT="${HOME}/.pyenv"
