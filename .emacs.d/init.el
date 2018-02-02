@@ -184,28 +184,6 @@ URI is returned by the `interactive-form' of `eww'."
   "Pass LIB through `blc-dataroot-to-src'."
   (funcall search sym type (blc-dataroot-to-src lib)))
 
-;;; gnus-msg
-
-(define-advice gnus-msg-mail (:override (&rest args) blc-gnus-msg-mail)
-  "Like `gnus-msg-mail', but heed SWITCH-FUNCTION argument."
-  (if (gnus-alive-p)
-      (seq-let (to subj heads cont switch yank send return) args
-        (let ((buf (current-buffer))
-              (nom gnus-newsgroup-name))
-          (save-window-excursion
-            (unwind-protect
-                (progn
-                  (setq gnus-newsgroup-name "")
-                  (gnus-setup-message 'message
-                    (message-mail to subj heads cont nil yank send return)))
-              (with-current-buffer buf
-                (setq gnus-newsgroup-name nom)))
-            (setq buf (current-buffer)))
-          (funcall (or switch #'switch-to-buffer) buf)
-          t))
-    (message "Gnus not running; using plain Message mode")
-    (apply #'message-mail args)))
-
 ;;; gnus-sum
 
 (define-advice gnus-summary-exit (:after (&rest _) blc-gnus-single-group-frame)
