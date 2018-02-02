@@ -621,6 +621,14 @@ attempt parsing year from \"Date\" field, or return the string
   (when (bound-and-true-p flycheck-mode)
     (blc-turn-off #'flycheck-mode)))
 
+;;; ghc
+
+(defun blc-ghc-init ()
+  "Fix libexecdir before `ghc-init'.
+See URL `https://github.com/DanielG/ghc-mod/issues/923'."
+  (setenv "cabal_helper_libexecdir" "/usr/lib")
+  (ghc-init))
+
 ;;; git-commit, git-rebase
 
 (defun blc-kill-git-buffer ()
@@ -1802,7 +1810,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks message-setup-hook :fns footnote-mode)
 
   ;; ghc
-  (:hooks haskell-mode-hook :fns ghc-init)
+  (:hooks haskell-mode-hook :fns blc-ghc-init)
 
   ;; git-commit
   (:hooks git-commit-setup-hook :fns (blc-git-commit-set-fill-column
