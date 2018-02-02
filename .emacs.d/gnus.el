@@ -73,14 +73,13 @@
 
 (defun blc-gnus-truncate-logs ()
   "Truncate Gnus log buffers to `message-log-max' lines."
-  (mapc (lambda (log)
-          (with-current-buffer log
-            (goto-char (point-max))
-            (let ((inhibit-read-only t))
-              (delete-region (point-min)
-                             (line-beginning-position
-                              (- 1 message-log-max))))))
-        (seq-filter #'get-buffer blc-gnus-log-buffers)))
+  (dolist (log (seq-filter #'get-buffer blc-gnus-log-buffers))
+    (with-current-buffer log
+      (goto-char (point-max))
+      (let ((inhibit-read-only t))
+        (delete-region (point-min)
+                       (line-beginning-position
+                        (- 1 message-log-max)))))))
 
 (defun blc-gnus-kill-logs ()
   "Kill buffers named in `blc-gnus-log-buffers'."
@@ -212,8 +211,8 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (setq-default
    gnus-sorted-header-list
    (mapcan (lambda (header)
-             `(,header ,@(when (string-equal header "^To:")
-                           (copy-sequence '("^Delivered-To:" "^Reply-To:")))))
+             (cons header (when (string-equal header "^To:")
+                            (copy-sequence '("^Delivered-To:" "^Reply-To:")))))
            gnus-sorted-header-list)
 
    gnus-visible-headers
