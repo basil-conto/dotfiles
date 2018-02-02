@@ -280,6 +280,18 @@ into account."
                     (funcall get mode create nil value))
     (funcall fn)))
 
+;;; magit-remote
+
+(define-advice magit-clone (:around (clone repo dir) blc-git-clone-subdir)
+  "Clone into subdirectory of DIR if non-empty."
+  (setq dir (blc-dir dir))
+  (and (file-directory-p dir)
+       (directory-files dir nil directory-files-no-dot-files-regexp t)
+       (setq dir (blc-dir dir (and (string-match
+                                    "\\([^/:]+?\\)\\(/?\\.git\\)?\\'" repo)
+                                   (match-string 1 repo)))))
+  (funcall clone repo dir))
+
 ;;; mail-extr
 
 (define-advice mail-extract-address-components
