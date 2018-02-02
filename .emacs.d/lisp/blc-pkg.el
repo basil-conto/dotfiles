@@ -221,6 +221,7 @@ Visit `package-user-dir' if such a directory is not found."
    skype
    sl
    slime-volleyball
+   solarized-theme
    sr-speedbar
    sudoku
    swiper
