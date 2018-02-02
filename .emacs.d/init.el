@@ -1869,6 +1869,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                               js2-refactor-mode
                               blc-xref-js2-install-backend))
 
+  ;; markdown-mode
+  (:hooks markdown-mode-hook :fns visual-line-mode)
+
   ;; message
   (:hooks message-mode-hook :fns blc-turn-on-double-space-sentence-ends)
   (:hooks message-send-hook :fns blc-message-confirm-attach)
@@ -1897,9 +1900,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks sass-mode-hook :fns blc-turn-on-c++-comments)
 
   ;; simple
-  (:fns turn-on-auto-fill :hooks (bookmark-edit-annotation-mode
-                                  LaTeX-mode-hook
-                                  org-mode-hook))
+  (:fns display-line-numbers-mode :hooks visual-line-mode-hook)
+  (:fns turn-on-auto-fill         :hooks (bookmark-edit-annotation-mode
+                                          LaTeX-mode-hook
+                                          org-mode-hook))
 
   ;; startup
   (:hooks window-setup-hook :append t :fns (blc-report-init-time
