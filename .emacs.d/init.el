@@ -806,7 +806,7 @@ Return the name of the buffer as a string or `nil'."
 (defun blc-message-confirm-attach ()
   "Allow user to quit sending on missing attachment detection."
   (or (save-excursion
-        (message-goto-body-1)
+        (message-goto-body)
         (not (re-search-forward "attach"
                                 (save-excursion
                                   (message-goto-signature)
