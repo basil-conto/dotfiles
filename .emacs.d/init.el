@@ -96,9 +96,6 @@ why-are-you-changing-gc-cons-threshold/'.")
 (define-advice bbdb-complete-mail (:around (complete &rest args) blc-minibuffer)
   "Replace *Completions* buffer with `completing-read'."
   (let* (cands
-         (alice #'display-completion-list)
-         (eve   (lambda (addrs)
-                  (setq cands addrs)))
          (temp-buffer-show-function
           (lambda (buf)
             (kill-buffer buf)
@@ -111,11 +108,9 @@ why-are-you-changing-gc-cons-threshold/'.")
                               'blc-bbdb-mail-history)
              (current-buffer)
              completion-base-position))))
-    (unwind-protect
-        (progn
-          (advice-add alice :before eve)
-          (apply complete args))
-      (advice-remove alice eve))))
+    (blc-with-nonce display-completion-list
+        :before (apply-partially #'set 'cands)
+      (apply complete args))))
 
 ;;; cc-align
 
@@ -270,28 +265,20 @@ into account."
 (define-advice magit-diff-show-or-scroll
     (:around (fn &rest args) blc-visible-frames)
   "Show and scroll Magit diff buffer across frames."
-  (let ((get-win #'get-buffer-window)
-        (visible-frames (lambda (get &optional buf _frames)
-                          (funcall get buf 'visible))))
-    (unwind-protect
-        (progn
-          (advice-add get-win :around visible-frames)
-          (apply fn args))
-      (advice-remove get-win visible-frames))))
+  (blc-with-nonce get-buffer-window :around
+                  (lambda (get &optional buf _frames)
+                    (funcall get buf 'visible))
+    (apply fn args)))
 
 ;;; magit-log
 
 (define-advice magit-log-maybe-update-revision-buffer-1
     (:around (fn) blc-all-frames)
   "Update Magit log buffer across frames."
-  (let ((get-buf #'magit-mode-get-buffer)
-        (all-frames (lambda (get mode &optional create _frame value)
-                      (funcall get mode create nil value))))
-    (unwind-protect
-        (progn
-          (advice-add get-buf :around all-frames)
-          (funcall fn))
-      (advice-remove get-buf all-frames))))
+  (blc-with-nonce magit-mode-get-buffer :around
+                  (lambda (get mode &optional create _frame value)
+                    (funcall get mode create nil value))
+    (funcall fn)))
 
 ;;; mail-extr
 
@@ -310,10 +297,9 @@ This is much less accurate but also much more performant than
   "Delete horizontal whitespace before point."
   (delete-horizontal-space t))
 
-(mapc (lambda (fn)
-        (advice-add fn :after #'blc-delete-hspace-backward))
-      (list #'makefile-insert-gmake-function
-            #'makefile-insert-target-ref))
+(dolist (fn (list #'makefile-insert-gmake-function
+                  #'makefile-insert-target-ref))
+  (advice-add fn :after #'blc-delete-hspace-backward))
 
 ;;; mpc
 

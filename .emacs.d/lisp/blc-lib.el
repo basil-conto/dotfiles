@@ -584,6 +584,16 @@ called on KEYMAP, KEY and DEF."
                               bindings))))
               alist)))
 
+(defmacro blc-with-nonce (sym where fn &rest body)
+  "Run BODY with SYM temporarily advised at WHERE by FN."
+  (declare (indent 3))
+  (macroexp-let2 nil fn fn
+    `(unwind-protect
+         ,(macroexp-progn
+           `((advice-add ',sym ,where ,fn)
+             ,@body))
+       (advice-remove ',sym ,fn))))
+
 (defvar blc-locations
   '(("Athens"
      :country "GR" :lat [37 59 north] :long [23 44 east])
