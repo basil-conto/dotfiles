@@ -85,7 +85,6 @@ Visit `package-user-dir' if such a directory is not found."
    alert
    apache-mode
    apt-sources-list
-   ascii
    ascii-art-to-unicode
    async
    atomic-chrome
@@ -164,10 +163,8 @@ Visit `package-user-dir' if such a directory is not found."
    ialign
    idris-mode
    interleave
-   irfc
    irony
    irony-eldoc
-   isearch-prop
    ivy
    ivy-bibtex
    ivy-hydra
@@ -183,7 +180,6 @@ Visit `package-user-dir' if such a directory is not found."
 
    latex-extra
    ledger-mode
-   list-processes+
    list-unicode-display
    logview
    lorem-ipsum
@@ -206,7 +202,6 @@ Visit `package-user-dir' if such a directory is not found."
    org-pomodoro
 
    pacmacs
-   palette
    paren-face
    pass
    passmm
@@ -233,7 +228,6 @@ Visit `package-user-dir' if such a directory is not found."
 
    threes
    tile
-   top-mode
    tuareg
    typit
 
