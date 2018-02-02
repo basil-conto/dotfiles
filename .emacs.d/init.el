@@ -179,10 +179,10 @@ URI is returned by the `interactive-form' of `eww'."
 
 ;;; find-func
 
-(define-advice find-function-library (:filter-return (pair) blc-dataroot-to-src)
-  "Pass result through `blc-dataroot-to-src'."
-  (setcdr pair (blc-dataroot-to-src (cdr pair)))
-  pair)
+(define-advice find-function-search-for-symbol
+    (:around (search sym type lib) blc-dataroot-to-src)
+  "Pass LIB through `blc-dataroot-to-src'."
+  (funcall search sym type (blc-dataroot-to-src lib)))
 
 ;;; gnus-msg
 
