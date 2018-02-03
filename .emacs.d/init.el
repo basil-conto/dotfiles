@@ -1298,6 +1298,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; magit-diff
  magit-diff-adjust-tab-width            t
+ magit-diff-refine-hunk                 t
  magit-revision-use-hash-sections       'quickest
 
  ;; magit-git
@@ -2193,6 +2194,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
        (setq-default custom-file
                      (expand-file-name "custom.el" user-emacs-directory)))
   (lwarn 'blc :warning "Custom file %s exists but not loaded" custom-file))
+
+;;; custom
+
+(load-theme 'blc-light t)
 
 ;;; dash
 

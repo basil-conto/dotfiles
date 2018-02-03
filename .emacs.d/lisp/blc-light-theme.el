@@ -15,11 +15,16 @@
  'blc-light
  `(;; Built-in
 
+   ;; diff-mode
+   (diff-refine-added   ((t :background "#7763fe697763" ; 10% darker
+                            :inherit    diff-refine-changed)))
+   (diff-refine-removed ((t :background "#fea2a1c3a1c3" ;  5% darker
+                            :inherit    diff-refine-changed)))
+
    ;; External
 
    ;; hackernews
    (hackernews-comment-count ((t :inherit link-visited :underline nil)))
-   (hackernews-link          ((t :inherit link         :underline nil)))
 
    ;; sx-question-list
    (sx-question-list-read-question   ((t :inherit   link-visited
