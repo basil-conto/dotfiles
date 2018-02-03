@@ -1975,7 +1975,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("d"                                   . #'counsel-dired-jump)
    ("e"                                   . #'ebib)
    ("f"                                   . #'counsel-file-jump)
-   ("g"                                   . #'counsel-git)
+   ("g"                                   . #'counsel-git-grep)
    ("r"                                   . #'ivy-resume)
    ("w"                                   . #'webjump))
 
