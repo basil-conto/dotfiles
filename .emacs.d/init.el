@@ -288,6 +288,14 @@ This is much less accurate but also much more performant than
           (call-interactively mpc))
       (set-window-dedicated-p win flag))))
 
+;;; newst-treeview
+
+(define-advice newsticker--treeview-frame-init
+    (:around (init &rest args) blc-anonymous-frame)
+  "Create frame sans `name' parameter."
+  (blc-with-nonce make-frame :filter-args #'ignore
+    (apply init args)))
+
 ;;; org
 
 (define-advice org-read-date (:around (read &rest args) blc-avoid-frames)
