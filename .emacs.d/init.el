@@ -8,8 +8,6 @@
 
 ;;;; BOOTSTRAPPING
 
-;;; Performance
-
 (defalias 'blc-report-init-time
   (let ((file load-file-name))
     (lambda ()
@@ -17,32 +15,10 @@
                (float-time (time-subtract after-init-time before-init-time)))))
   "Print 3 d.p. `emacs-init-time' after `load'-style message.")
 
-(defalias 'blc-gc-thresh-restore
-  (let ((thresh gc-cons-threshold))
-    (lambda () (setq gc-cons-threshold thresh)))
-  "Restore default `gc-cons-threshold' value.
-See URL `http://bling.github.io/blog/2016/01/18/\
-why-are-you-changing-gc-cons-threshold/'.")
-
-(eval-and-compile
-  (defun blc-gc-thresh-maximise ()
-    "Increase GC threshold to at least 64MiB"
-    (setq gc-cons-threshold (max (ash 1 26) gc-cons-threshold)))
-
-  (blc-gc-thresh-maximise)
-
-  ;; Include user libraries
-  (dolist (dir '("lisp" "mod"))
-    (add-to-list 'load-path (expand-file-name dir user-emacs-directory)))
-
-  (condition-case err
-      (when (require 'realpath)
-        (advice-add #'file-truename :override #'realpath-truename))
-    (error (lwarn 'external :error "%S" err))))
-
-;;; Dependencies
-
 ;; User
+(eval-and-compile
+  (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
+
 (require 'blc-lib)
 (require 'blc-pkg)
 

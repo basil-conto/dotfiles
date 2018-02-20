@@ -22,7 +22,7 @@ thmouts = $(1)*-theme.elc
 EMACS ?= emacs
 
 %.elc: %.el
-	$(EMACS) $(ELFLAGS) --batch --funcall batch-byte-compile $^
+	$(EMACS) $(ELFLAGS) --batch --funcall=batch-byte-compile $^
 
 ## Sweeping generalisations
 
@@ -83,14 +83,15 @@ clean-gnus:
 	$(RM) gnus.elc
 
 .PHONY: init
-init: themes blc-lib blc-magit blc-mbsync blc-pass blc-pkg init.elc
+init: themes blc-lib blc-magit blc-mbsync blc-pass blc-pkg \
+		early-init.elc init.elc
 
 .PHONY: clean-init
 clean-init:
-	$(RM) init.elc
+	$(RM) early-init.elc init.elc
 
 .PHONY: profile
 profile: ELFLAGS := -nw
 profile: themes blc-lib blc-pkg
-	$(EMACS) $(ELFLAGS) --quick --load $(libdir)profile-dotemacs.el \
-		--funcall profile-dotemacs
+	$(EMACS) $(ELFLAGS) --quick --load=$(libdir)profile-dotemacs.el \
+		--funcall=profile-dotemacs
