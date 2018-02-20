@@ -42,6 +42,7 @@
   (declare-function gnus-demon-scan-news                  "gnus-demon")
   (declare-function gnus-group-set-timestamp              "gnus-group")
   (declare-function gnus-group-timestamp                  "gnus-group")
+  (declare-function gnus-score-find-single                "gnus-score")
   (declare-function gnus-article-sort-by-most-recent-date "gnus-sum")
   (declare-function gnus-article-sort-by-number           "gnus-sum")
   (declare-function gnus-gather-threads-by-references     "gnus-sum")
@@ -102,6 +103,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-select-method                     '(nnnil)
  gnus-summary-line-format               (blc-gnus-summary-line-format)
  gnus-update-message-archive-method     t
+ gnus-save-score                        t
  gnus-secondary-select-methods
  `(,@(seq-map-indexed
       (pcase-lambda (`(,user) i)
@@ -140,6 +142,11 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 
  ;; gnus-notifications
  gnus-notifications-minimum-level       3
+
+ ;; gnus-score
+ gnus-inhibit-slow-scoring              t
+ gnus-score-expiry-days                 nil
+ gnus-score-find-score-files-function   #'gnus-score-find-single
 
  ;; gnus-start
  gnus-activate-level                    gnus-level-default-subscribed
