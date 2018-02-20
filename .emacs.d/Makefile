@@ -5,7 +5,7 @@
 
 ## Files
 
-libs   := $(addprefix blc-,lib magit mbsync notmuch pass pkg)
+libs   := $(addprefix blc-,lib lib-tests magit mbsync notmuch pass pkg)
 libdir := lisp/
 pkgdir := elpa/
 
@@ -28,7 +28,7 @@ EMACS ?= emacs
 .NOTPARALLEL:
 
 .PHONY: all
-all: themes libs gnus init
+all: themes libs gnus init test
 
 .PHONY: clean
 clean: clean-themes clean-libs clean-gnus clean-init
@@ -48,6 +48,9 @@ clean-themes:
 
 .PHONY: blc-lib
 blc-lib: $(call libouts,blc-lib)
+
+.PHONY: blc-lib
+blc-lib-tests: blc-lib $(call libouts,blc-lib-tests)
 
 .PHONY: blc-magit
 blc-magit: blc-lib blc-pkg $(call libouts,blc-magit)
@@ -70,6 +73,12 @@ libs: $(libs)
 .PHONY: clean-libs
 clean-libs:
 	$(RM) $(call libouts,%)
+
+.PHONY: test
+test: libs
+	$(EMACS) $(ELFLAGS) --batch \
+		$(addprefix --load=,$(wildcard $(libdir)*-tests.el)) \
+		--funcall=ert-run-tests-batch-and-exit
 
 ## Init files
 
