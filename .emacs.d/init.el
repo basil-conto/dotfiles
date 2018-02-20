@@ -1010,7 +1010,6 @@ less jumpy auto-filling."
  counsel-org-goto-display-todo          t
  counsel-org-goto-face-style            'verbatim
  counsel-yank-pop-filter                #'identity
- ffap-file-finder                       #'blc-counsel-find-file
 
  ;; csv-mode
  csv-align-style                        'auto
@@ -1080,6 +1079,7 @@ less jumpy auto-filling."
 
  ;; ffap
  dired-at-point-require-prefix          t
+ ffap-file-finder                       #'blc-counsel-find-file
  ffap-require-prefix                    t
  ffap-rfc-path                          "https://ietf.org/rfc/rfc%s.txt"
 
