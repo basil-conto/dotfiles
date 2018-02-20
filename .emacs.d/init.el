@@ -2589,9 +2589,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'ivy
   ;; Keys
   (blc-define-keys
+    (ivy-minibuffer-map
+     ([?\S-\s]))
     (ivy-occur-mode-map
-     ("n"     . #'ivy-occur-next-line)
-     ("p"     . #'ivy-occur-previous-line)))
+     ("n" . #'ivy-occur-next-line)
+     ("p" . #'ivy-occur-previous-line)))
 
   (mapc (pcase-lambda (`[,olddef ,newdef ,oldmap])
           (substitute-key-definition olddef newdef ivy-minibuffer-map oldmap))
