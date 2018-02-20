@@ -26,6 +26,9 @@
    ;; hackernews
    (hackernews-comment-count ((t :inherit link-visited :underline nil)))
 
+   ;; magit
+   (magit-signature-good ((t :foreground "green4")))
+
    ;; sx-question-list
    (sx-question-list-read-question   ((t :inherit   link-visited
                                          :underline nil)))
