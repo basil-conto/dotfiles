@@ -1288,6 +1288,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; magit-process
  magit-process-finish-apply-ansi-colors t
 
+ ;; magit-refs
+ magit-refs-pad-commit-counts           t
+
  ;; magit-remote
  magit-remote-add-set-remote.pushDefault
  'ask

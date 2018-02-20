@@ -84,18 +84,8 @@
           (magit-merge-arguments  . "--ff-only"       )
           (magit-rebase-arguments . "--interactive"   )))
 
-;; Inline format reformatting
-(let ((fmtre (rx ?% (group (? (in ?+ ?-)) (* digit)) (in ?U ?n)))
-      case-fold-search)
-
-  ;; Align refs with wider columns
-  (mapc (lambda (fmt)
-          (set-default fmt (blc-sed fmtre "-40" (symbol-value fmt) t t 1)))
-        '(magit-refs-local-branch-format
-          magit-refs-remote-branch-format
-          magit-refs-tags-format))
-
-  ;; Limit number of commits in log
+;; Limit number of commits in log
+(let (case-fold-search)
   (setq-default
    magit-log-arguments
    (blc-sed-tree (rx "-n" (group (+ digit))) "64" magit-log-arguments t t 1)))
