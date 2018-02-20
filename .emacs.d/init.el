@@ -575,6 +575,14 @@ attempt parsing year from \"Date\" field, or return the string
       (eww-copy-page-url)
     (user-error "No bookmark on the current line")))
 
+(defun blc-eww-toggle-images ()
+  "Toggle display of images in current `eww' buffer.
+Adapted from URL
+`https://emacs.stackexchange.com/a/38639/15748'."
+  (interactive)
+  (setq-local shr-inhibit-images (not shr-inhibit-images))
+  (eww-reload t))
+
 ;;; flycheck
 
 (defun blc-turn-off-flycheck (&rest _)
@@ -2381,6 +2389,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'eww
   (blc-define-keys
     (eww-bookmark-mode-map
+     ("T" . #'blc-eww-toggle-images)
      ("n" . #'next-line)
      ("p" . #'previous-line)
      ("w" . #'blc-eww-bookmark-save))))
