@@ -916,6 +916,9 @@ less jumpy auto-filling."
  ;; indent.c
  indent-tabs-mode                       nil
 
+ ;; minibuffer.c
+ enable-recursive-minibuffers           t
+
  ;; window.c
  fast-but-imprecise-scrolling           t
  recenter-redisplay                     nil
@@ -2593,6 +2596,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (map-put ivy-sort-functions-alist caller sort))
           `((,#'blc-sort-reverse . ,#'Info-complete-menu-item)
             (,#'string-lessp     . ,#'counsel-M-x)))
+
+  ;; Recursive minibuffers
+  (minibuffer-depth-indicate-mode)
 
   ;; Location suggestions
   (recentf-mode)
