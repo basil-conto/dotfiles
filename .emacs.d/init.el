@@ -1592,6 +1592,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
          (delete-trailing-whitespace pmin pmax)
          (buffer-substring           pmin pmax)))
      initial-scratch-message)
+ user-mail-address                      (or (car (blc-msmtp-addresses))
+                                            user-mail-address)
 
  ;; swiper
  swiper-goto-start-of-match             t
@@ -2755,8 +2757,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (add-to-list 'message-required-mail-headers 'To)
 
   (when-let* ((addresses (blc-msmtp-addresses)))
-    (setq-default message-alternative-emails (regexp-opt addresses)
-                  user-mail-address          (car addresses)))
+    (setq-default message-alternative-emails (regexp-opt addresses)))
 
   (setq-default message-expand-name-databases
                 (delq 'eudc message-expand-name-databases)))
