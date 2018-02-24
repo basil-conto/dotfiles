@@ -897,6 +897,7 @@ less jumpy auto-filling."
  ;; buffer.c
  fill-column                            blc-chars-per-line
  indicate-buffer-boundaries             t
+ indicate-empty-lines                   t
  mode-line-format                       (blc-sed-tree " +" " " mode-line-format)
  tab-width                              2
 
@@ -1097,9 +1098,6 @@ less jumpy auto-filling."
 
  ;; fill-column-indicator
  fci-rule-column                        blc-chars-per-line
-
- ;; font-lock
- font-lock-maximum-decoration           t
 
  ;; footnote
  footnote-body-tag-spacing              1
@@ -1553,7 +1551,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; simple
  async-shell-command-display-buffer     nil
- indicate-unused-lines                  t
  kill-do-not-save-duplicates            t
  kill-whole-line                        t
  mail-user-agent                        'gnus-user-agent
