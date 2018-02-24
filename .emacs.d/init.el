@@ -1393,6 +1393,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     "https://hnrss.org/frontpage")
    ("LWN"
     "https://lwn.net/headlines/rss")
+   ("Nautilus"
+    "http://nautil.us/rss/all")
    ("NYT"
     "https://nytimes.com/services/xml/rss/userland/HomePage.xml")
    ("NYT Tech"
