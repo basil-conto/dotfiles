@@ -1984,6 +1984,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("e"                                   . #'ebib)
    ("f"                                   . #'counsel-file-jump)
    ("g"                                   . #'counsel-git-grep)
+   ("m"                                   . #'magit-find-file)
+   ("4m"                                  . #'magit-find-file-other-window)
    ("r"                                   . #'ivy-resume)
    ("w"                                   . #'webjump))
 
