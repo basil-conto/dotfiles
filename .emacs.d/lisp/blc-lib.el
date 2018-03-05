@@ -334,33 +334,14 @@ Offer to revert from the auto-save file, if that exists."
   (interactive)
   (revert-buffer nil t))
 
-(defun blc-fast-line-number ()
-  "Return current line number.
-Should outperform `line-number-at-pos' and scale better with
-buffer size. See URL `http://emacs.stackexchange.com/a/3822' for
-limitations."
+(defun blc-count-lines ()
+  "Like `count-lines-page', but not limited to current page."
   (interactive)
-  (string-to-number
-   (let ((line-number-display-limit-width most-positive-fixnum)
-         line-number-display-limit)
-     (format-mode-line "%l"))))
-
-(defun blc-fast-line-count ()
-  "Return number of lines within accessible portion of buffer.
-Uses `blc-fast-line-number', which see."
-  (save-excursion
-    (goto-char (point-max))
-    (funcall (if (bolp) #'1- #'identity)
-             (blc-fast-line-number))))
-
-(defun blc-echo-fast-line-count ()
-  "Emulate `count-lines-page' using `blc-fast-line-count'."
-  (interactive)
-  (let* ((total   (blc-fast-line-count))
-         (current (blc-fast-line-number))
-         (before  (min current total))
-         (after   (- total before)))
-    (message "Buffer has %d lines (%d + %d)" total before after)))
+  (save-restriction
+    (widen)
+    (let* ((total  (line-number-at-pos (point-max)))
+           (before (line-number-at-pos)))
+      (message "Buffer has %d lines (%d + %d)" total before (- total before)))))
 
 (defun blc-derived-buffers (&rest modes)
   "Return subset of `buffer-list' derived from MODES."
