@@ -1942,7 +1942,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([remap find-file]                     . #'find-file-at-point)
    ([remap find-file-other-window]        . #'ffap-other-window)
    ([remap find-file-other-frame]         . #'ffap-other-frame)
-   ([remap find-library]                  . #'counsel-find-library)
    ([remap imenu]                         . #'counsel-imenu)
    ([remap info]                          . #'blc-info)
    ([remap info-other-window]             . #'blc-info-other-window)
@@ -2192,8 +2191,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; counsel
 
 (with-eval-after-load 'counsel
-  (counsel-mode)
-
   (ivy-add-actions #'counsel-M-x
                    `(("j" ,#'blc-counsel-M-x-other-window "other window"))))
 
