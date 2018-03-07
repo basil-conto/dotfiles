@@ -83,7 +83,7 @@ alias startvm='vboxmanage startvm'
 
 # youtube-dl
 alias ydl='youtube-dl'
-alias ydl-opus='ydl --extract-audio --audio-format opus --audio-quality 128K'
+alias ydl-opus='ydl --extract-audio --audio-format opus --audio-quality 96K'
 
 # notify-send
 alias apprise='notify-send --urgency=low'
