@@ -1243,6 +1243,7 @@ less jumpy auto-filling."
 
  ;; isearch
  isearch-allow-scroll                   t
+ search-exit-option                     'edit
 
  ;; ivy
  ivy-action-wrap                        t
