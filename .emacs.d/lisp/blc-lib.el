@@ -662,7 +662,7 @@ Strings FROM override the default `f' format spec."
   "Predicate that the order of X and Y should be swapped."
   t)
 
-(defun blc-turn-on-xterm-mouse (&optional frame &rest _)
+(defun blc-turn-on-xterm-mouse (&optional frame)
   "Enable `xterm-mouse-mode' with first terminal frame created."
   (or (display-graphic-p frame)
       xterm-mouse-mode
