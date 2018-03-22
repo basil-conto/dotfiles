@@ -80,6 +80,7 @@ Visit `package-user-dir' if such a directory is not found."
  package-selected-packages
  '(2048-game
 
+   academic-phrases
    ace-window
    ag
    alert
