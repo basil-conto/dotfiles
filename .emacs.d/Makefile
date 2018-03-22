@@ -26,6 +26,8 @@ EMACS ?= emacs
 
 ## Sweeping generalisations
 
+.NOTPARALLEL:
+
 .PHONY: all
 all: themes libs gnus init
 
