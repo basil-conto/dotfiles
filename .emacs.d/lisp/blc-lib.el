@@ -611,10 +611,6 @@ overrides them."
             (or (plist-get props :tz)
                 (subst-char-in-string ?\s ?_ location)))))
 
-(defun blc-standard-value (var)
-  "Return `standard-value' property of symbol VAR."
-  (eval (car (plist-get (symbol-plist var) 'standard-value))))
-
 (defun blc-turn-off (&rest fns)
   "Call all FNS, if valid functions, with argument 0."
   (dolist (fn fns)
@@ -633,10 +629,6 @@ overrides them."
 (defun blc-turn-off-indent-tabs ()
   "Locally disable tab indentation."
   (setq indent-tabs-mode nil))
-
-(defun blc-restore-tab-width ()
-  "Restore `standard-value' of `tab-width'."
-  (setq tab-width (blc-standard-value 'tab-width)))
 
 (defun blc-gnus-summary-line-format (&rest from)
   "Return format string suitable for `gnus-summary-line-format'.

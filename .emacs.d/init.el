@@ -895,7 +895,6 @@ less jumpy auto-filling."
  indicate-buffer-boundaries             t
  indicate-empty-lines                   t
  mode-line-format                       (blc-sed-tree " +" " " mode-line-format)
- tab-width                              2
 
  ;; callint.c
  mark-even-if-inactive                  nil
@@ -1813,9 +1812,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; haskell-mode
   (:hooks haskell-mode-hook :fns (haskell-indent-mode
                                   interactive-haskell-mode))
-
-  ;; help-mode
-  (:hooks help-mode-hook :fns blc-restore-tab-width)
 
   ;; hi-lock
   (:hooks hi-lock-mode-hook :fns blc-hi-lock-no-eof-nl)
