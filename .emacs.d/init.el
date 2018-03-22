@@ -1364,7 +1364,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  mm-html-blocked-images                 nil
  mm-inline-large-images                 'resize
  mm-sign-option                         'guided
- mm-text-html-renderer                  'gnus-w3m
  mm-verify-option                       'always
 
  ;; mml-sec
