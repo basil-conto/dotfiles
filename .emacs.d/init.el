@@ -1242,7 +1242,7 @@ less jumpy auto-filling."
 
  ;; isearch
  isearch-allow-scroll                   t
- search-exit-option                     'edit
+ search-exit-option                     nil
 
  ;; ivy
  ivy-action-wrap                        t
