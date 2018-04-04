@@ -455,7 +455,7 @@ Assumes frame is split exactly in two. Adapted from Wilfred's
 function at URL
 `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (interactive)
-  (unless (= (length (window-list)) 2)
+  (unless (= (count-windows) 2)
     (user-error "Can only toggle a frame split in twain"))
   (let ((split (if (window-combined-p)
                    #'split-window-right
