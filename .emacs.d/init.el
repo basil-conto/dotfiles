@@ -956,6 +956,9 @@ less jumpy auto-filling."
  ;; xfns.c
  x-gtk-use-system-tooltips              nil
 
+ ;; xterm.c
+ x-wait-for-event-timeout               nil
+
  ;; ag
  ag-highlight-search                    t
 
