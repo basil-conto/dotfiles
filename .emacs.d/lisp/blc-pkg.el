@@ -154,6 +154,7 @@ Visit `package-user-dir' if such a directory is not found."
    figlet
    fill-column-indicator
    fireplace
+   flame
    flx
    free-keys
 
