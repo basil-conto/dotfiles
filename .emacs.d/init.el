@@ -1582,6 +1582,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  mail-user-agent                        'gnus-user-agent
  next-error-recenter                    '(4)
  read-mail-command                      'gnus
+ set-mark-command-repeat-pop            t
  yank-pop-change-selection              t
 
  ;; solar
