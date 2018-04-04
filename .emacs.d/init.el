@@ -1014,6 +1014,7 @@ less jumpy auto-filling."
  chess-images-default-size              blc-chars-per-line
 
  ;; comint
+ comint-input-ignoredups                t
  comint-terminfo-terminal               "xterm-256color"
 
  ;; compile
