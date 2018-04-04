@@ -758,31 +758,6 @@ Strings FROM override the default `f' format spec."
            nil
            (blc-rainbow--faces)))
 
-(defvar blc-tomato-timer ()
-  "Active timer for `blc-tomato-mode'.")
-
-(defvar blc-tomato-interval (blc-mins-to-secs 20)
-  "Number of seconds between `blc-tomato' runs.")
-
-(defun blc-tomato (start)
-  "Send a notification about elapsed time since START."
-  (notifications-notify
-   :title   "🍅"
-   :body    (format-seconds "%H %z%M" (float-time (time-subtract nil start)))
-   :urgency 'low))
-
-(define-minor-mode blc-tomato-mode
-  "Run `blc-tomato' every `blc-tomato-interval'."
-  :global t
-  :group  'blc
-  (setq blc-tomato-timer
-        (if blc-tomato-mode
-            (run-at-time blc-tomato-interval
-                         blc-tomato-interval
-                         #'blc-tomato
-                         (current-time))
-          (ignore (cancel-timer blc-tomato-timer)))))
-
 ;;; Constants
 
 (defconst blc-chars-per-line 80

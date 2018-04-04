@@ -1738,6 +1738,17 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; tramp-cache
  tramp-persistency-file-name            (blc-file blc-index-dir "tramp")
 
+ ;; type-break
+ type-break-demo-boring-stats           t
+ type-break-file-name                   nil
+ type-break-good-rest-interval          (blc-mins-to-secs  5)
+ type-break-interval                    (blc-mins-to-secs 20)
+ type-break-keystroke-threshold         '(nil)
+ type-break-keystroke-warning-intervals ()
+ type-break-terse-messages              t
+ type-break-time-stamp-format           "[type-break %R] "
+ type-break-time-warning-intervals      ()
+
  ;; uniquify
  uniquify-after-kill-buffer-p           nil
  uniquify-buffer-name-style             'forward
@@ -1840,8 +1851,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus)
 
   ;; blc-lib
-  (:hooks after-init-hook :fns (blc-dropbox-mode
-                                blc-tomato-mode))
+  (:hooks after-init-hook :fns blc-dropbox-mode)
   (:fns blc-turn-off-trailing-whitespace :hooks (Info-mode-hook
                                                  calendar-mode-hook
                                                  eww-mode-hook
@@ -3131,6 +3141,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; timer-list
 
 (function-put #'list-timers 'disabled nil)
+
+;; type-break
+
+(type-break-mode)
 
 ;; url
 
