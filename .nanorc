@@ -2,7 +2,7 @@
 # ~/.nanorc
 
 # Display cursor position
-set const
+set constantshow
 
 # Read files into new buffer
 set multibuffer
