@@ -1118,6 +1118,7 @@ less jumpy auto-filling."
  kept-old-versions                      2
  mode-require-final-newline             nil
  version-control                        t
+ view-read-only                         t
 
  ;; fill-column-indicator
  fci-rule-column                        blc-chars-per-line
