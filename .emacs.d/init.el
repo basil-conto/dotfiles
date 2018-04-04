@@ -44,6 +44,7 @@
 (autoload 'gnus-find-subscribed-addresses "gnus")
 (autoload 'turn-on-hi-lock-if-enabled     "hi-lock")
 (autoload 'ivy-completion-in-region       "ivy")
+(autoload 'magit-pop-revision-stack       "magit-extras" nil t)
 (autoload 'meme                           "meme" nil t)
 (autoload 'meme-file                      "meme" nil t)
 (autoload 'TeX-doc                        "tex" nil t)
@@ -221,6 +222,30 @@ into account."
                   (lambda (get &optional buf _frames)
                     (funcall get buf 'visible))
     (apply fn args)))
+
+;; magit-extras
+
+(define-advice magit-pop-revision-stack
+    (:around (fn &rest args) blc-message-narrow-to-body)
+  "Narrow to `message-mode' body before popping a revision."
+  (let ((mail (derived-mode-p #'message-mode)))
+    (save-restriction
+      (when mail
+        (narrow-to-region (if (message-in-body-p)
+                              (save-excursion (message-goto-body))
+                            (point-min))
+                          (save-excursion
+                            (when (message-goto-signature)
+                              (re-search-backward message-signature-separator)
+                              (end-of-line 0))
+                            (point))))
+      (apply fn args))
+    (save-excursion
+      (and mail
+           (message-goto-signature)
+           (re-search-backward message-signature-separator)
+           (or (= (line-beginning-position 0) (line-end-position 0))
+               (insert ?\n))))))
 
 ;; magit-log
 
@@ -2689,6 +2714,20 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'magit
   (require 'blc-magit))
+
+;; magit-extras
+
+(with-eval-after-load 'magit-extras
+  (setq-default
+   magit-pop-revision-stack-format
+   ;; Adapted from URL `https://github.com/npostavs/emacs.d'
+   (pcase-let ((`(,pt ,_eob ,index) magit-pop-revision-stack-format))
+     (list pt
+           "\
+[%N: %h]: %ci
+  %s
+  https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H"
+           index))))
 
 ;; make-mode
 
