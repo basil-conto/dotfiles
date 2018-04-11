@@ -99,7 +99,6 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  ;; gnus
  gnus-extract-address-components        #'mail-extract-address-components
  gnus-group-uncollapsed-levels          3
- gnus-invalid-group-regexp              "[: `'\"]\\|^$"
  gnus-select-method                     '(nnnil)
  gnus-summary-line-format               (blc-gnus-summary-line-format)
  gnus-update-message-archive-method     t
