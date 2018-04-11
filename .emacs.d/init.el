@@ -368,15 +368,6 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
-;; recentf
-
-(define-advice recentf-save-list (:around (save &rest args) blc-save-safely)
-  "Save silently only if sole Emacs instance."
-  (when-let* (((> 2 (seq-count (apply-partially #'string-match-p "\\`emacs")
-                               (blc-system-procs-by-attr 'comm ""))))
-              (save-silently t))
-    (apply save args)))
-
 ;; sx-question-mode
 
 (define-advice sx-question-mode--get-window (:override () blc-sx-question-win)
@@ -752,12 +743,6 @@ Return the name of the buffer as a string or `nil'."
 (defun blc-isearch-delight ()
   "Shorten lighter of `isearch-mode'."
   (setq isearch-mode "🔍"))
-
-;; ivy
-
-(defun blc-ivy-recentf (&optional count)
-  "Return first COUNT or `ivy-height'/2 items in `recentf-list'."
-  (seq-take (bound-and-true-p recentf-list) (or count (ash ivy-height -1))))
 
 ;; ledger
 
@@ -1280,8 +1265,6 @@ less jumpy auto-filling."
  ivy-extra-directories                  ()
  ivy-format-function                    #'ivy-format-function-arrow
  ivy-on-del-error-function              #'ignore
- ivy-use-virtual-buffers                t
- ivy-virtual-abbreviate                 'full
 
  ;; ivy-bibtex
  bibtex-completion-display-formats
@@ -1544,10 +1527,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; prolog
  prolog-system                          'swi
-
- ;; recentf
- ;; Do not attempt to `abbreviate-file-name' of root Tramp files
- recentf-initialize-file-name-history   nil
 
  ;; reftex
  reftex-cite-format                     ebib-bibtex-dialect
@@ -2637,12 +2616,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; Recursive minibuffers
   (minibuffer-depth-indicate-mode)
 
-  ;; Location suggestions
-  (recentf-mode)
-  (ivy-set-sources 'counsel-locate
-                   '((blc-ivy-recentf)
-                     (original-source)))
-
    ;; Do not match start of input for counsel or org commands
   (setq-default
    ivy-initial-inputs-alist
@@ -3013,11 +2986,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
        (set-default var cmd)))
    '((python-check-command     "epylint3" "epylint" "pyflakes")
      (python-shell-interpreter "ipython3" "python3" "ipython" "python"))))
-
-;; recentf
-
-(with-eval-after-load 'recentf
-  (run-at-time t (blc-mins-to-secs 10) #'recentf-save-list))
 
 ;; reftex
 
