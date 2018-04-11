@@ -984,6 +984,7 @@ less jumpy auto-filling."
  mode-line-percent-position             '(-3 "%o")
 
  ;; bookmark
+ bookmark-default-file                  (blc-file blc-index-dir "bookmarks.el")
  bookmark-save-flag                     1
  bookmark-search-delay                  0
 
@@ -1083,6 +1084,7 @@ less jumpy auto-filling."
  ess-indent-from-lhs                    nil
 
  ;; eww
+ eww-bookmarks-directory                blc-index-dir
  eww-search-prefix
  "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q="
 
@@ -1418,6 +1420,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     "https://wired.com/feed/rss"))
  newsticker-url-list-defaults           ()
 
+ ;; nsm
+ nsm-settings-file                      (blc-file blc-index-dir
+                                                  "network-security.el")
+
  ;; ob-python
  org-babel-python-command               "python3"
 
@@ -1478,6 +1484,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; org-clock
  org-clock-idle-time                    10
  org-clock-persist                      'history
+ org-clock-persist-file                 (blc-file blc-index-dir
+                                                  "org-clock-save.el")
 
  ;; org-footnote
  org-footnote-section                   nil
@@ -1519,6 +1527,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; projectile
  projectile-completion-system           'ivy
  projectile-find-dir-includes-top-level t
+ projectile-known-projects-file         (blc-file blc-index-dir
+                                                  "projectile-bookmarks.el")
  ;; Delight mode but not project name
  projectile-mode-line
  '(:eval (format "[%s]" (if (file-remote-p default-directory)
@@ -1533,6 +1543,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  reftex-comment-citations               t
  reftex-plug-into-AUCTeX                t
  reftex-revisit-to-follow               t
+
+ ;; saveplace
+ save-place-file                        (blc-file blc-index-dir "places.el")
 
  ;; sendmail
  sendmail-program                       "msmtp"

@@ -94,6 +94,7 @@ Visit `package-user-dir' if such a directory is not found."
 (setq-default
  package-menu-hide-low-priority t
  package-quickstart             t
+ package-quickstart-file        (blc-file blc-index-dir "package-quickstart.el")
  package-selected-packages
  '(2048-game
 

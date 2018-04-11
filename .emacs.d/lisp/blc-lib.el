@@ -763,7 +763,10 @@ Strings FROM override the default `f' format spec."
 (defvar blc-bib-file "~/.bib.bib"
   "Default user BibTeX file.")
 
-(defvar blc-repos-dir (blc-dir user-emacs-directory "repos")
+(defvar blc-index-dir (blc-dir user-emacs-directory "index")
+  "Directory containing bookmarks, caches, symlinks, etc.")
+
+(defvar blc-repos-dir (blc-dir blc-index-dir "repos")
   "Directory containing symlinks to user Git repositories.")
 
 (defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
