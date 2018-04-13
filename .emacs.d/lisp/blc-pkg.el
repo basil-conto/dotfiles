@@ -19,13 +19,6 @@
 (eval-when-compile
   (declare-function async-bytecomp-package-mode "ext:async-bytecomp"))
 
-(define-advice package-quickstart-refresh
-    (:around (fn &rest args) blc-report-progress)
-  "Report progress of `package-quickstart-refresh'."
-  (dotimes-with-progress-reporter (i 1)
-      "Refreshing `package-quickstart-file'..."
-    (apply fn args)))
-
 ;; Sandbox this nuisance
 (define-advice package--save-selected-packages
     (:override (&optional value) blc-no-save)
@@ -37,14 +30,18 @@ New `package-selected-packages': %S"
            package-selected-packages
            (setq package-selected-packages value))))
 
-(define-advice package-install (:around (fn &rest args) blc-slowstart)
-  "Temporarily disable `package-quickstart'."
-  (let (package-quickstart)
-    (apply fn args)))
+(define-advice package-quickstart-refresh
+    (:around (fn &rest args) blc-report-progress)
+  "Report progress of `package-quickstart-refresh'."
+  (let ((start (current-time))
+        (journo (make-progress-reporter "Refreshing `package-quickstart-file'..." 0 0)))
+    (apply fn args)
+    (message "%sdone (%.3fs)" (aref (cdr journo) 3) (time-subtract nil start))))
 
-(define-advice package-menu-execute (:after (&rest _) blc-quickstart-refresh)
-  "Conditionally refresh `package-quickstart-file'."
-  (package--quickstart-maybe-refresh))
+(define-advice package-menu-execute
+    (:after-while (&rest _) blc-quickstart-refresh)
+  "Refresh `package-quickstart-file' after menu transactions."
+  (package-quickstart-refresh))
 
 (defun blc-package-install (pkg)
   "Install and do not select PKG with demoted errors."
@@ -93,7 +90,6 @@ Visit `package-user-dir' if such a directory is not found."
 
 (setq-default
  package-menu-hide-low-priority t
- package-quickstart             t
  package-quickstart-file        (blc-file blc-index-dir "package-quickstart.el")
  package-selected-packages
  '(2048-game
