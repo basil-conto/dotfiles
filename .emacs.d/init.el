@@ -290,15 +290,6 @@ This is much less accurate but also much more performant than
                   #'makefile-insert-target-ref))
   (advice-add fn :after #'blc-delete-hspace-backward))
 
-;; message
-
-(define-advice message-set-auto-save-file-name
-    (:before (&rest _) blc-warn-unless-gnus)
-  "Warn when auto-saving Message buffer and Gnus is not running."
-  (unless (gnus-alive-p)
-    (lwarn 'blc :warning "Gnus not running; Message auto-saving to `%s'"
-           message-auto-save-directory)))
-
 ;; mpc
 
 (define-advice mpc (:around (mpc) blc-ensure-dedicated)
