@@ -925,6 +925,10 @@ less jumpy auto-filling."
  ;; minibuffer.c
  enable-recursive-minibuffers           t
 
+ ;; print.c
+ print-circle                           t
+ print-gensym                           t
+
  ;; window.c
  fast-but-imprecise-scrolling           t
  recenter-redisplay                     nil
