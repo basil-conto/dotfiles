@@ -36,7 +36,9 @@ New `package-selected-packages': %S"
   (let ((start (current-time))
         (journo (make-progress-reporter "Refreshing `package-quickstart-file'..." 0 0)))
     (apply fn args)
-    (message "%sdone (%.3fs)" (aref (cdr journo) 3) (time-subtract nil start))))
+    (message "%sdone (%.3fs)"
+             (aref (cdr journo) 3)
+             (float-time (time-subtract nil start)))))
 
 (define-advice package-menu-execute
     (:after-while (&rest _) blc-quickstart-refresh)
