@@ -1355,13 +1355,22 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; message
  message-confirm-send                   t
- message-from-style                     'angles
  message-forward-before-signature       nil
  message-make-forward-subject-function  #'message-forward-subject-fwd
  message-mail-alias-type                nil
  message-send-mail-function             #'message-send-mail-with-sendmail
  message-sendmail-envelope-from         'header
  message-signature                      (car (split-string user-full-name))
+ message-subscribed-addresses           '("bbdb-user@nongnu.org"
+                                          "bug-gnu-emacs@gnu.org"
+                                          "cc-ie@lists.ibiblio.org"
+                                          "emacs-devel@gnu.org"
+                                          "fsfe-ie@fsfeurope.org"
+                                          "fsfe-ie@lists.fsfe.org"
+                                          "help-debbugs@gnu.org"
+                                          "tramp-devel@gnu.org")
+ message-subscribed-regexps
+ (list (rx bos (+ nonl) ?@ (| "debbugs.gnu" "lists.debian") ".org" eos))
 
  ;; mines
  mines-empty-cell-char                  ?\s
