@@ -2094,6 +2094,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (function-put #'narrow-to-region 'disabled nil)
 
+;; buffer.c
+
+(function-put #'erase-buffer 'disabled nil)
+
 ;; ace-window
 
 (with-eval-after-load 'ace-window
