@@ -1661,6 +1661,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; tramp
  tramp-default-method                   "rsync"
 
+ ;; tramp-cache
+ tramp-persistency-file-name            (blc-file blc-index-dir "tramp")
+
  ;; uniquify
  uniquify-after-kill-buffer-p           nil
  uniquify-buffer-name-style             'forward
