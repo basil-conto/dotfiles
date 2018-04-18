@@ -948,6 +948,9 @@ less jumpy auto-filling."
  ;; xterm.c
  x-wait-for-event-timeout               nil
 
+ ;; abbrev
+ abbrev-file-name                       (blc-file blc-index-dir "abbrevs.el")
+
  ;; ag
  ag-highlight-search                    t
 
