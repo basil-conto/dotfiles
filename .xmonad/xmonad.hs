@@ -29,6 +29,7 @@ import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioLowerVolume
                                     -- , xF86XK_WLAN
                                     )
 import XMonad.Core                  ( X(), XConfig(..) )
+import XMonad.Hooks.EwmhDesktops    ( ewmh )
 import XMonad.Hooks.ManageDocks     ( avoidStruts, manageDocks )
 import XMonad.Main                  ( xmonad )
 import XMonad.ManageHook            ( (<+>) )
@@ -77,7 +78,7 @@ pamixer args = do
         ]
 
 main :: IO ()
-main = xmonad $ additionalKeys def
+main = xmonad . ewmh $ additionalKeys def
      { borderWidth        = 1
      , focusedBorderColor = zenburn "blue" focusedBorderColor
      , focusFollowsMouse  = False
