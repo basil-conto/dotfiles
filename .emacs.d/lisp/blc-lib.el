@@ -467,19 +467,17 @@ function at URL
 (defvar blc-small-scroll-step 6
   "Number of lines constituting a small scroll.")
 
-(defun blc-small-scroll-up (&optional step)
-  "Scroll up `blc-small-scroll-step' lines."
-  (interactive "P")
-  (scroll-up (if step
-                 (prefix-numeric-value step)
-               blc-small-scroll-step)))
+(defun blc-small-scroll-up ()
+  "Like `scroll-up-command', but with a smaller default distance.
+Scroll a default of `blc-small-scroll-step' lines."
+  (interactive)
+  (scroll-up-command (or current-prefix-arg blc-small-scroll-step)))
 
-(defun blc-small-scroll-down (&optional step)
-  "Scroll down `blc-small-scroll-step' lines."
-  (interactive "P")
-  (scroll-down (if step
-                   (prefix-numeric-value step)
-                 blc-small-scroll-step)))
+(defun blc-small-scroll-down ()
+  "Like `scroll-down-command', but with a smaller default distance.
+Scroll a default of `blc-small-scroll-step' lines."
+  (interactive)
+  (scroll-down-command (or current-prefix-arg blc-small-scroll-step)))
 
 ;;; Frames
 
