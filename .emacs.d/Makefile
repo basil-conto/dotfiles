@@ -11,8 +11,7 @@ pkgdir := elpa/
 
 ## Macros
 
-libouts = $(patsubst %,$(libdir)%.elc,$(filter $(1)%,$(libs)))
-thmouts = $(1)*-theme.elc
+libouts = $(patsubst %,$(libdir)%.elc,$(filter $(1),$(libs)))
 
 ## Emacs Lisp
 
@@ -40,15 +39,12 @@ distclean: clean
 
 ## Libs
 
-%-theme.elc: $(libdir)%-theme.elc
-	install --mode=644 $< .
-
 .PHONY: themes
-themes: $(call thmouts)
+themes: $(libdir)*-theme.elc
 
 .PHONY: clean-themes
 clean-themes:
-	$(RM) $(call thmouts,$(libdir))
+	$(RM) $(libdir)*-theme.elc
 
 .PHONY: blc-lib
 blc-lib: $(call libouts,blc-lib)
@@ -73,7 +69,7 @@ libs: $(libs)
 
 .PHONY: clean-libs
 clean-libs:
-	$(RM) $(call libouts)
+	$(RM) $(call libouts,%)
 
 ## Init files
 

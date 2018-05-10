@@ -1038,6 +1038,9 @@ less jumpy auto-filling."
  custom-unlispify-menu-entries          nil
  custom-unlispify-tag-names             nil
 
+ ;; custom
+ custom-theme-directory                 (blc-dir user-emacs-directory "lisp")
+
  ;; debbugs
  debbugs-gnu-emacs-current-release      "26.1"
  debbugs-gnu-send-mail-function         #'message-send-mail-with-sendmail
