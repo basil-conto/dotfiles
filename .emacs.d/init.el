@@ -876,6 +876,20 @@ Defaults to `org-directory' and `org-default-notes-file'."
 
 ;; term
 
+(defun blc-term (&optional non-ansi)
+  "Complete `ansi-term' and `term' buffer to switch to.
+Create a new `ansi-term' buffer if the special first candidate
+\"New\" is selected.  With optional prefix argument NON-ANSI
+non-nil, create a new `term' buffer instead."
+  (interactive "P")
+  (if-let* ((new   "New")
+            (names (mapcar #'buffer-name (blc-derived-buffers #'term-mode)))
+            (name  (completing-read "Term: " (cons new names)
+                                    nil t nil 'blc-term-history names))
+            ((not (string-equal name new))))
+      (pop-to-buffer name)
+    (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name)))
+
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
   (interactive)
@@ -2037,6 +2051,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("m"                                   . #'magit-find-file)
    ("4m"                                  . #'magit-find-file-other-window)
    ("r"                                   . #'ivy-resume)
+   ("t"                                   . #'blc-term)
    ("w"                                   . #'webjump))
 
   (blc-org-map
