@@ -386,6 +386,15 @@ Offer all entities found in `org-entities-user' and
   (add-function :before-while whitespace-enable-predicate
                 (lambda ()
                   (not (derived-mode-p #'magit-mode #'shell-mode)))))
+
+;; window
+
+(add-function :around pop-up-frame-function
+              (lambda (fn &rest args)
+                (let ((frame (selected-frame)))
+                  (unwind-protect
+                      (apply fn args)
+                    (select-frame-set-input-focus frame)))))
 
 ;;;; DEFINITIONS
 
@@ -1181,6 +1190,9 @@ less jumpy auto-filling."
  helm-make-completion-method            'ivy
  helm-make-list-target-method           'qp
  helm-make-require-match                nil
+
+ ;; help
+ help-window-select                     'other
 
  ;; holidays
  holiday-bahai-holidays                 ()
