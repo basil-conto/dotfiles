@@ -16,9 +16,6 @@
 (eval-when-compile
   (require 'subr-x))
 
-(eval-when-compile
-  (declare-function async-bytecomp-package-mode "ext:async-bytecomp"))
-
 ;; Sandbox this nuisance
 (define-advice package--save-selected-packages
     (:override (&optional value) blc-no-save)
@@ -103,7 +100,6 @@ Visit `package-user-dir' if such a directory is not found."
    apache-mode
    apt-sources-list
    ascii-art-to-unicode
-   async
    atomic-chrome
    auctex
    auctex-latexmk
@@ -276,18 +272,7 @@ Visit `package-user-dir' if such a directory is not found."
      ((y-or-n-p-with-timeout (format "Install %d missing packages? "
                                      (length missing))
                              5 t)))
-
   (package-refresh-contents)
-
-  (when (memq 'async missing)
-    (setq missing (delq 'async missing))
-    (blc-package-install 'async))
-
-  (setq-default async-bytecomp-allowed-packages '(all))
-  (condition-case err
-      (async-bytecomp-package-mode)
-    (error (lwarn 'blc :error "%S" err)))
-
   (mapc #'blc-package-install missing)
   (package--quickstart-maybe-refresh))
 
