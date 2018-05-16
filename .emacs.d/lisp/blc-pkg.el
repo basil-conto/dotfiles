@@ -116,7 +116,6 @@ Visit `package-user-dir' if such a directory is not found."
 
    chess
    cmake-mode
-   counsel
    counsel-gtags
    counsel-projectile
    csharp-mode
@@ -179,9 +178,7 @@ Visit `package-user-dir' if such a directory is not found."
    interleave
    irony
    irony-eldoc
-   ivy
    ivy-bibtex
-   ivy-hydra
    ivy-pages
    ivy-pass
 
@@ -238,7 +235,6 @@ Visit `package-user-dir' if such a directory is not found."
    solarized-theme
    sr-speedbar
    sudoku
-   swiper
    sx
    systemd
 
@@ -275,6 +271,11 @@ Visit `package-user-dir' if such a directory is not found."
   (package-refresh-contents)
   (mapc #'blc-package-install missing)
   (package--quickstart-maybe-refresh))
+
+;; Afford shadowing installed packages
+(eval-and-compile
+  (let ((dir (expand-file-name "lisp" user-emacs-directory)))
+    (setq load-path (cons dir (delete dir load-path)))))
 
 (provide 'blc-pkg)
 
