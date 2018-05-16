@@ -239,7 +239,6 @@ Visit `package-user-dir' if such a directory is not found."
    systemd
 
    threes
-   tile
    tuareg
    typit
 

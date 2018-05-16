@@ -897,18 +897,6 @@ non-nil, create a new `term' buffer instead."
       (term-line-mode)
     (term-char-mode)))
 
-;; tile
-
-(eval-when-compile
-  (add-to-list (defvar eieio--known-slot-names ()) 'current-strategy))
-
-(defun blc-tile (&optional select)
-  "Tile windows with `tile' and report new strategy.
-With prefix argument SELECT, call `tile-select' instead."
-  (interactive "P")
-  (funcall (if select #'tile-select #'tile))
-  (message "%s" (tile-get-name (eieio-oref tile-cycler 'current-strategy))))
-
 ;; visual-fill-column
 
 (defun blc-visual-auto-fill-column ()
@@ -1989,7 +1977,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([S-down]                              . #'windmove-down)
    ([S-left]                              . #'windmove-left)
    ([S-right]                             . #'windmove-right)
-   ([f2]                                  . #'blc-tile)
    ([f5]                                  . #'blc-revert-buffer)
    ([remap bookmark-jump]                 . #'counsel-bookmark)
    ([remap capitalize-word]               . #'capitalize-dwim)
