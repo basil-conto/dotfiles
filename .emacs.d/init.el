@@ -125,6 +125,19 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
                 (point))
             (point)))
 
+;; elisp-mode
+
+(define-advice elisp-completion-at-point (:filter-return (ret) my-elisp-pred)
+  "Filter unwanted symbols from `elisp-completion-at-point'."
+  (when-let* (((consp ret))
+              (props (cdddr ret))
+              (pred  (plist-get props :predicate)))
+    (plist-put props :predicate
+               (lambda (sym)
+                 (and (funcall pred sym)
+                      (not (string-match-p "--cmacro\\'" (symbol-name sym)))))))
+  ret)
+
 ;; em-cmpl
 
 (define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
