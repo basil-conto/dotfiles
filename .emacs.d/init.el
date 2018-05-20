@@ -1113,8 +1113,8 @@ less jumpy auto-filling."
  enwc-ask-to-save-interfaces            nil
  enwc-default-backend                   'nm
 
- ;; epa
- epa-pinentry-mode                      'loopback
+ ;; epg-config
+ epg-pinentry-mode                      'loopback
 
  ;; ess
  ess-default-style                      'DEFAULT
