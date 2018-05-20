@@ -2688,6 +2688,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                  ,#'elisp-completion-at-point
                                  ,#'find-face-definition)))
 
+  (map-delete ivy-completing-read-handlers-alist #'Info-menu)
+
   ;; Recursive minibuffers
   (minibuffer-depth-indicate-mode)
 
