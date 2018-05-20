@@ -118,9 +118,6 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    (nntp "news.gwene.org"
          (nntp-record-commands t)))
 
- ;; gnus-art
- gnus-blocked-images                    nil
-
  ;; gnus-group
  gnus-goto-next-group-when-activating   nil
  gnus-group-line-format
