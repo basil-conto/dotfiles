@@ -21,6 +21,11 @@
    (diff-refine-removed ((t :background "#fea2a1c3a1c3" ;  5% darker
                             :inherit    diff-refine-changed)))
 
+   ;; faces
+   (mode-line-inactive ((t :background "whitesmoke" :foreground "grey20"
+                           :inherit mode-line :weight light
+                           :box (:line-width -1 :color "grey75" :style nil))))
+
    ;; External
 
    ;; hackernews
