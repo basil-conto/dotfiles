@@ -646,6 +646,20 @@ See URL `https://github.com/DanielG/ghc-mod/issues/923'."
   (setenv "cabal_helper_libexecdir" "/usr/lib")
   (ghc-init))
 
+;; ghub
+
+(defun blc-github-notifications ()
+  "Summarise GitHub notifications in the echo area."
+  (interactive)
+  (require 'ghub)
+  (let ((repos '(("other" . 0))))
+    (dolist (n (ghub-get "/notifications" () :auth 'blc))
+      (let ((name (map-nested-elt n '(repository name) "other")))
+        (blc-put repos name (1+ (blc-elt repos name nil 0)))))
+    (message "%s" (mapconcat (pcase-lambda (`(,name . ,count))
+                               (format "%s: %d" name count))
+                             repos " "))))
+
 ;; git-commit, git-rebase
 
 (defun blc-kill-git-buffer ()
