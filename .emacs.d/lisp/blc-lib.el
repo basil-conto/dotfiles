@@ -736,8 +736,9 @@ Strings FROM override the default `f' format spec."
 (defun blc-tomato (start)
   "Send a notification about elapsed time since START."
   (notifications-notify
-   :title "🍅"
-   :body  (format-seconds "%H %z%M" (float-time (time-subtract nil start)))))
+   :title   "🍅"
+   :body    (format-seconds "%H %z%M" (float-time (time-subtract nil start)))
+   :urgency 'low))
 
 (define-minor-mode blc-tomato-mode
   "Run `blc-tomato' every `blc-tomato-interval'."

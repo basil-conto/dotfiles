@@ -648,17 +648,36 @@ See URL `https://github.com/DanielG/ghc-mod/issues/923'."
 
 ;; ghub
 
+(defconst blc-github-token-scopes '(notifications)
+  "List of `ghub' scopes for `blc'.")
+
 (defun blc-github-notifications ()
-  "Summarise GitHub notifications in the echo area."
+  "Asynchronously notify of any GitHub notifications."
   (interactive)
   (require 'ghub)
-  (let ((repos '(("other" . 0))))
-    (dolist (n (ghub-get "/notifications" () :auth 'blc))
-      (let ((name (map-nested-elt n '(repository name) "other")))
-        (blc-put repos name (1+ (blc-elt repos name nil 0)))))
-    (message "%s" (mapconcat (pcase-lambda (`(,name . ,count))
-                               (format "%s: %d" name count))
-                             repos " "))))
+  (require 'notifications)
+  (ghub-get
+   "/notifications" ()
+   :auth 'blc
+   :callback
+   (lambda (nots &rest _)
+     (notifications-notify
+      :title (blc-dom-to-xml
+              'a '((href . "https://github.com/notifications")) "GitHub")
+      :body (let ((repos '(("other" . 0))))
+              (dolist (not nots)
+                (let ((name (map-nested-elt not '(repository name) "other")))
+                  (blc-put repos name (1+ (blc-elt repos name nil 0)))))
+              (let ((fmt (format
+                          "%%-%ds %%%dd"
+                          (apply #'max (map-keys-apply #'string-width repos))
+                          (1+ (floor (log (apply #'max 1 (map-values repos))
+                                          10))))))
+                (mapconcat (pcase-lambda (`(,name . ,count))
+                             (format fmt name count))
+                           repos "\n")))))
+   :errorback (lambda (err &rest _)
+                (signal 'error (list "GitHub error: %S" (cdr err))))))
 
 ;; git-commit, git-rebase
 
