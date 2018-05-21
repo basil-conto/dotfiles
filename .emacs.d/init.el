@@ -33,7 +33,6 @@
 (autoload 'blc-mbsync-deduplicate         "blc-mbsync" nil t)
 (autoload 'blc-mbsync-maximise-uid        "blc-mbsync" nil t)
 (autoload 'blc-pass-backend-parse         "blc-pass")
-(autoload 'counsel-projectile-command-map "counsel-projectile" nil t 'keymap)
 (autoload 'deb-view-dired-view            "deb-view" nil t)
 (autoload 'deb-view-mode                  "deb-view" nil t)
 (autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
@@ -869,6 +868,15 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (org-set-property
    "captured" (format-time-string (org-time-stamp-format t t))))
 
+;; project
+
+(defun blc-project-switch ()
+  "Complete a file from another project to visit."
+  (interactive)
+  (let ((proj (project-current t (and (require 'magit-repos nil t)
+                                      (blc-dir (magit-read-repository))))))
+    (project-find-file-in nil (project-roots proj) proj)))
+
 ;; python
 
 (defun blc-python-pep-8-comments ()
@@ -1562,17 +1570,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; proced
  proced-auto-update-flag                t
 
- ;; projectile
- projectile-completion-system           'ivy
- projectile-find-dir-includes-top-level t
- projectile-known-projects-file         (blc-file blc-index-dir
-                                                  "projectile-bookmarks.el")
- ;; Delight mode but not project name
- projectile-mode-line
- '(:eval (format "[%s]" (if (file-remote-p default-directory)
-                            "📡"
-                          (projectile-project-name))))
-
  ;; prolog
  prolog-system                          'swi
 
@@ -2023,7 +2020,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("j"                                   . #'blc-jump-map)
    ("n"                                   . #'blc-rename-buffer)
    ("o"                                   . #'blc-org-map)
-   ("p"                                   . #'counsel-projectile-command-map)
    ("s"                                   . #'sx-switchto-map)
    ("u"                                   . #'counsel-unicode-char))
 
@@ -2032,10 +2028,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("b"                                   . #'ibuffer-jump)
    ("d"                                   . #'counsel-dired-jump)
    ("e"                                   . #'ebib)
-   ("f"                                   . #'counsel-file-jump)
+   ("f"                                   . #'project-find-file)
    ("g"                                   . #'counsel-git-grep)
    ("m"                                   . #'magit-find-file)
    ("4m"                                  . #'magit-find-file-other-window)
+   ("p"                                   . #'blc-project-switch)
    ("r"                                   . #'ivy-resume)
    ("t"                                   . #'blc-term)
    ("w"                                   . #'webjump))
@@ -2249,11 +2246,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'counsel
   (ivy-add-actions #'counsel-M-x
                    `(("j" ,#'blc-counsel-M-x-other-window "other window"))))
-
-;; counsel-projectile
-
-(with-eval-after-load 'counsel-projectile
-  (counsel-projectile-mode))
 
 ;; cus-edit
 
@@ -3029,15 +3021,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; perl-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".latexmkrc" eos) #'perl-mode))
-
-;; projectile
-
-(with-eval-after-load 'projectile
-  (when (and (require 'magit-repos nil t) (fboundp 'magit-list-repos))
-    (dolist (repo (magit-list-repos) (projectile-save-known-projects))
-      (projectile-add-known-project (blc-dir repo))))
-
-  (projectile-mode))
 
 ;; prolog
 

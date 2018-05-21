@@ -117,7 +117,6 @@ Visit `package-user-dir' if such a directory is not found."
    chess
    cmake-mode
    counsel-gtags
-   counsel-projectile
    csharp-mode
    cssh
    csv-mode
@@ -220,7 +219,6 @@ Visit `package-user-dir' if such a directory is not found."
    pdf-tools
    playerctl
    pomidor
-   projectile
    pulseaudio-control
 
    rainbow-mode
