@@ -174,6 +174,16 @@ URI is returned by the `interactive-form' of `eww'."
   "Pass LIB through `blc-dataroot-to-src'."
   (funcall search sym type (blc-dataroot-to-src lib)))
 
+;; ghub
+
+(define-advice ghub--auth-source-get (:around (fn keys &rest spec) blc-pass)
+  "Add missing :require to `auth-source-search' query."
+  (apply fn keys (append (and (plist-get spec :user)
+                              (not (plist-get spec :create))
+                              (not (plist-get spec :require))
+                              '(:require (:user)))
+                         spec)))
+
 ;; gnus-sum
 
 (define-advice gnus-summary-exit (:after (&rest _) blc-gnus-single-group-frame)
