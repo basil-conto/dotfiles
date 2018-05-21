@@ -177,7 +177,9 @@ Visit `package-user-dir' if such a directory is not found."
    interleave
    irony
    irony-eldoc
+   ivy
    ivy-bibtex
+   ivy-hydra
    ivy-pages
    ivy-pass
 
