@@ -767,7 +767,7 @@ Suspending or exiting Gnus deletes that frame."
 (defun blc-ielm-other-window ()
   "Call `ielm' in another window."
   (interactive)
-  (let ((display-buffer-alist '(("" () (inhibit-same-window . t)))))
+  (let ((display-buffer-overriding-action '(() (inhibit-same-window . t))))
     (call-interactively #'ielm)))
 
 (defun blc-info-read-buffer ()
