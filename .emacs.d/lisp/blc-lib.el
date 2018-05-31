@@ -447,6 +447,23 @@ exchange current and next lines."
     (indent-relative))
   (when below (blc-move-line-up)))
 
+(defun blc-scratch (&optional mode)
+  "Pop to \"*scratch*\" buffer.
+With optional prefix argument MODE non-nil, prompt user for mode
+command and switch to a scratch buffer with that mode enabled."
+  (interactive "P")
+  (if-let* ((mode)
+            (suff "-mode\\'")
+            (mode (completing-read "Mode: " obarray
+                                   (lambda (sym)
+                                     (and (commandp sym)
+                                          (string-match-p suff
+                                                          (symbol-name sym))))
+                                   t nil nil "lisp-interaction-mode")))
+      (progn (pop-to-buffer (format "*scratch-%s*" (blc-sed suff "" mode t t)))
+             (call-interactively (intern mode)))
+    (pop-to-buffer "*scratch*")))
+
 ;;; Windows
 
 (defun blc-transpose-split ()

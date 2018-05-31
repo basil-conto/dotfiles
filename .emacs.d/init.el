@@ -2079,6 +2079,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("4m"                                  . #'magit-find-file-other-window)
    ("p"                                   . #'blc-project-switch)
    ("r"                                   . #'ivy-resume)
+   ("s"                                   . #'blc-scratch)
    ("t"                                   . #'blc-term)
    ("w"                                   . #'webjump))
 
@@ -2706,7 +2707,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
               (map-put ivy-sort-functions-alist caller sort)))
           `((nil                 t)
             (,#'blc-sort-reverse ,#'Info-complete-menu-item)
-            (,#'string-lessp     ,#'counsel-M-x
+            (,#'string-lessp     ,#'blc-scratch
+                                 ,#'counsel-M-x
                                  ,#'counsel-describe-face
                                  ,#'counsel-describe-function
                                  ,#'counsel-describe-variable
