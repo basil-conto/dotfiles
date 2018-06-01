@@ -393,6 +393,15 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
+;; project
+
+(defvar blc-project-root nil
+  "First root of project last read or nil.")
+
+(define-advice project-find-file-in (:before (_file dirs _proj) blc-cache-dir)
+  "Update `blc-project-root' with DIRS."
+  (setq blc-project-root (car dirs)))
+
 ;; sx-question-mode
 
 (define-advice sx-question-mode--get-window (:override () blc-sx-question-win)
@@ -918,7 +927,12 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (interactive)
   (let ((proj (project-current t (and (require 'magit-repos nil t)
                                       (blc-dir (magit-read-repository))))))
+    (setq this-command #'project-find-file)
     (project-find-file-in nil (project-roots proj) proj)))
+
+(defun blc-project-relative (path)
+  "Return PATH relative to `blc-project-root'."
+  (file-relative-name path blc-project-root))
 
 ;; python
 
@@ -2715,6 +2729,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                  ,#'counsel-faces
                                  ,#'elisp-completion-at-point
                                  ,#'find-face-definition)))
+
+  (ivy-set-display-transformer #'project-find-file #'blc-project-relative)
 
   (map-delete ivy-completing-read-handlers-alist #'Info-menu)
 
