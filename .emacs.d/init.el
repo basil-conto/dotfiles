@@ -1014,6 +1014,9 @@ less jumpy auto-filling."
  ;; indent.c
  indent-tabs-mode                       nil
 
+ ;; keyboard.c
+ echo-keystrokes                        0.5
+
  ;; minibuffer.c
  enable-recursive-minibuffers           t
 
