@@ -136,6 +136,7 @@ Visit `package-user-dir' if such a directory is not found."
    ducpel
 
    ebib
+   el-search
    embrace
    emms
    engine-mode
@@ -156,11 +157,13 @@ Visit `package-user-dir' if such a directory is not found."
 
    ggtags
    ghc
+   ghub
    git-annex
    git-commit
    gitattributes-mode
    gitconfig-mode
    gitignore-mode
+   glab
    gnus-desktop-notify
    google-contacts
    google-maps
