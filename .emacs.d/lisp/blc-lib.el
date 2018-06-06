@@ -507,7 +507,7 @@ Display is determined by the environment variable DISPLAY."
 
 (defun blc-delete-spare-frame (&optional frame force)
   "Delegate to `delete-frame' unless FRAME is alone in terminal."
-  (when (cdr (frames-on-display-list frame))
+  (unless (eq (next-frame) (selected-frame))
     (delete-frame frame force)))
 
 (defun blc-with-every-frame (&rest fns)

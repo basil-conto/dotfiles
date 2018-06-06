@@ -155,6 +155,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-article-sort-functions
  `(,#'gnus-article-sort-by-number
    ,#'gnus-article-sort-by-most-recent-date)
+ gnus-auto-center-summary               nil
  gnus-auto-select-first                 nil
  gnus-auto-select-next                  nil
  gnus-subthread-sort-functions
@@ -206,7 +207,9 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (:hooks gnus-select-group-hook           :fns gnus-group-set-timestamp)
   (:hooks gnus-summary-mode-hook           :fns hl-line-mode))
 
-;;; Deferrals
+;;; Libraries
+
+;; gnus-art
 
 (with-eval-after-load 'gnus-art
   (define-key gnus-article-mode-map "\M-D" #'blc-download)
@@ -222,13 +225,19 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
    (blc-rx `(| (: bol (| "Delivered-To" "To") ?:)
                (regexp ,gnus-visible-headers)))))
 
+;; gnus-topic
+
 (with-eval-after-load 'gnus-topic
   (define-key
     gnus-topic-mode-map [remap gnus-topic-indent] #'blc-gnus-topic-fold))
 
-(with-eval-after-load 'gnus-win
-  ;; Display articles in new frame
-  (cl-nsubst 'frame 'vertical (map-elt gnus-buffer-configuration 'article)))
+;; gnus-win
+
+(gnus-add-configuration '(article (frame 1.0
+                                         (summary 1.0 point frame-focus)
+                                         (article 1.0))))
+
+;; nnir
 
 (with-eval-after-load 'nnir
   (map-do

@@ -187,10 +187,9 @@ URI is returned by the `interactive-form' of `eww'."
 
 (define-advice gnus-summary-exit (:after (&rest _) blc-gnus-single-group-frame)
   "Allow only the selected frame to display `gnus-group-buffer'."
-  (dolist (win (get-buffer-window-list gnus-group-buffer nil 'visible))
-    (when-let* ((frame (window-frame win))
-                ((not (eq frame (selected-frame)))))
-      (blc-delete-spare-frame frame))))
+  (dolist (win (cdr (get-buffer-window-list gnus-group-buffer nil 'visible)))
+    (when (frame-root-window-p win)
+      (blc-delete-spare-frame (window-frame win)))))
 
 ;; help-fns
 
@@ -748,10 +747,7 @@ order of descending priority, start `gnus'."
 Suspending or exiting Gnus deletes that frame."
   (interactive)
   (blc-make-frame)
-  (blc-gnus)
-  (blc-hook
-    (:fns blc-delete-spare-frame :hooks (gnus-suspend-gnus-hook
-                                         gnus-after-exiting-gnus-hook))))
+  (blc-gnus))
 
 ;; hi-lock
 
