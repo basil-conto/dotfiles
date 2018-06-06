@@ -2649,7 +2649,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; info
 
 (with-eval-after-load 'info
-  (define-key Info-mode-map "k" #'blc-info-kill))
+  (blc-define-keys
+    (Info-mode-map
+     ("k"    . #'blc-info-kill)
+     ("\C-s" . #'isearch-forward))))
 
 ;; irfc
 
