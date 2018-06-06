@@ -13,9 +13,6 @@
   (require 'subr-x)
   (require 'thunk))
 
-(eval-when-compile
-  (declare-function fci-mode "ext:fill-column-indicator"))
-
 (autoload 'comint-output-filter "comint")
 (autoload 'dom-node             "dom")
 (autoload 'notifications-notify "notifications")
@@ -376,7 +373,7 @@ BUFFER-OR-NAME to `bury-buffer'."
   (setq buffer-read-only t)
   (buffer-disable-undo)
   (fundamental-mode)
-  (blc-turn-off #'fci-mode #'font-lock-mode))
+  (blc-turn-off #'font-lock-mode))
 
 (defun blc-strip-large-buffer ()
   "Conditionally call `blc-strip-buffer'.
@@ -667,6 +664,10 @@ Strings FROM override the default `f' format spec."
 (defun blc-turn-on-double-space-sentence-ends ()
   "Locally enable `sentence-end-double-space'."
   (setq-local sentence-end-double-space t))
+
+(defun blc-turn-off-trailing-whitespace ()
+  "Locally disable `show-trailing-whitespace'."
+  (setq show-trailing-whitespace nil))
 
 (defun blc-turn-off-prettify-symbols (&rest _)
   "Disable `prettify-symbols-mode'."

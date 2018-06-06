@@ -37,7 +37,6 @@
 (autoload 'deb-view-mode                  "deb-view" nil t)
 (autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
 (autoload 'ffap-gnus-hook                 "ffap")
-(autoload 'turn-off-fci-mode              "fill-column-indicator" nil t)
 (autoload 'flex-mode                      "flex-mode" nil t)
 (autoload 'samba-generic-mode             "generic-x" nil t)
 (autoload 'gnus-find-subscribed-addresses "gnus")
@@ -1036,6 +1035,7 @@ less jumpy auto-filling."
  scroll-conservatively                  most-positive-fixnum
  scroll-margin                          1
  scroll-step                            1
+ show-trailing-whitespace               t
 
  ;; xfns.c
  x-gtk-use-system-tooltips              nil
@@ -1211,9 +1211,6 @@ less jumpy auto-filling."
  mode-require-final-newline             nil
  version-control                        t
  view-read-only                         t
-
- ;; fill-column-indicator
- fci-rule-column                        blc-chars-per-line
 
  ;; footnote
  footnote-body-tag-spacing              1
@@ -1810,7 +1807,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                     ""]))
 
  ;; whitespace
- whitespace-style                       '(face tab-mark trailing)
+ whitespace-style                       '(face lines-tail tab-mark)
 
  ;; windmove
  windmove-window-distance-delta         2
@@ -1845,6 +1842,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; bbdb
   (:hooks gnus-started-hook :fns blc-bbdb-set-gnus-summary-line-format)
   (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus)
+
+  ;; blc-lib
+  (:hooks after-init-hook :fns (blc-dropbox-mode
+                                blc-tomato-mode))
+  (:fns blc-turn-off-trailing-whitespace :hooks (Info-mode-hook
+                                                 minibuffer-setup-hook
+                                                 term-mode-hook))
 
   ;; bug-reference
   (:hooks prog-mode-hook :fns bug-reference-prog-mode)
@@ -1886,28 +1890,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks ffap-gnus-hook :hooks (gnus-article-mode-hook
                                  gnus-summary-mode-hook))
 
-  ;; fic-mode
-  (:fns fic-mode :hooks (conf-mode-hook
-                         ess-mode-hook
-                         haskell-cabal-mode-hook
-                         mustache-mode-hook
-                         prog-mode-hook
-                         text-mode-hook))
-
   ;; files
   (:hooks find-file-hook :fns blc-strip-large-buffer)
-
-  ;; fill-column-indicator
-  (:fns turn-on-fci-mode  :hooks (conf-mode-hook
-                                  ess-mode-hook
-                                  haskell-cabal-mode-hook
-                                  mustache-mode-hook
-                                  prog-mode-hook
-                                  text-mode-hook))
-  (:fns turn-off-fci-mode :hooks (lisp-interaction-mode-hook
-                                  message-mode-hook
-                                  org-mode-hook
-                                  visual-line-mode-hook))
 
   ;; flycheck
   (:hooks flycheck-mode-hook :fns blc-turn-off-flycheck)
@@ -2267,11 +2251,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'bibtex
   (bibtex-set-dialect ebib-bibtex-dialect))
 
-;; blc-lib
-
-(blc-dropbox-mode)
-(blc-tomato-mode)
-
 ;; cc-mode
 
 (with-eval-after-load 'cc-mode
@@ -2531,12 +2510,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'ffap
   (add-to-list 'ffap-rfc-directories (blc-dir user-emacs-directory "rfc")))
-
-;; fic-mode
-
-(with-eval-after-load 'fic-mode
-  (mapc (apply-partially #'add-to-list 'fic-highlighted-words)
-        '("HACK" "KLUDGE" "NOTE" "WARN")))
 
 ;; files
 

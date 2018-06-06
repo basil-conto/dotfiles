@@ -124,9 +124,6 @@
 
      ;; External
 
-     ;; fill-column-indicator
-     (fci-rule-color ,bg+1)
-
      ;; pdf-view
      (pdf-view-midnight-colors '(,fg . ,bg-05))))
 

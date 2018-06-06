@@ -147,9 +147,7 @@ Visit `package-user-dir' if such a directory is not found."
    expand-region
    eyebrowse
 
-   fic-mode
    figlet
-   fill-column-indicator
    fireplace
    flame
    flx

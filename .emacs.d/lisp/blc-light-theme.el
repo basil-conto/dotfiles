@@ -26,6 +26,9 @@
                            :inherit mode-line :weight light
                            :box (:line-width -1 :color "grey75" :style nil))))
 
+   ;; whitespace
+   (whitespace-line ((t :underline t)))
+
    ;; External
 
    ;; hackernews
