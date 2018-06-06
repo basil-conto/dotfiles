@@ -40,10 +40,12 @@ this is more useful for destructuring than pattern matching."
                       `(app (pcase--flip plist-get ,key) ,var))
                     (seq-partition args 2)))))
 
-(defun blc-true-list-p (object)
-  "Like `format-proper-list-p', but faster."
+(defun blc-true-list-length (object)
+  "Return length of OBJECT if it is a true list, nil otherwise.
+Suggested by Paul Eggert at URL `https://lists.gnu.org/archive/\
+html/emacs-devel/2018-06/msg00138.html'."
   (declare (pure t))
-  (null (nthcdr (safe-length object) object)))
+  (and (listp object) (ignore-errors (length object))))
 
 (defun blc-as-list (object)
   "Ensure OBJECT is either a list or within one."
@@ -86,10 +88,10 @@ SEQ is modified destructively unless COPY is non-nil."
                (funcall (if leaf #'blc-sed #'blc-sed-tree)
                         regexp rep node fixedcase literal subexp))))
     (pcase tree
-      ((pred stringp)         (funcall sed tree t))
-      ((pred blc-true-list-p) (mapcar  sed tree))
-      (`(,head . ,tail)       (apply #'cons (mapcar sed (list head tail))))
-      (_                      tree))))
+      ((pred stringp)              (funcall sed tree t))
+      ((pred blc-true-list-length) (mapcar  sed tree))
+      (`(,head . ,tail)            (apply #'cons (mapcar sed (list head tail))))
+      (_                           tree))))
 
 ;;; DOM
 
