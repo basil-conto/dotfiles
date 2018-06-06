@@ -28,10 +28,13 @@ New `package-selected-packages': %S"
            (setq package-selected-packages value))))
 
 (define-advice package-quickstart-refresh
-    (:around (fn &rest args) blc-report-progress)
-  "Report progress of `package-quickstart-refresh'."
-  (let ((start (current-time))
-        (journo (make-progress-reporter "Refreshing `package-quickstart-file'..." 0 0)))
+    (:around (fn &rest args) blc-turn-off-hooks)
+  "Disable `emacs-lisp-mode' hooks and report progress."
+  (let (prog-mode-hook
+        emacs-lisp-mode-hook
+        (start (current-time))
+        (journo (make-progress-reporter
+                 "Refreshing `package-quickstart-file'..." 0 0)))
     (apply fn args)
     (message "%sdone (%.3fs)"
              (aref (cdr journo) 3)
