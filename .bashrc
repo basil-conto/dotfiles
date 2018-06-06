@@ -63,14 +63,13 @@ man() {
 
 blc_prompt() {
   local rc=$?
-  [ "${rc}" -eq 0 ] && rc='' || rc="[${rc}]"
+  [ "${rc}" -eq 0 ] && rc='' || rc=" \\[${BLC_COLOURS[red]}\\][${rc}]"
   [ "${BLC_DARK}" -eq 0 ] && fg=blk_bf || fg=wht_bf
   fg="${BLC_COLOURS[${fg}]}"
 
   PS1="\\[${fg}\\]\342\224\214[\\[${BLC_COLOURS[grn_bf]}\\]\\u@\\h${fg}]"
   PS1+="\\[${BLC_COLOURS[ylw_bf]}\\]\$(__git_ps1)"
-  PS1+="\\[${BLC_COLOURS[blu_bf]}\\] \\w "
-  PS1+="\\[${BLC_COLOURS[red]}\\]${rc}\n\\[${fg}\\]\342\224\224"
+  PS1+="\\[${BLC_COLOURS[blu_bf]}\\] \\w${rc}\n\\[${fg}\\]\342\224\224"
   PS1+="\\[${BLC_COLOURS[blu_bf]}\\]\\$ \\[${BLC_COLOURS[reset]}\\]"
 }
 
