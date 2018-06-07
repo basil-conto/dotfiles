@@ -4,3 +4,5 @@
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 [ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
 xscreensaver -no-splash &
+systemctl --user start redshift-gtk.service
+eval $(ssh-agent)
