@@ -1843,6 +1843,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks after-init-hook :fns (blc-dropbox-mode
                                 blc-tomato-mode))
   (:fns blc-turn-off-trailing-whitespace :hooks (Info-mode-hook
+                                                 magit-popup-mode-hook
+                                                 message-mode-hook
                                                  minibuffer-setup-hook
                                                  term-mode-hook))
 
