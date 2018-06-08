@@ -393,12 +393,18 @@ Offer all entities found in `org-entities-user' and
 
 ;; project
 
-(defvar blc-project-root nil
-  "First root of project last read or nil.")
-
-(define-advice project-find-file-in (:before (_file dirs _proj) blc-cache-dir)
-  "Update `blc-project-root' with DIRS."
-  (setq blc-project-root (car dirs)))
+(define-advice project-file-completion-table
+    (:around (fn proj dirs) blc-relative)
+  "Return file names relative to the first root of PROJ in DIRS."
+  (let* ((root  (expand-file-name (car dirs)))
+         (table (funcall fn proj dirs)))
+    (lambda (str pred action)
+      (let ((res (funcall table str pred action)))
+        (if (eq action t)
+            (mapcar (lambda (file)
+                      (file-relative-name file root))
+                    res)
+          res)))))
 
 ;; sx-question-mode
 
@@ -924,10 +930,6 @@ Defaults to `org-directory' and `org-default-notes-file'."
                                       (blc-dir (magit-read-repository))))))
     (setq this-command #'project-find-file)
     (project-find-file-in nil (project-roots proj) proj)))
-
-(defun blc-project-relative (path)
-  "Return PATH relative to `blc-project-root'."
-  (file-relative-name path blc-project-root))
 
 ;; python
 
@@ -2710,8 +2712,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                  ,#'counsel-faces
                                  ,#'elisp-completion-at-point
                                  ,#'find-face-definition)))
-
-  (ivy-set-display-transformer #'project-find-file #'blc-project-relative)
 
   (map-delete ivy-completing-read-handlers-alist #'Info-menu)
 
