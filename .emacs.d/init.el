@@ -49,6 +49,9 @@
 (autoload 'meme                           "meme" nil t)
 (autoload 'meme-file                      "meme" nil t)
 (autoload 'TeX-doc                        "tex" nil t)
+(autoload 'youtube-dl                     "youtube-dl" nil t)
+(autoload 'youtube-dl-list                "youtube-dl" nil t)
+(autoload 'youtube-dl-playlist            "youtube-dl" nil t)
 
 ;;;; ADVICE
 
@@ -1852,7 +1855,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  magit-popup-mode-hook
                                                  message-mode-hook
                                                  minibuffer-setup-hook
-                                                 term-mode-hook))
+                                                 term-mode-hook
+                                                 youtube-dl-list-mode-hook))
 
   ;; bug-reference
   (:hooks prog-mode-hook :fns bug-reference-prog-mode)
@@ -3160,6 +3164,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; xt-mouse
 
 (blc-with-every-frame #'blc-turn-on-xterm-mouse)
+
+;; youtube-dl
+
+(with-eval-after-load 'youtube-dl
+  (setq-default youtube-dl-directory (blc-user-dir "VIDEOS")))
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars unresolved)
