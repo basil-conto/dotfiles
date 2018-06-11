@@ -393,18 +393,19 @@ Offer all entities found in `org-entities-user' and
 
 ;; project
 
+(define-advice project-find-file-in (:around (fn file dirs proj) blc-root-dir)
+  "Bind `default-directory' to the first root of PROJ in DIRS."
+  (let ((default-directory (blc-dir (car dirs))))
+    (funcall fn file dirs proj)))
+
 (define-advice project-file-completion-table
-    (:around (fn proj dirs) blc-relative)
-  "Return file names relative to the first root of PROJ in DIRS."
-  (let* ((root  (expand-file-name (car dirs)))
-         (table (funcall fn proj dirs)))
-    (lambda (str pred action)
-      (let ((res (funcall table str pred action)))
-        (if (eq action t)
-            (mapcar (lambda (file)
-                      (file-relative-name file root))
-                    res)
-          res)))))
+    (:filter-return (fn) blc-relative)
+  "Return relative file names."
+  (lambda (str pred action)
+    (let ((res (funcall fn str pred action)))
+      (if (eq action t)
+          (mapcar #'file-relative-name res)
+        res))))
 
 ;; sx-question-mode
 
