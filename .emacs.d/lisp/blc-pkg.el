@@ -118,6 +118,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    chess
    cmake-mode
+   counsel
    counsel-gtags
    csharp-mode
    cssh
@@ -238,6 +239,7 @@ Visit `package-user-dir' if such a directory is not found."
    solarized-theme
    sr-speedbar
    sudoku
+   swiper
    sx
    systemd
 
