@@ -3,21 +3,23 @@
 # FIXME:
 # * Report charging status
 # * Detect colour support?
-# TODO:
-# * Handle missing .bash_colours file
-[ -r "${HOME}/.bash_colours" ] && . "${HOME}/.bash_colours"
 
-format () {
+fmt_cap () {
   local face=''
   if [ "$1" -le 20 ]; then
-    face="${BASH_COLOURS[red_bf]}"
+    face='\e[1;31m'
   elif [ "$1" -ge 80 ]; then
-    face="${BASH_COLOURS[grn_bf]}"
+    face='\e[1;32m'
   fi
-  printf '%b%3u%b' "${face}" "$1" "${BLC_COLOURS[reset]}"
+  printf '%b%3u\e[0m' "${face}" "$1"
 }
 
-for bat in /sys/class/power_supply/BAT*; do
-  printf '%s: %s%%\n' "$(basename ${bat})" "$(format $(cat ${bat}/capacity))"
-done
-unset bat
+# TODO: Try to read in capacity file, rather than cat'ing it?
+fmt_batts () {
+  local bat
+  for bat in /sys/class/power_supply/BAT*; do
+    printf '%s: %s%%\n' "$(basename ${bat})" "$(fmt_cap $(cat ${bat}/capacity))"
+  done
+}
+
+fmt_batts
