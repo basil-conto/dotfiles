@@ -1,0 +1,3 @@
+# -*- conf -*-
+# Skeleton /etc/dovecot/users passwd-file and userdb
+user:password:1000:1000::/path/to/maildir::userdb_mail=maildir:/path/to/maildir:INBOX=/path/to/maildir/INBOX:LAYOUT=fs
