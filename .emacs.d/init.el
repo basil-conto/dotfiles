@@ -2816,6 +2816,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H"
            index))))
 
+;; magit-log
+
+(with-eval-after-load 'magit-log
+  (let ((age (cdr magit-log-margin)))
+    (setcar age 'age-abbreviated)
+    (setcar (cdddr age) 16)))
+
 ;; make-mode
 
 (with-eval-after-load 'make-mode
