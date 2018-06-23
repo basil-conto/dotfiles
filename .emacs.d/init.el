@@ -1105,7 +1105,6 @@ less jumpy auto-filling."
 
  ;; comint
  comint-input-ignoredups                t
- comint-terminfo-terminal               "xterm-256color"
 
  ;; compile
  compilation-message-face               'default
