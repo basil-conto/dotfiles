@@ -97,5 +97,8 @@ alias policy='cpufreq-info --policy'
 alias powersave='sudo cpufreq-set --governor powersave --related'
 alias performance='sudo cpufreq-set --governor performance --related'
 
+# man
+alias man='TERM=xterm-man man'
+
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'

@@ -1,0 +1,5 @@
+xterm-man|xterm with colour highlighting,
+  use=xterm,
+  bold=\e[1;34m,
+  rmul=\e[0m,
+  smul=\e[31m,
