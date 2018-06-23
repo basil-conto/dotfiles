@@ -104,16 +104,14 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-update-message-archive-method     t
  gnus-save-score                        t
  gnus-secondary-select-methods
- `(,@(seq-map-indexed
-      (pcase-lambda (`(,user) i)
-        `(nnimap ,user
-                 (nnimap-address         ,(format-network-address
-                                           `[127 1 0 ,(1+ i)]))
-                 (nnimap-record-commands t)
-                 (nnimap-stream          network)
-                 (nnimap-user            ,user)
-                 (nnir-search-engine     imap)))
-      (blc-mbsync-chandirs))
+ `(,@(map-keys-apply (lambda (user)
+                       `(nnimap ,user
+                                (nnimap-address         "127.0.0.1")
+                                (nnimap-record-commands t)
+                                (nnimap-stream          network)
+                                (nnimap-user            ,user)
+                                (nnir-search-engine     imap)))
+                     (blc-mbsync-chandirs))
    ;; FIXME: Firewall
    (nntp "news.gwene.org"
          (nntp-record-commands t)))
