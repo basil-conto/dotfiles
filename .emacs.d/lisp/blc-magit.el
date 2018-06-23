@@ -70,7 +70,7 @@
 (blc-put magit-diff-highlight-indentation "" 'tabs)
 
 ;; Status buffer
-(dolist (fn '(magit-insert-remote-header magit-insert-repo-header))
+(dolist (fn '(magit-insert-repo-header magit-insert-remote-header))
   (magit-add-section-hook
    'magit-status-headers-hook fn 'magit-insert-head-branch-header))
 
