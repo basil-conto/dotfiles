@@ -106,7 +106,6 @@ Visit `package-user-dir' if such a directory is not found."
    atomic-chrome
    auctex
    auctex-latexmk
-   auth-password-store
    avy
 
    babel
