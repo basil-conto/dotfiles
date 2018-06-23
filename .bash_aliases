@@ -33,9 +33,6 @@ sudo apt-get dist-upgrade     && \
 sudo apt-get autoremove       && \
 sudo apt-get autoclean'
 
-# wajig
-alias list='wajig listinstalled'
-
 # xdg
 alias dis='xdg-open'
 
@@ -60,31 +57,14 @@ alias brighten='xbacklight -inc 10'
 # GNU compilers
 alias gcc='gcc -fdiagnostics-color'
 alias g++='g++ -fdiagnostics-color'
-alias gcc99='gcc -std=c99'
-alias gcc11='gcc -std=c11'
-alias g++03='g++ -std=c++03'
-alias g++11='g++ -std=c++11'
 
 # emacsen
 alias ec='TERM=xterm-24bits emacsclient --tty'
 alias em='TERM=xterm-24bits emacs -nw'
 
-# colordiff
-alias ciff='colordiff --side-by-side --width=160'
-
-# mp3blaster
-alias blaster='padsp mp3blaster'
-
-# virtualbox
-alias startvm='vboxmanage startvm'
-
 # youtube-dl
 alias ydl='youtube-dl'
 alias ydl-opus='ydl --extract-audio --audio-format opus --audio-quality 96K'
-
-# notify-send
-alias apprise='notify-send --urgency=low'
-alias error='notify-send --icon=error --urgency=critical'
 
 # gcal
 alias gcal='gcal --starting-day=Monday'
