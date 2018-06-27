@@ -502,22 +502,6 @@ See `browse-url' for an explanation of the arguments."
 
 (function-put #'blc-print-url 'interactive-form (interactive-form #'browse-url))
 
-(defvar blc-hackage-url-format
-  "https://hackage.haskell.org/package/%s/docs/%s.html"
-  "URL format string for Hackage packages.
-The two format specifiers correspond to the package and module
-names, respectively.")
-
-(defun blc-browse-url-ghc-doc (url &rest args)
-  "Pass latest version of Hackage package URL to `browse-url'."
-  (when (string-match (blc-sed "%s" (rx (group (+ nonl)))
-                               ghc-doc-hackage-format t t)
-                      url)
-    (apply #'browse-url
-           (apply #'format blc-hackage-url-format
-                  (mapcar #'match-string (list 1 3)))
-           args)))
-
 (defun blc-browse-url-irfc (url &rest _)
   "Visit RFC URL via `irfc-visit'.
 URL is parsed using the regular expressions found in
@@ -1227,9 +1211,6 @@ less jumpy auto-filling."
 
  ;; ggtags
  ggtags-enable-navigation-keys          nil
-
- ;; ghc
- ghc-doc-browser-function               #'blc-browse-url-ghc-doc
 
  ;; git-annex
  git-annex-commit                       nil
