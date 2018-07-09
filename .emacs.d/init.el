@@ -1904,8 +1904,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks gnus-started-hook :fns blc-gc-thresh-restore )
 
   ;; haskell-mode
-  (:hooks haskell-mode-hook :fns (haskell-indent-mode
-                                  interactive-haskell-mode))
+  (:hooks haskell-mode-hook :fns haskell-indent-mode)
 
   ;; hi-lock
   (:hooks hi-lock-mode-hook :fns blc-hi-lock-no-eof-nl)
