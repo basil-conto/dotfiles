@@ -648,14 +648,6 @@ Adapted from URL
   (when (bound-and-true-p flycheck-mode)
     (blc-turn-off #'flycheck-mode)))
 
-;; ghc
-
-(defun blc-ghc-init ()
-  "Fix libexecdir before `ghc-init'.
-See URL `https://github.com/DanielG/ghc-mod/issues/923'."
-  (setenv "cabal_helper_libexecdir" "/usr/lib")
-  (ghc-init))
-
 ;; ghub
 
 (defconst blc-github-token-scopes '(notifications)
@@ -1898,9 +1890,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; footnote
   (:hooks message-setup-hook :fns footnote-mode)
-
-  ;; ghc
-  (:hooks haskell-mode-hook :fns blc-ghc-init)
 
   ;; git-commit
   (:hooks git-commit-setup-hook :fns (blc-git-commit-set-fill-column

@@ -154,7 +154,6 @@ Visit `package-user-dir' if such a directory is not found."
    free-keys
 
    ggtags
-   ghc
    ghub
    git-annex
    git-commit
