@@ -45,7 +45,6 @@
   (declare-function gnus-score-find-single                "gnus-score")
   (declare-function gnus-article-sort-by-most-recent-date "gnus-sum")
   (declare-function gnus-article-sort-by-number           "gnus-sum")
-  (declare-function gnus-gather-threads-by-references     "gnus-sum")
   (declare-function gnus-thread-sort-by-date              "gnus-sum")
   (declare-function gnus-thread-sort-by-most-recent-date  "gnus-sum")
   (declare-function gnus-thread-sort-by-number            "gnus-sum")
@@ -156,27 +155,29 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
  gnus-auto-center-summary               nil
  gnus-auto-select-first                 nil
  gnus-auto-select-next                  nil
+ gnus-sort-gathered-threads-function    #'gnus-thread-sort-by-date
  gnus-subthread-sort-functions
  `(,#'gnus-thread-sort-by-number
    ,#'gnus-thread-sort-by-date)
  gnus-sum-thread-tree-false-root        ""
- gnus-sum-thread-tree-leaf-with-other   " ├➤ "
+ gnus-sum-thread-tree-leaf-with-other   "├➤"
  gnus-sum-thread-tree-root              ""
- gnus-sum-thread-tree-single-leaf       " ╰➤ "
+ gnus-sum-thread-tree-single-leaf       "╰➤"
  gnus-sum-thread-tree-indent            " "
- gnus-sum-thread-tree-vertical          " │ "
+ gnus-sum-thread-tree-vertical          "│"
+ gnus-summary-dummy-line-format         (format "%15c %%(%27s%%)\n" ?: "%S")
  gnus-summary-gather-subject-limit      'fuzzy
  gnus-summary-next-group-on-exit        nil
- gnus-summary-thread-gathering-function #'gnus-gather-threads-by-references
+ gnus-thread-hide-killed                nil
  gnus-thread-sort-functions
  `(,#'gnus-thread-sort-by-number
    ,#'gnus-thread-sort-by-most-recent-date)
- gnus-user-date-format-alist            ; Max. length 10
+ gnus-user-date-format-alist            ; Max. length 8
  `(((gnus-seconds-today)                . "%R")
    ((float-time
      (time-add
       ',(days-to-time 1)
-      (gnus-seconds-today)))            . "Y %R")
+      (gnus-seconds-today)))            . "-%R")
    (,(float-time (days-to-time 7))      . "%a %d")
    ((gnus-seconds-year)                 . "%d %b")
    (t                                   . "%d/%m/%y"))

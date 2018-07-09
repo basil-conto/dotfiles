@@ -680,12 +680,11 @@ Strings FROM override the default `f' format spec."
          `("%U"                                   ; Read status
            "%R"                                   ; Replied status
            "%z"                                   ; Article zcore
-           "%O "                                  ; Download mark
-           "%B"                                   ; Thread tree
+           "%O"                                   ; Download mark
+           "%4{%9&user-date; :%} "                ; Date & colon
            "%(%2{%-24,24" ,@(or from '("f")) "%}" ; From/To
-           "%-29= : "                             ; Colon
-           "%3{%-50,50s%}%)"                      ; Subject
-           "%4{%9&user-date;%}"                   ; Age-sensitive data
+           " %B"                                  ; Thread tree
+           "%3{%s%}%)"                            ; Subject
            "\n")))
 
 (defun blc-turn-on-lexical-binding ()

@@ -1060,6 +1060,7 @@ less jumpy auto-filling."
  ;; bbdb
  bbdb-complete-mail-allow-cycling       t
  bbdb-default-country                   nil
+ bbdb-mua-summary-mark                  "✓"
  bbdb-name-format                       'last-first
  bbdb-phone-style                       nil
  bbdb-pop-up-window-size                t

@@ -11,6 +11,14 @@
   "Light theme for blc.")
 
 (apply
+ #'custom-theme-set-variables
+ 'blc-light
+ '(;; Built-in
+
+   ;; gnus-spec
+   (gnus-face-4 'shadow)))
+
+(apply
  #'custom-theme-set-faces
  'blc-light
  `(;; Built-in
