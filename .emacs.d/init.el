@@ -194,6 +194,15 @@ URI is returned by the `interactive-form' of `eww'."
     (when (frame-root-window-p win)
       (blc-delete-spare-frame (window-frame win)))))
 
+;; gnus-win
+
+(define-advice gnus-configure-frame (:before (&rest _) blc-no-gnus-frames)
+  "Empty `gnus-frame-list' before doing anything else.
+This means frames that Gnus has created are no longer dedicated
+to their initial Gnus purpose, and so their window
+configurations, if since changed, are left alone."
+  (setq gnus-frame-list ()))
+
 ;; help-fns
 
 (define-advice help-fns-short-filename (:around (abbr file) blc-src-load-path)
