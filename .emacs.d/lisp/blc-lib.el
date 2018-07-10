@@ -164,7 +164,7 @@ Order is breadth-first lexicographic."
           ((eq dirs1 dirs2)
            (string-lessp (file-name-nondirectory path1)
                          (file-name-nondirectory path2)))
-          ((not dirs1)))))
+          ((null dirs1)))))
 
 (defun blc-user-dir (dir)
   "Like `xdg-user-dir', but return directory name."
