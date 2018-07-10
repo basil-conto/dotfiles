@@ -596,7 +596,7 @@ Intended as an Ivy action for `counsel-M-x'."
 ;; doc-view
 
 (defun blc-doc-view-pdf-to-png (pdf png page callback)
-  "MuPDF-backed PDF to PNG converter function for DocView."
+  "`mutool'-backed PDF to PNG converter function for DocView."
   (doc-view-start-process
    "pdf->png"
    "mutool"
@@ -910,6 +910,13 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (org-set-property
    "captured" (format-time-string (org-time-stamp-format t t))))
 
+;; pdf-tools
+
+(defun blc-pdf-tools-undefer ()
+  "Clean up remnants of deferred `pdf-tools' loading."
+  (remove-hook 'pdf-view-mode-hook #'blc-pdf-tools-undefer)
+  (setq auto-mode-alist (rassq-delete-all #'pdf-tools-install auto-mode-alist)))
+
 ;; project
 
 (defun blc-project-switch ()
@@ -1149,8 +1156,8 @@ less jumpy auto-filling."
  "objdump -D -M att -Sl --no-show-raw-insn"
 
  ;; doc-view
- doc-view-conversion-refresh-interval   nil
  doc-view-pdf->png-converter-function   #'blc-doc-view-pdf-to-png
+ doc-view-resolution                    150
 
  ;; dropbox
  dropbox-locale                         "en_IE"
@@ -1883,9 +1890,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks ffap-gnus-hook :hooks (gnus-article-mode-hook
                                  gnus-summary-mode-hook))
 
-  ;; files
-  (:hooks find-file-hook :fns blc-strip-large-buffer)
-
   ;; flycheck
   (:hooks flycheck-mode-hook :fns blc-turn-off-flycheck)
 
@@ -1959,8 +1963,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; pascal
   (:hooks pascal-mode-hook :fns blc-turn-on-c++-comments)
 
-  ;; pdf-tools
-  (:hooks doc-view-mode-hook :fns pdf-tools-install)
+  ;; pdf-view
+  (:hooks pdf-view-mode-hook :fns blc-pdf-tools-undefer)
 
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
@@ -3051,6 +3055,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (show-paren-mode)
 
 ;; pdf-tools
+
+(add-to-list 'auto-mode-alist (cons (rx ".pdf" eos) #'pdf-tools-install))
 
 (with-eval-after-load 'pdf-view
   (define-key pdf-view-mode-map "\C-s" #'isearch-forward))

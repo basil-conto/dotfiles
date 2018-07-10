@@ -398,21 +398,6 @@ BUFFER-OR-NAME to `bury-buffer'."
                                   (buffer-name))
                  unique))
 
-(defun blc-strip-buffer ()
-  "Disable features in an attempt to maximise responsiveness."
-  (interactive)
-  (setq buffer-read-only t)
-  (buffer-disable-undo)
-  (fundamental-mode)
-  (blc-turn-off #'font-lock-mode))
-
-(defun blc-strip-large-buffer ()
-  "Conditionally call `blc-strip-buffer'.
-Strip buffer when current buffer size exceeds
-`large-file-warning-threshold'."
-  (when (> (buffer-size) large-file-warning-threshold)
-    (blc-strip-buffer)))
-
 (defun blc-iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
 See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
