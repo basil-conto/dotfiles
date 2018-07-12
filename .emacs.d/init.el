@@ -197,11 +197,14 @@ URI is returned by the `interactive-form' of `eww'."
 ;; gnus-win
 
 (define-advice gnus-configure-frame (:before (&rest _) blc-no-gnus-frames)
-  "Empty `gnus-frame-list' before doing anything else.
-This means frames that Gnus has created are no longer dedicated
-to their initial Gnus purpose, and so their window
-configurations, if since changed, are left alone."
-  (setq gnus-frame-list ()))
+  "Empty lists of frames kept by Gnus.
+Emptying `gnus-frame-list' undedicates Gnus frames from their
+initial purpose, so their window configuration, if since changed,
+is left alone.
+Emptying `gnus-created-frames' protects against deletion of the
+last visible Emacs client frame."
+  (setq gnus-frame-list     ())
+  (setq gnus-created-frames ()))
 
 ;; help-fns
 
