@@ -19,7 +19,6 @@
 (autoload 'shell-mode           "shell")
 (autoload 'shr-dom-to-xml       "shr")
 (autoload 'shr-url-at-point     "shr")
-(autoload 'url-get-url-at-point "url-util")
 (autoload 'xdg-user-dir         "xdg")
 
 (defgroup blc ()
@@ -288,7 +287,7 @@ directory, as per `copy-file' et al. NEW-WINDOW is for
 compatibility with `browse-url' and ignored."
   (interactive)
   (if-let* ((url    (or url
-                        (url-get-url-at-point)   ; Raw URL
+                        (thing-at-point 'url)    ; Raw URL
                         (shr-url-at-point nil))) ; Link/image
             (remote (url-file-nondirectory url))
             (local  (or file
