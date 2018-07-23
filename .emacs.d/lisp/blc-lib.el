@@ -666,7 +666,7 @@ Strings FROM override the default `f' format spec."
            "%R"                                   ; Replied status
            "%z"                                   ; Article zcore
            "%O"                                   ; Download mark
-           "%4{%9&user-date; :%} "                ; Date & colon
+           "%4{:%8&user-date;%} "                 ; Date & colon
            "%(%2{%-24,24" ,@(or from '("f")) "%}" ; From/To
            " %B"                                  ; Thread tree
            "%3{%s%}%)"                            ; Subject

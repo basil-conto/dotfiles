@@ -190,7 +190,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
  gnus-sum-thread-tree-single-leaf       "╰➤"
  gnus-sum-thread-tree-indent            " "
  gnus-sum-thread-tree-vertical          "│"
- gnus-summary-dummy-line-format         (format "%15c %%(%27s%%)\n" ?: "%S")
+ gnus-summary-dummy-line-format         (format "%5c%11c(%27s%%)\n" ?: ?% "%S")
  gnus-summary-gather-subject-limit      'fuzzy
  gnus-summary-next-group-on-exit        nil
  gnus-thread-hide-killed                nil
