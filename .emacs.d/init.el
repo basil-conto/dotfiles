@@ -302,9 +302,12 @@ into account."
   (setq dir (blc-dir dir))
   (and (file-directory-p dir)
        (directory-files dir nil directory-files-no-dot-files-regexp t)
-       (setq dir (blc-dir dir (and (string-match
-                                    "\\([^/:]+?\\)\\(/?\\.git\\)?\\'" repo)
-                                   (match-string 1 repo)))))
+       (setq dir (blc-dir dir
+                          (and (string-match
+                                (rx (* nonl) (in ?/ ?:) (group (+? nonl))
+                                    (? ".git") eos)
+                                repo)
+                               (match-string 1 repo)))))
   (funcall clone repo dir))
 
 ;; mail-extr
