@@ -33,6 +33,7 @@
   (defvar gnus-level-default-subscribed)
   (defvar gnus-sorted-header-list)
   (defvar gnus-startup-file)
+  (defvar gnus-summary-mode-map)
   (defvar gnus-tmp-group)
   (defvar gnus-topic-mode-map)
   (defvar gnus-visible-headers)
@@ -45,6 +46,7 @@
   (declare-function gnus-score-find-single                "gnus-score")
   (declare-function gnus-article-sort-by-most-recent-date "gnus-sum")
   (declare-function gnus-article-sort-by-number           "gnus-sum")
+  (declare-function gnus-summary-save-parts               "gnus-sum")
   (declare-function gnus-thread-sort-by-date              "gnus-sum")
   (declare-function gnus-thread-sort-by-most-recent-date  "gnus-sum")
   (declare-function gnus-thread-sort-by-number            "gnus-sum")
@@ -91,6 +93,29 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (interactive)
   (gnus-topic-goto-topic (gnus-current-topic))
   (gnus-topic-fold))
+
+(defun blc-gnus-apply-attachments (n)
+  "Apply all Gnus patch attachments to `source-directory'.
+Pass all text/x-diff parts to git-am(1) and display its output in
+the buffer \"*git am*\". Argument N follows the process/prefix
+convention (see the Info node `(gnus) Process/Prefix')."
+  (interactive "P")
+  (let ((dir (make-temp-file "blc-gnus-" t)))
+    (gnus-summary-save-parts "text/x-diff" dir n)
+    (let* ((default-directory source-directory)
+           (proc (make-process
+                  :name "git am"
+                  :buffer "*git am*"
+                  :connection-type 'pipe
+                  :command
+                  `("git" "am" ,@(directory-files dir t "\\.patch\\'")))))
+      (display-buffer (process-buffer proc) '(() (allow-no-window . t)))
+      (add-function :after (process-sentinel proc)
+                    (lambda (proc _msg)
+                      (when (and (blc-process-success-p proc)
+                                 (file-directory-p dir))
+                        (delete-directory dir t)
+                        (message "Deleted temporary directory %s" dir)))))))
 
 ;;; Options
 
@@ -205,6 +230,10 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
   (:hooks gnus-group-mode-hook             :fns gnus-topic-mode)
   (:hooks gnus-select-group-hook           :fns gnus-group-set-timestamp)
   (:hooks gnus-summary-mode-hook           :fns hl-line-mode))
+
+;;; Bindings
+
+(define-key gnus-summary-mode-map "va" #'blc-gnus-apply-attachments)
 
 ;;; Libraries
 
