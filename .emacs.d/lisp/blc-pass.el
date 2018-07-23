@@ -31,8 +31,9 @@ Both KEY and VALS can be any valid `rx' form. KEY need not end in
 a trailing colon, as that is already provided. When non-nil, VALS
 are spliced into an `or' form. The resulting regexp contains one
 capturing group around the actual value found. "
-  (blc-rx
-   `(: bol ,key ?: (* space) (group ,(if vals `(| ,@vals) '(+ word))) eol)))
+  (blc-rx `(: bol ,key ?: (* space)
+              (group ,(if vals `(| ,@vals) '(+ (not space))))
+              eol)))
 
 (defun blc-pass--extract (regexp)
   "Return first match group of REGEXP in current buffer.
