@@ -1023,6 +1023,9 @@ less jumpy auto-filling."
  print-circle                           t
  print-gensym                           t
 
+ ;; terminal.c
+ ring-bell-function                     #'ignore
+
  ;; window.c
  fast-but-imprecise-scrolling           t
  recenter-redisplay                     nil
