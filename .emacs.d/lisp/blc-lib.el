@@ -62,6 +62,12 @@ SEQ is modified destructively unless COPY is non-nil."
   "Like `map-put', but TESTFN defaults to `equal'."
   `(map-put ,map ,key ,value ,(or testfn '#'equal)))
 
+;;; Functions
+
+(defun blc-const (object)
+  "Return variadic function which always returns OBJECT."
+  (lambda (&rest _) object))
+
 ;;; Regular expressions
 
 (defalias 'blc-sed #'replace-regexp-in-string)
