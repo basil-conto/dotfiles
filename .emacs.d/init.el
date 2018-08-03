@@ -3052,12 +3052,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
        :completion-function
        (list
         (lambda (&rest _)
-          (mapc (lambda (file)
-                  (set-file-modes file (pcase file
-                                         ((pred file-regular-p)   #o640)
-                                         ((pred file-directory-p) #o750)
-                                         (_ (file-modes file)))))
-                (directory-files-recursively pubdir "" t)))))))))
+          (dolist (file (directory-files-recursively pubdir "" t))
+            (set-file-modes file (pcase file
+                                   ((pred file-regular-p)   #o640)
+                                   ((pred file-directory-p) #o750)
+                                   (_ (file-modes file))))))))))))
 
 ;; paren
 
