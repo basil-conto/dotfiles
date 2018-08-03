@@ -435,7 +435,9 @@ Offer all entities found in `org-entities-user' and
 (with-eval-after-load 'whitespace
   (add-function :before-while whitespace-enable-predicate
                 (lambda ()
-                  (not (derived-mode-p #'magit-mode #'shell-mode)))))
+                  (not (derived-mode-p #'dired-mode
+                                       #'magit-mode
+                                       #'shell-mode)))))
 
 ;; window
 
