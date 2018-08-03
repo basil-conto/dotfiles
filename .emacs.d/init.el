@@ -27,14 +27,10 @@
 (eval-when-compile
   (require 'subr-x))
 
-(autoload 'apt-utils-search               "apt-utils" nil t)
-(autoload 'apt-utils-show-package         "apt-utils" nil t)
 (autoload 'blc-mbsync                     "blc-mbsync" nil t)
 (autoload 'blc-mbsync-deduplicate         "blc-mbsync" nil t)
 (autoload 'blc-mbsync-maximise-uid        "blc-mbsync" nil t)
 (autoload 'blc-pass-backend-parse         "blc-pass")
-(autoload 'deb-view-dired-view            "deb-view" nil t)
-(autoload 'deb-view-mode                  "deb-view" nil t)
 (autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
 (autoload 'ffap-gnus-hook                 "ffap")
 (autoload 'flex-mode                      "flex-mode" nil t)
@@ -2311,7 +2307,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (add-to-list 'auto-mode-alist (cons (rx ".deb" eos) #'deb-view-mode))
 (with-eval-after-load 'dired
-  (require 'deb-view))
+  (require 'deb-view nil t))
 
 ;; delight
 
