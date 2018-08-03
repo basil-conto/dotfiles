@@ -2442,6 +2442,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (("lowriter")       "doc" "docx" "odt")
             (("mpv")            "mkv" "mp4" "webm")
             (("mpv" "opusinfo") "opus")
+            (("optipng")        "png")
             (("pdf")            "pdf"))))
 
 ;; disaster
