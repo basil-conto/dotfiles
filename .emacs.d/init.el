@@ -1758,6 +1758,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; wdired
  wdired-allow-to-change-permissions     t
+ wdired-use-dired-vertical-movement     t
 
  ;; webjump
  webjump-sites
