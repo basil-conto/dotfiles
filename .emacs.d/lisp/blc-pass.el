@@ -103,8 +103,4 @@ Values of :host consitute the base name of GPG files to search."
 
 (provide 'blc-pass)
 
-;; Local Variables:
-;; byte-compile-dynamic: t
-;; End:
-
 ;;; blc-pass.el ends here

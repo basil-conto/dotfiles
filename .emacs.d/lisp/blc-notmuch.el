@@ -111,8 +111,4 @@ Like `message', but each line is prefixed with a timestamp."
 
 (provide 'blc-notmuch)
 
-;; Local Variables:
-;; byte-compile-dynamic: t
-;; End:
-
 ;;; blc-notmuch.el ends here
