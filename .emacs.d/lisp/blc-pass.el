@@ -61,8 +61,9 @@ non-nil."
 
 (defun blc-pass--test (spec)
   "Return a function testing buffer contents against plist SPEC.
-The returned predicate returns non-nil for matches. Any supported
-key-value entries found in the buffer are returned as an alist."
+The returned predicate returns non-nil when called in a matching
+buffer; in particular, it returns any supported key-value entries
+found in the buffer as an alist."
   (let ((tests (map-apply (apply-partially #'blc-pass--field spec)
                           '((:secret . ())
                             (:user   . (: "user" (? "name")))
