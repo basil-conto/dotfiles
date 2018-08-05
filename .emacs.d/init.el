@@ -309,13 +309,13 @@ This is much less accurate but also much more performant than
 
 ;; make-mode
 
-(defun blc-delete-hspace-backward (&rest _)
+(defun blc-delete-hspace-backward--advice (&rest _)
   "Delete horizontal whitespace before point."
   (delete-horizontal-space t))
 
 (dolist (fn (list #'makefile-insert-gmake-function
                   #'makefile-insert-target-ref))
-  (advice-add fn :after #'blc-delete-hspace-backward))
+  (advice-add fn :after #'blc-delete-hspace-backward--advice))
 
 ;; mpc
 
@@ -433,12 +433,14 @@ Offer all entities found in `org-entities-user' and
 
 ;; window
 
-(add-function :around pop-up-frame-function
-              (lambda (fn &rest args)
-                (let ((frame (selected-frame)))
-                  (unwind-protect
-                      (apply fn args)
-                    (select-frame-set-input-focus frame)))))
+(defun blc-pop-up-frame--advice (fn &rest args)
+  "Keep focus on old frame when popping up a new one to display."
+  (let ((frame (selected-frame)))
+    (unwind-protect
+        (apply fn args)
+      (select-frame-set-input-focus frame))))
+
+(add-function :around pop-up-frame-function #'blc-pop-up-frame--advice)
 
 ;;;; DEFINITIONS
 
