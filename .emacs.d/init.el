@@ -422,12 +422,14 @@ Offer all entities found in `org-entities-user' and
 
 ;; whitespace
 
+(defun blc-whitespace-enable--advice ()
+  "Advice intended for predicate `whitespace-enable-predicate'."
+  (not (or (derived-mode-p #'dired-mode #'magit-mode #'shell-mode)
+           (equal (buffer-name) "*scratch*"))))
+
 (with-eval-after-load 'whitespace
   (add-function :before-while whitespace-enable-predicate
-                (lambda ()
-                  (not (derived-mode-p #'dired-mode
-                                       #'magit-mode
-                                       #'shell-mode)))))
+                #'blc-whitespace-enable--advice))
 
 ;; window
 
