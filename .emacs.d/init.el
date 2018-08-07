@@ -2700,6 +2700,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (,#'blc-sort-reverse ,#'Info-complete-menu-item)
             (,#'string-lessp     ,#'blc-scratch
                                  ,#'counsel-M-x
+                                 ,#'counsel-apropos
                                  ,#'counsel-describe-face
                                  ,#'counsel-describe-function
                                  ,#'counsel-describe-variable
