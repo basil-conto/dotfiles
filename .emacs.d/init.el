@@ -2950,7 +2950,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                              "%i")        ; Active region contents
                            "\n")
              :prepend t :unnarrowed t))
-     ("s" . ("Show" entry (file+olp "" "Projects" "Show")
+     ("s" . ("Show" entry (file+olp "" "Show")
              ,(string-join '("* %?"
                              "%x"         ; X clipboard contents
                              "%i")
