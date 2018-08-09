@@ -2946,30 +2946,29 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (setq-default
    org-capture-templates
    `(("t" . ("Task" entry (file+olp "" "Tasks")
-             ,(string-join '("* %?"     ; Final point
-                             "%i")      ; Active region contents
+             ,(string-join '("* %?"       ; Final point
+                             "%i")        ; Active region contents
                            "\n")
              :prepend t :unnarrowed t))
      ("s" . ("Show" entry (file+olp "" "Projects" "Show")
              ,(string-join '("* %?"
-                             "%x"       ; X clipboard contents
+                             "%x"         ; X clipboard contents
                              "%i")
                            "\n")
              :prepend t :unnarrowed t))
      ("b" . ("Book" entry (file "books.org")
-             ,(concat "* %? %^g"        ; Genre tag prompt
-                      (mapconcat (apply-partially #'format "%%^{%s}p")
-                                 '(title
-                                   author
-                                   publisher
-                                   published
-                                   published_orig
-                                   language
-                                   format
-                                   pages
-                                   price
-                                   discount)
-                                 ""))   ; Property prompts
+             ,(apply #'concat "* %? %^g"  ; Genre tag prompt
+                     (mapcar (apply-partially #'format "%%^{%s}p")
+                             '(title      ; Property prompts
+                               author
+                               publisher
+                               published
+                               published_orig
+                               language
+                               format
+                               pages
+                               price
+                               discount)))
              :prepend t :unnarrowed t))
      ("e" . ("Entertainment" entry (file+olp "ents.org" "Inbox")
              "* %?"
