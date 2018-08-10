@@ -1556,8 +1556,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-special-ctrl-a/e                   t
  org-startup-indented                   t
  org-todo-keywords
- '((type "NEXT(n)" "TODO(t)" "EXEC(e)" "MEET(m)" "WAIT(w)" "BALK(b)" "|"
-         "DONE(d!)" "VOID(v@)"))
+ '((type "NEXT(n)" "TODO(t)" "PROJ(p)" "EXEC(e)" "MEET(m)" "WAIT(w)" "BALK(b)"
+         "|" "DONE(d!)" "VOID(v@)"))
  org-treat-S-cursor-todo-selection-as-state-change
  nil
  org-use-speed-commands                 t
