@@ -355,20 +355,14 @@ This is much less accurate but also much more performant than
 
 ;; org-agenda
 
-(define-advice org-agenda-finalize (:after (&rest _) blc-pad-dates)
-  "Display double spacing before org agenda view date lines.
-This is defined as advice instead of being added to
-`org-agenda-finalize-hook' to ensure it runs irrespective of
-`org-agenda-multi'."
-  (save-excursion
-    (goto-char (point-min))
-    (let (day)
-      (while (setq day (next-single-property-change (line-end-position)
-                                                    'org-date-line))
-        (goto-char day)
-        (put-text-property (line-end-position 0)
-                           (line-beginning-position)
-                           'display "\n\n")))))
+(defun blc-org-agenda-spacing--advice (str)
+  "Prepend a newline to STR via `display' property."
+  (put-text-property 0 1 'display (string ?\n (string-to-char str)) str)
+  str)
+
+(with-eval-after-load 'org-agenda
+  (add-function :filter-return org-agenda-format-date
+                #'blc-org-agenda-spacing--advice))
 
 ;; org-capture
 
