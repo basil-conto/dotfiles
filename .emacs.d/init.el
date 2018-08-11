@@ -2008,7 +2008,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (blc-define-keys
   ((current-global-map)
-   ("\C-s"                                . #'counsel-grep-or-swiper)
    ([?\C-\S-v]                            . #'scroll-other-window)
    ([S-next]                              . #'blc-small-scroll-up)
    ([S-prior]                             . #'blc-small-scroll-down)
@@ -2151,7 +2150,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("5\C-v"                               . #'find-variable-other-frame))
 
   (isearch-mode-map
-   ([?\C-']                               . #'avy-isearch)))
+   ([?\C-']                               . #'avy-isearch))
+
+  (search-map
+   ("s"                                   . #'counsel-grep-or-swiper)))
+
 
 ;;;; PACKAGES
 
@@ -2650,10 +2653,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; info
 
 (with-eval-after-load 'info
-  (blc-define-keys
-    (Info-mode-map
-     ("k"    . #'blc-info-kill)
-     ("\C-s" . #'isearch-forward))))
+  (define-key Info-mode-map "k" #'blc-info-kill))
 
 ;; irfc
 
@@ -3064,9 +3064,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; pdf-tools
 
 (add-to-list 'auto-mode-alist (cons (rx ".pdf" eos) #'pdf-tools-install))
-
-(with-eval-after-load 'pdf-view
-  (define-key pdf-view-mode-map "\C-s" #'isearch-forward))
 
 ;; perl-mode
 
