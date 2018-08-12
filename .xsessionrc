@@ -3,6 +3,15 @@
 [ -r /etc/profile       ] && . /etc/profile
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 [ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
+
 xscreensaver -no-splash &
-systemctl --user start redshift-gtk.service
+
+if command -v taffybar; then
+  taffybar &
+  command -v nm-applet && nm-applet &
+  command -v pasystray && pasystray &
+fi
+
+systemctl start --user redshift-gtk.service
+
 eval $(ssh-agent)

@@ -1066,7 +1066,7 @@ less jumpy auto-filling."
 
  ;; battery
  battery-load-critical                  20
- battery-mode-line-format               "%L%p%% "
+ battery-mode-line-format               "%L"
 
  ;; bbdb
  bbdb-complete-mail-allow-cycling       t
@@ -1719,14 +1719,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  LaTeX-csquotes-close-quote             "}"
 
  ;; time
- display-time-format                    "%a %d %b %R %:::z"
- display-time-load-average-threshold    0
- display-time-mail-string               "✉"
+ display-time-format                    ""
+ display-time-default-load-average      nil
+ display-time-use-mail-icon             t
  display-time-world-list
  (map-apply (lambda (loc props)
               (list (apply #'blc--location-to-tz loc props) loc))
             blc-locations)
- display-time-world-time-format         display-time-format
+ display-time-world-time-format         "%a %d %b %R %:::z"
 
  ;; tls
  tls-checktrust                         'ask

@@ -29,11 +29,6 @@
 ;;; simple
 (column-number-mode)
 
-;;; time
-(setq-default display-time-24hr-format t)
-(display-battery-mode)
-(display-time-mode)
-
 ;;; tool-bar
 (tool-bar-mode 0)
 
