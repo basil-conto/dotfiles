@@ -968,6 +968,12 @@ Keep `visual-fill-column-width' larger than `fill-column' for
 less jumpy auto-filling."
   (setq visual-fill-column-width (+ fill-column 20)))
 
+;; webjump
+
+(defun blc-webjump-browse-url (_name)
+  "Wrap `browse-url-interactive-arg' for use in `webjump-sites'."
+  (car (browse-url-interactive-arg "URL: ")))
+
 ;; xref-js2
 
 (defun blc-xref-js2-install-backend ()
@@ -1764,6 +1770,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     . [simple-query "https://bookdepository.com/"
                     "https://bookdepository.com/search?searchTerm=hi"
                     ""])
+   ("Browse URL"
+    .               blc-webjump-browse-url)
    ("Emacs Wiki"
     . [simple-query "https://emacswiki.org/"
                     "https://emacswiki.org/cgi-bin/wiki/"
