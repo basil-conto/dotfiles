@@ -993,7 +993,6 @@ less jumpy auto-filling."
  text-quoting-style                     'grave
 
  ;; frame.c
- default-frame-alist                    '((menu-bar-lines . 0))
  frame-resize-pixelwise                 t
 
  ;; indent.c
