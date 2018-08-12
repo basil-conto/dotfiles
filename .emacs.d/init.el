@@ -2068,12 +2068,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("u"                                   . #'counsel-unicode-char))
 
   (blc-jump-map
-   ("a"                                   . #'counsel-ag)
    ("b"                                   . #'ibuffer-jump)
    ("d"                                   . #'counsel-dired-jump)
    ("e"                                   . #'ebib)
    ("f"                                   . #'project-find-file)
-   ("g"                                   . #'counsel-git-grep)
    ("m"                                   . #'magit-find-file)
    ("4m"                                  . #'magit-find-file-other-window)
    ("p"                                   . #'blc-project-switch)
@@ -2153,6 +2151,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([?\C-']                               . #'avy-isearch))
 
   (search-map
+   ("a"                                   . #'counsel-ag)
+   ("g"                                   . #'counsel-git-grep)
    ("s"                                   . #'counsel-grep-or-swiper)))
 
 
