@@ -2,8 +2,7 @@
 
 emacs.cursorBlink:        0
 emacs.dialog*font:        DejaVu Sans Mono-9
-emacs.font:               DejaVu Sans Mono-8
-emacs.fullscreen:         maximized
+emacs.font:               DejaVu Sans Mono-10
 emacs.menu*font:          DejaVu Sans Mono-9
 emacs.menuBar:            0
 emacs.pane.menubar.font:  DejaVu Sans Mono-9
