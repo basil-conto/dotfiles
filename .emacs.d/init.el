@@ -418,7 +418,10 @@ Offer all entities found in `org-entities-user' and
 
 (defun blc-whitespace-enable--advice ()
   "Advice intended for predicate `whitespace-enable-predicate'."
-  (not (or (derived-mode-p #'dired-mode #'magit-mode #'shell-mode)
+  (not (or (derived-mode-p #'dired-mode
+                           #'magit-mode
+                           #'markdown-mode
+                           #'shell-mode)
            (equal (buffer-name) "*scratch*"))))
 
 (with-eval-after-load 'whitespace
