@@ -2321,7 +2321,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (add-to-list 'auto-mode-alist (cons (rx ".deb" eos) #'deb-view-mode))
 (with-eval-after-load 'dired
-  (require 'deb-view nil t))
+  (require 'deb-view nil t)
+  ;; Dired Isearch support is not worth overriding `search-map'
+  (define-key dired-mode-map (where-is-internal search-map nil t) nil))
 
 ;; delight
 
