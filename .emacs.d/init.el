@@ -2158,7 +2158,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("5\C-v"                               . #'find-variable-other-frame))
 
   (isearch-mode-map
-   ([?\C-']                               . #'avy-isearch))
+   ([?\C-']                               . #'avy-isearch)
+   ([up]                                  . #'isearch-repeat-backward)
+   ([down]                                . #'isearch-repeat-forward))
 
   (search-map
    ("a"                                   . #'counsel-ag)
