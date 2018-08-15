@@ -1,13 +1,14 @@
-import System.Taffybar                     ( TaffybarConfig(..), defaultTaffybar
+import System.Taffybar                     ( TaffybarConfig(..)
+                                           , defaultTaffybar
                                            , defaultTaffybarConfig )
-import System.Taffybar.Battery             ( batteryBarNew )
-import System.Taffybar.CommandRunner       ( commandRunnerNew )
-import System.Taffybar.MPRIS2              ( mpris2New )
-import System.Taffybar.Pager               ( defaultPagerConfig )
-import System.Taffybar.SimpleClock         ( textClockNew )
-import System.Taffybar.Systray             ( systrayNew )
-import System.Taffybar.TaffyPager          ( taffyPagerNew )
-import System.Taffybar.Widgets.VerticalBar ( defaultBarConfig )
+import System.Taffybar.Battery             ( batteryBarNew         )
+import System.Taffybar.CommandRunner       ( commandRunnerNew      )
+import System.Taffybar.MPRIS2              ( mpris2New             )
+import System.Taffybar.Pager               ( defaultPagerConfig    )
+import System.Taffybar.SimpleClock         ( textClockNew          )
+import System.Taffybar.Systray             ( systrayNew            )
+import System.Taffybar.TaffyPager          ( taffyPagerNew         )
+import System.Taffybar.Widgets.VerticalBar ( defaultBarConfig      )
 
 main :: IO ()
 main = do
@@ -17,10 +18,10 @@ main = do
       batt  = batteryBarNew (defaultBarConfig colour) secs
       pager = taffyPagerNew defaultPagerConfig
   defaultTaffybar defaultTaffybarConfig
-                    { barHeight    = 18
-                    , endWidgets   = [ clock, load, batt, systrayNew, mpris2New ]
-                    , startWidgets = [ pager ]
-                    }
+                  { barHeight    = 18
+                  , endWidgets   = [ clock, load, batt, systrayNew, mpris2New ]
+                  , startWidgets = [ pager ]
+                  }
   where
     colour p | p < 0.2   = (1.0, 0.0, 0.0)
              | p < 0.8   = (0.5, 0.5, 0.5)
