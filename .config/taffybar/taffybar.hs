@@ -13,10 +13,7 @@ main :: IO ()
 main = do
   let secs  = 10.0
       clock = textClockNew Nothing "%F %a %R %z" secs
-      load  = commandRunnerNew (secs / 2.0)
-                               "sh" ["-c", "cat /proc/loadavg | cut -c-4"]
-                               ""
-                               "white"
+      load  = commandRunnerNew secs "cut" ["-c-4", "/proc/loadavg"] "" "white"
       batt  = batteryBarNew (defaultBarConfig colour) secs
       pager = taffyPagerNew defaultPagerConfig
   defaultTaffybar defaultTaffybarConfig
