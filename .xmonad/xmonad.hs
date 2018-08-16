@@ -20,7 +20,7 @@ import Graphics.X11.ExtraTypes.XF86     ( xF86XK_AudioLowerVolume
                                         , xF86XK_MonBrightnessUp
                                         , xF86XK_ScreenSaver )
 import Graphics.X11.Types               ( mod4Mask, noModMask, shiftMask
-                                        , xK_Print, xK_a, xK_s )
+                                        , xK_Print, xK_a, xK_o, xK_s )
 import System.Taffybar.Hooks.PagerHints ( pagerHints )
 import XMonad.Actions.Volume            ( lowerVolume, raiseVolume, toggleMute )
 import XMonad.Core                      ( XConfig(..) )
@@ -73,6 +73,7 @@ main = xmonad . ewmh . pagerHints . docks $ additionalKeys def
      ++
      mapPairs ((modMask',), safeSpawn')
               [ (xK_a, ["sensible-editor" ])
+              , (xK_o, ["passmenu"        ])
               , (xK_s, ["sensible-browser"])
               ]
   where
