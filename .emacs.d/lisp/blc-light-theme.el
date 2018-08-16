@@ -39,9 +39,6 @@
 
    ;; External
 
-   ;; hackernews
-   (hackernews-comment-count ((t :inherit link-visited :underline nil)))
-
    ;; magit
    (magit-signature-good ((t :foreground "green4")))
 

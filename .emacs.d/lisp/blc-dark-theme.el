@@ -606,10 +606,6 @@
      (google-contacts-givenname  ((t :inherit google-contacts-familyname)))
      (google-contacts-header     ((t :inherit font-lock-string-face)))
 
-     ;; hackernews
-     (hackernews-comment-count ((t :inherit link-visited :underline nil)))
-     (hackernews-link          ((t :inherit link         :underline nil)))
-
      ;; helm
      (helm-candidate-number ((t :background ,bg-1  :foreground ,grn+4)))
      (helm-header           ((t :background ,bg    :foreground ,grn)))
