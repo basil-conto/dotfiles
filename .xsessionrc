@@ -9,7 +9,7 @@ xscreensaver -no-splash &
 if command -v taffybar; then
   taffybar &
   command -v nm-applet && nm-applet &
-  command -v pasystray && pasystray &
+  command -v pasystray && pasystray --always-notify &
 fi
 
 systemctl start --user redshift-gtk.service
