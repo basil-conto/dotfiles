@@ -43,6 +43,7 @@ fi
 # Books (bib)
 if [ -d "${HOME}/.bibs" ]; then
   export BIBINPUTS="${HOME}/.bibs:${BIBINPUTS}"
+fi
 
 # Pyenv
 if [ -d "${HOME}/.pyenv" ]; then
