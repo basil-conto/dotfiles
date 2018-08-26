@@ -32,6 +32,7 @@
 (autoload 'blc-mbsync-maximise-uid        "blc-mbsync" nil t)
 (autoload 'blc-pass-backend-parse         "blc-pass")
 (autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
+(autoload 'eww-open-in-new-buffer         "eww" nil t)
 (autoload 'ffap-gnus-hook                 "ffap")
 (autoload 'flex-mode                      "flex-mode" nil t)
 (autoload 'samba-generic-mode             "generic-x" nil t)
@@ -124,16 +125,11 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 ;; eww
 
-(defun blc-eww-suggest-uri--advice (eww uri)
-  "Call EWW with URI suggested as default.
-URI is returned by the `interactive-form' of `eww'."
-  (let ((eww-suggest-uris (list (lambda () uri))))
+(define-advice eww-open-in-new-buffer (:around (eww url) blc-read-url)
+  "Like `eww', but fetch URL in a new EWW buffer."
+  (interactive (advice-eval-interactive-spec (cadr (interactive-form #'eww))))
+  (let ((eww-suggest-uris (list (lambda () url))))
     (funcall eww)))
-
-(with-eval-after-load 'eww
-  (function-put
-   #'blc-eww-suggest-uri--advice 'interactive-form (interactive-form #'eww))
-  (advice-add #'eww-open-in-new-buffer :around #'blc-eww-suggest-uri--advice))
 
 ;; files
 
@@ -2056,6 +2052,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (blc-jump-map
    ("b"                                   . #'ibuffer-jump)
    ("d"                                   . #'counsel-dired-jump)
+   ("e"                                   . #'eww-open-in-new-buffer)
    ("f"                                   . #'project-find-file)
    ("l"                                   . #'counsel-locate)
    ("m"                                   . #'magit-find-file)
