@@ -332,14 +332,15 @@ This is much less accurate but also much more performant than
 
 ;; org-agenda
 
-(defun blc-org-agenda-spacing--advice (str)
-  "Prepend a newline to STR via `display' property."
-  (put-text-property 0 1 'display (string ?\n (string-to-char str)) str)
-  str)
-
-(with-eval-after-load 'org-agenda
-  (add-function :filter-return org-agenda-format-date
-                #'blc-org-agenda-spacing--advice))
+(define-advice org-agenda-align-tags (:around (align &rest args) my-column)
+  "Override `current-column' to incorporate display properties."
+  (blc-with-nonce current-column :override
+                  (lambda ()
+                    (/ (- (car (window-absolute-pixel-position))
+                          (car (window-absolute-pixel-position
+                                (line-beginning-position))))
+                       (default-font-width)))
+    (apply align args)))
 
 ;; org-capture
 
@@ -1504,6 +1505,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-columns-default-format
  "%ITEM %TODO %1PRIORITY %TAGS %Effort{:} %CLOCKSUM"
  org-ctrl-k-protect-subtree             t
+ org-fontify-done-headline              t
  org-goto-interface                     'outline-path-completion
  org-goto-max-level                     10
  org-hierarchical-todo-statistics       nil
@@ -1538,6 +1540,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-use-speed-commands                 t
 
  ;; org-agenda
+ org-agenda-category-icon-alist
+ '(("travel"
+    "/usr/share/icons/Adwaita/scalable/status/airplane-mode-symbolic.svg"
+    nil nil :ascent center))
+ org-agenda-deadline-leaders            '("" "%3dd +" "%3dd -")
+ org-agenda-scheduled-leaders           '("" "%3dd -")
+ org-agenda-timerange-leaders           '("" "(%d/%d)")
  org-agenda-todo-ignore-with-date       t
  org-agenda-todo-list-sublevels         nil
  org-agenda-window-setup                'other-frame
@@ -2940,7 +2949,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'org-capture
   (setq-default
    org-capture-templates
-   `(("t" . ("Task" entry (file+olp "" "Tasks")
+   `(("t" . ("Task" entry (file+olp "" "Inbox")
              ,(string-join '("* %?"       ; Final point
                              "%i")        ; Active region contents
                            "\n")

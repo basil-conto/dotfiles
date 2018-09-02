@@ -34,6 +34,10 @@
                            :inherit mode-line :weight light
                            :box (:line-width -1 :color "grey75" :style nil))))
 
+   ;; org-faces
+   (org-agenda-date-today ((t :foreground "darkblue" :inherit org-agenda-date
+                              :slant      italic     :weight  bold)))
+
    ;; whitespace
    (whitespace-line ((t :underline t)))
 
