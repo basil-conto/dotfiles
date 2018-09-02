@@ -106,7 +106,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 ;; elisp-mode
 
-(define-advice elisp-completion-at-point (:filter-return (ret) my-elisp-pred)
+(define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
   "Filter unwanted symbols from `elisp-completion-at-point'."
   (when-let* (((consp ret))
               (props (cdddr ret))
@@ -332,7 +332,7 @@ This is much less accurate but also much more performant than
 
 ;; org-agenda
 
-(define-advice org-agenda-align-tags (:around (align &rest args) my-column)
+(define-advice org-agenda-align-tags (:around (align &rest args) blc-column)
   "Override `current-column' to incorporate display properties."
   (blc-with-nonce current-column :override
                   (lambda ()
