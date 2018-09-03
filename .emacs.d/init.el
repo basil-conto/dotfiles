@@ -1540,10 +1540,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-use-speed-commands                 t
 
  ;; org-agenda
- org-agenda-category-icon-alist
- '(("travel"
-    "/usr/share/icons/Adwaita/scalable/status/airplane-mode-symbolic.svg"
-    nil nil :ascent center))
+ org-agenda-category-icon-alist         '(("" (space :width (16))))
  org-agenda-deadline-leaders            '("" "%3dd +" "%3dd -")
  org-agenda-scheduled-leaders           '("" "%3dd -")
  org-agenda-timerange-leaders           '("" "(%d/%d)")
@@ -2942,7 +2939,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             ((= (length cmd) 2)))
       (blc-put org-agenda-custom-commands key
                `(,@cmd () ,(blc-file org-directory "agenda.html")))
-    (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'")))
+    (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'"))
+
+  (mapc (lambda (icon)
+          (blc-put org-agenda-category-icon-alist
+                   (blc-rx `(: bos ,(file-name-base icon) eos))
+                   (list (file-truename icon) nil nil :ascent 'center)))
+        (let ((dir (blc-dir blc-index-dir "org-icons")))
+          (and (file-directory-p dir)
+               (nreverse (directory-files
+                          dir t directory-files-no-dot-files-regexp t))))))
 
 ;; org-capture
 
