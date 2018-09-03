@@ -330,18 +330,6 @@ This is much less accurate but also much more performant than
   (let (pop-up-frames)
     (apply read args)))
 
-;; org-agenda
-
-(define-advice org-agenda-align-tags (:around (align &rest args) blc-column)
-  "Override `current-column' to incorporate display properties."
-  (blc-with-nonce current-column :override
-                  (lambda ()
-                    (/ (- (car (window-absolute-pixel-position))
-                          (car (window-absolute-pixel-position
-                                (line-beginning-position))))
-                       (default-font-width)))
-    (apply align args)))
-
 ;; org-capture
 
 (define-advice org-capture-refile (:after (&rest _) blc-org-save)
