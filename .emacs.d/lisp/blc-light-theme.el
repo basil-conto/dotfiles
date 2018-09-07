@@ -16,7 +16,15 @@
  '(;; Built-in
 
    ;; gnus-spec
-   (gnus-face-4 'shadow)))
+   (gnus-face-4 'shadow)
+
+   ;; org-faces
+   (org-todo-keyword-faces
+    '(("PROJ" :inherit (font-lock-comment-face       org-todo))
+      ("EXEC" :inherit (font-lock-variable-name-face org-todo))
+      ("MEET" :inherit (font-lock-constant-face      org-todo))
+      ("WAIT" :inherit (font-lock-preprocessor-face  org-todo))
+      ("BALK" . bold)))))
 
 (apply
  #'custom-theme-set-faces
