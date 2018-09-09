@@ -488,6 +488,11 @@ URL is parsed using the regular expressions found in
         (user-error "Invalid RFC URL: %s" url))
     (user-error "Regexp not found for RFC URL: %s" url)))
 
+(defun blc-browse-url-surf (&rest args)
+  "Like `browse-url-generic', but using the Surf browser."
+  (let ((browse-url-generic-program "surf"))
+    (apply #'browse-url-generic args)))
+
 (defvar blc-browser-alist
   `(("EWW"                . ,#'eww-browse-url       )
     ("Firefox"            . ,#'browse-url-firefox   )
@@ -495,6 +500,7 @@ URL is parsed using the regular expressions found in
     ("Print"              . ,#'blc-print-url        )
     ("Emacs IRFC"         . ,#'blc-browse-url-irfc  )
     ("XDG"                . ,#'browse-url-xdg-open  )
+    ("Surf"               . ,#'blc-browse-url-surf  )
     ("Chromium"           . ,#'browse-url-chromium  )
     ("Elinks"             . ,#'browse-url-elinks    )
     ("Xterm text browser" . ,#'browse-url-text-xterm)
