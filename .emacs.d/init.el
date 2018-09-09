@@ -3028,33 +3028,32 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'ox-publish
   (setq-default
    org-publish-project-alist
-   (list
-    (let* ((proj "recipes")
-           (pubdir (blc-dir (blc-user-dir "PUBLICSHARE") proj)))
-      (list
-       proj
-       :base-directory       (blc-dir org-directory proj)
-       :publishing-directory pubdir
-       :publishing-function  #'org-html-publish-to-html
-       :recursive            t
-       :with-author          nil
-       :with-toc             nil
-       :html-postamble       t
-       :html-home/up-format
-       (blc-dom-to-xml 'div
-                       '((id . org-div-home-and-up))
-                       (dom-node 'a
-                                 '((accesskey . h)
-                                   (href      . "%s"))
-                                 "&uarr;"))
-       :completion-function
-       (list
-        (lambda (&rest _)
-          (dolist (file (directory-files-recursively pubdir "" t))
-            (set-file-modes file (pcase file
-                                   ((pred file-regular-p)   #o640)
-                                   ((pred file-directory-p) #o750)
-                                   (_ (file-modes file))))))))))))
+   (mapcar (lambda (proj)
+             (let ((pubdir (blc-dir (blc-user-dir "PUBLICSHARE") proj)))
+               (list proj
+                     :base-directory       (blc-dir org-directory proj)
+                     :publishing-directory pubdir
+                     :publishing-function  #'org-html-publish-to-html
+                     :recursive            t
+                     :with-author          nil
+                     :with-toc             nil
+                     :html-postamble       t
+                     :html-home/up-format
+                     (blc-dom-to-xml 'div
+                                     '((id . org-div-home-and-up))
+                                     (dom-node 'a
+                                               '((accesskey . h)
+                                                 (href      . "%s"))
+                                               "&uarr;"))
+                     :completion-function
+                     (list
+                      (lambda (&rest _)
+                        (dolist (file (directory-files-recursively pubdir "" t))
+                          (set-file-modes file (pcase file
+                                                 ((pred file-regular-p)   #o640)
+                                                 ((pred file-directory-p) #o750)
+                                                 (_ (file-modes file))))))))))
+           '("daft" "recipes"))))
 
 ;; paren
 
