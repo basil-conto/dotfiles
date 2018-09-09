@@ -19,6 +19,9 @@
    (gnus-face-4 'shadow)
 
    ;; org-faces
+   (org-priority-faces
+    '((?A . error)
+      (?C . shadow)))
    (org-todo-keyword-faces
     '(("PROJ" :inherit (font-lock-comment-face       org-todo))
       ("EXEC" :inherit (font-lock-variable-name-face org-todo))

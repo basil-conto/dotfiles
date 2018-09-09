@@ -2909,8 +2909,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                           (mapcan (lambda (step)
                                     (number-sequence step (* step 3) step))
                                   '(15 60))
-                          " "))))
-   org-lowest-priority (+ org-highest-priority 3))
+                          " ")))))
 
   (org-clock-persistence-insinuate))
 
