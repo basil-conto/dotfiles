@@ -1,7 +1,7 @@
 ;;; init.el --- init file for blc -*- lexical-binding: t -*-
 
 ;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
-;; Homepage: https://github.com/basil-conto/dotfiles
+;; Homepage: https://gitlab.com/basil-conto/dotfiles
 
 ;;; Code:
 
@@ -1753,6 +1753,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                     "https://github.com/notifications"
                     "https://github.com/pulls"
                     "https://github.com/search"])
+   ("GitLab"
+    . [mirrors      "https://gitlab.com/"
+                    "https://gitlab.com/basil-conto"
+                    "https://gitlab.com/dashboard"
+                    "https://gitlab.com/dashboard/issues"
+                    "https://gitlab.com/dashboard/merge_requests"
+                    "https://gitlab.com/dashboard/todos"
+                    "https://gitlab.com/search"])
    ("Google Definition"
     . [simple-query "https://encrypted.google.com/"
                     "https://encrypted.google.com/search?q=define+"

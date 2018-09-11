@@ -1,7 +1,7 @@
 ;;; blc-lib-tests.el --- tests for blc-lib.el -*- lexical-binding: t -*-
 
 ;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
-;; Homepage: https://github.com/basil-conto/dotfiles
+;; Homepage: https://gitlab.com/basil-conto/dotfiles
 
 ;;; Commentary:
 

@@ -1,12 +1,12 @@
 ;;; blc-magit.el --- magit init file for blc -*- lexical-binding: t -*-
 
 ;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
-;; Homepage: https://github.com/basil-conto/dotfiles
+;; Homepage: https://gitlab.com/basil-conto/dotfiles
 
 ;;; Commentary:
 
 ;; The GPG header code is adapted from the GitHub Gist by fice-t at
-;; https://gist.github.com/fice-t/c84c3bc7007d0d4bcacfeb2c0e42ac27.
+;; <https://gist.github.com/fice-t/c84c3bc7007d0d4bcacfeb2c0e42ac27>.
 
 ;;; Code:
 

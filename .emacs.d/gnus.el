@@ -1,7 +1,7 @@
 ;;; gnus.el --- gnus init file for blc -*- lexical-binding: t -*-
 
 ;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
-;; Homepage: https://github.com/basil-conto/dotfiles
+;; Homepage: https://gitlab.com/basil-conto/dotfiles
 
 ;;; Commentary:
 
