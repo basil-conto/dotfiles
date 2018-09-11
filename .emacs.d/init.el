@@ -1504,8 +1504,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-archive-location                   (format "%s::" (blc-file org-directory
                                                                  "archive.org"))
  org-catch-invisible-edits              'smart
- org-columns-default-format
- "%ITEM %TODO %1PRIORITY %TAGS %Effort{:} %CLOCKSUM"
+ org-columns-default-format             "%ITEM %TODO %LOCATION %TAGS"
  org-ctrl-k-protect-subtree             t
  org-fontify-done-headline              t
  org-goto-interface                     'outline-path-completion
