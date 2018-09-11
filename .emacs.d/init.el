@@ -493,18 +493,25 @@ URL is parsed using the regular expressions found in
   (let ((browse-url-generic-program "surf"))
     (apply #'browse-url-generic args)))
 
+(defun blc-browse-url-firefox (&rest args)
+  "Like `browse-url-firefox', but private."
+  (let ((browse-url-firefox-arguments
+         (cons "-private" browse-url-firefox-arguments)))
+    (apply #'browse-url-firefox args)))
+
 (defvar blc-browser-alist
-  `(("EWW"                . ,#'eww-browse-url       )
-    ("Firefox"            . ,#'browse-url-firefox   )
-    ("Download"           . ,#'blc-download         )
-    ("Print"              . ,#'blc-print-url        )
-    ("Emacs IRFC"         . ,#'blc-browse-url-irfc  )
-    ("XDG"                . ,#'browse-url-xdg-open  )
-    ("Surf"               . ,#'blc-browse-url-surf  )
-    ("Chromium"           . ,#'browse-url-chromium  )
-    ("Elinks"             . ,#'browse-url-elinks    )
-    ("Xterm text browser" . ,#'browse-url-text-xterm)
-    ("Emacs text browser" . ,#'browse-url-text-emacs))
+  `(("EWW"                . ,#'eww-browse-url        )
+    ("Firefox"            . ,#'browse-url-firefox    )
+    ("Firefox private"    . ,#'blc-browse-url-firefox)
+    ("Download"           . ,#'blc-download          )
+    ("Print"              . ,#'blc-print-url         )
+    ("Emacs IRFC"         . ,#'blc-browse-url-irfc   )
+    ("XDG"                . ,#'browse-url-xdg-open   )
+    ("Surf"               . ,#'blc-browse-url-surf   )
+    ("Chromium"           . ,#'browse-url-chromium   )
+    ("Elinks"             . ,#'browse-url-elinks     )
+    ("Xterm text browser" . ,#'browse-url-text-xterm )
+    ("Emacs text browser" . ,#'browse-url-text-emacs ))
   "Map preferred browsers to their calling function.")
 
 (defun blc-browse-url (url &rest args)
@@ -1060,6 +1067,7 @@ less jumpy auto-filling."
 
  ;; browse-url
  browse-url-browser-function            #'blc-browse-url
+ browse-url-firefox-new-window-is-tab   t
 
  ;; calendar
  calendar-date-style                    'iso
