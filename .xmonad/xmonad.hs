@@ -41,9 +41,9 @@ main = xmonad . ewmh . pagerHints . docks $ additionalKeys def
      , terminal           = "x-terminal-emulator"
      } $
 
-     [ ((noModMask, xF86XK_AudioLowerVolume), void $lowerVolume volStep)
+     [ ((noModMask, xF86XK_AudioLowerVolume), void $ lowerVolume volStep)
      , ((noModMask, xF86XK_AudioMute       ), void toggleMute)
-     , ((noModMask, xF86XK_AudioRaiseVolume), void $raiseVolume volStep)
+     , ((noModMask, xF86XK_AudioRaiseVolume), void $ raiseVolume volStep)
      , ((modMask' .|. shiftMask, xK_s),
         safeSpawn "sensible-browser" ["-private-window", "--incognito"])
      ]
@@ -51,8 +51,8 @@ main = xmonad . ewmh . pagerHints . docks $ additionalKeys def
      ++
      mapPairs ((noModMask,), safeSpawn')
               [ (xK_Print,            ["scrot"])
-              , (xF86XK_AudioMicMute, ["pactl"
-                                      , "set-source-mute", "1", "toggle"])
+              , (xF86XK_AudioMicMute, ["pactl",
+                                       "set-source-mute", "1", "toggle"])
               , (xF86XK_Display,      ["arandr"])
               , (xF86XK_ScreenSaver,  ["xscreensaver-command", "-lock"])
               ]
