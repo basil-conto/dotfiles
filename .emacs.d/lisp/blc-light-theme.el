@@ -48,6 +48,7 @@
    ;; org-faces
    (org-agenda-date-today ((t :foreground "darkblue" :inherit org-agenda-date
                               :slant      italic     :weight  bold)))
+   (org-upcoming-deadline ((t :foreground "purple")))
 
    ;; whitespace
    (whitespace-line ((t :underline t)))
