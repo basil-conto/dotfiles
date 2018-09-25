@@ -488,6 +488,9 @@ URL is parsed using the regular expressions found in
         (user-error "Invalid RFC URL: %s" url))
     (user-error "Regexp not found for RFC URL: %s" url)))
 
+(defvar browse-url-firefox-arguments)
+(defvar browse-url-generic-program)
+
 (defun blc-browse-url-surf (&rest args)
   "Like `browse-url-generic', but using the Surf browser."
   (let ((browse-url-generic-program "surf"))
