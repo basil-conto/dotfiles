@@ -229,6 +229,7 @@ Visit `package-user-dir' if such a directory is not found."
    rainbow-mode
    regex-tool
    restclient
+   rmsbolt
 
    sass-mode
    sicp
