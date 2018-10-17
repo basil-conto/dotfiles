@@ -2115,10 +2115,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   (esc-map
    ("\C-z"                                . #'raise-sexp)
+   ("#"                                   . #'avy-goto-word-or-subword-1)
    ("+"                                   . #'er/expand-region)
    ("R"                                   . #'redraw-display)
    ("V"                                   . #'scroll-other-window-down)
-   ("]"                                   . #'avy-goto-word-or-subword-1)
+   ("["                                   . #'raise-sexp)
+   ("]"                                   . #'delete-pair)
    ("o"                                   . #'ace-window))
 
   (goto-map
