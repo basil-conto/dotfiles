@@ -4,14 +4,12 @@
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 [ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
 
-xscreensaver -no-splash &
+command -v xscreensaver && xscreensaver -no-splash &
 
 if command -v taffybar; then
   taffybar &
   command -v nm-applet && nm-applet &
   command -v pasystray && pasystray --always-notify &
 fi
-
-systemctl start --user redshift-gtk.service
 
 eval $(ssh-agent)
