@@ -72,13 +72,15 @@ alias gcal='gcal --starting-day=Monday'
 # vlc
 alias nvlc='nvlc --browse-dir .'
 
-# cpufreq
-alias policy='cpufreq-info --policy'
-alias powersave='sudo cpufreq-set --governor powersave --related'
-alias performance='sudo cpufreq-set --governor performance --related'
-
 # man
 alias man='TERM=xterm-man man'
+
+# cpupower
+alias policy='sudo cpupower info; cpupower frequency-info --policy'
+alias powersave='sudo cpupower frequency-set --governor powersave && \
+sudo cpupower set --perf-bias 15'
+alias performance='sudo cpupower frequency-set --governor performance && \
+sudo cpupower set --perf-bias 0'
 
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'
