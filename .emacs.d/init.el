@@ -1121,6 +1121,9 @@ less jumpy auto-filling."
  diary-comment-start                    ";"
  diary-number-of-entries                3
 
+ ;; diff-mode
+ diff-font-lock-prettify                t
+
  ;; dired
  dired-auto-revert-buffer               t
  dired-dwim-target                      t
