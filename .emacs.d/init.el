@@ -1917,6 +1917,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks gnus-load-hook    :fns blc-gc-thresh-maximise)
   (:hooks gnus-started-hook :fns blc-gc-thresh-restore )
 
+  ;; gnus-dired
+  (:hooks dired-mode-hook :fns turn-on-gnus-dired-mode)
+
   ;; haskell-mode
   (:hooks haskell-mode-hook :fns haskell-indent-mode)
 
