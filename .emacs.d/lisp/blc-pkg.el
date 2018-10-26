@@ -127,6 +127,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    dash
    debbugs
+   debian-el
    debpaste
    define-word
    delight
