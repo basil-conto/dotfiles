@@ -35,6 +35,9 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 [ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
 export PATH
 
+# Hoard (include)
+[ -d "${LOCAL_DIR}/include" ] && export CPATH="${LOCAL_DIR}/include:${CPATH}"
+
 # Books (lib)
 if [ -d "${LOCAL_DIR}/lib" ]; then
   export LD_LIBRARY_PATH="${LOCAL_DIR}/lib:${LD_LIBRARY_PATH}"
