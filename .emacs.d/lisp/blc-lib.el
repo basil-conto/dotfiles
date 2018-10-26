@@ -379,8 +379,9 @@ Offer to revert from the auto-save file, if that exists."
 (defun blc-derived-buffers (&rest modes)
   "Return subset of `buffer-list' derived from MODES."
   (seq-filter (lambda (buf)
-                (with-current-buffer buf
-                  (apply #'derived-mode-p modes)))
+                (apply #'provided-mode-derived-p
+                       (buffer-local-value 'major-mode buf)
+                       modes))
               (buffer-list)))
 
 (defun blc-bury-buffer (&optional buffer-or-name unbury)
