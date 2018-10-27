@@ -644,17 +644,7 @@ Adapted from URL
    :errorback (lambda (err &rest _)
                 (signal 'error (list "GitHub error: %S" (cdr err))))))
 
-;; git-commit, git-rebase
-
-(defun blc-kill-git-buffer ()
-  "Kill current git commit message or rebase todo list buffer."
-  (when-let* ((re (cond ((bound-and-true-p git-commit-mode)
-                         git-commit-filename-regexp)
-                        ((derived-mode-p #'git-rebase-mode)
-                         git-rebase-filename-regexp)))
-              (buffer-file-name)
-              ((string-match-p re buffer-file-name)))
-    (kill-buffer)))
+;; git-commit
 
 (defun blc-git-commit-set-fill-column ()
   "Set local `fill-column' for `git-commit-mode' buffers."
@@ -1620,9 +1610,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; sendmail
  sendmail-program                       "msmtp"
 
- ;; server
- server-kill-new-buffers                nil
-
  ;; sh-script
  sh-basic-offset                        2
  sh-indentation                         2
@@ -1996,10 +1983,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; text-mode
   (:hooks text-mode-hook :fns blc-indent-relative-first-indent-point)
-
-  ;; with-editor
-  (:fns blc-kill-git-buffer :hooks (with-editor-post-cancel-hook
-                                    with-editor-post-finish-hook))
 
   ;; writeroom-mode
   (:hooks writeroom-mode-hook :fns blc-visual-auto-fill-column))
