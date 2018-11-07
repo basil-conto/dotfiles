@@ -89,6 +89,15 @@
         :before (apply-partially #'set 'cands)
       (apply complete args))))
 
+;; browse-url
+
+(define-advice browse-url-firefox (:around (fn &rest args) blc-no-wait)
+  "Detach from spawned subprocess."
+  (blc-with-nonce start-process :override
+                  (lambda (_name _buf prog &rest args)
+                    (apply #'call-process prog nil 0 nil args))
+    (apply fn args)))
+
 ;; cc-align
 
 (define-advice c-lineup-arglist (:before-until (langelem) blc-c++-lambda-indent)
@@ -500,7 +509,7 @@ URL is parsed using the regular expressions found in
 (defun blc-browse-url-firefox (&rest args)
   "Like `browse-url-firefox', but private."
   (let ((browse-url-firefox-arguments
-         (cons "-private" browse-url-firefox-arguments)))
+         `("-P" "private" "-private-window" ,@browse-url-firefox-arguments)))
     (apply #'browse-url-firefox args)))
 
 (defvar blc-browser-alist
