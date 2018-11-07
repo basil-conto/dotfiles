@@ -12,9 +12,9 @@ path=/opt/google/chrome/PepperFlash
 
 if [ -d "${path}" ]; then
   flags="${flags} --ppapi-flash-path=${path}/libpepflashplayer.so"
-  if command -v jq >/dev/null; then
+  if [ -x "$(command -v jq)" ]; then
     flags="${flags} --ppapi-flash-version=$(jq .version ${path}/manifest.json)"
-  elif command -v notify-send >/dev/null; then
+  elif [ -x "$(command -v notify-send)" ]; then
     notify-send 'jq not installed'
   else
     printf '\n%s\n\n' 'WARN: jq not installed' >&2

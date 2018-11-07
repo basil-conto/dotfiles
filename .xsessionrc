@@ -1,15 +1,16 @@
 #!/usr/bin/env sh
+# ~/.xsessionrc
 
 [ -r /etc/profile       ] && . /etc/profile
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 [ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
 
-command -v xscreensaver && xscreensaver -no-splash &
+[ -x "$(command -v xscreensaver)" ] && xscreensaver -no-splash &
 
-if command -v taffybar; then
+if [ -x "$(command -v taffybar)" ]; then
   taffybar &
-  command -v nm-applet && nm-applet &
-  command -v pasystray && pasystray --always-notify &
+  [ -x "$(command -v nm-applet)" ] && nm-applet &
+  [ -x "$(command -v pasystray)" ] && pasystray --always-notify &
 fi
 
 eval $(ssh-agent)
