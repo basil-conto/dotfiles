@@ -4,7 +4,9 @@
 import Control.Arrow                    ( (***) )
 import Control.Monad                    ( void )
 import Data.Bits                        ( (.|.) )
+import Data.Char                        ( toUpper )
 import Data.List                        ( uncons )
+import Text.Printf                      ( printf )
 
 -- Third-party
 import Data.Default                     ( def )
@@ -22,13 +24,18 @@ import Graphics.X11.ExtraTypes.XF86     ( xF86XK_AudioLowerVolume
 import Graphics.X11.Types               ( mod4Mask, noModMask, shiftMask
                                         , xK_Print, xK_a, xK_f, xK_o, xK_s )
 import System.Taffybar.Hooks.PagerHints ( pagerHints )
-import XMonad.Actions.Volume            ( lowerVolume, raiseVolume, toggleMute )
 import XMonad.Core                      ( XConfig(..) )
 import XMonad.Hooks.EwmhDesktops        ( ewmh )
 import XMonad.Hooks.ManageDocks         ( avoidStruts, docks )
 import XMonad.Main                      ( xmonad )
 import XMonad.Util.EZConfig             ( additionalKeys )
 import XMonad.Util.Run                  ( safeSpawn, safeSpawnProg )
+
+pactl :: String -> Int -> [String]
+pactl s n = case n of 0 -> cmd "mute"   $ "toggle"
+                      _ -> cmd "volume" $ printf "%+d%%" n
+  where def     = printf "@DEFAULT_%s@" $ map toUpper s
+        cmd k v = ["pactl", printf "set-%s-%s" s k, def, v]
 
 main :: IO ()
 main = xmonad . ewmh . pagerHints . docks $ additionalKeys def
@@ -41,20 +48,19 @@ main = xmonad . ewmh . pagerHints . docks $ additionalKeys def
      , terminal           = "x-terminal-emulator"
      } $
 
-     [ ((noModMask, xF86XK_AudioLowerVolume), void $ lowerVolume volStep)
-     , ((noModMask, xF86XK_AudioMute       ), void toggleMute)
-     , ((noModMask, xF86XK_AudioRaiseVolume), void $ raiseVolume volStep)
-     , ((modMask' .|. shiftMask, xK_s),
+     [ ((modMask' .|. shiftMask, xK_s),
         safeSpawn "sensible-browser" ["-private-window", "--incognito"])
      ]
 
      ++
      mapPairs ((noModMask,), safeSpawn')
-              [ (xK_Print,            ["scrot"])
-              , (xF86XK_AudioMicMute, ["pactl",
-                                       "set-source-mute", "1", "toggle"])
-              , (xF86XK_Display,      ["arandr"])
-              , (xF86XK_ScreenSaver,  ["xscreensaver-command", "-lock"])
+              [ (xK_Print,                ["scrot"])
+              , (xF86XK_AudioLowerVolume, pactl "sink"   (-5))
+              , (xF86XK_AudioMicMute,     pactl "source"    0)
+              , (xF86XK_AudioMute,        pactl "sink"      0)
+              , (xF86XK_AudioRaiseVolume, pactl "sink"      5)
+              , (xF86XK_Display,          ["arandr"])
+              , (xF86XK_ScreenSaver,      ["xscreensaver-command", "-lock"])
               ]
 
      ++
