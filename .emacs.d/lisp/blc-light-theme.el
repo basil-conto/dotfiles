@@ -58,6 +58,10 @@
    ;; gscholar-bibtex
    (gscholar-bibtex-title ((t :inherit bold)))
 
+   ;; ledger-fonts
+   (ledger-font-payee-uncleared-face
+    ((t :inherit (font-lock-comment-face bold))))
+
    ;; magit
    (magit-signature-good ((t :foreground "green4")))
 

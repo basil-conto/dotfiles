@@ -772,12 +772,6 @@ Return the name of the buffer as a string or `nil'."
   "Shorten lighter of `isearch-mode'."
   (setq isearch-mode "🔍"))
 
-;; ledger
-
-(defun blc-ledger-frame-width ()
-  "Return available `frame-width' as a string."
-  (number-to-string (blc-but-fringes (frame-width))))
-
 ;; man
 
 (defun blc--man-other-buffer (&optional prev)
@@ -2779,13 +2773,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'ledger-mode
   (setq-default ledger-default-date-format ledger-iso-date-format)
 
-  (blc-put ledger-report-format-specifiers
-           "frame-width"
-           #'blc-ledger-frame-width)
-
   (ledger-reports-add "blc-account"
                       (string-join '("%(binary)"
-                                     "--columns %(frame-width)"
                                      "--dc"
                                      "--file %(ledger-file)"
                                      "register %(account)")
