@@ -423,6 +423,15 @@ Offer all entities found in `org-entities-user' and
   "Locally restore `default-value' of `TeX-command-default'."
   (setq TeX-command-default (default-value 'TeX-command-default)))
 
+(defun blc-TeX-doc (arg)
+  "Prompt for and display TeX documentation.
+Like `TeX-doc', but with prefix ARG pass it to
+`TeX-documentation-texdoc' instead."
+  (interactive "P")
+  (if arg
+      (TeX-documentation-texdoc arg)
+    (call-interactively #'TeX-doc)))
+
 ;; bbdb
 
 (defun blc-bbdb-set-gnus-summary-line-format ()
@@ -2194,7 +2203,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (add-to-list 'LaTeX-clean-intermediate-suffixes (blc-rx `(: ?. ,suffix)))))
 
 (with-eval-after-load 'tex
-  (define-key TeX-mode-map [remap TeX-documentation-texdoc] #'TeX-doc)
+  (define-key TeX-mode-map [remap TeX-documentation-texdoc] #'blc-TeX-doc)
 
   ;; Set priority of pre-configured PDF viewers
   (dolist (viewer '("Zathura" "PDF Tools"))
