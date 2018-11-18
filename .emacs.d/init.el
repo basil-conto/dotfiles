@@ -743,11 +743,12 @@ Suspending or exiting Gnus deletes that frame."
 (defun blc-info-read-buffer ()
   "Read the name, file and node of an Info buffer.
 Return the name of the buffer as a string or `nil'."
-  (if-let* ((bufs (mapcar
+  (if-let* ((bufs (blc-keep
                    (lambda (buf)
-                     (let ((name (buffer-name buf))
-                           (id   (buffer-local-value
-                                  'mode-line-buffer-identification buf)))
+                     (and-let* ((name (buffer-name buf))
+                                ((/= (aref name 0) ?\s))
+                                (id   (buffer-local-value
+                                       'mode-line-buffer-identification buf)))
                        (cons (concat name (substring-no-properties (cadr id)))
                              name)))
                    (blc-derived-buffers #'Info-mode)))
