@@ -2807,16 +2807,15 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; magit-extras
 
 (with-eval-after-load 'magit-extras
+  ;; Adapted from URL `https://github.com/npostavs/emacs.d'
   (setq-default
    magit-pop-revision-stack-format
-   ;; Adapted from URL `https://github.com/npostavs/emacs.d'
-   (pcase-let ((`(,pt ,_eob ,index) magit-pop-revision-stack-format))
-     (list pt
-           "\
-[%h]: %ci
-  %s
+   (list "format:[%N] "
+         "\
+[%N]: %s
+  %ci
   https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H"
-           index))))
+         (caddr magit-pop-revision-stack-format))))
 
 ;; magit-log
 
