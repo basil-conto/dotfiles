@@ -540,10 +540,9 @@ URL is parsed using the regular expressions found in
   "Read WWW browser name to open URL with completion.
 See `blc-browser-alist' for known browsers and `browse-url' for a
 description of the arguments to this function."
-  (when-let* ((prompt (blc--url-prompt (if (string-blank-p url)
-                                           "Open browser: "
-                                         "Open URL `%s' in: ")
-                                       url))
+  (when-let* ((prompt (if (string-blank-p url)
+                          "Open browser: "
+                        (format "Open URL `%s' in: " (blc--url-truncate url))))
               (browser
                (blc-elt blc-browser-alist
                         (completing-read prompt blc-browser-alist nil t))))

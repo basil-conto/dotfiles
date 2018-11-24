@@ -271,11 +271,9 @@ many opusenc processes as there are available processing units."
                                 (aref (cdr journo) 3)
                                 (float-time (time-subtract nil start))))))))))
 
-(defun blc--url-prompt (fmt url)
-  "Truncate URL for viewing and substitute in FMT string.
-Resulting %-occurences are escaped as %%."
-  (let ((url (url-truncate-url-for-viewing url (ash (frame-width) -1))))
-    (blc-sed "%" "%%" (format fmt url) t t)))
+(defun blc--url-truncate (url)
+  "Truncate URL to half the selected frame's width for viewing."
+  (url-truncate-url-for-viewing url (ash (frame-width) -1)))
 
 (defun blc-download (&optional url _new-window file)
   "Write contents of URL to FILE.
@@ -290,7 +288,8 @@ compatibility with `browse-url' and ignored."
                         (shr-url-at-point nil))) ; Link/image
             (remote (url-file-nondirectory url))
             (local  (or file
-                        (read-file-name (blc--url-prompt "Copy `%s' to: " url)
+                        (read-file-name (format "Copy `%s' to: "
+                                                (blc--url-truncate url))
                                         nil nil nil remote)))
             (file   (apply #'blc-file
                            local
