@@ -2159,6 +2159,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (search-map
    ("a"                                   . #'counsel-ag)
    ("g"                                   . #'counsel-git-grep)
+   ("r"                                   . #'counsel-rg)
    ("s"                                   . #'counsel-grep-or-swiper)))
 
 
