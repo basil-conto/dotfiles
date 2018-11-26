@@ -271,9 +271,27 @@ many opusenc processes as there are available processing units."
                                 (aref (cdr journo) 3)
                                 (float-time (time-subtract nil start))))))))))
 
-(defun blc--url-truncate (url)
-  "Truncate URL to half the selected frame's width for viewing."
-  (url-truncate-url-for-viewing url (ash (frame-width) -1)))
+(defun blc--url-fmt (fmt url)
+  "Truncate URL for viewing and substitute in FMT string."
+  (format fmt (url-truncate-url-for-viewing url (ash (frame-width) -1))))
+
+(defun blc-read-file (prompt dir def)
+  "Read regular file name with PROMPT and completion in DIR.
+Like `read-file-name', but intended for selecting a file to write
+to with protection from accidental overwriting. DEF is like the
+INITIAL argument to `read-file-name', and is additionally used as
+the base file name when a directory is selected."
+  (let ((init def)
+        file)
+    (while (progn (setq file (read-file-name prompt dir nil nil def))
+                  (when (file-directory-p file)
+                    (setq file (expand-file-name init file)))
+                  (and (file-exists-p file)
+                       (not (yes-or-no-p
+                             (format "File `%s' exists; overwrite? " file)))))
+      (setq dir (file-name-directory    file))
+      (setq def (file-name-nondirectory file)))
+    file))
 
 (defun blc-download (&optional url _new-window file)
   "Write contents of URL to FILE.
@@ -283,18 +301,13 @@ directory, URL is downloaded to a similarly named file under that
 directory, as per `copy-file' et al. NEW-WINDOW is for
 compatibility with `browse-url' and ignored."
   (interactive)
-  (if-let* ((url    (or url
-                        (thing-at-point 'url)    ; Raw URL
-                        (shr-url-at-point nil))) ; Link/image
-            (remote (url-file-nondirectory url))
-            (local  (or file
-                        (read-file-name (format "Copy `%s' to: "
-                                                (blc--url-truncate url))
-                                        nil nil nil remote)))
-            (file   (apply #'blc-file
-                           local
-                           (and (file-accessible-directory-p local)
-                                (list remote)))))
+  (if-let* ((url  (or url
+                      (thing-at-point 'url)    ; Raw URL
+                      (shr-url-at-point nil))) ; Link/image
+            (file (or file
+                      (blc-read-file (blc--url-fmt "Copy `%s' to: " url)
+                                     (blc-user-dir "DOWNLOAD")
+                                     (url-file-nondirectory url)))))
       (url-copy-file url file 0)
     (user-error "No URL specified or found at point")))
 

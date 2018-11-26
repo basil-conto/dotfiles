@@ -44,6 +44,7 @@
 (autoload 'irfc-visit                     "irfc" nil t)
 (autoload 'ivy-completion-in-region       "ivy")
 (autoload 'magit-pop-revision-stack       "magit-extras" nil t)
+(autoload 'mailcap-file-name-to-mime-type "mailcap")
 (autoload 'meme                           "meme" nil t)
 (autoload 'meme-file                      "meme" nil t)
 (autoload 'TeX-doc                        "tex" nil t)
@@ -442,7 +443,7 @@ Like `TeX-doc', but with prefix ARG pass it to
 
 ;; browse-url
 
-(defun blc-print-url--lpr (url &rest _)
+(defun blc-print-url--lpr (url)
   "Asynchronously print URL using `lpr-command'.
 This function is written with a print command like `hp-print' in
 mind, which is passed `lpr-switches' and URL as arguments."
@@ -451,45 +452,53 @@ mind, which is passed `lpr-switches' and URL as arguments."
                 :command         `(,lpr-command ,@lpr-switches ,url)
                 :connection-type 'pipe))
 
-(defun blc-print-url--webkit (url &rest _)
-  "Print URL using `wkhtmltopdf'.
-The contents of URL are converted to a temporary PDF file by
-`wkhtmltopdf' before printing the result with
-`blc-print-url--lpr'."
-  (let ((name "WebKit Print")
-        (temp (make-temp-file "blc-" nil ".pdf")))
-    (make-process
-     :name            name
-     :command         (list "wkhtmltopdf" url temp)
-     :connection-type 'pipe
-     :sentinel
-     (lambda (proc event)
-       (if (blc-process-success-p proc)
-           (blc-print-url--lpr temp)
-         (lwarn 'blc :error "%s: %s" name event))))))
+(defun blc-print-url--webkit (url pdf callback)
+  "Asynchronously convert contents of URL to PDF using `wkhtmltopdf'.
+Call CALLBACK with no arguments on success."
+  (let ((name "WebKit Print"))
+    (make-process :name            name
+                  :command         (list "wkhtmltopdf" url pdf)
+                  :connection-type 'pipe
+                  :sentinel
+                  (lambda (proc event)
+                    (if (blc-process-success-p proc)
+                        (funcall callback)
+                      (lwarn 'blc :error "%s: %s" name event))))))
 
-(defun blc-print-url--selector (url)
-  "Return cons cell with appropriate printer and filter for URL."
-  (require 'eww)
-  (require 'mailcap)
-  (if-let* ((mimetype (mailcap-file-name-to-mime-type url))
-            ((url-handler-file-remote-p url)))
-      (if (member mimetype '( "application/pdf" "application/postscript"))
-          (cons #'blc-print-url--lpr #'url-file-local-copy)
-        (cons #'blc-print-url--webkit #'identity))
-    (if (eww-html-p mimetype)
-        (cons #'blc-print-url--webkit #'identity)
-      (cons #'blc-print-url--lpr
-            (lambda (url)
-              (url-filename (url-generic-parse-url url)))))))
-
-(defun blc-print-url (url &rest args)
+(defun blc-print-url (url &rest _)
   "Print contents of URL.
-See `browse-url' for an explanation of the arguments."
-  (pcase-let ((`(,browser . ,filter) (blc-print-url--selector url)))
-    (apply browser (funcall filter url) args)))
+See `browse-url' for a description of the arguments."
+  (require 'eww)
+  (let ((mime   (mailcap-file-name-to-mime-type url))
+        (remote (url-handler-file-remote-p url)))
+    (cond ((and remote
+                (member mime '("application/pdf" "application/postscript")))
+           (blc-print-url--lpr (url-file-local-copy url)))
+          ((not (or remote (eww-html-p mime)))
+           (blc-print-url--lpr (url-filename (url-generic-parse-url url))))
+          (t
+           (let ((tmp (make-temp-file "blc-" nil ".pdf")))
+             (blc-print-url--webkit
+              url tmp (apply-partially #'blc-print-url--lpr tmp)))))))
 
 (function-put #'blc-print-url 'interactive-form (interactive-form #'browse-url))
+
+(defun blc-print-url-pdf (url &rest _)
+  "Save contents of URL as a PDF file.
+See `browse-url' for a description of the arguments."
+  (cond ((not (equal (mailcap-file-name-to-mime-type url) "application/pdf"))
+         (let* ((base (file-name-sans-extension (url-file-nondirectory url)))
+                (pdf  (blc-read-file (blc--url-fmt "Save URL `%s' to: " url)
+                                     (blc-user-dir "DOWNLOAD")
+                                     (concat base ".pdf"))))
+           (blc-print-url--webkit url pdf #'ignore)))
+        ((url-handler-file-remote-p url)
+         (blc-download url))
+        (t
+         (message "PDF `%s' already saved" url))))
+
+(function-put
+ #'blc-print-url-pdf 'interactive-form (interactive-form #'browse-url))
 
 (defun blc-browse-url-irfc (url &rest _)
   "Visit RFC URL via `irfc-visit'.
@@ -522,11 +531,12 @@ URL is parsed using the regular expressions found in
     (apply #'browse-url-firefox args)))
 
 (defvar blc-browser-alist
-  `(("EWW"                . ,#'eww-browse-url        )
-    ("Firefox"            . ,#'browse-url-firefox    )
+  `(("Firefox"            . ,#'browse-url-firefox    )
     ("Firefox private"    . ,#'blc-browse-url-firefox)
+    ("EWW"                . ,#'eww-browse-url        )
     ("Download"           . ,#'blc-download          )
     ("Print"              . ,#'blc-print-url         )
+    ("Print to PDF"       . ,#'blc-print-url-pdf     )
     ("Emacs IRFC"         . ,#'blc-browse-url-irfc   )
     ("XDG"                . ,#'browse-url-xdg-open   )
     ("Surf"               . ,#'blc-browse-url-surf   )
@@ -542,7 +552,7 @@ See `blc-browser-alist' for known browsers and `browse-url' for a
 description of the arguments to this function."
   (when-let* ((prompt (if (string-blank-p url)
                           "Open browser: "
-                        (format "Open URL `%s' in: " (blc--url-truncate url))))
+                        (blc--url-fmt "Open URL `%s' in: " url)))
               (browser
                (blc-elt blc-browser-alist
                         (completing-read prompt blc-browser-alist nil t))))
