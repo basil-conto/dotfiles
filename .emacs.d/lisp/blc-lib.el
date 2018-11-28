@@ -275,21 +275,27 @@ many opusenc processes as there are available processing units."
   "Truncate URL for viewing and substitute in FMT string."
   (format fmt (url-truncate-url-for-viewing url (ash (frame-width) -1))))
 
-(defun blc-read-file (prompt dir def)
-  "Read regular file name with PROMPT and completion in DIR.
+(defvar blc-read-file-dir nil
+  "Directory for `blc-read-file' to start completion in.
+If nil, this variable is set to XDG_DOWNLOAD_DIR when needed.")
+
+(defun blc-read-file (prompt &optional def)
+  "Read regular file name with PROMPT in `blc-read-file-dir'.
 Like `read-file-name', but intended for selecting a file to write
 to with protection from accidental overwriting. DEF is like the
 INITIAL argument to `read-file-name', and is additionally used as
 the base file name when a directory is selected."
+  (or blc-read-file-dir (setq blc-read-file-dir (blc-user-dir "DOWNLOAD")))
   (let ((init def)
         file)
-    (while (progn (setq file (read-file-name prompt dir nil nil def))
-                  (when (file-directory-p file)
-                    (setq file (expand-file-name init file)))
-                  (and (file-exists-p file)
-                       (not (yes-or-no-p
-                             (format "File `%s' exists; overwrite? " file)))))
-      (setq dir (file-name-directory    file))
+    (while (progn
+             (setq file (read-file-name prompt blc-read-file-dir nil nil def))
+             (when (file-directory-p file)
+               (setq file (expand-file-name init file)))
+             (and (file-exists-p file)
+                  (not (yes-or-no-p
+                        (format "File `%s' exists; overwrite? " file)))))
+      (setq blc-read-file-dir (file-name-directory file))
       (setq def (file-name-nondirectory file)))
     file))
 
@@ -306,7 +312,6 @@ compatibility with `browse-url' and ignored."
                       (shr-url-at-point nil))) ; Link/image
             (file (or file
                       (blc-read-file (blc--url-fmt "Copy `%s' to: " url)
-                                     (blc-user-dir "DOWNLOAD")
                                      (url-file-nondirectory url)))))
       (url-copy-file url file 0)
     (user-error "No URL specified or found at point")))

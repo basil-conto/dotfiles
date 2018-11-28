@@ -489,7 +489,6 @@ See `browse-url' for a description of the arguments."
   (cond ((not (equal (mailcap-file-name-to-mime-type url) "application/pdf"))
          (let* ((base (file-name-sans-extension (url-file-nondirectory url)))
                 (pdf  (blc-read-file (blc--url-fmt "Save URL `%s' to: " url)
-                                     (blc-user-dir "DOWNLOAD")
                                      (concat base ".pdf"))))
            (blc-print-url--webkit url pdf #'ignore)))
         ((url-handler-file-remote-p url)
