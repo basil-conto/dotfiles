@@ -32,6 +32,8 @@
 (autoload 'blc-mbsync-deduplicate         "blc-mbsync" nil t)
 (autoload 'blc-mbsync-maximise-uid        "blc-mbsync" nil t)
 (autoload 'blc-pass-backend-parse         "blc-pass")
+(autoload 'dired-jump                     "dired-x" nil t)
+(autoload 'dired-jump-other-window        "dired-x" nil t)
 (autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
 (autoload 'eww-open-in-new-buffer         "eww" nil t)
 (autoload 'ffap-gnus-hook                 "ffap")
