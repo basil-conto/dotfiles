@@ -1507,6 +1507,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     "https://wired.com/feed/rss"))
  newsticker-url-list-defaults           ()
 
+ ;; novice
+ disabled-command-function              nil
+
  ;; nsm
  nsm-settings-file                      (blc-file blc-index-dir
                                                   "network-security.el")
@@ -2175,14 +2178,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 
 ;;;; PACKAGES
-
-;; editfns.c
-
-(function-put #'narrow-to-region 'disabled nil)
-
-;; buffer.c
-
-(function-put #'erase-buffer 'disabled nil)
 
 ;; ace-window
 
@@ -3156,10 +3151,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; time
 
 (display-time)
-
-;; timer-list
-
-(function-put #'list-timers 'disabled nil)
 
 ;; type-break
 
