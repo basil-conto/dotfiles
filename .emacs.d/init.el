@@ -1676,9 +1676,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  speedbar-use-images                    t
  speedbar-vc-do-check                   nil
 
- ;; sr-speedbar
- sr-speedbar-auto-refresh               nil
-
  ;; startup
  inhibit-default-init                   t
  inhibit-startup-screen                 t
@@ -2116,8 +2113,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("7"                                   . #'blc-transpose-split)
    ("B"                                   . #'blc-bury-buffer)
    ("M"                                   . #'blc-gnus)
-   ("g"                                   . #'magit-status)
-   ("t"                                   . #'sr-speedbar-toggle))
+   ("g"                                   . #'magit-status))
 
   (ctl-x-4-map
    ("\C-j"                                . #'dired-jump-other-window)
@@ -3114,11 +3110,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; saveplace
 
 (save-place-mode)
-
-;; sr-speedbar
-
-(with-eval-after-load 'speedbar
-  (require 'sr-speedbar))
 
 ;; simple
 
