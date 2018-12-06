@@ -227,11 +227,13 @@ Visit `package-user-dir' if such a directory is not found."
    pomidor
    pulseaudio-control
 
+   racket-mode
    rainbow-mode
    restclient
    rmsbolt
 
    sass-mode
+   scribble-mode
    sicp
    skype
    sl
