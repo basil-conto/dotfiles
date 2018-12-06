@@ -228,7 +228,6 @@ Visit `package-user-dir' if such a directory is not found."
    pulseaudio-control
 
    rainbow-mode
-   regex-tool
    restclient
    rmsbolt
 
@@ -238,7 +237,6 @@ Visit `package-user-dir' if such a directory is not found."
    sl
    slime-volleyball
    solarized-theme
-   sr-speedbar
    sudoku
    swiper
    sx
@@ -256,7 +254,6 @@ Visit `package-user-dir' if such a directory is not found."
    web-mode
    wgrep
    wiki-summary
-   with-editor
    writeroom-mode
    wttrin
 
