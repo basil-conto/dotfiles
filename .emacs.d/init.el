@@ -182,6 +182,16 @@ last visible Emacs client frame."
   (setq gnus-frame-list     ())
   (setq gnus-created-frames ()))
 
+;; help
+
+(define-advice view-echo-area-messages (:filter-return (win) blc-select-window)
+  "Pop to `messages-buffer'."
+  (when-let (frame (and win (window-frame win)))
+    (unless (eq frame (selected-frame))
+      (select-frame-set-input-focus frame))
+    (select-window win))
+  win)
+
 ;; help-fns
 
 (define-advice help-fns-short-filename (:around (abbr file) blc-src-load-path)
