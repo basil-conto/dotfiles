@@ -161,7 +161,6 @@ Visit `package-user-dir' if such a directory is not found."
    gitattributes-mode
    gitconfig-mode
    gitignore-mode
-   glab
    gnus-desktop-notify
    google-contacts
    google-maps
