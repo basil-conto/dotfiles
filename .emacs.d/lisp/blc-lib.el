@@ -549,13 +549,6 @@ Display is determined by the environment variable DISPLAY."
   (unless (eq (next-frame) (selected-frame))
     (delete-frame frame force)))
 
-(defun blc-select-frame (frame &optional norecord)
-  "Select FRAME, raise it, and set input focus, if possible.
-Like `select-frame-set-input-focus', but do nothing if FRAME is
-already selected."
-  (unless (eq frame (selected-frame))
-    (select-frame-set-input-focus frame norecord)))
-
 (defun blc-with-every-frame (&rest fns)
   "Run abnormal hooks in current frame and with every new one."
   (let ((frame (selected-frame)))

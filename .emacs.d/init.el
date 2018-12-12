@@ -187,7 +187,7 @@ last visible Emacs client frame."
 (define-advice view-echo-area-messages (:filter-return (win) blc-select-window)
   "Pop to `messages-buffer'."
   (when-let (frame (and win (window-frame win)))
-    (blc-select-frame frame)
+    (select-frame-set-input-focus frame)
     (select-window win))
   win)
 
@@ -423,7 +423,7 @@ Offer all entities found in `org-entities-user' and
   (let ((frame (selected-frame)))
     (unwind-protect
         (apply fn args)
-      (blc-select-frame frame))))
+      (select-frame-set-input-focus frame))))
 
 (add-function :around pop-up-frame-function #'blc-pop-up-frame--advice)
 
