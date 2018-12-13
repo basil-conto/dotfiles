@@ -953,6 +953,24 @@ non-nil, create a new `term' buffer instead."
       (term-line-mode)
     (term-char-mode)))
 
+(defun blc-term-rename ()
+  "Reflect `default-directory' changes in terminal buffer name.
+Intended for `term-exec-hook'."
+  (add-function
+   :after (process-filter (get-buffer-process (current-buffer)))
+   (let (dir)
+     (lambda (proc _s)
+       (when-let ((buf (process-buffer proc))
+                  ((buffer-live-p buf)))
+         (with-current-buffer buf
+           (unless (equal dir default-directory)
+             (setq dir default-directory)
+             (rename-buffer (format "*%s %s*"
+                                    term-ansi-buffer-base-name
+                                    (abbreviate-file-name
+                                     (directory-file-name dir)))
+                            t))))))))
+
 ;; visual-fill-column
 
 (defun blc-visual-auto-fill-column ()
@@ -2012,6 +2030,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; startup
   (:hooks window-setup-hook :append t :fns (blc-report-init-time
                                             blc-gc-thresh-restore))
+
+  ;; term
+  (:hooks term-exec-hook :fns blc-term-rename)
 
   ;; text-mode
   (:hooks text-mode-hook :fns blc-indent-relative-first-indent-point)
