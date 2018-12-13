@@ -53,14 +53,18 @@ SEQ is modified destructively unless COPY is non-nil."
                (list result)))
            seq))
 
-(defun blc-elt (map key &optional testfn default)
-  "Like `map-elt', but TESTFN defaults to `equal'."
-  (declare (pure t))
-  (map-elt map key default (or testfn #'equal)))
+(defun blc-get (alist key &optional default testfn)
+  "Like `alist-get', but TESTFN defaults to `equal'."
+  (alist-get key alist default nil (or testfn #'equal)))
 
-(defmacro blc-put (map key value &optional testfn)
-  "Like `map-put', but TESTFN defaults to `equal'."
-  `(map-put ,map ,key ,value ,(or testfn '#'equal)))
+(defmacro blc-put (alist key val &optional testfn)
+  "Associate KEY with VAL in ALIST and return VAL.
+TESTFN is as in `alist-get'."
+  `(setf (alist-get ,key ,alist nil nil ,testfn) ,val))
+
+(defmacro blc-put* (alist key val)
+  "Like `blc-put', but with `equal' as TESTFN."
+  `(blc-put ,alist ,key ,val #'equal))
 
 ;;; Functions
 
@@ -333,7 +337,7 @@ compatibility with `browse-url' and ignored."
 (defun blc-system-procs-by-attr (attr &optional def)
   "Return ATTR or DEF of all running processes."
   (mapcar (lambda (pid)
-            (map-elt (process-attributes pid) attr def))
+            (alist-get attr (process-attributes pid) def))
           (list-system-processes)))
 
 (defun blc--dropbox (shell &rest args)
@@ -650,13 +654,13 @@ called on KEYMAP, KEY and DEF."
 
 (defun blc--country-xref (&rest plist)
   "Lookup PLIST `:country' property in `blc-countries'."
-  (blc-elt blc-countries (plist-get plist :country)))
+  (blc-get blc-countries (plist-get plist :country)))
 
 (defun blc--location-to-tz (location &rest plist)
   "Return LOCATION timezone in zoneinfo format.
 LOCATION properties are looked up in `blc-locations' unless PLIST
 overrides them."
-  (let ((props (or plist (blc-elt blc-locations location))))
+  (let ((props (or plist (blc-get blc-locations location))))
     (format "%s/%s"
             (plist-get (apply #'blc--country-xref props) :area)
             (or (plist-get props :tz)

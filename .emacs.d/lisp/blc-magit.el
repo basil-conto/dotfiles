@@ -41,7 +41,7 @@
                 (with-temp-buffer
                   (magit-rev-insert-format "%G?%x00%GS%x00%GK%x00%GG" rev)
                   (split-string (buffer-string) "\0")))
-               (`(,status ,face) (map-elt blc-magit-gpg-types type)))
+               (`(,status ,face) (alist-get type blc-magit-gpg-types)))
     (when (and status face)
       (magit-insert-section (gpg status (not (eq type ?E)))
         (insert "GPG Status: "
@@ -67,7 +67,7 @@
                         t)
 
 ;; Always highlight tabs
-(blc-put magit-diff-highlight-indentation "" 'tabs)
+(blc-put* magit-diff-highlight-indentation "" 'tabs)
 
 ;; Status buffer
 (dolist (fn '(magit-insert-repo-header magit-insert-remote-header))

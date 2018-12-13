@@ -45,7 +45,7 @@ for the mbsync executable."
   "Translate mbsync CHANS to maildirs.
 See `blc--mbsync-crm' for valid CHANS."
   (let ((chandirs (blc-mbsync-chandirs)))
-    (blc-keep (apply-partially #'blc-elt chandirs)
+    (blc-keep (apply-partially #'blc-get chandirs)
               (if (member "--all" chans)
                   (map-keys chandirs)
                 chans))))

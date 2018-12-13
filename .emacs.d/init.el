@@ -64,11 +64,11 @@
 
 (define-advice battery-linux-sysfs (:filter-return (alist) blc-unicodify)
   "Transcribe Linux sysfs AC line status in ALIST to Unicode."
-  (let ((key ?L))
-    (map-put alist key (pcase (map-elt alist key)
-                         ("AC"  "🔌")
-                         ("BAT" "🔋")
-                         (_     "¿?"))))
+  (let ((cell (assq ?L alist)))
+    (setcdr cell (pcase (cdr cell)
+                   ("AC"  "🔌")
+                   ("BAT" "🔋")
+                   (_     "¿?"))))
   alist)
 
 ;; bbdb-com
@@ -516,11 +516,11 @@ URL is parsed using the regular expressions found in
 `auto-mode-alist' and `ffap-alist' for `irfc-mode' and
 `ffap-rfc', respectively."
   (require 'ffap)
-  (if-let* ((res (blc-keep (lambda (cell)
-                             (and-let* ((re (car cell)))
-                               `(regexp ,re)))
-                           (map-apply #'rassq `((irfc-mode . ,auto-mode-alist)
-                                                (ffap-rfc  . ,ffap-alist))))))
+  (if-let ((res (blc-keep (pcase-lambda (`(,key . ,alist))
+                            (and-let* ((re (car (rassq key alist))))
+                              `(regexp ,re)))
+                          `((irfc-mode . ,auto-mode-alist)
+                            (ffap-rfc  . ,ffap-alist)))))
       (if (string-match (blc-rx `(| ,@res)) (url-file-nondirectory url))
           (irfc-visit (string-to-number (match-string 1)))
         (user-error "Invalid RFC URL: %s" url))
@@ -564,7 +564,7 @@ description of the arguments to this function."
                           "Open browser: "
                         (blc--url-fmt "Open URL `%s' in: " url)))
               (browser
-               (blc-elt blc-browser-alist
+               (blc-get blc-browser-alist
                         (completing-read prompt blc-browser-alist nil t))))
     (apply browser url args)))
 
@@ -669,7 +669,7 @@ Adapted from URL
       :body (let ((repos '(("other" . 0))))
               (dolist (not nots)
                 (let ((name (map-nested-elt not '(repository name) "other")))
-                  (blc-put repos name (1+ (blc-elt repos name nil 0)))))
+                  (blc-put* repos name (1+ (blc-get repos name 0)))))
               (let ((fmt (format
                           "%%-%ds %%%dd"
                           (apply #'max (map-keys-apply #'string-width repos))
@@ -772,7 +772,7 @@ Return the name of the buffer as a string or `nil'."
                              name)))
                    (blc-derived-buffers #'Info-mode)))
             ((cdr bufs)))
-      (blc-elt bufs (completing-read
+      (blc-get bufs (completing-read
                      "Info buffer: " (seq-sort-by #'car #'string-lessp bufs)))
     (cdar bufs)))
 
@@ -925,7 +925,7 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (interactive (list (completing-read "Location: " blc-locations nil t nil ()
                                       (blc-system-location))))
   (pcase-let (((plist :country country :lat lat :long long)
-               (blc-elt blc-locations location)))
+               (blc-get blc-locations location)))
     (setq-default calendar-latitude      lat
                   calendar-longitude     long
                   calendar-location-name (format "%s, %s" location country))))
@@ -2231,7 +2231,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'atomic-chrome
   (setq-default atomic-chrome-extension-type-list '(ghost-text))
-  (blc-put atomic-chrome-url-major-mode-alist "github\\.com" #'gfm-mode))
+  (blc-put* atomic-chrome-url-major-mode-alist "github\\.com" #'gfm-mode))
 
 ;; auctex
 
@@ -2255,17 +2255,17 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
       (let* ((nom (format "%s%s"     nom (if pvc " PVC" "")))
              (cmd (format "%s%s %%t" exe (if pvc "-pvc -view=none" "")))
              (dsc (format "Run %s"   nom)))
-        (blc-put TeX-command-list nom           ; Command name
-                 (list cmd                      ; Non-expanded shell command
-                       #'TeX-run-command        ; Process handler
-                       nil                      ; Confirm expanded shell command
-                       '(latex-mode LaTeX-mode) ; Applicable modes
-                       :help dsc))))))          ; Command
+        (blc-put* TeX-command-list nom           ; Name
+                  (list cmd                      ; Non-expanded command
+                        #'TeX-run-command        ; Process handler
+                        nil                      ; Confirm expanded command
+                        '(latex-mode LaTeX-mode) ; Applicable modes
+                        :help dsc))))))          ; Command
 
 ;; auth-source
 
 (with-eval-after-load 'auth-source
-  (map-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587")))
+  (blc-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587")))
 
 ;; battery
 
@@ -2320,7 +2320,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                          (innamespace       . 0 )
                          (member-init-intro . ++))))
 
-    (map-put c-default-style 'other name)))
+    (blc-put c-default-style 'other name)))
 
 ;; chess
 
@@ -2490,9 +2490,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                              (regexp ,dired-omit-files))))
 
   (map-do (lambda (cmds suffs)
-            (blc-put dired-guess-shell-alist-user
-                     (blc-rx `(: ?. (| ,@suffs) eos))
-                     cmds))
+            (blc-put* dired-guess-shell-alist-user
+                      (blc-rx `(: ?. (| ,@suffs) eos))
+                      cmds))
           '((("jpegoptim")      "jpg" "jpeg")
             (("localc")         "ods" "xls" "xlsx")
             (("lowriter")       "doc" "docx" "odt")
@@ -2605,9 +2605,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; gscholar-bibtex
 
 (with-eval-after-load 'gscholar-bibtex
-  (setq-default gscholar-bibtex-default-source
-                (map-contains-key gscholar-bibtex-available-sources
-                                  "Google Scholar")))
+  (when-let ((src (assoc "Google Scholar" gscholar-bibtex-available-sources)))
+    (setq-default gscholar-bibtex-default-source (car src))))
 
 ;; hacker-typer
 
@@ -2639,8 +2638,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
           newsticker-treeview-item-mode
           term-mode))
 
-  (map-put minor-mode-alist 'hi-lock-mode
-           (blc-sed-tree " .+" "⛯" (map-elt minor-mode-alist 'hi-lock-mode))))
+  (when-let ((cell (assq 'hi-lock-mode minor-mode-alist)))
+    (setcdr cell (blc-sed-tree " .+" "⛯" (cdr cell)))))
 
 (global-hi-lock-mode)
 
@@ -2739,12 +2738,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
           [,#'isearch-yank-word-or-char ,#'ivy-yank-word ,isearch-mode-map]))
 
   ;; Default matching behaviour
-  (map-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
+  (blc-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
 
   ;; Fix ordering
   (map-do (lambda (sort callers)
             (dolist (caller callers)
-              (map-put ivy-sort-functions-alist caller sort)))
+              (blc-put ivy-sort-functions-alist caller sort)))
           `((nil                 t)
             (,#'blc-path-lessp   ,#'project-find-file)
             (,#'blc-sort-reverse ,#'Info-complete-menu-item)
@@ -2758,8 +2757,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                  ,#'elisp-completion-at-point
                                  ,#'find-face-definition)))
 
-  (mapc (apply-partially #'map-delete ivy-completing-read-handlers-alist)
-        (list #'Info-menu #'webjump))
+  (dolist (caller (list #'Info-menu #'webjump))
+    (setq ivy-completing-read-handlers-alist
+          (map-delete ivy-completing-read-handlers-alist caller)))
 
   ;; Recursive minibuffers
   (minibuffer-depth-indicate-mode)
@@ -2869,7 +2869,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; Expand GNU functions
   (map-do (lambda (fn args)
             (unless (assoc-string fn makefile-gnumake-functions-alist)
-              (blc-put makefile-gnumake-functions-alist fn args)))
+              (blc-put* makefile-gnumake-functions-alist fn args)))
           '(("abspath"  "Names")
             ("error"    "Text")
             ("flavor"   "Variable")
@@ -2934,7 +2934,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; mpc
 
 (with-eval-after-load 'mpc
-  (map-delete mpc-frame-alist 'font))
+  (setq mpc-frame-alist (map-delete mpc-frame-alist 'font)))
 
 ;; org
 
@@ -2945,7 +2945,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (global-set-key (where-is-internal cmd org-mode-map t) cmd))
 
   (mapc (lambda (lang)
-          (map-put org-babel-load-languages lang t))
+          (push (cons lang t) org-babel-load-languages))
         '(C
           haskell
           java
@@ -2982,16 +2982,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
      ([?\M-p] . #'blc-org-agenda-day-backward)))
 
   (if-let* ((key "n")
-            (cmd (seq-take (blc-elt org-agenda-custom-commands key) 2))
+            (cmd (seq-take (blc-get org-agenda-custom-commands key) 2))
             ((= (length cmd) 2)))
-      (blc-put org-agenda-custom-commands key
-               `(,@cmd () ,(blc-file org-directory "agenda.html")))
+      (blc-put* org-agenda-custom-commands key
+                `(,@cmd () ,(blc-file org-directory "agenda.html")))
     (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'"))
 
   (mapc (lambda (icon)
-          (blc-put org-agenda-category-icon-alist
-                   (blc-rx `(: bos ,(file-name-base icon) eos))
-                   (list (file-truename icon) nil nil :ascent 'center)))
+          (blc-put* org-agenda-category-icon-alist
+                    (blc-rx `(: bos ,(file-name-base icon) eos))
+                    (list (file-truename icon) nil nil :ascent 'center)))
         (let ((dir (blc-dir org-directory "icons")))
           (and (file-directory-p dir)
                (nreverse (directory-files
@@ -3062,7 +3062,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                    (dom-node 'h3  '((class .      footnotes)) "%s")
                    (dom-node 'div '((id    . text-footnotes)) "%s")))
 
-  (map-put org-html-checkbox-types
+  (blc-put org-html-checkbox-types
            'html
            (let ((checkbox '((type     . checkbox)
                              (disabled . ""))))
@@ -3073,9 +3073,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                 (off   . ())
                 (trans . ())))))
 
-  (blc-put org-html-postamble-format
-           org-export-default-language
-           (list (blc-dom-to-xml 'p '((class . modification)) "Updated: %C"))))
+  (blc-put* org-html-postamble-format
+            org-export-default-language
+            (list (blc-dom-to-xml 'p '((class . modification)) "Updated: %C"))))
 
 ;; ox-publish
 

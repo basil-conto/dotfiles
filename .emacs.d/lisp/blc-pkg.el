@@ -10,7 +10,6 @@
 
 (require 'blc-lib)
 
-(require 'map)
 (require 'package)
 (require 'seq)
 (eval-when-compile
@@ -63,7 +62,7 @@ New `package-selected-packages': %S"
 Return `package-user-dir' if no directory is found."
   (or (blc-package-dir
        (completing-read "Package name: "
-                        (sort (map-keys package-alist) #'string-lessp)
+                        (sort (mapcar #'car package-alist) #'string-lessp)
                         nil t nil 'blc-package-history))
       package-user-dir))
 
@@ -85,8 +84,8 @@ Visit `package-user-dir' if such a directory is not found."
 
 ;; Archives
 (seq-do-indexed (pcase-lambda (`(,id . ,url) i)
-                  (blc-put package-archives           id url)
-                  (blc-put package-archive-priorities id (1+ i)))
+                  (blc-put* package-archives           id url)
+                  (blc-put* package-archive-priorities id (1+ i)))
                 '(("melpa" . "https://melpa.org/packages/")
                   ("org"   . "http://orgmode.org/elpa/")))
 
