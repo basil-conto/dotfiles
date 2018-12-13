@@ -2010,9 +2010,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; org
   (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
 
-  ;; paren-face
-  (:hooks prog-mode-hook :fns global-paren-face-mode)
-
   ;; pascal
   (:hooks pascal-mode-hook :fns blc-turn-on-c++-comments)
 
@@ -3112,6 +3109,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; paren
 
 (show-paren-mode)
+
+;; paren-face
+
+(global-paren-face-mode)
 
 ;; pdf-tools
 
