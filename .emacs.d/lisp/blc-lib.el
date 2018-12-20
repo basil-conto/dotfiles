@@ -801,9 +801,6 @@ Strings FROM override the default `f' format spec."
 (defvar blc-index-dir (blc-dir user-emacs-directory "index")
   "Directory containing bookmarks, caches, symlinks, etc.")
 
-(defvar blc-repos-dir (blc-dir blc-index-dir "repos")
-  "Directory containing symlinks to user Git repositories.")
-
 (defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
   "List of buffer names associated with Gnus logs.")
 

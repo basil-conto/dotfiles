@@ -1444,7 +1444,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  'ask
 
  ;; magit-repos
- magit-repository-directories           `((,blc-repos-dir . 2))
+ magit-repository-directories           `((,blc-index-dir . 2))
 
  ;; magit-utils
  magit-view-git-manual-method           'man
