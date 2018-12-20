@@ -84,16 +84,20 @@ TESTFN is as in `alist-get'."
   "Like `re-search-forward', but unbounded and silent."
   (re-search-forward regexp nil t))
 
+(defun blc-tree-map (fn tree)
+  "Return copy of TREE applying FN to each leaf node."
+  (cond ((consp tree)
+         (cons (blc-tree-map fn (car tree))
+               (blc-tree-map fn (cdr tree))))
+        (tree (funcall fn tree))))
+
 (defun blc-sed-tree (regexp rep tree &optional fixedcase literal subexp)
   "Like `blc-sed', but performed recursively on TREE."
-  (let ((sed (lambda (node &optional leaf)
-               (funcall (if leaf #'blc-sed #'blc-sed-tree)
-                        regexp rep node fixedcase literal subexp))))
-    (pcase tree
-      ((pred stringp)       (funcall sed tree t))
-      ((pred proper-list-p) (mapcar  sed tree))
-      (`(,head . ,tail)     (apply #'cons (mapcar sed (list head tail))))
-      (_                    tree))))
+  (blc-tree-map (lambda (leaf)
+                  (if (stringp leaf)
+                      (blc-sed regexp rep leaf fixedcase literal subexp)
+                    leaf))
+                tree))
 
 ;;; DOM
 

@@ -13,6 +13,13 @@
 
 (require 'ert)
 
+(ert-deftest blc-tree-map ()
+  "Test `blc-tree-map' behaviour."
+  (should (null  (blc-tree-map #'1+ ())))
+  (should (equal (blc-tree-map #'1+ 0) 1))
+  (should (equal (blc-tree-map #'1+ '(0 . 1)) '(1 . 2)))
+  (should (equal (blc-tree-map #'1+ '(0 ((1 2) . 3) ())) '(1 ((2 3) . 4) ()))))
+
 (ert-deftest blc-path-lessp-relative ()
   "Test `blc-path-lessp' with relative paths."
   (should (eq (blc-path-lessp "" "") nil))
