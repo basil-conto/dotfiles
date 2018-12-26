@@ -944,7 +944,8 @@ non-nil, create a new `term' buffer instead."
                                     nil t nil 'blc-term-history names))
             ((not (string-equal name new))))
       (pop-to-buffer name)
-    (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name)))
+    (blc-with-nonce switch-to-buffer :override #'pop-to-buffer
+      (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name))))
 
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
