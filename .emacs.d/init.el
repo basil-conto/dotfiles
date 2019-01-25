@@ -2991,10 +2991,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
           (blc-put* org-agenda-category-icon-alist
                     (blc-rx `(: bos ,(file-name-base icon) eos))
                     (list (file-truename icon) nil nil :ascent 'center)))
-        (let ((dir (blc-dir org-directory "icons")))
-          (and (file-directory-p dir)
-               (nreverse (directory-files
-                          dir t directory-files-no-dot-files-regexp t))))))
+        (and-let* ((dir (blc-dir org-directory "icons"))
+                   ((file-directory-p dir)))
+          (nreverse
+           (directory-files dir t directory-files-no-dot-files-regexp t)))))
 
 ;; org-capture
 
