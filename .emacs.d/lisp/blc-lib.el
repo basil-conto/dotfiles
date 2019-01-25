@@ -727,6 +727,7 @@ Strings FROM override the default `f' format spec."
 (defun blc-turn-on-xterm-mouse (&optional frame)
   "Enable `xterm-mouse-mode' with first terminal frame created."
   (or (display-graphic-p frame)
+      (string= "initial_terminal" (terminal-name (frame-terminal frame)))
       xterm-mouse-mode
       (xterm-mouse-mode)))
 
