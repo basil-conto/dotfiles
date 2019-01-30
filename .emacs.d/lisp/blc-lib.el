@@ -515,6 +515,9 @@ command and switch to a scratch buffer with that mode enabled."
 
 ;;; Windows
 
+(defvar blc-other-window-action '(() (inhibit-same-window . t))
+  "A `display-buffer' action for displaying in another window.")
+
 (defun blc-transpose-split ()
   "Alternate between vertical and horizontal frame split.
 Assumes frame is split exactly in two. Adapted from Wilfred's

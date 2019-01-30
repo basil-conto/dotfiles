@@ -742,7 +742,7 @@ Suspending or exiting Gnus deletes that frame."
 (defun blc-ielm-other-window ()
   "Call `ielm' in another window."
   (interactive)
-  (let ((display-buffer-overriding-action '(() (inhibit-same-window . t))))
+  (let ((display-buffer-overriding-action blc-other-window-action))
     (call-interactively #'ielm)))
 
 (defun blc-info-read-buffer ()
@@ -930,8 +930,13 @@ non-nil, create a new `term' buffer instead."
                                     nil t nil 'blc-term-history names))
             ((not (string-equal name new))))
       (pop-to-buffer name)
-    (blc-with-nonce switch-to-buffer :override #'pop-to-buffer
-      (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name))))
+    (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name)))
+
+(defun blc-term-p (name &optional _action)
+  "Determine whether NAME names a `term-mode' buffer.
+Intended as a condition for `display-buffer-alist'."
+  (with-current-buffer name
+    (derived-mode-p #'term-mode)))
 
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
@@ -948,15 +953,14 @@ Intended for `term-exec-hook'."
    (let (dir)
      (lambda (proc _s)
        (when-let ((buf (process-buffer proc))
-                  ((buffer-live-p buf)))
+                  (nom (buffer-name buf)))
          (with-current-buffer buf
            (unless (equal dir default-directory)
              (setq dir default-directory)
-             (rename-buffer (format "*%s %s*"
-                                    term-ansi-buffer-base-name
-                                    (abbreviate-file-name
-                                     (directory-file-name dir)))
-                            t))))))))
+             (let ((base (and (string-match (rx bos ?* (+ word)) nom)
+                              (substring nom 1 (match-end 0))))
+                   (abbr (abbreviate-file-name (directory-file-name dir))))
+               (rename-buffer (format "*%s %s*" base abbr) t)))))))))
 
 ;; visual-fill-column
 
@@ -1842,10 +1846,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  windmove-wrap-around                   t
 
  ;; window
+ display-buffer-alist
+ `((,#'blc-term-p . ,blc-other-window-action))
  frame-auto-hide-function               #'blc-delete-spare-frame
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
  split-window-keep-point                nil
+ switch-to-buffer-obey-display-actions  t
 
  ;; wttrin
  wttrin-default-accept-language         '("Accept-Language" . "el,en,*")
