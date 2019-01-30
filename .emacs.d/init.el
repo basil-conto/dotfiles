@@ -127,7 +127,7 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
     (plist-put props :predicate
                (lambda (sym)
                  (and (funcall pred sym)
-                      (not (string-match-p "--cmacro\\'" (symbol-name sym)))))))
+                      (not (string-suffix-p "--cmacro" (symbol-name sym)))))))
   ret)
 
 ;; em-cmpl
