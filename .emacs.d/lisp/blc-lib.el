@@ -177,6 +177,9 @@ Order is breadth-first lexicographic."
   (and-let* ((file (xdg-user-dir dir)))
     (file-name-as-directory file)))
 
+(defvar blc-index-dir (blc-dir user-emacs-directory "index")
+  "Directory containing bookmarks, caches, symlinks, etc.")
+
 (defvar blc-dataroot-dir (blc-parent-dir data-directory)
   "Machine-independent data root directory.")
 
@@ -386,6 +389,9 @@ Use `async-shell-command' when called interactively."
 
 ;;; Buffers
 
+(defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
+  "List of buffer names associated with Gnus logs.")
+
 (defun blc-revert-buffer ()
   "Reconcile current buffer with what lives on the disk.
 Offer to revert from the auto-save file, if that exists."
@@ -404,9 +410,8 @@ Offer to revert from the auto-save file, if that exists."
 (defun blc-derived-buffers (&rest modes)
   "Return subset of `buffer-list' derived from MODES."
   (seq-filter (lambda (buf)
-                (apply #'provided-mode-derived-p
-                       (buffer-local-value 'major-mode buf)
-                       modes))
+                (with-current-buffer buf
+                  (apply #'derived-mode-p modes)))
               (buffer-list)))
 
 (defun blc-bury-buffer (&optional buffer-or-name unbury)
@@ -731,6 +736,9 @@ Strings FROM override the default `f' format spec."
       xterm-mouse-mode
       (xterm-mouse-mode)))
 
+(defconst blc-chars-per-line 80
+  "Target maximum number of characters per line.")
+
 ;;; Modes
 
 (defvar blc-dropbox-timers ()
@@ -791,19 +799,6 @@ Strings FROM override the default `f' format spec."
              #'font-lock-remove-keywords)
            nil
            (blc-rainbow--faces)))
-
-;;; Constants
-
-(defconst blc-chars-per-line 80
-  "Target maximum number of characters per line.")
-
-;;; Variables
-
-(defvar blc-index-dir (blc-dir user-emacs-directory "index")
-  "Directory containing bookmarks, caches, symlinks, etc.")
-
-(defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
-  "List of buffer names associated with Gnus logs.")
 
 (provide 'blc-lib)
 
