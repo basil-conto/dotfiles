@@ -218,6 +218,10 @@ Include every major mode derived from the current
                  (or filters (default-value 'ibuffer-filter-groups)))
            tail)))
 
+(define-advice image--imagemagick-wanted-p (:filter-return (_) blc-native)
+  "Prefer XRender over ImageMagick scaling."
+  nil)
+
 ;; ivy-bibtex
 
 (define-advice bibtex-completion-format-entry
