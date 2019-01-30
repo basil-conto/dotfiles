@@ -608,20 +608,6 @@ Intended as an Ivy action for `counsel-M-x'."
   "Align all fields in the current CSV buffer."
   (csv-align-fields nil (point-min) (point-max)))
 
-;; doc-view
-
-(defun blc-doc-view-pdf-to-png (pdf png page callback)
-  "`mutool'-backed PDF to PNG converter function for DocView."
-  (doc-view-start-process
-   "pdf->png"
-   "mutool"
-   `("draw"
-     "-o" ,png
-     "-r" ,(number-to-string (round doc-view-resolution))
-     ,pdf
-     ,@(and page (list (number-to-string page))))
-   callback))
-
 ;; eww
 
 (defun blc-eww-bookmark-save ()
@@ -1185,7 +1171,6 @@ less jumpy auto-filling."
  "objdump -D -M att -Sl --no-show-raw-insn"
 
  ;; doc-view
- doc-view-pdf->png-converter-function   #'blc-doc-view-pdf-to-png
  doc-view-resolution                    150
 
  ;; dropbox
