@@ -1373,6 +1373,7 @@ less jumpy auto-filling."
  ivy-extra-directories                  ()
  ivy-format-function                    #'ivy-format-function-arrow
  ivy-on-del-error-function              #'ignore
+ ivy-pulse-delay                        nil
 
  ;; ivy-bibtex
  bibtex-completion-display-formats
