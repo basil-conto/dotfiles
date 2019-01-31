@@ -898,7 +898,7 @@ Defaults to `org-directory' and `org-default-notes-file'."
   "Reconcile solar calendar with LOCATION from `blc-locations'."
   (interactive (list (completing-read "Location: " blc-locations nil t nil ()
                                       (blc-system-location))))
-  (pcase-let (((plist :country country :lat lat :long long)
+  (pcase-let (((map (:country country) (:lat lat) (:long long))
                (blc-get blc-locations location)))
     (setq-default calendar-latitude      lat
                   calendar-longitude     long

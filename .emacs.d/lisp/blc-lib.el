@@ -27,18 +27,6 @@
 
 ;;; Sequences
 
-(eval-and-compile
-  (pcase-defmacro plist (&rest args)
-    "Build a `pcase' pattern matching property list elements.
-ARGS should itself form a plist whose values are bound to
-elements of the `pcase' expression corresponding to its keys.
-Lookup is performed using `plist-get', which always succeeds, so
-this is more useful for destructuring than pattern matching."
-    `(and (pred seqp)
-          ,@(mapcar (pcase-lambda ((seq key var))
-                      `(app (pcase--flip plist-get ,key) ,var))
-                    (seq-partition args 2)))))
-
 (defun blc-as-list (object)
   "Ensure OBJECT is either a list or within one."
   (declare (pure t))
@@ -607,8 +595,8 @@ or a list thereof.
 :local LOCAL -- See `add-hook'."
   (declare (indent 0))
   (macroexp-progn
-   (mapcan (pcase-lambda ((plist :hooks  hooks  :fns   fns
-                                 :append append :local local))
+   (mapcan (pcase-lambda ((map (:hooks  hooks)  (:fns   fns)
+                               (:append append) (:local local)))
              (mapcan (lambda (hook)
                        (mapcar (lambda (fn)
                                  `(add-hook ',hook #',fn ,append ,local))
