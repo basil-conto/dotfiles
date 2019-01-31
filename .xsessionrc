@@ -10,7 +10,7 @@
 if [ -x "$(command -v taffybar)" ]; then
   taffybar &
   [ -x "$(command -v nm-applet)" ] && nm-applet &
-  [ -x "$(command -v pasystray)" ] && pasystray --always-notify &
+  [ -x "$(command -v pasystray)" ] && pasystray --notify=always &
 fi
 
 eval $(ssh-agent)
