@@ -5,12 +5,14 @@
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 [ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
 
-[ -x "$(command -v xscreensaver)" ] && xscreensaver -no-splash &
-
 if [ -x "$(command -v taffybar)" ]; then
   taffybar &
   [ -x "$(command -v nm-applet)" ] && nm-applet &
   [ -x "$(command -v pasystray)" ] && pasystray --notify=always &
 fi
 
-eval $(ssh-agent)
+[ -x "$(command -v setxkbmap)"    ] \
+  && setxkbmap -layout ie,gr -option grp:alt_caps_toggle
+[ -x "$(command -v kbdd)"         ] && kbdd
+[ -x "$(command -v xscreensaver)" ] && xscreensaver -no-splash &
+[ -x "$(command -v ssh-agent)"    ] && eval $(ssh-agent)
