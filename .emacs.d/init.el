@@ -918,7 +918,8 @@ non-nil, create a new `term' buffer instead."
                                     nil t nil 'blc-term-history names))
             ((not (string-equal name new))))
       (pop-to-buffer name)
-    (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name)))
+    (let ((switch-to-buffer-obey-display-actions t))
+      (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name))))
 
 (defun blc-term-p (name &optional _action)
   "Determine whether NAME names a `term-mode' buffer.
@@ -1841,7 +1842,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
  split-window-keep-point                nil
- switch-to-buffer-obey-display-actions  t
 
  ;; wttrin
  wttrin-default-accept-language         '("Accept-Language" . "el,en,*")
