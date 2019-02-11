@@ -21,7 +21,7 @@ libouts = $(patsubst %,$(libdir)%.elc,$(filter $(1),$(libs)))
 EMACS ?= emacs
 
 %.elc: %.el
-	$(EMACS) $(ELFLAGS) --batch --funcall=batch-byte-compile $^
+	$(EMACS) $(ELFLAGS) --batch --funcall=batch-byte-compile $<
 
 ## Sweeping generalisations
 
