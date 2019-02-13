@@ -1571,6 +1571,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-use-speed-commands                 t
 
  ;; org-agenda
+ org-agenda-align-tags-to-column        (- blc-chars-per-line)
  org-agenda-category-icon-alist         '(("" (space :width (16))))
  org-agenda-deadline-leaders            '("" "%3dd +" "%3dd -")
  org-agenda-scheduled-leaders           '("" "%3dd -")
