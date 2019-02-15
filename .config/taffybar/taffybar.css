@@ -18,26 +18,25 @@
    */
 	all: unset;
 
-	font-family: "Noto Sans", sans-serif;
+	font-family: "DejaVu Sans", sans-serif;
 	font-size: 10pt;
 	color: @font-color;
 }
 
 .taffy-box {
-	border-radius: 10px;
 	background-color: rgba(0.0, 0.0, 0.0, 0.3);
 }
 
 .inner-pad {
-	padding-bottom: 5px;
-	padding-top: 5px;
+	padding-bottom: 0px;
+	padding-top: 0px;
 	padding-left: 2px;
 	padding-right: 2px;
 }
 
 .contents {
-	padding-bottom: 4px;
-	padding-top: 4px;
+	padding-bottom: 0px;
+	padding-top: 0px;
 	padding-right: 2px;
 	padding-left: 2px;
 	transition: background-color .5s;
@@ -49,7 +48,7 @@
 .workspace-label {
 	padding-right: 3px;
 	padding-left: 2px;
-	font-size: 12pt;
+	font-size: 10pt;
 }
 
 .active .contents {
