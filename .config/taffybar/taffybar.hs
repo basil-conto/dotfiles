@@ -1,28 +1,38 @@
-import System.Taffybar                     ( TaffybarConfig(..)
-                                           , defaultTaffybar
-                                           , defaultTaffybarConfig )
-import System.Taffybar.Battery             ( batteryBarNew         )
-import System.Taffybar.CommandRunner       ( commandRunnerNew      )
-import System.Taffybar.MPRIS2              ( mpris2New             )
-import System.Taffybar.Pager               ( defaultPagerConfig    )
-import System.Taffybar.SimpleClock         ( textClockNew          )
-import System.Taffybar.Systray             ( systrayNew            )
-import System.Taffybar.TaffyPager          ( taffyPagerNew         )
-import System.Taffybar.Widgets.VerticalBar ( defaultBarConfig      )
+import qualified Data.Text as T
+
+import System.Taffybar.SimpleConfig         ( SimpleTaffyConfig(..)
+                                            , defaultSimpleTaffyConfig
+                                            , simpleTaffybar )
+import System.Taffybar.Widget.Battery       ( textBatteryNew )
+import System.Taffybar.Widget.CommandRunner ( commandRunnerNew )
+import System.Taffybar.Widget.Layout        ( LayoutConfig(..)
+                                            , defaultLayoutConfig
+                                            , layoutNew )
+import System.Taffybar.Widget.MPRIS2        ( mpris2New )
+import System.Taffybar.Widget.SNITray       ( sniTrayNew )
+import System.Taffybar.Widget.SimpleClock   ( textClockNew )
+import System.Taffybar.Widget.Windows       ( defaultWindowsConfig, windowsNew )
+import System.Taffybar.Widget.Workspaces    ( WorkspacesConfig(..)
+                                            , defaultWorkspacesConfig
+                                            , hideEmpty, workspacesNew )
 
 main :: IO ()
 main = do
-  let secs  = 10.0
-      clock = textClockNew Nothing "%F %a %R %z" secs
-      load  = commandRunnerNew secs "cut" ["-c-4", "/proc/loadavg"] "" "white"
-      batt  = batteryBarNew (defaultBarConfig colour) secs
-      pager = taffyPagerNew defaultPagerConfig
-  defaultTaffybar defaultTaffybarConfig
-                  { barHeight    = 18
-                  , endWidgets   = [ clock, load, batt, systrayNew, mpris2New ]
-                  , startWidgets = [ pager ]
-                  }
-  where
-    colour p | p < 0.2   = (1.0, 0.0, 0.0)
-             | p < 0.8   = (0.5, 0.5, 0.5)
-             | otherwise = (0.0, 1.0, 0.0)
+  let secs = 10.0
+      batt = textBatteryNew "$percentage$%"
+      clck = textClockNew Nothing "%F %a %R %z" secs
+      load = commandRunnerNew 10.0 "cut" ["-c-4", "/proc/loadavg"] T.empty
+      lout = layoutNew defaultLayoutConfig { formatLayout = delimit }
+      wins = windowsNew defaultWindowsConfig
+      work = workspacesNew defaultWorkspacesConfig
+           { borderWidth      = 0
+           , showWorkspaceFn  = hideEmpty
+           , underlineHeight  = 0
+           , underlinePadding = 0
+           }
+  simpleTaffybar defaultSimpleTaffyConfig
+                 { barHeight    = 22
+                 , endWidgets   = [ clck, batt, load, sniTrayNew, mpris2New ]
+                 , startWidgets = [ work, lout, wins ]
+                 }
+  where delimit l = return . T.intercalate l $ map T.pack [": ", " :"]

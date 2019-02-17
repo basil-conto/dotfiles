@@ -5,10 +5,11 @@
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 [ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
 
-if [ -x "$(command -v taffybar)" ]; then
-  taffybar &
-  [ -x "$(command -v nm-applet)" ] && nm-applet &
+if [ -x "$(command -v status-notifier-watcher)" ]; then
+  status-notifier-watcher &
+  [ -x "$(command -v nm-applet)" ] && nm-applet --indicator  &
   [ -x "$(command -v pasystray)" ] && pasystray --notify=all &
+  [ -x "$(command -v taffybar)"  ] && taffybar               &
 fi
 
 [ -x "$(command -v setxkbmap)"    ] \
