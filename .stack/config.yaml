@@ -1,0 +1,6 @@
+templates:
+  params:
+    author-name: Basil L. Contovounesios
+    author-email: contovob@tcd.ie
+    github-username: basil-conto
+system-ghc: true
