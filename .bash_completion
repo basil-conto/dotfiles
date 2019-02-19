@@ -1,5 +1,10 @@
 # -*- sh -*-
 
+# git-issue
+if [ -r "${LOCAL_DIR}/etc/bash_completion.d/git-issue" ]; then
+  . "${LOCAL_DIR}/etc/bash_completion.d/git-issue"
+fi
+
 # pip
 _pip_completion()
 {
@@ -12,6 +17,11 @@ complete -o default -F _pip_completion pip
 # pyenv
 if [ -r "${HOME}/.pyenv/completions/pyenv.bash" ]; then
   . "${HOME}/.pyenv/completions/pyenv.bash"
+fi
+
+# stack
+if [ -r "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion" ]; then
+  . "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion"
 fi
 
 # tmux
