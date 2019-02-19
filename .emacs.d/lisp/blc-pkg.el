@@ -151,6 +151,7 @@ Visit `package-user-dir' if such a directory is not found."
    fireplace
    flame
    flx
+   forge
    free-keys
 
    ggtags
