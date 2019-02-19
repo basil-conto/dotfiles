@@ -677,10 +677,6 @@ overrides them."
   (interactive)
   (blc-turn-off #'electric-indent-local-mode))
 
-(defun blc-indent-relative-first-indent-point ()
-  "Locally switch to `insert-relative-first-indent-point'."
-  (setq-local indent-line-function #'indent-relative-first-indent-point))
-
 (defun blc-turn-off-indent-tabs ()
   "Locally disable tab indentation."
   (setq indent-tabs-mode nil))
