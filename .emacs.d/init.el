@@ -35,7 +35,6 @@
 (autoload 'dired-jump                     "dired-x" nil t)
 (autoload 'dired-jump-other-window        "dired-x" nil t)
 (autoload 'engine-mode-prefixed-map       "engine-mode" nil t 'keymap)
-(autoload 'eww-open-in-new-buffer         "eww" nil t)
 (autoload 'ffap-gnus-hook                 "ffap")
 (autoload 'flex-mode                      "flex-mode" nil t)
 (autoload 'samba-generic-mode             "generic-x" nil t)
@@ -138,11 +137,9 @@ Adapted from URL `http://stackoverflow.com/a/23553882'."
 
 ;; eww
 
-(define-advice eww-open-in-new-buffer (:around (eww url) blc-read-url)
-  "Like `eww', but fetch URL in a new EWW buffer."
-  (interactive (advice-eval-interactive-spec (cadr (interactive-form #'eww))))
-  (let ((eww-suggest-uris (list (lambda () url))))
-    (funcall eww)))
+(define-advice eww (:around (eww url &optional arg) blc-toggle-prefix)
+  "Like `eww', but invert the sense of the prefix argument."
+  (funcall eww url (and (= (prefix-numeric-value arg) 1) 4)))
 
 ;; files
 
@@ -2101,7 +2098,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (blc-jump-map
    ("b"                                   . #'ibuffer-jump)
    ("d"                                   . #'counsel-dired-jump)
-   ("e"                                   . #'eww-open-in-new-buffer)
+   ("e"                                   . #'eww)
    ("f"                                   . #'project-find-file)
    ("l"                                   . #'counsel-locate)
    ("m"                                   . #'magit-find-file)
