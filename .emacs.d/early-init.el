@@ -19,9 +19,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 
   (blc-gc-thresh-maximise)
 
-  ;; Include user libraries
-  (dolist (dir '("lisp" "mod"))
-    (add-to-list 'load-path (expand-file-name dir user-emacs-directory)))
+  (add-to-list 'load-path (expand-file-name "mod" user-emacs-directory))
 
   (condition-case err
       (when (require 'realpath)

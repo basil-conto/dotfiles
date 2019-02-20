@@ -1025,9 +1025,6 @@ less jumpy auto-filling."
  ;; xterm.c
  x-wait-for-event-timeout               nil
 
- ;; abbrev
- abbrev-file-name                       (blc-file blc-index-dir "abbrevs.el")
-
  ;; ag
  ag-highlight-search                    t
 
@@ -1211,6 +1208,10 @@ less jumpy auto-filling."
  footnote-section-tag                   ""
  footnote-spaced-footnotes              nil
 
+ ;; forge
+ forge-database-file                    (blc-file blc-index-dir
+                                                  "forge-db.sqlite")
+
  ;; frame
  window-divider-default-right-width     2
 
@@ -1242,6 +1243,10 @@ less jumpy auto-filling."
 
  ;; hacker-typer
  hacker-typer-show-hackerman            t
+
+ ;; hackernews
+ hackernews-visited-links-file          (blc-file blc-index-dir
+                                                  "hackernews-visited.el")
 
  ;; haskell-mode
  haskell-completing-read-function       #'completing-read
@@ -1343,6 +1348,9 @@ less jumpy auto-filling."
  ielm-noisy                             nil
  ielm-prompt                            "(>) "
 
+ ;; image-dired
+ image-dired-dir                        (blc-dir blc-index-dir "image-dired")
+
  ;; indent
  indent-line-function                   #'insert-tab
 
@@ -1389,6 +1397,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  t
  ledger-report-use-header-line          t
  ledger-use-iso-dates                   t
+
+ ;; logview
+ logview-cache-filename                (blc-file blc-index-dir
+                                                 "logview-cache.extmap")
+ logview-views-file                    (blc-file blc-index-dir "logview.views")
 
  ;; lpr
  lpr-add-switches                       nil
@@ -1682,6 +1695,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  speedbar-vc-do-check                   nil
 
  ;; startup
+ auto-save-list-file-prefix             (blc-file blc-index-dir
+                                                  "auto-save-list/.saves-")
  inhibit-default-init                   t
  inhibit-startup-screen                 t
  initial-scratch-message
@@ -1702,6 +1717,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  swiper-goto-start-of-match             t
 
  ;; sx
+ sx-cache-directory                     (blc-dir blc-index-dir "sx")
  sx-question-mode-comments-format       "%s:\n   %s\n"
 
  ;; term

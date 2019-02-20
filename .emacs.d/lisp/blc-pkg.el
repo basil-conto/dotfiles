@@ -90,6 +90,24 @@ Visit `package-user-dir' if such a directory is not found."
                   ("org"   . "http://orgmode.org/elpa/")))
 
 (setq-default
+ ;; abbrev
+ abbrev-file-name               (blc-file blc-index-dir "abbrevs.el")
+
+ ;; emms
+ emms-directory                 (blc-dir blc-index-dir "emms")
+
+ ;; srecode
+ srecode-map-save-file          nil
+
+ ;; transient
+ transient-history-file         (blc-file blc-index-dir "transient-history.el")
+ transient-levels-file          (blc-file blc-index-dir "transient-levels.el")
+ transient-values-file          (blc-file blc-index-dir "transient-values.el")
+
+ ;; url
+ url-configuration-directory    (blc-dir blc-index-dir "url")
+
+ ;; package
  package-menu-hide-low-priority t
  package-quickstart-file        (blc-file blc-index-dir "package-quickstart.el")
  package-selected-packages
