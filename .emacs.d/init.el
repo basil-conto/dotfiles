@@ -2567,6 +2567,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (add-to-list 'auto-mode-alist (cons (rx ".lex" eos) #'flex-mode))
 
+;; forge
+
+(with-eval-after-load 'forge
+  (remove-hook 'forge-post-mode-hook #'turn-on-flyspell))
+
 ;; frame
 
 (window-divider-mode)
