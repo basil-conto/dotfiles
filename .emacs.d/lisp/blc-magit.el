@@ -16,11 +16,11 @@
 (require 'blc-lib)
 (require 'blc-pkg)
 
+(require 'forge)
 (require 'magit)
 (require 'magit-git)
 (require 'magit-section)
 
-(require 'map)
 (eval-when-compile
   (require 'subr-x))
 
@@ -78,17 +78,14 @@
 (push (list "D" 1 #'magit-repolist-column-dirty ())
       (nthcdr 2 magit-repolist-columns))
 
-;; Default arguments
-(map-do #'add-to-list
-        '((magit-log-arguments    . "--show-signature")
-          (magit-merge-arguments  . "--ff-only"       )
-          (magit-rebase-arguments . "--interactive"   )))
-
 ;; Limit number of commits in log
 (let (case-fold-search)
   (setq-default
    magit-log-arguments
    (blc-sed-tree (rx "-n" (group (+ digit))) "64" magit-log-arguments t t 1)))
+
+;; Default arguments
+(add-to-list 'magit-log-arguments "--show-signature")
 
 ;; Modes
 (magit-wip-after-apply-mode)

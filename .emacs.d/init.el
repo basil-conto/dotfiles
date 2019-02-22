@@ -44,7 +44,6 @@
 (autoload 'irfc-mode                      "irfc" nil t)
 (autoload 'irfc-visit                     "irfc" nil t)
 (autoload 'ivy-completion-in-region       "ivy")
-(autoload 'magit-pop-revision-stack       "magit-extras" nil t)
 (autoload 'mailcap-file-name-to-mime-type "mailcap")
 (autoload 'meme                           "meme" nil t)
 (autoload 'meme-file                      "meme" nil t)
@@ -1887,7 +1886,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  eww-buffers-mode-hook
                                                  eww-mode-hook
                                                  help-mode-hook
-                                                 magit-popup-mode-hook
                                                  message-mode-hook
                                                  minibuffer-setup-hook
                                                  term-mode-hook
@@ -2088,7 +2086,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([remap zap-to-char]                   . #'zap-up-to-char))
 
   (mode-specific-map
-   ([?\M-g]                               . #'magit-file-popup)
+   ([?\M-g]                               . #'magit-file-dispatch)
    ([?\M-n]                               . #'next-logical-line)
    ([?\M-p]                               . #'previous-logical-line)
    ("/"                                   . #'define-word-at-point)
@@ -2133,7 +2131,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("\C-j"                                . #'dired-jump)
    ("\C-n"                                . #'blc-open-next-line)
    ("\C-p"                                . #'blc-open-previous-line)
-   ([?\M-g]                               . #'magit-dispatch-popup)
+   ([?\M-g]                               . #'magit-dispatch)
    ("/"                                   . #'engine-mode-prefixed-map)
    ("7"                                   . #'blc-transpose-split)
    ("B"                                   . #'blc-bury-buffer)
@@ -2853,9 +2851,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; magit-log
 
 (with-eval-after-load 'magit-log
-  (let ((age (cdr magit-log-margin)))
-    (setcar age 'age-abbreviated)
-    (setcar (cdddr age) 16)))
+  (setq-default magit-log-margin
+                '(t age-abbreviated magit-log-margin-width t 16)))
 
 ;; make-mode
 
