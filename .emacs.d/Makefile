@@ -3,102 +3,77 @@
 ## Author:   Basil L. Contovounesios <basil.conto@gmail.com>
 ## Homepage: https://gitlab.com/basil-conto/dotfiles
 
-## Files
-
-libs   := $(addprefix blc-,lib lib-tests magit mbsync notmuch pass pkg)
-libdir := lisp/
-pkgdir := elpa/
-
-## Macros
-
-libouts = $(patsubst %,$(libdir)%.elc,$(filter $(1),$(libs)))
-
 ## Emacs Lisp
-
-.SUFFIXES:
-.SUFFIXES: .el .elc
 
 EMACS ?= emacs
 
 %.elc: %.el
-	$(EMACS) $(ELFLAGS) --batch --funcall=batch-byte-compile $<
+	$(EMACS) --batch $(ELFLAGS) --funcall=batch-byte-compile $<
 
-## Sweeping generalisations
+## Macros
 
-.NOTPARALLEL:
+lib    = $(1:%=$(libdir)blc-%.elc)
+liball = $(patsubst %.el,%.elc,$(wildcard $(libdir)blc-*-$(1).el))
+
+## Files
+
+pkgdir := elpa/
+libdir := lisp/
+libs   := $(call lib,lib magit mbsync notmuch pass pkg)
+themes := $(call liball,theme)
+tests  := $(call liball,tests)
+inits  := $(addsuffix .elc,early-init init)
+
+## Actions
 
 .PHONY: all
-all: themes libs gnus init test
+all: themes libs gnus inits test
 
 .PHONY: clean
-clean: clean-themes clean-libs clean-gnus clean-init
+clean: clean-themes clean-libs clean-gnus clean-inits clean-tests
 
 .PHONY: distclean
 distclean: clean
 	$(RM) --recursive $(pkgdir) index/package-quickstart.el
 
-## Libs
+.PHONY: themes clean-themes
+themes:               $(themes)
+clean-themes: ; $(RM) $(themes)
 
-.PHONY: themes
-themes: $(libdir)*-theme.elc
+.PHONY: libs clean-libs
+libs:               $(libs)
+clean-libs: ; $(RM) $(libs)
 
-.PHONY: clean-themes
-clean-themes:
-	$(RM) $(libdir)*-theme.elc
+.PHONY: gnus clean-gnus
+gnus:               gnus.elc
+clean-gnus: ; $(RM) gnus.elc
 
-.PHONY: blc-lib
-blc-lib: $(call libouts,blc-lib)
-
-.PHONY: blc-lib
-blc-lib-tests: blc-lib $(call libouts,blc-lib-tests)
-
-.PHONY: blc-magit
-blc-magit: blc-lib blc-pkg $(call libouts,blc-magit)
-
-.PHONY: blc-mbsync
-blc-mbsync: blc-lib $(call libouts,blc-mbsync)
-
-.PHONY: blc-notmuch
-blc-notmuch: blc-lib $(call libouts,blc-notmuch)
-
-.PHONY: blc-pass
-blc-pass: blc-lib $(call libouts,blc-pass)
-
-.PHONY: blc-pkg
-blc-pkg: blc-lib $(call libouts,blc-pkg)
-
-.PHONY: libs
-libs: $(libs)
-
-.PHONY: clean-libs
-clean-libs:
-	$(RM) $(call libouts,%)
+.PHONY: inits clean-inits
+inits:               $(inits)
+clean-inits: ; $(RM) $(inits)
 
 .PHONY: test
-test: libs
-	$(EMACS) $(ELFLAGS) --batch \
-		$(addprefix --load=,$(wildcard $(libdir)*-tests.el)) \
+test: $(tests)
+	$(EMACS) --batch $(ELFLAGS) $(addprefix --load=,$^) \
 		--funcall=ert-run-tests-batch-and-exit
 
-## Init files
-
-.PHONY: gnus
-gnus: blc-lib blc-mbsync blc-notmuch gnus.elc
-
-.PHONY: clean-gnus
-clean-gnus:
-	$(RM) gnus.elc
-
-.PHONY: init
-init: themes blc-lib blc-magit blc-mbsync blc-pass blc-pkg \
-		early-init.elc init.elc
-
-.PHONY: clean-init
-clean-init:
-	$(RM) early-init.elc init.elc
+.PHONY: clean-tests
+clean-tests:
+	$(RM) $(tests)
 
 .PHONY: profile
-profile: ELFLAGS := -nw
-profile: themes blc-lib blc-pkg
-	$(EMACS) $(ELFLAGS) --quick --load=$(libdir)profile-dotemacs.el \
+profile: init.elc
+	$(EMACS) --quick $(ELFLAGS) --load=$(libdir)profile-dotemacs.el \
 		--funcall=profile-dotemacs
+
+# Dependencies
+
+$(call lib,magit):     $(call lib,lib pkg)
+$(call lib,mbsync):    $(call lib,lib)
+$(call lib,notmuch):   $(call lib,lib)
+$(call lib,pass):      $(call lib,lib)
+$(call lib,pkg):       $(call lib,lib)
+$(call lib,lib-tests): $(call lib,lib)
+
+gnus.elc: $(call lib,lib mbsync notmuch)
+init.elc: $(themes) $(call lib,lib magit mbsync pass pkg) early-init.elc
