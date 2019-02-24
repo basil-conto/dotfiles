@@ -231,16 +231,12 @@ convention (see the Info node `(gnus) Process/Prefix')."
   (:hooks gnus-select-group-hook           :fns gnus-group-set-timestamp)
   (:hooks gnus-summary-mode-hook           :fns hl-line-mode))
 
-;;; Bindings
-
-(define-key gnus-summary-mode-map "va" #'blc-gnus-apply-attachments)
-
 ;;; Libraries
 
 ;; gnus-art
 
 (with-eval-after-load 'gnus-art
-  (define-key gnus-article-mode-map "\M-D" #'blc-download)
+  (define-key gnus-article-mode-map [?\M-D] #'blc-download)
 
   (setq-default
    gnus-sorted-header-list
@@ -252,6 +248,15 @@ convention (see the Info node `(gnus) Process/Prefix')."
    gnus-visible-headers
    (blc-rx `(| (: bol (| "Delivered-To" "To") ?:)
                (regexp ,gnus-visible-headers)))))
+
+;; gnus-sum
+
+(with-eval-after-load 'gnus-sum
+  (blc-define-keys
+    (gnus-summary-mode-map
+     ([?\M-r])
+     ([?\M-s])
+     ("va" . #'blc-gnus-apply-attachments))))
 
 ;; gnus-topic
 

@@ -1781,7 +1781,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; wdired
  wdired-allow-to-change-permissions     t
- wdired-use-dired-vertical-movement     t
+ wdired-use-dired-vertical-movement     'sometimes
 
  ;; webjump
  webjump-sites
@@ -2352,9 +2352,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (add-to-list 'auto-mode-alist (cons (rx ".deb" eos) #'deb-view-mode))
 (with-eval-after-load 'dired
-  (require 'deb-view nil t)
-  ;; Dired Isearch support is not worth overriding `search-map'
-  (define-key dired-mode-map (where-is-internal search-map nil t) nil))
+  (require 'deb-view nil t))
 
 ;; delight
 
@@ -2462,6 +2460,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; delsel
 
 (delete-selection-mode)
+
+;; dired
+
+(with-eval-after-load 'dired
+  (blc-define-keys
+    (dired-mode-map
+     ([?\M-s])
+     ("_" . #'dired-create-empty-file))))
 
 ;; dired-aux
 
