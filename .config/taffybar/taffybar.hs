@@ -5,9 +5,7 @@ import System.Taffybar.SimpleConfig         ( SimpleTaffyConfig(..)
                                             , simpleTaffybar )
 import System.Taffybar.Widget.Battery       ( textBatteryNew )
 import System.Taffybar.Widget.CommandRunner ( commandRunnerNew )
-import System.Taffybar.Widget.Layout        ( LayoutConfig(..)
-                                            , defaultLayoutConfig
-                                            , layoutNew )
+import System.Taffybar.Widget.Layout        ( defaultLayoutConfig, layoutNew )
 import System.Taffybar.Widget.MPRIS2        ( mpris2New )
 import System.Taffybar.Widget.SNITray       ( sniTrayNew )
 import System.Taffybar.Widget.SimpleClock   ( textClockNew )
@@ -22,7 +20,7 @@ main = do
       batt = textBatteryNew "$percentage$%"
       clck = textClockNew Nothing "%F %a %R %z" secs
       load = commandRunnerNew 10.0 "cut" ["-c-4", "/proc/loadavg"] T.empty
-      lout = layoutNew defaultLayoutConfig { formatLayout = delimit }
+      lout = layoutNew defaultLayoutConfig
       wins = windowsNew defaultWindowsConfig
       work = workspacesNew defaultWorkspacesConfig
            { borderWidth      = 0
@@ -35,4 +33,3 @@ main = do
                  , endWidgets   = [ clck, batt, load, sniTrayNew, mpris2New ]
                  , startWidgets = [ work, lout, wins ]
                  }
-  where delimit l = return . T.intercalate l $ map T.pack [": ", " :"]
