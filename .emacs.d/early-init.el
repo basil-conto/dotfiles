@@ -17,14 +17,7 @@ why-are-you-changing-gc-cons-threshold/'.")
     "Increase GC threshold to at least 64MiB"
     (setq gc-cons-threshold (max (ash 1 26) gc-cons-threshold)))
 
-  (blc-gc-thresh-maximise)
-
-  (add-to-list 'load-path (expand-file-name "mod" user-emacs-directory))
-
-  (condition-case err
-      (when (require 'realpath)
-        (advice-add #'file-truename :override #'realpath-truename))
-    (error (lwarn 'external :error "%S" err))))
+  (blc-gc-thresh-maximise))
 
 (setq-default package-enable-at-startup nil)
 
