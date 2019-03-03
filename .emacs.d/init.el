@@ -99,22 +99,6 @@
                     (apply #'call-process prog nil 0 nil args))
     (apply fn args)))
 
-;; cc-align
-
-(define-advice c-lineup-arglist (:before-until (langelem) blc-c++-lambda-indent)
-  "Return indentation offset for C++11 lambda arguments.
-Currently keeps offset unchanged by returning 0 for lambdas
-opened as arguments and nil for everything else.
-Adapted from URL `http://stackoverflow.com/a/23553882'."
-  (and (derived-mode-p #'c++-mode)
-       (ignore-errors
-         (save-excursion
-           (goto-char (c-langelem-pos langelem))
-           ;; Detect "[...](" or "[...]{",
-           ;; preceded by "," or "(" and with unclosed brace
-           (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$")))
-       0))
-
 ;; elisp-mode
 
 (define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
@@ -2301,14 +2285,15 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'cc-mode
   (let ((name "blc"))
     (c-add-style name '("linux"
-                        (c-basic-offset . 2 )
+                        (c-basic-offset . 2)
                         (c-offsets-alist
-                         (access-label      . / )
-                         (arglist-close     . 0 )
-                         (case-label        . + )
+                         (access-label      .  /)
+                         (arglist-close     .  0)
+                         (case-label        .  +)
                          (inher-intro       . ++)
-                         (inline-open       . 0 )
-                         (innamespace       . 0 )
+                         (inlambda          .  0)
+                         (inline-open       .  0)
+                         (innamespace       .  0)
                          (member-init-intro . ++))))
 
     (blc-put c-default-style 'other name)))
