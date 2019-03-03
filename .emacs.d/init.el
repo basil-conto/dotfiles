@@ -1508,9 +1508,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("Nautilus"
     "http://nautil.us/rss/all")
    ("NYT"
-    "https://nytimes.com/services/xml/rss/userland/HomePage.xml")
+    "http://rss.nytimes.com/services/xml/rss/nyt/World.xml")
    ("NYT Tech"
-    "https://nytimes.com/services/xml/rss/userland/Technology.xml")
+    "http://rss.nytimes.com/services/xml/rss/nyt/Technology.xml")
+   ("NYT Sci"
+    "http://rss.nytimes.com/services/xml/rss/nyt/Science.xml")
    ("QotD"
     "https://feeds.feedburner.com/quotationspage/qotd")
    ("Spiegel"
