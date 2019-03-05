@@ -139,6 +139,7 @@ Visit `package-user-dir' if such a directory is not found."
    cmake-mode
    counsel
    counsel-gtags
+   crontab-mode
    csharp-mode
    cssh
    csv-mode
