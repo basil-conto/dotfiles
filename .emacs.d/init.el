@@ -539,15 +539,6 @@ description of the arguments to this function."
 (function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
-;; cc-mode
-
-(defun blc-turn-on-c++-comments ()
-  "Default to C++-style line comments."
-  (if (bound-and-true-p c-buffer-is-cc-mode)
-      (c-toggle-comment-style -1)
-    (setq comment-start "//"
-          comment-end   "")))
-
 ;; counsel
 
 (defun blc-counsel-find-file (&optional file)
@@ -1074,6 +1065,9 @@ less jumpy auto-filling."
  calendar-date-style                    'iso
  calendar-christian-all-holidays-flag   t
  calendar-islamic-all-holidays-flag     t
+
+ ;; cc-vars
+ c-electric-pound-behavior              '(alignleft)
 
  ;; chess
  chess-images-default-size              blc-chars-per-line
@@ -1886,8 +1880,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks text-mode-hook :fns bug-reference-mode)
 
   ;; cc-mode
-  (:hooks c-mode-common-hook :fns (blc-turn-on-c++-comments
-                                   hs-minor-mode))
+  (:hooks c-mode-common-hook :fns hs-minor-mode)
 
   ;; csv-mode
   (:hooks csv-mode-hook :fns blc-csv-align-all-fields)
@@ -1991,9 +1984,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; org
   (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
-
-  ;; pascal
-  (:hooks pascal-mode-hook :fns blc-turn-on-c++-comments)
 
   ;; pdf-view
   (:hooks pdf-view-mode-hook :fns blc-pdf-tools-undefer)
@@ -2281,6 +2271,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; cc-mode
 
 (with-eval-after-load 'cc-mode
+  (define-key c-mode-base-map "\C-m" #'c-context-line-break)
+
   (let ((name "blc"))
     (c-add-style name '("linux"
                         (c-basic-offset . 2)
@@ -2294,7 +2286,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                          (innamespace       .  0)
                          (member-init-intro . ++))))
 
-    (blc-put c-default-style 'other name)))
+    (blc-put c-default-style 'other name)
+
+    (define-advice c-set-style (:after (&rest _) blc-comment-style)
+      "Set default comment style after `c-indentation-style'."
+      (when (eq major-mode #'c-mode)
+        (c-toggle-comment-style
+         (if (string= c-indentation-style name) -1 1))))))
 
 ;; chess
 
