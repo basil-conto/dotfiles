@@ -49,6 +49,7 @@
 
 [diff]
   algorithm          = histogram
+  colorMoved         = true
   submodule          = log
 
 [diff "elisp"]
