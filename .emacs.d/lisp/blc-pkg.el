@@ -156,6 +156,7 @@ Visit `package-user-dir' if such a directory is not found."
    dropbox
    ducpel
 
+   eglot
    el-search
    embrace
    emms
