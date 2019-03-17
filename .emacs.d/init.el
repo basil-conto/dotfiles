@@ -2902,8 +2902,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   (add-to-list 'message-required-mail-headers 'To)
 
-  (when-let* ((addresses (blc-msmtp-addresses)))
-    (setq-default message-alternative-emails (regexp-opt addresses)))
+  (setq-default message-dont-reply-to-names
+                (list (regexp-opt '("bug-gnu-emacs@gnu.org"
+                                    "submit@debbugs.gnu.org"
+                                    "control@debbugs.gnu.org"
+                                    "owner@debbugs.gnu.org"))))
+
+  (when-let* ((addresses (blc-msmtp-addresses))
+              (addresses (regexp-opt addresses)))
+    (setq-default message-alternative-emails addresses)
+    (push addresses message-dont-reply-to-names))
 
   (setq-default message-expand-name-databases
                 (delq 'eudc message-expand-name-databases)))
