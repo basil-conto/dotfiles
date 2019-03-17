@@ -250,7 +250,6 @@ Visit `package-user-dir' if such a directory is not found."
    restclient
    rmsbolt
 
-   sass-mode
    scribble-mode
    sicp
    skype

@@ -2001,9 +2001,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
 
-  ;; sass-mode
-  (:hooks sass-mode-hook :fns blc-turn-on-c++-comments)
-
   ;; simple
   (:fns display-line-numbers-mode :hooks visual-line-mode-hook)
   (:fns turn-on-auto-fill         :hooks (bookmark-edit-annotation-mode
