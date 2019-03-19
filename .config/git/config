@@ -40,7 +40,7 @@
   wip   = commit --edit --message='[WIP]'
 
 [commit]
-  gpgsign            = true
+  gpgSign            = true
 
 [core]
   compression        = 9
