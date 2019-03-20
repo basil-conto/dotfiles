@@ -112,12 +112,6 @@
                       (not (string-suffix-p "--cmacro" (symbol-name sym)))))))
   ret)
 
-;; em-cmpl
-
-(define-advice eshell-pcomplete (:override (&rest _) blc-completion-at-point)
-  "Use default inline completion."
-  (completion-at-point))
-
 ;; eww
 
 (define-advice eww (:around (eww url &optional arg) blc-toggle-prefix)
