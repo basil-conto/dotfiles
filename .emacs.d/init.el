@@ -2839,6 +2839,15 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
          (caddr magit-pop-revision-stack-format))))
 
+;; magit-files
+
+(with-eval-after-load 'magit-files
+  (blc-define-keys
+    (magit-file-mode-map
+     ([?\C-c ?\M-g])
+     ([?\C-x ?\M-g])
+     ("\C-xg"))))
+
 ;; magit-log
 
 (with-eval-after-load 'magit-log
