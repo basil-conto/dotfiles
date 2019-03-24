@@ -39,7 +39,6 @@
 (autoload 'flex-mode                      "flex-mode" nil t)
 (autoload 'samba-generic-mode             "generic-x" nil t)
 (autoload 'gnus-find-subscribed-addresses "gnus")
-(autoload 'turn-on-hi-lock-if-enabled     "hi-lock")
 (autoload 'irfc-follow                    "irfc" nil t)
 (autoload 'irfc-mode                      "irfc" nil t)
 (autoload 'irfc-visit                     "irfc" nil t)
@@ -677,7 +676,8 @@ Suspending or exiting Gnus deletes that frame."
 
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
-  (hi-lock-set-pattern "^.+\\'" 'hi-red-b))
+  (add-to-list 'hi-lock-interactive-patterns
+               '("^.+\\'" 0 'trailing-whitespace prepend)))
 
 ;; ibuffer
 
