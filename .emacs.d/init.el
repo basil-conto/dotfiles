@@ -1098,8 +1098,11 @@ less jumpy auto-filling."
  custom-theme-directory                 (blc-dir user-emacs-directory "lisp")
 
  ;; debbugs
+ debbugs-gnu-branch-directory
+ (blc-dir (blc-parent-dir source-directory) "emacs26")
  debbugs-gnu-emacs-current-release      "26.1"
  debbugs-gnu-send-mail-function         #'message-send-mail-with-sendmail
+ debbugs-gnu-suppress-closed            nil
  debbugs-gnu-trunk-directory            source-directory
 
  ;; diary-lib
@@ -2330,6 +2333,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (add-to-list 'auto-mode-alist (cons (rx ".deb" eos) #'deb-view-mode))
 (with-eval-after-load 'dired
   (require 'deb-view nil t))
+
+;; debbugs-gnu
+
+(with-eval-after-load 'debbugs-gnu
+  (setq-default debbugs-gnu-default-severities debbugs-gnu-all-severities))
 
 ;; delight
 
