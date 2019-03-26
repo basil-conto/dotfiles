@@ -677,7 +677,7 @@ Suspending or exiting Gnus deletes that frame."
 (defun blc-hi-lock-no-eof-nl ()
   "Highlight missing trailing EOF newlines."
   (add-to-list 'hi-lock-interactive-patterns
-               '("^.+\\'" 0 'trailing-whitespace prepend)))
+               '("^.+\\'" 0 'trailing-whitespace t)))
 
 ;; ibuffer
 
