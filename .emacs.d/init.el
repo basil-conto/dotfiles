@@ -46,6 +46,7 @@
 (autoload 'mailcap-file-name-to-mime-type "mailcap")
 (autoload 'meme                           "meme" nil t)
 (autoload 'meme-file                      "meme" nil t)
+(autoload 'notifications-notify           "notifications")
 (autoload 'TeX-doc                        "tex" nil t)
 (autoload 'youtube-dl                     "youtube-dl" nil t)
 (autoload 'youtube-dl-list                "youtube-dl" nil t)
@@ -59,14 +60,39 @@
 
 ;; battery
 
-(define-advice battery-linux-sysfs (:filter-return (alist) blc-unicodify)
-  "Transcribe Linux sysfs AC line status in ALIST to Unicode."
-  (let ((cell (assq ?L alist)))
-    (setcdr cell (pcase (cdr cell)
-                   ("AC"  "🔌")
-                   ("BAT" "🔋")
-                   (_     "¿?"))))
-  alist)
+(defvar blc-battery-load 0
+  "Last `battery' load percentage.")
+
+(defalias 'blc-battery-status--advice
+  (let (notified)
+    (lambda (alist)
+      (let* ((cell (assq ?L alist))
+             (ac   (string-equal (cdr cell) "AC")))
+        (setcdr cell (cond ((string-equal (cdr cell) "BAT") "🔋")
+                           (ac "🔌")
+                           (t  "¿?")))
+        (setq blc-battery-load (string-to-number (alist-get ?p alist)))
+        (setq notified
+              (cond ((and notified ac) nil)
+                    ((or notified ac (> blc-battery-load battery-load-critical))
+                     notified)
+                    (t (notifications-notify
+                        :title "Low Battery"
+                        :body (format "%d%% (%s mins) remaining"
+                                      blc-battery-load (alist-get ?m alist))
+                        :urgency 'critical
+                        :image-path "battery-caution")))))
+      alist))
+  "Send a notification if battery load percentage is critical.
+Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
+
+(advice-add #'battery-linux-sysfs :filter-return #'blc-battery-status--advice)
+
+(define-advice battery-update (:after () blc-battery-low)
+  "Indicate low battery load percentage with the face `warning'."
+  (when (< battery-load-critical blc-battery-load battery-load-low)
+    (put-text-property 0 (length battery-mode-line-string)
+                       'face 'warning battery-mode-line-string)))
 
 ;; bbdb-com
 
@@ -595,7 +621,6 @@ Adapted from URL
   "Asynchronously notify of any GitHub notifications."
   (interactive)
   (require 'ghub)
-  (require 'notifications)
   (ghub-get
    "/notifications" ()
    :auth 'blc
@@ -1015,7 +1040,7 @@ less jumpy auto-filling."
  avy-background                         t
 
  ;; battery
- battery-load-critical                  20
+ battery-load-low                       20
  battery-mode-line-format               "%L"
 
  ;; bbdb
