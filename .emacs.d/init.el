@@ -64,7 +64,7 @@
   "Last `battery' load percentage.")
 
 (defalias 'blc-battery-status--advice
-  (let (notified)
+  (let (id)
     (lambda (alist)
       (let* ((cell (assq ?L alist))
              (ac   (string-equal (cdr cell) "AC")))
@@ -72,16 +72,16 @@
                            (ac "🔌")
                            (t  "¿?")))
         (setq blc-battery-load (string-to-number (alist-get ?p alist)))
-        (setq notified
-              (cond ((and notified ac) nil)
-                    ((or notified ac (> blc-battery-load battery-load-critical))
-                     notified)
-                    (t (notifications-notify
-                        :title "Low Battery"
-                        :body (format "%d%% (%s mins) remaining"
-                                      blc-battery-load (alist-get ?m alist))
-                        :urgency 'critical
-                        :image-path "battery-caution")))))
+        (cond ((and id ac)
+               (notifications-close-notification id)
+               (setq id nil))
+              ((not (or id ac (> blc-battery-load battery-load-critical)))
+               (setq id (notifications-notify
+                         :title "Low Battery"
+                         :body (format "%d%% (%s mins) remaining"
+                                       blc-battery-load (alist-get ?m alist))
+                         :urgency 'critical
+                         :image-path "battery-caution")))))
       alist))
   "Send a notification if battery load percentage is critical.
 Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
