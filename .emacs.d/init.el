@@ -2290,7 +2290,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
       "Set default comment style after `c-indentation-style'."
       (when (eq major-mode #'c-mode)
         (c-toggle-comment-style
-         (if (string= c-indentation-style name) -1 1))))))
+         (if (string-equal c-indentation-style name) -1 1))))))
 
 ;; chess
 
