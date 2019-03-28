@@ -143,17 +143,6 @@ Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
   "Like `eww', but invert the sense of the prefix argument."
   (funcall eww url (and (= (prefix-numeric-value arg) 1) 4)))
 
-;; files
-
-(define-advice save-buffers-kill-emacs
-    (:around (kill &rest args) blc-confirm-daemon)
-  "Ensure `confirm-kill-emacs' is bound when `daemonp'."
-  (let ((confirm-kill-emacs (or confirm-kill-emacs
-                                (and (daemonp)
-                                     (lambda (&rest _)
-                                       (yes-or-no-p "Really kill daemon? "))))))
-    (apply kill args)))
-
 ;; find-func
 
 (define-advice find-function-search-for-symbol
@@ -603,6 +592,14 @@ Adapted from URL
   (interactive)
   (setq-local shr-inhibit-images (not shr-inhibit-images))
   (eww-reload t))
+
+;; files
+
+(defun blc-confirm-kill-daemon (prompt)
+  "Ask whether to kill daemon Emacs with PROMPT.
+Intended as a predicate for `confirm-kill-emacs'."
+  (or (not (daemonp))
+      (yes-or-no-p prompt)))
 
 ;; flycheck
 
@@ -1192,6 +1189,7 @@ less jumpy auto-filling."
  auto-save-visited-interval             auto-save-timeout
  backup-by-copying                      t
  backup-directory-alist                 '(("" . "~/.backup/"))
+ confirm-kill-emacs                     #'blc-confirm-kill-daemon
  delete-old-versions                    t
  directory-free-space-args              "-hP"
  find-file-visit-truename               t
