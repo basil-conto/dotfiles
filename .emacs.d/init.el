@@ -1887,7 +1887,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  eww-buffers-mode-hook
                                                  eww-mode-hook
                                                  help-mode-hook
-                                                 log-view-mode
+                                                 log-view-mode-hook
                                                  message-mode-hook
                                                  minibuffer-setup-hook
                                                  term-mode-hook
