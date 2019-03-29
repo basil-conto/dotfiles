@@ -680,20 +680,6 @@ overrides them."
   "Locally disable tab indentation."
   (setq indent-tabs-mode nil))
 
-(defun blc-gnus-summary-line-format (&rest from)
-  "Return format string suitable for `gnus-summary-line-format'.
-Strings FROM override the default `f' format spec."
-  (apply #'concat
-         `("%U"                                   ; Read status
-           "%R"                                   ; Replied status
-           "%z"                                   ; Article zcore
-           "%O"                                   ; Download mark
-           "%4{:%8&user-date;%} "                 ; Date & colon
-           "%(%2{%-24,24" ,@(or from '("f")) "%}" ; From/To
-           " %B"                                  ; Thread tree
-           "%3{%s%}%)"                            ; Subject
-           "\n")))
-
 (defun blc-turn-on-lexical-binding ()
   "Locally enable lexical binding."
   (setq lexical-binding t))

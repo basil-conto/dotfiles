@@ -420,14 +420,6 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
-;; bbdb
-
-(defun blc-bbdb-set-gnus-summary-line-format ()
-  "Prepare `gnus-summary-line-format' for `bbdb' unification."
-  (setq-default
-   gnus-summary-line-format
-   (blc-gnus-summary-line-format "u" bbdb-mua-summary-unify-format-letter)))
-
 ;; browse-url
 
 (defun blc-print-url--lpr (url)
@@ -1877,7 +1869,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks auth-source-backend-parser-functions :fns blc-pass-backend-parse)
 
   ;; bbdb
-  (:hooks gnus-started-hook :fns blc-bbdb-set-gnus-summary-line-format)
   (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus)
 
   ;; blc-lib

@@ -124,7 +124,16 @@ convention (see the Info node `(gnus) Process/Prefix')."
  gnus-extract-address-components        #'mail-extract-address-components
  gnus-group-uncollapsed-levels          3
  gnus-select-method                     '(nnnil)
- gnus-summary-line-format               (blc-gnus-summary-line-format)
+ gnus-summary-line-format
+ (concat "%U"                           ; Read status
+         "%R"                           ; Replied status
+         "%z"                           ; Article zcore
+         "%O"                           ; Download mark
+         "%4{:%8&user-date;%} "         ; Date & colon
+         "%(%2{%-24,24uB%}"             ; From (BBDB-unified)
+         " %B"                          ; Thread tree
+         "%3{%s%}%)"                    ; Subject
+         "\n")
  gnus-update-message-archive-method     t
  gnus-save-score                        t
  gnus-secondary-select-methods
