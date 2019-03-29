@@ -22,6 +22,8 @@
 (require 'map)
 (require 'seq)
 (eval-when-compile
+  (require 'gnus-sum)
+  (require 'nnheader)
   (require 'subr-x))
 
 ;;; Byte-compiler declarations
@@ -31,6 +33,7 @@
   (defvar gnus-buffer-configuration)
   (defvar gnus-directory)
   (defvar gnus-level-default-subscribed)
+  (defvar gnus-newsgroup-limit)
   (defvar gnus-sorted-header-list)
   (defvar gnus-startup-file)
   (defvar gnus-summary-mode-map)
@@ -39,6 +42,7 @@
   (defvar gnus-visible-headers)
   (defvar nnir-imap-search-arguments)
 
+  (declare-function bbdb-mua-summary-unify                "bbdb-mua")
   (declare-function gnus-demon-add-handler                "gnus-demon")
   (declare-function gnus-demon-scan-news                  "gnus-demon")
   (declare-function gnus-group-set-timestamp              "gnus-group")
@@ -46,6 +50,7 @@
   (declare-function gnus-score-find-single                "gnus-score")
   (declare-function gnus-article-sort-by-most-recent-date "gnus-sum")
   (declare-function gnus-article-sort-by-number           "gnus-sum")
+  (declare-function gnus-summary-goto-article             "gnus-sum")
   (declare-function gnus-summary-save-parts               "gnus-sum")
   (declare-function gnus-thread-sort-by-date              "gnus-sum")
   (declare-function gnus-thread-sort-by-most-recent-date  "gnus-sum")
@@ -54,7 +59,8 @@
   (declare-function gnus-current-topic                    "gnus-topic")
   (declare-function gnus-topic-fold                       "gnus-topic")
   (declare-function gnus-topic-goto-topic                 "gnus-topic")
-  (declare-function gnus-topic-mode                       "gnus-topic"))
+  (declare-function gnus-topic-mode                       "gnus-topic")
+  (declare-function gnus-completing-read                  "gnus-util"))
 
 (autoload 'nnir-run-blc-notmuch "blc-notmuch")
 
@@ -116,6 +122,21 @@ convention (see the Info node `(gnus) Process/Prefix')."
                                  (file-directory-p dir))
                         (delete-directory dir t)
                         (message "Deleted temporary directory %s" dir)))))))
+
+(defun blc-gnus-format-article (article)
+  "Format Gnus ARTICLE for `blc-gnus-goto-article'."
+  (let* ((head (gnus-data-header (gnus-data-find article)))
+         (time (blc-gnus-user-date (mail-header-date head)))
+         (from (bbdb-mua-summary-unify (mail-header-from head))))
+    (cons (format "%8s %-24s %s" time from (mail-header-subject head))
+          article)))
+
+(defun blc-gnus-goto-article ()
+  "Like `gnus-summary-goto-article', but human-readable."
+  (interactive)
+  (let ((arts (mapcar #'blc-gnus-format-article gnus-newsgroup-limit)))
+    (gnus-summary-goto-article
+     (blc-get arts (gnus-completing-read "Article" arts t)))))
 
 ;;; Options
 
@@ -265,7 +286,8 @@ convention (see the Info node `(gnus) Process/Prefix')."
     (gnus-summary-mode-map
      ([?\M-r])
      ([?\M-s])
-     ("va" . #'blc-gnus-apply-attachments))))
+     ([remap gnus-summary-goto-article] . #'blc-gnus-goto-article)
+     ("va"                              . #'blc-gnus-apply-attachments))))
 
 ;; gnus-topic
 
