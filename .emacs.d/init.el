@@ -63,6 +63,16 @@
 (defvar blc-battery-load 0
   "Last `battery' load percentage.")
 
+(defun blc-battery-notify (alist &optional id)
+  "Send a low battery notification optionally replacing ID.
+ALIST is like that returned by `battery-status-function'."
+  (notifications-notify :title "Low Battery"
+                        :body (format "%d%% (%s mins) remaining"
+                                      blc-battery-load (alist-get ?m alist))
+                        :replaces-id id
+                        :urgency 'critical
+                        :image-path "battery-caution"))
+
 (defalias 'blc-battery-status--advice
   (let (id)
     (lambda (alist)
@@ -73,15 +83,10 @@
                            (t  "¿?")))
         (setq blc-battery-load (string-to-number (alist-get ?p alist)))
         (cond ((and id ac)
-               (notifications-close-notification id)
-               (setq id nil))
-              ((not (or id ac (> blc-battery-load battery-load-critical)))
-               (setq id (notifications-notify
-                         :title "Low Battery"
-                         :body (format "%d%% (%s mins) remaining"
-                                       blc-battery-load (alist-get ?m alist))
-                         :urgency 'critical
-                         :image-path "battery-caution")))))
+               (notifications-close-notification (prog1 id (setq id nil))))
+              (id (blc-battery-notify alist id))
+              ((unless ac (<= blc-battery-load battery-load-critical))
+               (setq id (blc-battery-notify alist)))))
       alist))
   "Send a notification if battery load percentage is critical.
 Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
@@ -1031,6 +1036,7 @@ less jumpy auto-filling."
  ;; battery
  battery-load-low                       20
  battery-mode-line-format               "%L"
+ battery-update-interval                30
 
  ;; bbdb
  bbdb-complete-mail-allow-cycling       t
