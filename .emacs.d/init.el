@@ -1346,9 +1346,6 @@ less jumpy auto-filling."
  ;; image-dired
  image-dired-dir                        (blc-dir blc-index-dir "image-dired")
 
- ;; indent
- indent-line-function                   #'insert-tab
-
  ;; irony-eldoc
  irony-eldoc-use-unicode                t
 
@@ -1907,16 +1904,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks dafny-mode-hook :fns blc-turn-off-prettify-symbols)
 
   ;; electric
-  (:fns blc-turn-off-electric-indent-local :hooks (apt-sources-list-mode-hook
-                                                   bibtex-mode-hook
-                                                   conf-mode-hook
-                                                   dafny-mode-hook
-                                                   haskell-cabal-mode-hook
-                                                   haskell-mode-hook
-                                                   js2-mode-hook
-                                                   lisp-mode-hook
-                                                   restclient-mode-hook
-                                                   text-mode-hook))
+  (:fns blc-turn-off-electric-indent-local :hooks (haskell-cabal-mode-hook
+                                                   haskell-mode-hook))
 
   ;; elisp-mode
   (:hooks emacs-lisp-mode-hook :fns (blc-rainbow-mode
