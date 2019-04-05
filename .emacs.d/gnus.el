@@ -43,6 +43,10 @@
   (defvar nnir-imap-search-arguments)
 
   (declare-function bbdb-mua-summary-unify                "bbdb-mua")
+  (declare-function diff-file-next                        "diff-mode")
+  (declare-function diff-file-prev                        "diff-mode")
+  (declare-function diff-hunk-next                        "diff-mode")
+  (declare-function diff-hunk-prev                        "diff-mode")
   (declare-function gnus-demon-add-handler                "gnus-demon")
   (declare-function gnus-demon-scan-news                  "gnus-demon")
   (declare-function gnus-group-set-timestamp              "gnus-group")
@@ -266,7 +270,13 @@ convention (see the Info node `(gnus) Process/Prefix')."
 ;; gnus-art
 
 (with-eval-after-load 'gnus-art
-  (define-key gnus-article-mode-map [?\M-D] #'blc-download)
+  (blc-define-keys
+    (gnus-article-mode-map
+     ("vN" . #'diff-file-next)
+     ("vP" . #'diff-file-prev)
+     ("vd" . #'blc-download)
+     ("vn" . #'diff-hunk-next)
+     ("vp" . #'diff-hunk-prev)))
 
   (setq-default
    gnus-sorted-header-list
