@@ -2844,7 +2844,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    magit-pop-revision-stack-format
    (list "format:[%N] "
          "\
-[%N]: %s
+[%N: %h]: %s
   %ci
   https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
          (caddr magit-pop-revision-stack-format))))
