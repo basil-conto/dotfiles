@@ -111,7 +111,7 @@ the buffer \"*git am*\". Argument N follows the process/prefix
 convention (see the Info node `(gnus) Process/Prefix')."
   (interactive "P")
   (let ((dir (make-temp-file "blc-gnus-" t)))
-    (gnus-summary-save-parts "text/x-diff" dir n)
+    (gnus-summary-save-parts (rx (| "text/x-diff" "text/x-patch")) dir n)
     (let* ((default-directory source-directory)
            (proc (make-process
                   :name "git am"
