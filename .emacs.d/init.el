@@ -64,6 +64,7 @@
                     (buffer-name cand)))
          killed ran)
     (when name
+      (setq blc-debug 1)
       (with-current-buffer cand
         (unless (memq #'auto-revert-remove-current-buffer kill-buffer-hook)
           (lwarn 'blc :error "Auto-revertable buffer not hooked for removal
@@ -78,9 +79,10 @@
     (setq killed (funcall fn buf))
     (and killed name (memq cand auto-revert-buffer-list)
          (lwarn 'blc :error (if ran
-                                "Auto-revertable buffer not purged: %s"
-                              "Auto-revertable buffer's hook not run: %s")
-                name))
+                                "Auto-revertable buffer not purged: %s %s"
+                              "Auto-revertable buffer's hook not run: %s %s")
+                blc-debug name))
+    (setq blc-debug 0)
     killed))
 
 ;; fns.c
