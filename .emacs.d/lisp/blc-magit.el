@@ -60,11 +60,6 @@
         (magit-insert-section (gpg raw)
           (insert (propertize raw 'face face) "\n\n"))))))
 
-(defun blc-auto-revert-filter (buffer)
-  "Like `buffer-live-p', but warn of a killed BUFFER."
-  (or (buffer-live-p buffer)
-      (ignore (lwarn 'blc :error "Trying to auto-revert a killed buffer"))))
-
 ;; Add signature revision headers
 (magit-add-section-hook 'magit-revision-sections-hook
                         #'blc-magit-insert-revision-gpg
@@ -84,10 +79,6 @@
       (nthcdr 2 magit-repolist-columns))
 
 (setq-default
- ;; magit-autorevert
- auto-revert-buffer-list-filter         #'blc-auto-revert-filter
-
- ;; magit-log
  magit-log-arguments
  (let (case-fold-search)
    ;; Limit number of commits in log

@@ -54,37 +54,6 @@
 
 ;;;; ADVICE
 
-;; buffer.c
-
-(define-advice kill-buffer (:around (fn &optional buf) blc-anity)
-  "(In)Sanity check for `auto-revert-buffer-list' purging."
-  (let* ((cand (and (boundp 'auto-revert-buffer-list)
-                    (if buf (get-buffer buf) (current-buffer))))
-         (name (and cand (memq cand auto-revert-buffer-list)
-                    (buffer-name cand)))
-         killed ran)
-    (when name
-      (setq blc-debug 1)
-      (with-current-buffer cand
-        (unless (memq #'auto-revert-remove-current-buffer kill-buffer-hook)
-          (lwarn 'blc :error "Auto-revertable buffer not hooked for removal
-  Buffer : %s
-  Local  : %s
-  Global : %s"
-                 name kill-buffer-hook (default-value 'kill-buffer-hook)))
-        (letrec ((hook (lambda ()
-                         (setq ran t)
-                         (remove-hook 'kill-buffer-hook hook t))))
-          (add-hook 'kill-buffer-hook hook nil t))))
-    (setq killed (funcall fn buf))
-    (and killed name (memq cand auto-revert-buffer-list)
-         (lwarn 'blc :error (if ran
-                                "Auto-revertable buffer not purged: %s %s"
-                              "Auto-revertable buffer's hook not run: %s %s")
-                blc-debug name))
-    (setq blc-debug 0)
-    killed))
-
 ;; fns.c
 
 (advice-add #'yes-or-no-p :override #'y-or-n-p)
