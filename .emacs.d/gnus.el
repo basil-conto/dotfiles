@@ -113,12 +113,11 @@ convention (see the Info node `(gnus) Process/Prefix')."
   (let ((dir (make-temp-file "blc-gnus-" t)))
     (gnus-summary-save-parts (rx (| "text/x-diff" "text/x-patch")) dir n)
     (let* ((default-directory source-directory)
-           (proc (make-process
-                  :name "git am"
-                  :buffer "*git am*"
-                  :connection-type 'pipe
-                  :command
-                  `("git" "am" ,@(directory-files dir t "\\.patch\\'")))))
+           (files (directory-files dir t (rx ".patch" eos)))
+           (proc  (make-process :name "git am"
+                                :buffer "*git am*"
+                                :connection-type 'pipe
+                                :command `("git" "am" ,@files))))
       (display-buffer (process-buffer proc) '(() (allow-no-window . t)))
       (add-function :after (process-sentinel proc)
                     (lambda (proc _msg)
