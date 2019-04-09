@@ -12,7 +12,8 @@ if [ -x "$(command -v status-notifier-watcher)" ]; then
   [ -x "$(command -v taffybar)"  ] && taffybar               &
 fi
 
-[ -x "$(command -v blc-xkb)"      ] && blc-xkb
-[ -x "$(command -v kbdd)"         ] && kbdd
-[ -x "$(command -v xscreensaver)" ] && xscreensaver -no-splash &
-[ -x "$(command -v ssh-agent)"    ] && eval $(ssh-agent)
+[ -x "$(command -v blc-xkb)"        ] && blc-xkb
+[ -x "$(command -v kbdd)"           ] && kbdd
+[ -x "$(command -v xscreensaver)"   ] && xscreensaver -no-splash &
+[ -x "$(command -v smart-notifier)" ] && smart-notifier &
+[ -x "$(command -v ssh-agent)"      ] && eval $(ssh-agent)
