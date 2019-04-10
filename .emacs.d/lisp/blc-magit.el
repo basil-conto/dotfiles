@@ -18,6 +18,7 @@
 
 (require 'forge)
 (require 'magit)
+(require 'magit-extras)
 (require 'magit-git)
 (require 'magit-section)
 
@@ -59,6 +60,16 @@
         (magit-insert-heading)
         (magit-insert-section (gpg raw)
           (insert (propertize raw 'face face) "\n\n"))))))
+
+(defun blc-magit-insert-emacs-revision ()
+  "Insert the head of `magit-revision-stack' before point.
+Format the Git revision as per CONTRIBUTE guidelines."
+  (interactive)
+  (let ((process-environment (cons "TZ=UTC" process-environment))
+        (default-directory   (or (cadar magit-revision-stack)
+                                 (user-error "Revision stack is empty"))))
+    (call-process "git" nil t t "show" "--quiet" "--date=iso-local"
+                  "--format=%aI!%aE" (caar magit-revision-stack))))
 
 ;; Add signature revision headers
 (magit-add-section-hook 'magit-revision-sections-hook
