@@ -793,15 +793,17 @@ Return the name of the buffer as a string or `nil'."
   "Allow user to quit sending on missing attachment detection."
   (or (save-excursion
         (message-goto-body)
-        (not (re-search-forward "attach"
-                                (save-excursion
-                                  (message-goto-signature)
-                                  (point))
-                                t)))
+        (not (re-search-forward
+              (rx (eval `(| "attach"
+                            ,@(mapcar (lambda (s)
+                                        `(regexp ,(char-fold-to-regexp s)))
+                                      '("συναπτ" "συναψ" "συνημμ")))))
+              (save-excursion (message-goto-signature) (point))
+              t)))
       (map-some (lambda (_part params)
                   (assq 'disposition params))
                 (mml-parse))
-      (y-or-n-p "Mention of \"attach\" but no attachments; send anyway? ")
+      (y-or-n-p "No attachments; send anyway? ")
       (keyboard-quit)))
 
 ;; org
