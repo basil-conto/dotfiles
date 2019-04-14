@@ -68,8 +68,10 @@ Format the Git revision as per CONTRIBUTE guidelines."
   (let ((process-environment (cons "TZ=UTC" process-environment))
         (default-directory   (or (cadar magit-revision-stack)
                                  (user-error "Revision stack is empty"))))
-    (call-process "git" nil t t "show" "--quiet" "--date=iso-local"
-                  "--format=%aI!%aE" (caar magit-revision-stack))))
+    (and (eq 0 (call-process "git" nil t t "show" "--quiet" "--date=iso-local"
+                             "--format=%aI!%aE" (caar magit-revision-stack)))
+         (bolp)
+         (delete-char -1))))
 
 ;; Add signature revision headers
 (magit-add-section-hook 'magit-revision-sections-hook
