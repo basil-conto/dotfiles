@@ -2034,6 +2034,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([S-left]                              . #'windmove-left)
    ([S-right]                             . #'windmove-right)
    ([f5]                                  . #'blc-revert-buffer)
+   ([f6]                                  . #'gif-screencast)
    ([remap bookmark-jump]                 . #'counsel-bookmark)
    ([remap capitalize-word]               . #'capitalize-dwim)
    ([remap count-lines-page]              . #'blc-count-lines)
@@ -2584,6 +2585,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (ggtags-mode-map
      ([?\M-\]]) ; `ggtags-find-reference'
      ([?\M-F]  . #'ggtags-find-reference))))
+
+;; gif-screencast
+
+(with-eval-after-load 'gif-screencast
+  (define-key gif-screencast-mode-map [f7] #'gif-screencast-stop))
 
 ;; git-annex
 

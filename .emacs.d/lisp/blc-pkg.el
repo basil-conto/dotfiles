@@ -177,6 +177,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    ggtags
    ghub
+   gif-screencast
    git-annex
    git-commit
    gitattributes-mode
