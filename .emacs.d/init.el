@@ -2368,9 +2368,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    (     conf-unix-mode "🔧[🐧]" :major)
    (conf-xdefaults-mode "🔧[X]"  :major)
 
-   ;; counsel
-   (counsel-mode nil counsel)
-
    ;; eldoc
    (eldoc-mode nil eldoc)
 
@@ -2396,9 +2393,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
    ;; irony
    (irony-mode "🜜" irony)
-
-   ;; ivy
-   (ivy-mode nil ivy)
 
    ;; js2-mode
    (js2-mode "jsⅡ" :major)
@@ -2871,6 +2865,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'magit-log
   (setq-default magit-log-margin
                 '(t age-abbreviated magit-log-margin-width t 16)))
+
+;; magit-utils
+
+(with-eval-after-load 'magit-utils
+  (require 'ivy))
 
 ;; make-mode
 
