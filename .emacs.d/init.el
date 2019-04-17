@@ -2748,7 +2748,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (dolist (caller callers)
               (blc-put ivy-sort-functions-alist caller sort)))
           `((nil                 t)
-            (,#'blc-path-lessp   ,#'project-find-file)
+            (,#'blc-file-lessp   ,#'project-find-file)
             (,#'blc-sort-reverse ,#'Info-complete-menu-item)
             (,#'string-lessp     ,#'blc-scratch
                                  ,#'counsel-M-x

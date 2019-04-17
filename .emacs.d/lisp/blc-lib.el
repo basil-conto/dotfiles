@@ -130,34 +130,21 @@ Return result of last form in BODY or nil if PATH is unreadable."
   "Return parent directory of absolute PATH."
   (file-name-directory (directory-file-name path)))
 
-(defalias 'blc--split-dir
-  (let ((cache (make-hash-table :test #'equal)))
-    (lambda (path)
-      (or (gethash path cache)
-          (unless (string-equal path "")
-            (puthash path
-                     (cdr (split-string (directory-file-name
-                                         (file-name-directory
-                                          (expand-file-name path "/")))
-                                        "/"))
-                     cache)))))
-  "Split expanded PATH into constituent directory components.")
-
-(defun blc-path-lessp (path1 path2)
-  "Return t if file PATH1 precedes file PATH2, nil otherwise.
+(defun blc-file-lessp (file1 file2)
+  "Return non-nil if FILE1 precedes FILE2.
 Order is breadth-first lexicographic."
-  (let ((dirs1 (blc--split-dir path1))
-        (dirs2 (blc--split-dir path2))
-        (cmp   t))
-    (while (and dirs1 dirs2
-                (eq t (setq cmp (compare-strings (pop dirs1) nil nil
-                                                 (pop dirs2) nil nil)))))
+  (let (cmp beg1 end1 beg2 end2)
+    (while (and (setq end1 (string-match-p "/" file1 beg1)
+                      end2 (string-match-p "/" file2 beg2))
+                end1
+                (eq t (setq cmp (compare-strings file1 beg1 end1
+                                                 file2 beg2 end2))))
+      (setq beg1 (1+ end1) beg2 beg1))
     (cond ((integerp cmp)
            (< cmp 0))
-          ((eq dirs1 dirs2)
-           (string-lessp (file-name-nondirectory path1)
-                         (file-name-nondirectory path2)))
-          ((null dirs1)))))
+          (end2)
+          ((not end1)
+           (string-lessp file1 file2)))))
 
 (defun blc-user-dir (dir)
   "Like `xdg-user-dir', but return directory name."
