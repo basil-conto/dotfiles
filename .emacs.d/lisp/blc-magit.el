@@ -35,9 +35,10 @@
     (?E "ERROR"       magit-signature-error))
   "Map GPG sign types to their description and face.")
 
-(defun blc-magit-insert-revision-gpg (rev)
-  "Insert GPG information about REV into revision buffer."
-  (pcase-let* ((`(,(app string-to-char type) ,signer ,key
+(defun blc-magit-insert-revision-gpg ()
+  "Insert GPG information into revision buffer."
+  (pcase-let* ((rev magit-buffer-revision)
+               (`(,(app string-to-char type) ,signer ,key
                   ,(app (pcase--flip string-trim-right "\n+") raw))
                 (with-temp-buffer
                   (magit-rev-insert-format "%G?%x00%GS%x00%GK%x00%GG" rev)
@@ -91,14 +92,11 @@ Format the Git revision as per CONTRIBUTE guidelines."
 (push (list "D" 1 #'magit-repolist-column-dirty ())
       (nthcdr 2 magit-repolist-columns))
 
-(setq-default
- magit-log-arguments
- (let (case-fold-search)
-   ;; Limit number of commits in log
-   (blc-sed-tree (rx "-n" (group (+ digit))) "64" magit-log-arguments t t 1)))
-
-;; Default arguments
-(add-to-list 'magit-log-arguments "--show-signature")
+;; Set default log arguments
+(mapatoms (lambda (sym)
+            (when-let (args (get sym 'magit-log-default-arguments))
+              (put sym 'magit-log-default-arguments
+                   `("-n64" "--show-signature" ,@args)))))
 
 ;; Modes
 (magit-wip-after-apply-mode)

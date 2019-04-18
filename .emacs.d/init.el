@@ -272,9 +272,7 @@ into account."
 (define-advice magit-log-maybe-update-revision-buffer-1
     (:around (fn) blc-all-frames)
   "Update Magit log buffer across frames."
-  (blc-with-nonce magit-mode-get-buffer :around
-                  (lambda (get mode &optional create _frame value)
-                    (funcall get mode create nil value))
+  (blc-with-nonce magit-get-mode-buffer :filter-args #'butlast
     (funcall fn)))
 
 ;; magit-remote
