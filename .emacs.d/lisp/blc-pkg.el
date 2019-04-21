@@ -97,6 +97,9 @@ Visit `package-user-dir' if such a directory is not found."
  ;; emms
  emms-directory                 (blc-dir blc-index-dir "emms")
 
+ ;; nsm
+ nsm-settings-file              (blc-file blc-index-dir "network-security.el")
+
  ;; srecode
  srecode-map-save-file          nil
 

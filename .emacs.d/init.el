@@ -1522,10 +1522,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; novice
  disabled-command-function              nil
 
- ;; nsm
- nsm-settings-file                      (blc-file blc-index-dir
-                                                  "network-security.el")
-
  ;; ob-python
  org-babel-python-command               "python3"
 
