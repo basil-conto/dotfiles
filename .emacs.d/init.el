@@ -858,7 +858,8 @@ Defaults to `org-directory' and `org-default-notes-file'."
 (defun blc-pdf-tools-undefer ()
   "Clean up remnants of deferred `pdf-tools' loading."
   (remove-hook 'pdf-view-mode-hook #'blc-pdf-tools-undefer)
-  (setq auto-mode-alist (rassq-delete-all #'pdf-tools-install auto-mode-alist)))
+  (dolist (sym '(auto-mode-alist magic-mode-alist))
+    (set sym (rassq-delete-all #'pdf-tools-install (symbol-value sym)))))
 
 ;; project
 
@@ -3135,7 +3136,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 ;; pdf-tools
 
-(add-to-list 'auto-mode-alist (cons (rx ".pdf" eos) #'pdf-tools-install))
+(map-do (lambda (alist key)
+          (add-to-list alist (cons key #'pdf-tools-install)))
+        `((auto-mode-alist  . ,(rx ".pdf" eos))
+          (magic-mode-alist . "%PDF")))
 
 ;; perl-mode
 
