@@ -3120,7 +3120,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  ((pred file-regular-p)   #o640)
                                                  ((pred file-directory-p) #o750)
                                                  (_ (file-modes file))))))))))
-           '("daft" "recipes"))))
+           '("daft" "recipes"))
+   org-publish-timestamp-directory (blc-dir blc-index-dir "org-timestamps")))
 
 ;; paren
 
