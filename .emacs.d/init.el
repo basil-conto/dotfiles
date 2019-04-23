@@ -27,6 +27,7 @@
 (eval-when-compile
   (require 'subr-x))
 
+(autoload 'blc-backup                     "blc-backup" nil t)
 (autoload 'blc-mbsync                     "blc-mbsync" nil t)
 (autoload 'blc-mbsync-all                 "blc-mbsync" nil t)
 (autoload 'blc-mbsync-deduplicate         "blc-mbsync" nil t)

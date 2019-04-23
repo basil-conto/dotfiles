@@ -19,7 +19,7 @@ liball = $(patsubst %.el,%.elc,$(wildcard $(libdir)blc-*-$(1).el))
 
 pkgdir := elpa/
 libdir := lisp/
-libs   := $(call lib,lib magit mbsync notmuch pass pkg)
+libs   := $(call lib,backup lib magit mbsync notmuch pass pkg)
 themes := $(call liball,theme)
 tests  := $(call liball,tests)
 inits  := $(addsuffix .elc,early-init init)
@@ -68,6 +68,7 @@ profile: init.elc
 
 # Dependencies
 
+$(call lib,backup):    $(call lib,lib)
 $(call lib,magit):     $(call lib,lib pkg)
 $(call lib,mbsync):    $(call lib,lib)
 $(call lib,notmuch):   $(call lib,lib)
@@ -76,4 +77,4 @@ $(call lib,pkg):       $(call lib,lib)
 $(call lib,lib-tests): $(call lib,lib)
 
 gnus.elc: $(call lib,lib mbsync notmuch)
-init.elc: $(themes) $(call lib,lib magit mbsync pass pkg) early-init.elc
+init.elc: $(themes) $(call lib,backup lib magit mbsync pass pkg) early-init.elc
