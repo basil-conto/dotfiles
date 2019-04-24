@@ -1131,6 +1131,11 @@ less jumpy auto-filling."
  diary-comment-start                    ";"
  diary-number-of-entries                3
 
+ ;; dictionary
+ dictionary-create-buttons              nil
+ dictionary-default-strategy            "re"
+ dictionary-server                      "localhost"
+
  ;; diff-mode
  diff-font-lock-prettify                t
 
