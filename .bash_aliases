@@ -59,8 +59,8 @@ alias gcc='gcc -fdiagnostics-color'
 alias g++='g++ -fdiagnostics-color'
 
 # emacsen
-alias ec='TERM=xterm-24bits emacsclient --tty'
-alias em='TERM=xterm-24bits emacs -nw'
+alias ec='TERM=xterm-direct emacsclient --tty'
+alias em='TERM=xterm-direct emacs -nw'
 
 # youtube-dl
 alias ydl='youtube-dl'

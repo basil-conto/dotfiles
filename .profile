@@ -19,7 +19,6 @@ export LOCAL_DIR="${HOME}/.local"     # Local installations
 export N_PREFIX="${LOCAL_DIR}"        # https://github.com/tj/n
 export PDFVIEWER='ecc --no-wait'      # texdoc
 export PSVIEWER='ecc  --no-wait'      # texdoc
-export TERM=xterm-256color            # Colours!
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Rubbish (bin)
