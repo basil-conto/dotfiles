@@ -1911,8 +1911,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                    haskell-mode-hook))
 
   ;; elisp-mode
-  (:hooks emacs-lisp-mode-hook :fns (blc-rainbow-mode
-                                     blc-turn-on-lexical-binding))
+  (:hooks emacs-lisp-mode-hook :fns blc-rainbow-mode)
 
   ;; eshell
   (:hooks eshell-output-filter-functions :fns eshell-truncate-buffer)
@@ -1964,9 +1963,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                              newsticker-treeview-list-mode
                              org-agenda-mode-hook
                              tabulated-list-mode-hook))
-
-  ;; ielm
-  (:hooks ielm-mode-hook :fns blc-turn-on-lexical-binding)
 
   ;; irony
   (:hooks irony-mode-hook :fns (irony-cdb-autosetup-compile-options

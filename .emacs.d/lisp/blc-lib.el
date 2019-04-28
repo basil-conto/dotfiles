@@ -671,10 +671,6 @@ overrides them."
   "Locally disable tab indentation."
   (setq indent-tabs-mode nil))
 
-(defun blc-turn-on-lexical-binding ()
-  "Locally enable lexical binding."
-  (setq lexical-binding t))
-
 (defun blc-turn-on-double-space-sentence-ends ()
   "Locally enable `sentence-end-double-space'."
   (setq-local sentence-end-double-space t))
