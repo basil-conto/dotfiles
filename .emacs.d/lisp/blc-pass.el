@@ -6,7 +6,7 @@
 ;;; Commentary:
 
 ;; This package is a clean-slate POC attempt at improving the built-in
-;; lisp/auth-source-pass.el package. Currently most of the
+;; lisp/auth-source-pass.el package.  Currently most of the
 ;; functionality is supported at one-third the search time cost.
 
 ;;; Code:
@@ -39,10 +39,10 @@
 
 (defun blc-pass--field (spec key &optional field)
   "Return a matcher object for KEY according to plist SPEC.
-FIELD is a regexp in `rx' sexp form. The object returned is of
-the form [KEY TEST REQUIRED]. TEST is a function which returns a
+FIELD is a regexp in `rx' sexp form.  The object returned is of
+the form [KEY TEST REQUIRED].  TEST is a function which returns a
 FIELD: VALUE entry corresponding to KEY from the current buffer
-or nil if not found. REQUIRED non-nil means TEST should return
+or nil if not found.  REQUIRED non-nil means TEST should return
 non-nil."
   (let ((vals (and field (blc-pass--get spec key))))
     (vector key

@@ -648,7 +648,7 @@ Intended as a predicate for `confirm-kill-emacs'."
 
 (defun blc--gnus-switch-buffer (action)
   "Call ACTION on first desirable Gnus buffer found.
-Return result of ACTION. See `blc-gnus' for a definition of
+Return result of ACTION.  See `blc-gnus' for a definition of
 desirable."
   (and-let* ((buf (seq-some (lambda (var)
                               (and-let* (((boundp var))
@@ -1617,9 +1617,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; ox-publish
  org-publish-use-timestamps-flag        nil
-
- ;; paragraphs
- sentence-end-double-space              nil
 
  ;; password-cache
  password-cache                         nil

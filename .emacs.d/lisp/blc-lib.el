@@ -212,12 +212,12 @@ See `blc-opusenc-flac'."
         (push (cons flac opus) files)))))
 
 (defvar blc-opusenc-switches '("--bitrate" "128" "--quiet")
-  "List of `opusenc' switches for `blc-opusenc-flac'. ")
+  "List of `opusenc' switches for `blc-opusenc-flac'.")
 
 (defun blc-opusenc-flac (dir)
   "Asynchronously transcode new flac files under DIR to opus.
 Only those flac files which lack a corresponding and as recent
-opus file are transcoded. At any given time, there may exist as
+opus file are transcoded.  At any given time, there may exist as
 many opusenc processes as there are available processing units."
   (interactive (list (read-directory-name "Transcode flacs under directory: "
                                           (blc-user-dir "MUSIC") nil t)))
@@ -267,7 +267,7 @@ If nil, this variable is set to XDG_DOWNLOAD_DIR when needed.")
 (defun blc-read-file (prompt &optional def)
   "Read regular file name with PROMPT in `blc-read-file-dir'.
 Like `read-file-name', but intended for selecting a file to write
-to with protection from accidental overwriting. DEF is like the
+to with protection from accidental overwriting.  DEF is like the
 INITIAL argument to `read-file-name', and is additionally used as
 the base file name when a directory is selected."
   (or blc-read-file-dir (setq blc-read-file-dir (blc-user-dir "DOWNLOAD")))
@@ -287,10 +287,10 @@ the base file name when a directory is selected."
 (defun blc-download (&optional url _new-window file)
   "Write contents of URL to FILE.
 Try to detect any raw or image URLs at point when URL is nil.
-FILE is read interactively if nil. If FILE then names an existing
-directory, URL is downloaded to a similarly named file under that
-directory, as per `copy-file' et al. NEW-WINDOW is for
-compatibility with `browse-url' and ignored."
+FILE is read interactively if nil.  If FILE then names an
+existing directory, URL is downloaded to a similarly named file
+under that directory, as per `copy-file' et al.  NEW-WINDOW is
+for compatibility with `browse-url' and ignored."
   (interactive)
   (if-let* ((url  (or url
                       (thing-at-point 'url)    ; Raw URL
@@ -390,8 +390,8 @@ Offer to revert from the auto-save file, if that exists."
 
 (defun blc-bury-buffer (&optional buffer-or-name unbury)
   "Un/bury buffer.
-With prefix argument UNBURY, call `unbury-buffer'. Otherwise pass
-BUFFER-OR-NAME to `bury-buffer'."
+With prefix argument UNBURY, call `unbury-buffer'.  Otherwise
+pass BUFFER-OR-NAME to `bury-buffer'."
   (interactive "i\nP")
   (if unbury
       (unbury-buffer)
@@ -478,7 +478,7 @@ exchange current and next lines."
 (defun blc-scratch (&optional mode)
   "Pop to \"*scratch*\" buffer.
 If MODE is non-nil, use it instead of `initial-major-mode' in a
-correspondingly named scratch buffer. When called interactively
+correspondingly named scratch buffer.  When called interactively
 with a prefix argument, read MODE with completion."
   (interactive
    (when current-prefix-arg
@@ -498,7 +498,7 @@ with a prefix argument, read MODE with completion."
 
 (defun blc-transpose-split ()
   "Alternate between vertical and horizontal frame split.
-Assumes frame is split exactly in two. Adapted from Wilfred's
+Assumes frame is split exactly in two.  Adapted from Wilfred's
 function at URL
 `https://www.emacswiki.org/emacs/ToggleWindowSplit'."
   (interactive)
@@ -597,7 +597,7 @@ or a list thereof.
 (defmacro blc-define-keys (&rest alist)
   "Bind multiple keys per multiple keymaps.
 Elements of ALIST should have the form (KEYMAP . BINDINGS), where
-KEYMAP is an expression evaluating to a keymap. For each element
+KEYMAP is an expression evaluating to a keymap.  For each element
 of the alist BINDINGS of the form (KEY . DEF), `define-key' is
 called on KEYMAP, KEY and DEF."
   (declare (indent 0))

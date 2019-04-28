@@ -169,7 +169,7 @@ all share the same valid max. UID of %d:\n\n" uid))
 (defun blc-mbsync (&rest chans)
   "Call mbsync with CHANS asynchronously via a shell.
 When called interactively, prompt the user with completion for
-multiple channels to synchronise. Otherwise, CHANS should form a
+multiple channels to synchronise.  Otherwise, CHANS should form a
 list of shell-quoted strings to pass to mbsync."
   (interactive (blc--mbsync-crm "Synchronise mbsync channels: "))
   (let ((cmd (string-join (cons "mbsync" chans) " ")))

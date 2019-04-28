@@ -107,7 +107,7 @@ See URL `https://www.emacswiki.org/emacs/GnusTopics'."
 (defun blc-gnus-apply-attachments (n)
   "Apply all Gnus patch attachments to `source-directory'.
 Pass all text/x-diff parts to git-am(1) and display its output in
-the buffer \"*git am*\". Argument N follows the process/prefix
+the buffer \"*git am*\".  Argument N follows the process/prefix
 convention (see the Info node `(gnus) Process/Prefix')."
   (interactive "P")
   (let ((dir (make-temp-file "blc-gnus-" t)))
