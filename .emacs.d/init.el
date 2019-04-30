@@ -1374,8 +1374,7 @@ less jumpy auto-filling."
 ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; jit-lock
- jit-lock-stealth-load                  60
- jit-lock-stealth-time                   4
+ jit-lock-stealth-time                  4
 
  ;; js
  js-indent-level                        4
