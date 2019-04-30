@@ -130,6 +130,12 @@ Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
                     (apply #'call-process prog nil 0 nil args))
     (apply fn args)))
 
+;; cc-align
+
+(define-advice c-lineup-gnu-DEFUN-intro-cont (:after-while (&rest _) blc-two)
+  "Indent DEFUN argument list to column 2."
+  2)
+
 ;; elisp-mode
 
 (define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
