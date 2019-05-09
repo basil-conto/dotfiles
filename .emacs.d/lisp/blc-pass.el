@@ -32,7 +32,9 @@
 
 (defun blc-pass--files (spec)
   "Return `blc-pass-dir' files matching plist SPEC's :host."
-  (let ((hosts (blc-pass--get spec :host)))
+  (let ((hosts (mapcar (lambda (host)
+                         (subst-char-in-string ?/ ?- host))
+                       (blc-pass--get spec :host))))
     (directory-files-recursively
      blc-pass-dir
      (blc-rx `(: ,@(and hosts `(bos (| ,@hosts))) ".gpg" eos)))))
