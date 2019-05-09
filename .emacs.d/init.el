@@ -1037,6 +1037,9 @@ less jumpy auto-filling."
  auth-source-debug                      'trivia
  auth-sources                           '(blc-pass)
 
+ ;; autorevert
+ auto-revert-avoid-polling              t
+
  ;; avy
  avy-all-windows                        'all-frames
  avy-background                         t
