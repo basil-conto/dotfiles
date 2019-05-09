@@ -1759,6 +1759,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; tramp-cache
  tramp-persistency-file-name            (blc-file blc-index-dir "tramp")
 
+ ;; transient
+ transient-enable-popup-navigation      t
+
  ;; type-break
  type-break-demo-boring-stats           t
  type-break-file-name                   nil
