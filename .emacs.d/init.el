@@ -812,31 +812,6 @@ Return the name of the buffer as a string or `nil'."
 
 ;; org
 
-(defun blc--org-agenda-day-1 (n sign iter origin)
-  "Subroutine of `blc--org-agenda-day'."
-  (while (unless (zerop n)
-           (when-let* ((day (funcall iter (funcall origin) 'org-date-line)))
-             (goto-char day)
-             (beginning-of-line)
-             (setq n (- n sign))))))
-
-(defun blc--org-agenda-day (n)
-  "Move N agenda date lines forward (backward if N is negative)."
-  (apply #'blc--org-agenda-day-1 n (cl-signum n)
-         (if (natnump n)
-             (list #'next-single-property-change #'line-end-position)
-           (list #'previous-single-property-change #'line-beginning-position))))
-
-(defun blc-org-agenda-day-backward (n)
-  "Like `previous-line', but for `org' agenda date lines."
-  (interactive "p")
-  (blc--org-agenda-day (- n)))
-
-(defun blc-org-agenda-day-forward (n)
-  "Like `next-line', but for `org' agenda date lines."
-  (interactive "p")
-  (blc--org-agenda-day n))
-
 (defun blc-org-read-file ()
   "Read `org' filename.
 Defaults to `org-directory' and `org-default-notes-file'."
@@ -3002,11 +2977,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; org-agenda
 
 (with-eval-after-load 'org-agenda
-  (blc-define-keys
-    (org-agenda-mode-map
-     ([?\M-n] . #'blc-org-agenda-day-forward)
-     ([?\M-p] . #'blc-org-agenda-day-backward)))
-
   (if-let* ((key "n")
             (cmd (seq-take (blc-get org-agenda-custom-commands key) 2))
             ((= (length cmd) 2)))
