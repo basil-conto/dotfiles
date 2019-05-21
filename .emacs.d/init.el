@@ -353,6 +353,15 @@ This is much less accurate but also much more performant than
   (let (pop-up-frames)
     (apply read args)))
 
+;; org-agenda
+
+(defvar org-agenda-window-setup)
+
+(define-advice org-agenda--quit (:around (fn &rest args) blc-spare-frame)
+  "Do not delete Org Agenda frame on exit."
+  (let (org-agenda-window-setup)
+    (apply fn args)))
+
 ;; org-capture
 
 (define-advice org-capture-refile (:after (&rest _) blc-org-save)
@@ -1564,6 +1573,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-agenda-category-icon-alist         '(("" (space :width (16))))
  org-agenda-deadline-leaders            '("" "%3dd +" "%3dd -")
  org-agenda-scheduled-leaders           '("" "%3dd -")
+ org-agenda-sticky                      t
  org-agenda-timerange-leaders           '("" "(%d/%d)")
  org-agenda-todo-ignore-with-date       t
  org-agenda-todo-list-sublevels         nil
