@@ -233,12 +233,6 @@ into account."
            (blc-but-fringes
             width (string-width (funcall ivy-format-function '(""))))))
 
-;; ledger-complete
-
-(define-advice ledger-pcomplete (:override (&rest _) blc-completion-at-point)
-  "Use default inline completion."
-  (completion-at-point))
-
 ;; magit-diff
 
 (define-advice magit-diff-show-or-scroll
@@ -2808,6 +2802,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (add-to-list 'auto-mode-alist (cons (rx ".ledger" eos) #'ledger-mode))
 
 (with-eval-after-load 'ledger-mode
+  (define-key ledger-mode-map "\e\t" #'completion-at-point)
+
   (setq-default ledger-default-date-format ledger-iso-date-format)
 
   (ledger-reports-add "blc-account"
