@@ -189,7 +189,6 @@ convention (see the Info node `(gnus) Process/Prefix')."
          "\n")
 
  ;; gnus-msg
- gnus-bug-create-help-buffer            nil
  gnus-gcc-mark-as-read                  t
 
  ;; gnus-notifications
