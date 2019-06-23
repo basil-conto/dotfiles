@@ -54,6 +54,7 @@
   (declare-function gnus-score-find-single                "gnus-score")
   (declare-function gnus-article-sort-by-most-recent-date "gnus-sum")
   (declare-function gnus-article-sort-by-number           "gnus-sum")
+  (declare-function gnus-data-find-in                     "gnus-sum")
   (declare-function gnus-summary-goto-article             "gnus-sum")
   (declare-function gnus-summary-save-parts               "gnus-sum")
   (declare-function gnus-thread-sort-by-date              "gnus-sum")
