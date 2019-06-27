@@ -1151,6 +1151,9 @@ less jumpy auto-filling."
  dropbox-locale                         "en_IE"
  dropbox-verbose                        t
 
+ ;; emacsbug
+ report-emacs-bug-no-explanations       t
+
  ;; emms
  emms-volume-change-function            #'emms-volume-pulse-change
 
