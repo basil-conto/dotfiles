@@ -156,7 +156,9 @@ Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
 
 (define-advice eww (:around (eww url &optional arg) blc-toggle-prefix)
   "Like `eww', but invert the sense of the prefix argument."
-  (funcall eww url (and (= (prefix-numeric-value arg) 1) 4)))
+  (funcall eww url (and (memq this-command '(eww eww-follow-link))
+                        (= (prefix-numeric-value arg) 1)
+                        4)))
 
 ;; find-func
 
