@@ -86,11 +86,11 @@ ALIST is like that returned by `battery-status-function'."
                            (ac "🔌")
                            (t  "¿?")))
         (setq blc-battery-load (string-to-number (alist-get ?p alist)))
-        (cond ((and id ac)
-               (notifications-close-notification (prog1 id (setq id nil))))
-              (id (blc-battery-notify alist id))
-              ((unless ac (<= blc-battery-load battery-load-critical))
-               (setq id (blc-battery-notify alist)))))
+        (cond ((unless ac (<= blc-battery-load battery-load-critical))
+               (let ((new (blc-battery-notify alist id)))
+                 (or id (setq id new))))
+              (id (notifications-close-notification
+                   (prog1 id (setq id nil))))))
       alist))
   "Send a notification if battery load percentage is critical.
 Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
