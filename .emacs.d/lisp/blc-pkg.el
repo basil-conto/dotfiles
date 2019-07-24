@@ -300,7 +300,9 @@ Visit `package-user-dir' if such a directory is not found."
 
 ;; Afford shadowing installed packages
 (eval-and-compile
-  (let ((dir (expand-file-name "lisp" user-emacs-directory)))
+  (dolist (dir `(("lisp/org" ,blc-dataroot-dir)
+                 ("lisp"     ,user-emacs-directory)))
+    (setq dir (apply #'expand-file-name dir))
     (setq load-path (cons dir (delete dir load-path)))))
 
 (provide 'blc-pkg)
