@@ -1880,7 +1880,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus)
 
   ;; blc-lib
-  (:fns blc-turn-off-trailing-whitespace :hooks (Info-mode-hook
+  (:fns blc-turn-off-trailing-whitespace :hooks (5x5-mode-hook
+                                                 Info-mode-hook
                                                  calendar-mode-hook
                                                  comint-mode-hook
                                                  compilation-mode-hook
