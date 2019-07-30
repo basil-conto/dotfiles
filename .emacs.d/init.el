@@ -167,13 +167,6 @@ Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
   "Pass LIB through `blc-dataroot-to-src'."
   (funcall search sym type (blc-dataroot-to-src lib)))
 
-;; git-commit
-
-(define-advice git-commit-setup-changelog-support (:after (&rest _) blc-fill)
-  "Do not interpret leading asterisks as a fill prefix.
-See URL `https://github.com/magit/magit/pull/3911'."
-  (setq-local fill-indent-according-to-mode t))
-
 ;; gnus-sum
 
 (define-advice gnus-summary-exit (:after (&rest _) blc-gnus-single-group-frame)
