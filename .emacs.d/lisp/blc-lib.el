@@ -543,13 +543,6 @@ Display is determined by the environment variable DISPLAY."
   (unless (eq (next-frame) (selected-frame))
     (delete-frame frame force)))
 
-(defun blc-with-every-frame (&rest fns)
-  "Run abnormal hooks in current frame and with every new one."
-  (let ((frame (selected-frame)))
-    (dolist (fn fns)
-      (funcall fn frame)))
-  (mapc (apply-partially #'add-hook 'after-make-frame-functions) fns))
-
 (defun blc-but-fringes (width &rest subtrahends)
   "Subtract SUBTRAHENDS and total fringe columns from WIDTH."
   (apply #'- width `(,@subtrahends ,@(mapcar #'fringe-columns '(left right)))))
@@ -687,13 +680,6 @@ overrides them."
 (defun blc-sort-reverse (_x _y)
   "Predicate that the order of X and Y should be swapped."
   t)
-
-(defun blc-turn-on-xterm-mouse (&optional frame)
-  "Enable `xterm-mouse-mode' with first terminal frame created."
-  (or (display-graphic-p frame)
-      (string-equal "initial_terminal" (terminal-name (frame-terminal frame)))
-      xterm-mouse-mode
-      (xterm-mouse-mode)))
 
 (defconst blc-chars-per-line 80
   "Target maximum number of characters per line.")

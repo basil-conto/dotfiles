@@ -3220,10 +3220,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
      ([?\C-\M->] . #'writeroom-increase-width)
      ([?\C-\M-=] . #'writeroom-adjust-width))))
 
-;; xt-mouse
-
-(blc-with-every-frame #'blc-turn-on-xterm-mouse)
-
 ;; youtube-dl
 
 (with-eval-after-load 'youtube-dl
