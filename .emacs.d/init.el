@@ -2631,6 +2631,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
           erc-mode
           eshell-mode
           lyrics-show-mode
+          magit-mode
           newsticker-treeview-item-mode
           term-mode))
 
