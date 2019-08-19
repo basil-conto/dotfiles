@@ -1451,7 +1451,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  message-mail-alias-type                nil
  message-send-mail-function             #'message-send-mail-with-sendmail
  message-sendmail-envelope-from         'header
- message-sendmail-f-is-evil             nil
  message-signature                      (car (split-string user-full-name))
 
  ;; mines
