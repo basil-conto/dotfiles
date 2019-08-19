@@ -2735,6 +2735,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; Default matching behaviour
   (blc-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
+  (blc-put ivy-more-chars-alist  t 2)
 
   ;; Fix ordering
   (map-do (lambda (sort callers)
