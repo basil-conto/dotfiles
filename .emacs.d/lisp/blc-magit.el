@@ -87,8 +87,8 @@ Format the Git revision as per CONTRIBUTE guidelines."
   (magit-add-section-hook
    'magit-status-headers-hook fn 'magit-insert-head-branch-header))
 
-;; Repo list: insert dirty column in third position
-(push (list "D" 1 #'magit-repolist-column-dirty ())
+;; Repo list: insert flag column in third position
+(push (list "D" 1 #'magit-repolist-column-flag ())
       (nthcdr 2 magit-repolist-columns))
 
 ;; Set default log arguments
