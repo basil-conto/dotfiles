@@ -6,7 +6,6 @@ import System.Taffybar.SimpleConfig         ( SimpleTaffyConfig(..)
 import System.Taffybar.Widget.Battery       ( textBatteryNew )
 import System.Taffybar.Widget.CommandRunner ( commandRunnerNew )
 import System.Taffybar.Widget.Layout        ( defaultLayoutConfig, layoutNew )
-import System.Taffybar.Widget.MPRIS2        ( mpris2New )
 import System.Taffybar.Widget.SNITray       ( sniTrayNew )
 import System.Taffybar.Widget.SimpleClock   ( textClockNew )
 import System.Taffybar.Widget.Windows       ( defaultWindowsConfig, windowsNew )
@@ -30,6 +29,6 @@ main = do
            }
   simpleTaffybar defaultSimpleTaffyConfig
                  { barHeight    = 22
-                 , endWidgets   = [ clck, batt, load, sniTrayNew, mpris2New ]
+                 , endWidgets   = [ clck, batt, load, sniTrayNew ]
                  , startWidgets = [ work, lout, wins ]
                  }
