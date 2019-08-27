@@ -1233,9 +1233,6 @@ less jumpy auto-filling."
  gnus-desktop-notify-format             "%3n: %G"
  gnus-desktop-notify-function           #'gnus-desktop-notify-send
 
- ;; gnutls
- gnutls-min-prime-bits                  nil
-
  ;; hacker-typer
  hacker-typer-show-hackerman            t
 
