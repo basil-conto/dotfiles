@@ -2622,6 +2622,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'hi-lock
   (mapc (apply-partially #'add-to-list 'hi-lock-exclude-modes)
         '(comint-mode
+          compilation-mode
           completion-list-mode
           display-time-world-mode
           erc-mode
