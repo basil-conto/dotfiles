@@ -51,6 +51,7 @@
 (autoload 'meme                             "meme" nil t)
 (autoload 'meme-file                        "meme" nil t)
 (autoload 'notifications-notify             "notifications")
+(autoload 'pdf-view-mode                    "pdf-view" nil t)
 (autoload 'TeX-doc                          "tex" nil t)
 (autoload 'youtube-dl                       "youtube-dl" nil t)
 (autoload 'youtube-dl-list                  "youtube-dl" nil t)
