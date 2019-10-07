@@ -1881,6 +1881,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  help-mode-hook
                                                  log-view-mode-hook
                                                  message-mode-hook
+                                                 messages-buffer-mode-hook
                                                  minibuffer-setup-hook
                                                  term-mode-hook
                                                  youtube-dl-list-mode-hook))
