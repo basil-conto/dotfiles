@@ -376,7 +376,7 @@
      (Man-underline  ((t :inherit font-lock-string-face :underline t)))
 
      ;; message
-     (message-cited-text        ((t :inherit    font-lock-comment-face)))
+     (message-cited-text-1      ((t :inherit    font-lock-comment-face)))
      (message-header-cc         ((t :inherit    message-header-to)))
      (message-header-name       ((t :inherit    font-lock-builtin-face)))
      (message-header-newsgroups ((t :inherit    message-header-to)))
@@ -385,7 +385,7 @@
      (message-header-to         ((t :foreground ,ylw :weight bold)))
      (message-header-xheader    ((t :inherit    message-header-other)))
      (message-mml               ((t :inherit    message-header-to)))
-     (message-separator         ((t :inherit    message-cited-text)))
+     (message-separator         ((t :inherit    message-cited-text-1)))
 
      ;; minibuffer
      (completions-annotations ((t :foreground ,fg-1)))
