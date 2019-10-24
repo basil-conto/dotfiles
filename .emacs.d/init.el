@@ -2008,8 +2008,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                           org-mode-hook))
 
   ;; startup
-  (:hooks window-setup-hook :append t :fns (blc-report-init-time
-                                            blc-gc-thresh-restore))
+  (:hooks window-setup-hook :depth t :fns (blc-report-init-time
+                                           blc-gc-thresh-restore))
 
   ;; term
   (:hooks term-exec-hook :fns blc-term-rename)

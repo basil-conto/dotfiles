@@ -574,16 +574,16 @@ thereof.
 :fns FNS -- FNS is either a single function to be added to HOOKS
 or a list thereof.
 
-:append APPEND -- See `add-hook'.
+:depth DEPTH -- See `add-hook'.
 
 :local LOCAL -- See `add-hook'."
   (declare (indent 0))
   (macroexp-progn
-   (mapcan (pcase-lambda ((map (:hooks  hooks)  (:fns   fns)
-                               (:append append) (:local local)))
+   (mapcan (pcase-lambda ((map (:hooks hooks) (:fns   fns)
+                               (:depth depth) (:local local)))
              (mapcan (lambda (hook)
                        (mapcar (lambda (fn)
-                                 `(add-hook ',hook #',fn ,append ,local))
+                                 `(add-hook ',hook #',fn ,depth ,local))
                                (blc-as-list fns)))
                      (blc-as-list hooks)))
            plists)))
