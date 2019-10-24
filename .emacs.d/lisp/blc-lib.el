@@ -15,6 +15,7 @@
 
 (autoload 'comint-output-filter "comint")
 (autoload 'dom-node             "dom")
+(autoload 'fringe-columns       "fringe")
 (autoload 'shell-mode           "shell")
 (autoload 'shr-dom-to-xml       "shr")
 (autoload 'shr-url-at-point     "shr")

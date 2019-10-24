@@ -11,7 +11,10 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'image)
   (defvar gnus-mode-line-image-cache))
+
+(autoload 'image--set-property "image")
 
 (deftheme blc-dark
   "Zenburn-based theme for blc.")
