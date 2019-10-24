@@ -24,6 +24,7 @@
 ;; Built-in
 (require 'map)
 (require 'seq)
+(require 'xdg)
 (eval-when-compile
   (require 'subr-x))
 
@@ -1187,7 +1188,8 @@ less jumpy auto-filling."
  ;; files
  auto-save-visited-interval             auto-save-timeout
  backup-by-copying                      t
- backup-directory-alist                 '(("" . "~/.backup/"))
+ backup-directory-alist
+ `(("" . ,(blc-dir (xdg-cache-home) "emacs")))
  confirm-kill-emacs                     #'blc-confirm-kill-daemon
  delete-old-versions                    t
  directory-free-space-args              "-hP"
@@ -1469,6 +1471,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; mm-decode
  mm-decrypt-option                      'ask
+ mm-default-directory                   (blc-user-dir "DOWNLOAD")
  mm-external-terminal-program           "x-terminal-emulator"
  mm-sign-option                         'guided
  mm-verify-option                       'always
@@ -1853,7 +1856,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  (cons "Moon" (map-apply
                (pcase-lambda (loc (app (apply #'blc--country-xref) country))
                  (format "%s, %s" loc (plist-get country :name)))
-               blc-locations)))
+               blc-locations))
+
+ ;; youtube-dl
+ youtube-dl-directory                   (blc-user-dir "VIDEOS"))
 
 ;;;; HOOKS
 
@@ -2945,11 +2951,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
   (setq-default message-expand-name-databases
                 (delq 'eudc message-expand-name-databases)))
 
-;; mm-decode
-
-(with-eval-after-load 'mm-decode
-  (setq-default mm-default-directory (blc-user-dir "DOWNLOAD")))
-
 ;; mpc
 
 (with-eval-after-load 'mpc
@@ -3224,11 +3225,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
      ([?\C-\M-<] . #'writeroom-decrease-width)
      ([?\C-\M->] . #'writeroom-increase-width)
      ([?\C-\M-=] . #'writeroom-adjust-width))))
-
-;; youtube-dl
-
-(with-eval-after-load 'youtube-dl
-  (setq-default youtube-dl-directory (blc-user-dir "VIDEOS")))
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars unresolved)
