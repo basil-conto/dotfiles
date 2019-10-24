@@ -727,6 +727,8 @@ Suspending or exiting Gnus deletes that frame."
   (let ((display-buffer-overriding-action blc-other-window-action))
     (call-interactively #'ielm)))
 
+;; info
+
 (defun blc-info-read-buffer ()
   "Read the name, file and node of an Info buffer.
 Return the name of the buffer as a string or `nil'."
@@ -743,8 +745,6 @@ Return the name of the buffer as a string or `nil'."
       (blc-get bufs (completing-read
                      "Info buffer: " (seq-sort-by #'car #'string-lessp bufs)))
     (cdar bufs)))
-
-;; info
 
 (defun blc-info (&optional buffer)
   "Call `info' on interactively completed BUFFER."
@@ -2008,8 +2008,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                           org-mode-hook))
 
   ;; startup
-  (:hooks window-setup-hook :depth t :fns (blc-report-init-time
-                                           blc-gc-thresh-restore))
+  (:hooks window-setup-hook :fns blc-report-init-time :depth t)
 
   ;; term
   (:hooks term-exec-hook :fns blc-term-rename)

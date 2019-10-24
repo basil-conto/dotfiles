@@ -66,7 +66,7 @@ profile: init.elc
 	$(EMACS) --quick $(ELFLAGS) --load=$(libdir)profile-dotemacs.el \
 		--funcall=profile-dotemacs
 
-# Dependencies
+## Dependencies
 
 $(call lib,backup):    $(call lib,lib)
 $(call lib,magit):     $(call lib,lib pkg)

@@ -14,7 +14,7 @@ why-are-you-changing-gc-cons-threshold/'.")
 
 (eval-and-compile
   (defun blc-gc-thresh-maximise ()
-    "Increase GC threshold to at least 64MiB"
+    "Increase GC threshold to at least 64MiB."
     (setq gc-cons-threshold (max (ash 1 26) gc-cons-threshold)))
 
   (blc-gc-thresh-maximise))
@@ -31,5 +31,6 @@ created.  FRAME defaults to the selected one."
 (setq-default package-enable-at-startup nil)
 
 (add-hook 'after-make-frame-functions #'blc-turn-on-xterm-mouse)
+(add-hook 'window-setup-hook #'blc-gc-thresh-restore t)
 
 ;;; early-init.el ends here
