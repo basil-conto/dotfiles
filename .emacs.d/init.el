@@ -1491,7 +1491,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  default-input-method                   "greek"
 
  ;; mwheel
- mwheel-tilt-scroll-p                   t
+ mouse-wheel-tilt-scroll                t
+ mouse-wheel-flip-direction             t
 
  ;; newsticker
  newsticker-date-format                 "(%F %a %R %:::z)"
