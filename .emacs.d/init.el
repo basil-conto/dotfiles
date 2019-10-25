@@ -2449,10 +2449,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    (view-mode "👓" view)
 
    ;; whitespace
-   (global-whitespace-mode nil whitespace)
-
-   ;; wrap-region
-   (wrap-region-mode nil wrap-region)))
+   (global-whitespace-mode nil whitespace)))
 
 ;; delsel
 
