@@ -868,6 +868,13 @@ Defaults to `org-directory' and `org-default-notes-file'."
   "Adapt `comment-inline-offset' to PEP-8 recommendations."
   (setq-local comment-inline-offset 2))
 
+;; simple
+
+(defun blc-messages-trailing-whitespace ()
+  "Disable `show-trailing-whitespace' in *Messages* buffer."
+  (with-current-buffer (messages-buffer)
+    (blc-turn-off-trailing-whitespace)))
+
 ;; solar
 
 (defun blc-solar-set-location (&optional location)
@@ -2010,7 +2017,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                           org-mode-hook))
 
   ;; startup
-  (:hooks window-setup-hook :fns blc-report-init-time :depth t)
+  (:hooks window-setup-hook :depth t :fns (blc-messages-trailing-whitespace
+                                           blc-report-init-time))
 
   ;; term
   (:hooks term-exec-hook :fns blc-term-rename)
