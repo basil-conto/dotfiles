@@ -902,7 +902,10 @@ non-nil, create a new `term' buffer instead."
             ((not (string-equal name new))))
       (pop-to-buffer name)
     (let ((switch-to-buffer-obey-display-actions t))
-      (funcall (if non-ansi #'term #'ansi-term) explicit-shell-file-name))))
+      (funcall (if non-ansi #'term #'ansi-term)
+               (or explicit-shell-file-name
+                   (getenv "ESHELL")
+                   shell-file-name)))))
 
 (defun blc-term-p (name &optional _action)
   "Determine whether NAME names a `term-mode' buffer.
@@ -965,9 +968,6 @@ less jumpy auto-filling."
 
  ;; callint.c
  mark-even-if-inactive                  nil
-
- ;; callproc.c
- shell-file-name                        "/bin/sh"
 
  ;; doc.c
  text-quoting-style                     'grave
@@ -1653,11 +1653,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; sh-script
  sh-basic-offset                        2
  sh-indentation                         2
-
- ;; shell
- explicit-shell-file-name               (or (getenv "ESHELL")
-                                            (getenv "SHELL")
-                                            "/bin/bash")
 
  ;; shr
  shr-bullet                             "• "
