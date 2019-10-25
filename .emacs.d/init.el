@@ -225,11 +225,9 @@ Include every major mode derived from the current
     (:around (fmt entry width) blc-narrow)
   "Decrease `ivy-bibtex' entry width due to other formatting.
 `ivy-bibtex-default-action' only considers `frame-width', which
-does not, for example, take the effect of `ivy-format-function'
-into account."
-  (funcall fmt entry
-           (blc-but-fringes
-            width (string-width (funcall ivy-format-function '(""))))))
+for example excludes the effect of `ivy-format-functions-alist'."
+  (let ((str (funcall (ivy-alist-setting ivy-format-functions-alist) '(""))))
+    (funcall fmt entry (blc-but-fringes width (string-width str)))))
 
 ;; magit-diff
 
@@ -763,6 +761,18 @@ Return the name of the buffer as a string or `nil'."
   "Shorten lighter of `isearch-mode'."
   (setq isearch-mode "🔍"))
 
+;; ivy
+
+(defun blc-ivy-strip-init-inputs (regexp)
+  "Undo some default settings for Ivy initial inputs.
+Delete from `ivy-initial-inputs-alist' those entries whose key
+name matches REGEXP."
+  (setq-default
+   ivy-initial-inputs-alist
+   (map-remove (lambda (cmd _)
+                 (string-match-p regexp (symbol-name cmd)))
+               ivy-initial-inputs-alist)))
+
 ;; man
 
 (defun blc--man-other-buffer (&optional prev)
@@ -1084,7 +1094,6 @@ less jumpy auto-filling."
 
  ;; counsel
  counsel-describe-function-preselect    #'ivy-function-called-at-point
- counsel-git-grep-skip-counting-lines   t
  counsel-grep-base-command              "ag --nocolor %s %s" ; Smart case
  counsel-mode-map                       ()                   ; Control remaps
  counsel-org-goto-display-tags          t
@@ -1351,7 +1360,6 @@ less jumpy auto-filling."
  ivy-action-wrap                        t
  ivy-count-format                       "(%d/%d) "
  ivy-extra-directories                  ()
- ivy-format-function                    #'ivy-format-function-arrow
  ivy-on-del-error-function              #'ignore
  ivy-pulse-delay                        nil
 
@@ -2317,7 +2325,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'counsel
   (ivy-add-actions #'counsel-M-x
-                   `(("j" ,#'blc-counsel-M-x-other-window "other window"))))
+                   `(("j" ,#'blc-counsel-M-x-other-window "other window")))
+
+  ;; Do not match start of input for counsel commands
+  (blc-ivy-strip-init-inputs (rx bos "counsel-")))
 
 ;; cus-edit
 
@@ -2730,9 +2741,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
         `([,#'narrow-to-region ,#'ivy-restrict-to-matches ,(current-global-map)]
           [,#'isearch-yank-word-or-char ,#'ivy-yank-word ,isearch-mode-map]))
 
-  ;; Default matching behaviour
-  (blc-put ivy-re-builders-alist t #'ivy--regex-ignore-order)
-  (blc-put ivy-more-chars-alist  t 2)
+  ;; Set defaults
+  (blc-put ivy-format-functions-alist t #'ivy-format-function-arrow)
+  (blc-put ivy-more-chars-alist       t 2)
+  (blc-put ivy-re-builders-alist      t #'ivy--regex-ignore-order)
 
   ;; Fix ordering
   (map-do (lambda (sort callers)
@@ -2758,13 +2770,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; Recursive minibuffers
   (minibuffer-depth-indicate-mode)
 
-   ;; Do not match start of input for counsel or org commands
-  (setq-default
-   ivy-initial-inputs-alist
-   (map-remove (lambda (cmd _)
-                 (string-match-p (rx bos (| "org" "counsel") ?-)
-                                 (symbol-name cmd)))
-               ivy-initial-inputs-alist)))
+  ;; Do not match start of input for org commands
+  (blc-ivy-strip-init-inputs (rx bos "org-")))
 
 ;; ivy-bibtex
 
