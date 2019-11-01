@@ -1101,8 +1101,16 @@ less jumpy auto-filling."
 
  ;; counsel
  counsel-describe-function-preselect    #'ivy-function-called-at-point
- counsel-grep-base-command              "ag --nocolor %s %s" ; Smart case
- counsel-mode-map                       ()                   ; Control remaps
+ counsel-grep-base-command              (string-join '("rg"
+                                                       "--color" "never"
+                                                       "--line-number"
+                                                       "--no-heading"
+                                                       "--smart-case"
+                                                       "--with-filename"
+                                                       "--regexp" "%s"
+                                                       "%s")
+                                                     " ")
+ counsel-mode-map                       () ; Control remaps
  counsel-org-goto-display-tags          t
  counsel-org-goto-display-todo          t
  counsel-org-goto-face-style            'verbatim
