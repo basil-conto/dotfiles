@@ -956,6 +956,17 @@ less jumpy auto-filling."
 (defun blc-xref-js2-install-backend ()
   "Locally install `xref-js2-xref-backend'."
   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
+
+;; xt-mouse
+
+(defun blc-turn-on-xterm-mouse (&optional frame)
+  "Conditionally enable `xterm-mouse-mode' on FRAME.
+Enable the mode only if FRAME is the first terminal frame
+created.  FRAME defaults to the selected one."
+  (or (display-graphic-p frame)
+      (string-equal "initial_terminal" (terminal-name (frame-terminal frame)))
+      xterm-mouse-mode
+      (xterm-mouse-mode)))
 
 ;;;; VARIABLES
 
@@ -2024,7 +2035,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks term-exec-hook :fns blc-term-rename)
 
   ;; writeroom-mode
-  (:hooks writeroom-mode-hook :fns blc-visual-auto-fill-column))
+  (:hooks writeroom-mode-hook :fns blc-visual-auto-fill-column)
+
+  ;; xt-mouse
+  (:fns blc-turn-on-xterm-mouse :hooks (after-make-frame-functions
+                                        window-setup-hook)))
 
 ;;;; BINDINGS
 

@@ -19,18 +19,8 @@ why-are-you-changing-gc-cons-threshold/'.")
 
   (blc-gc-thresh-maximise))
 
-(defun blc-turn-on-xterm-mouse (&optional frame)
-  "Conditionally enable `xterm-mouse-mode' on FRAME.
-Enable the mode only if FRAME is the first terminal frame
-created.  FRAME defaults to the selected one."
-  (or (display-graphic-p frame)
-      (string-equal "initial_terminal" (terminal-name (frame-terminal frame)))
-      xterm-mouse-mode
-      (xterm-mouse-mode)))
-
 (setq-default package-enable-at-startup nil)
 
-(add-hook 'after-make-frame-functions #'blc-turn-on-xterm-mouse)
 (add-hook 'window-setup-hook #'blc-gc-thresh-restore t)
 
 ;;; early-init.el ends here
