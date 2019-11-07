@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+ecc --eval '(diff "'"$1"'" "'"$2"'")'
