@@ -2478,6 +2478,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (delete-selection-mode)
 
+;; diff
+
+(with-eval-after-load 'diff
+  (setq diff-switches (blc-as-list diff-switches))
+  (add-to-list 'diff-switches "--show-c-function"))
+
 ;; dired
 
 (with-eval-after-load 'dired
