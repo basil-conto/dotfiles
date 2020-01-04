@@ -1684,6 +1684,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  read-mail-command                      'gnus
  save-interprogram-paste-before-kill    t
  set-mark-command-repeat-pop            t
+ shell-command-prompt-show-cwd          t
  yank-pop-change-selection              t
 
  ;; solar
