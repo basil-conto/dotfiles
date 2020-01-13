@@ -271,6 +271,16 @@ for example excludes the effect of `ivy-format-functions-alist'."
   (blc-with-nonce magit-get-mode-buffer :filter-args #'butlast
     (apply fn args)))
 
+;; magit-mode
+
+(define-advice magit-display-buffer-same-window-except-diff-v1
+    (:around (fn &rest args) blc-visible-frames)
+  "Display Magit diff buffers across frames."
+  (blc-with-nonce display-buffer :around
+                  (lambda (display buf &optional action _frame)
+                    (funcall display buf action 'visible))
+    (apply fn args)))
+
 ;; magit-remote
 
 (define-advice magit-clone (:around (clone repo dir) blc-git-clone-subdir)
