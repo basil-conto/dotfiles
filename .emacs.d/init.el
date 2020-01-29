@@ -897,6 +897,25 @@ Defaults to `org-directory' and `org-default-notes-file'."
                   calendar-longitude     long
                   calendar-location-name (format "%s, %s" location country))))
 
+;; startup
+
+(defun blc-scratch-cowtune ()
+  "Return string contents of cowtune file or nil if non-existent.
+Format contents as an `emacs-lisp-mode' comment suitable for
+`initial-scratch-message'."
+  (blc-with-contents (or (getenv "COWTUNE_FILE") "~/.cowtune")
+    (while (re-search-forward (rx (+ ?_) (+ ?\b)) nil t)
+      ;; "__\b\b" means underline the next 2 characters, but we upcase instead.
+      (let ((len (ash (- (match-end 0) (match-beginning 0)) -1)))
+        (replace-match "" t t)
+        (upcase-region (point) (+ (point) len))))
+    (let ((comment-start       ";;")
+          (comment-empty-lines t)
+          delete-trailing-lines)
+      (comment-region (point-min) (point-max))
+      (delete-trailing-whitespace (point-min) (point-max)))
+    (buffer-string)))
+
 ;; term
 
 (defun blc-term (&optional non-ansi)
@@ -1717,17 +1736,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                   "auto-save-list/.saves-")
  inhibit-default-init                   t
  inhibit-startup-screen                 t
- initial-scratch-message
- (or (blc-with-contents (or (getenv "COWTUNE_FILE") "~/.cowtune")
-       (let ((pmin (point-min-marker))
-             (pmax (point-max-marker))
-             (comment-start ";;")
-             (comment-empty-lines t)
-             delete-trailing-lines)
-         (comment-region             pmin pmax)
-         (delete-trailing-whitespace pmin pmax)
-         (buffer-substring           pmin pmax)))
-     initial-scratch-message)
+ initial-scratch-message                (or (blc-scratch-cowtune)
+                                            initial-scratch-message)
  user-mail-address                      (or (car (blc-msmtp-addresses))
                                             user-mail-address)
 
