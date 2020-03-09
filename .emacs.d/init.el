@@ -2327,7 +2327,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; cc-mode
 
 (with-eval-after-load 'cc-mode
-  (define-key c-mode-base-map "\C-m" #'c-context-line-break)
+  (blc-define-keys
+    (c-mode-base-map
+     ("\C-cO" . #'ff-find-other-file)
+     ("\C-m"  . #'c-context-line-break)))
 
   (let ((name "blc"))
     (c-add-style name '("linux"
