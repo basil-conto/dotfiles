@@ -148,10 +148,10 @@
      (diff-added          ((t :background "#335533" :foreground ,grn)))
      (diff-changed        ((t :background "#555511" :foreground ,ylw-1)))
      (diff-file-header    ((t :background ,bg+2     :foreground ,fg
-                              :weight      bold)))
+                              :weight     bold)))
      (diff-header         ((t :background ,bg+2)))
      (diff-refine-added   ((t :background "#338833" :foreground ,grn+4)))
-     (diff-refine-change  ((t :background "#888811" :foreground ,ylw)))
+     (diff-refine-changed ((t :background "#888811" :foreground ,ylw)))
      (diff-refine-removed ((t :background "#883333" :foreground ,red)))
      (diff-removed        ((t :background "#553333" :foreground ,red-2)))
 
