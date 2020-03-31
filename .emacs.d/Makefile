@@ -8,7 +8,7 @@
 EMACS ?= emacs
 
 %.elc: %.el
-	$(EMACS) --batch $(ELFLAGS) --funcall=batch-byte-compile $<
+	$(EMACS) --quick --batch $(ELFLAGS) --funcall=batch-byte-compile $<
 
 ## Macros
 
@@ -54,7 +54,7 @@ clean-inits: ; $(RM) $(inits)
 
 .PHONY: test
 test: $(tests)
-	$(EMACS) --batch $(ELFLAGS) $(addprefix --load=,$^) \
+	$(EMACS) --quick --batch $(ELFLAGS) $(addprefix --load=,$^) \
 		--funcall=ert-run-tests-batch-and-exit
 
 .PHONY: clean-tests
