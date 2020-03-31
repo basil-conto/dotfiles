@@ -133,6 +133,7 @@ Visit `package-user-dir' if such a directory is not found."
    better-shell
    biblio
    bison-mode
+   bluetooth
    bog
    bongo
    boogie-friends
@@ -160,6 +161,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    eglot
    el-search
+   elisp-benchmarks
    embrace
    emms
    engine-mode
