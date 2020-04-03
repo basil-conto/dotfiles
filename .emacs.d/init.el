@@ -1501,6 +1501,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; message
  message-cite-function                  #'message-cite-original
  message-confirm-send                   t
+ message-expand-name-standard-ui        t
  message-forward-before-signature       nil
  message-make-forward-subject-function  #'message-forward-subject-fwd
  message-mail-alias-type                nil
