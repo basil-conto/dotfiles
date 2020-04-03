@@ -891,7 +891,7 @@ Defaults to `org-directory' and `org-default-notes-file'."
   "Reconcile solar calendar with LOCATION from `blc-locations'."
   (interactive (list (completing-read "Location: " blc-locations nil t nil ()
                                       (blc-system-location))))
-  (pcase-let (((map (:country country) (:lat lat) (:long long))
+  (pcase-let (((map :country :lat :long)
                (blc-get blc-locations location)))
     (setq-default calendar-latitude      lat
                   calendar-longitude     long
@@ -1168,8 +1168,8 @@ created.  FRAME defaults to the selected one."
 
  ;; debbugs
  debbugs-gnu-branch-directory
- (blc-dir (blc-parent-dir source-directory) "emacs26")
- debbugs-gnu-emacs-current-release      "26.1"
+ (blc-dir (blc-parent-dir source-directory) "emacs27")
+ debbugs-gnu-emacs-current-release      "27.1"
  debbugs-gnu-send-mail-function         #'message-send-mail-with-sendmail
  debbugs-gnu-suppress-closed            nil
  debbugs-gnu-trunk-directory            source-directory
@@ -1984,8 +1984,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks gitconfig-mode-hook :fns blc-turn-off-indent-tabs)
 
   ;; gnus
-  (:hooks gnus-load-hook    :fns blc-gc-thresh-maximise)
-  (:hooks gnus-started-hook :fns blc-gc-thresh-restore )
+  (:hooks gnus-started-hook :fns blc-gc-thresh-restore)
 
   ;; gnus-dired
   (:hooks dired-mode-hook :fns turn-on-gnus-dired-mode)
@@ -2242,7 +2241,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (add-to-list 'auto-mode-alist
              (cons (rx (| ".sources"
-                          (: "sources" (? ".list.d/" (+ anything)) ".list"))
+                          (: "sources" (? ".list.d/" (+ anychar)) ".list"))
                        eos)
                    #'apt-sources-list-mode))
 
@@ -2656,6 +2655,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'git-commit
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line))
+
+;; gnus
+
+(with-eval-after-load 'gnus
+  (blc-gc-thresh-maximise))
 
 ;; gscholar-bibtex
 

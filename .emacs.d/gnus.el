@@ -94,10 +94,6 @@
                        (line-beginning-position
                         (- 1 message-log-max)))))))
 
-(defun blc-gnus-kill-logs ()
-  "Kill buffers named in `blc-gnus-log-buffers'."
-  (kill-matching-buffers (blc-rx `(: bos (| ,@blc-gnus-log-buffers) eos))))
-
 (defun blc-gnus-topic-fold ()
   "Toggle folding of current topic.
 See URL `https://www.emacswiki.org/emacs/GnusTopics'."
@@ -259,7 +255,6 @@ convention (see the Info node `(gnus) Process/Prefix')."
   ;; FIXME: Adding `gnus-notifications' to `gnus-after-getting-new-news-hook'
   ;;        notifies of all unread messages ;_;
   (:hooks gnus-after-getting-new-news-hook :fns blc-gnus-truncate-logs)
-  (:hooks gnus-exit-gnus-hook              :fns blc-gnus-kill-logs)
   (:hooks gnus-group-catchup-group-hook    :fns gnus-group-set-timestamp)
   (:hooks gnus-group-mode-hook             :fns gnus-topic-mode)
   (:hooks gnus-select-group-hook           :fns gnus-group-set-timestamp)

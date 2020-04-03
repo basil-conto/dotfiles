@@ -579,8 +579,7 @@ or a list thereof.
 :local LOCAL -- See `add-hook'."
   (declare (indent 0))
   (macroexp-progn
-   (mapcan (pcase-lambda ((map (:hooks hooks) (:fns   fns)
-                               (:depth depth) (:local local)))
+   (mapcan (pcase-lambda ((map :hooks :fns :depth :local))
              (mapcan (lambda (hook)
                        (mapcar (lambda (fn)
                                  `(add-hook ',hook #',fn ,depth ,local))
