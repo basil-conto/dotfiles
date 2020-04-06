@@ -82,11 +82,9 @@ ALIST is like that returned by `battery-status-function'."
 (defalias 'blc-battery-status--advice
   (let (id)
     (lambda (alist)
-      (let* ((cell (assq ?L alist))
-             (ac   (string-equal (cdr cell) "AC")))
-        (setcdr cell (cond ((string-equal (cdr cell) "BAT") "🔋")
-                           (ac "🔌")
-                           (t  "¿?")))
+      (let* ((cell (assq ?b alist))
+             (ac   (string-equal (cdr cell) "+")))
+        (setcdr cell (if ac "🔌" "🔋"))
         (setq blc-battery-load (string-to-number (alist-get ?p alist)))
         (cond ((unless ac (<= blc-battery-load battery-load-critical))
                (let ((new (blc-battery-notify alist id)))
@@ -95,9 +93,9 @@ ALIST is like that returned by `battery-status-function'."
                    (prog1 id (setq id nil))))))
       alist))
   "Send a notification if battery load percentage is critical.
-Also transcribe Linux sysfs AC line status in ALIST to Unicode.")
+Also transcribe battery status in ALIST to Unicode.")
 
-(advice-add #'battery-linux-sysfs :filter-return #'blc-battery-status--advice)
+(advice-add #'battery-upower :filter-return #'blc-battery-status--advice)
 
 (define-advice battery-update (:after () blc-battery-low)
   "Indicate low battery load percentage with the face `warning'."
@@ -1077,7 +1075,7 @@ created.  FRAME defaults to the selected one."
 
  ;; battery
  battery-load-low                       20
- battery-mode-line-format               "%L"
+ battery-mode-line-format               "%b"
  battery-update-interval                30
 
  ;; bbdb
