@@ -437,6 +437,10 @@ Like `TeX-doc', but with prefix ARG pass it to
 
 ;; browse-url
 
+(defun blc-kill-url (url &rest _)
+  "Make URL the latest kill in the kill ring."
+  (kill-new url))
+
 (defun blc-print-url--lpr (url)
   "Asynchronously print URL using `lpr-command'.
 This function is written with a print command like `hp-print' in
@@ -528,6 +532,7 @@ URL is parsed using the regular expressions found in
     ("Firefox private"    . ,#'blc-browse-url-firefox)
     ("EWW"                . ,#'eww-browse-url        )
     ("Download"           . ,#'blc-download          )
+    ("Kill"               . ,#'blc-kill-url          )
     ("Print"              . ,#'blc-print-url         )
     ("Print to PDF"       . ,#'blc-print-url-pdf     )
     ("Emacs IRFC"         . ,#'blc-browse-url-irfc   )
