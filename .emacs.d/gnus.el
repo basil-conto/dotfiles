@@ -281,8 +281,8 @@ convention (see the Info node `(gnus) Process/Prefix')."
            gnus-sorted-header-list)
 
    gnus-visible-headers
-   (blc-rx `(| (: bol (| "Delivered-To" "To") ?:)
-               (regexp ,gnus-visible-headers)))))
+   (rx (| (: bol (| "Delivered-To" "To") ?:)
+          (regexp gnus-visible-headers)))))
 
 ;; gnus-sum
 

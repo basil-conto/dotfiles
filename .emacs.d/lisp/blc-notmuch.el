@@ -78,11 +78,10 @@ Like `message', but each line is prefixed with a timestamp."
     (when (string-empty-p qstring)
       (user-error "blc-notmuch: You didn't enter anything"))
 
-    (let* ((prefix    (blc-rx `(: bos (regexp
-                                       ,(nnir-read-server-parm
-                                         'nnir-notmuch-remove-prefix server)))))
-           (cmd       (apply #'blc-notmuch--cmd qstring server groups))
-           (reporter  (blc-notmuch--reporter qstring)))
+    (let* ((prefix   (rx bos (regexp (nnir-read-server-parm
+                                      'nnir-notmuch-remove-prefix server))))
+           (cmd      (apply #'blc-notmuch--cmd qstring server groups))
+           (reporter (blc-notmuch--reporter qstring)))
 
       (blc-notmuch--log-vars qstring prefix)
       (blc-notmuch--log "calling: %s" (string-join cmd " "))

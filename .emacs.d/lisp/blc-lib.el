@@ -191,14 +191,12 @@ relevant major-mode."
   (thunk-delay
    (blc-with-contents "~/.msmtprc"
      (let (addresses)
-       (while (blc-search-forward
-               (rx bol "account" (+ space) (group (+ (not space))) eol))
-         (when (blc-search-forward
-                (rx bol "from" (+ space)
-                    (group (+ (not space)) ?@ (+ (not space))
-                           ?. (+ (not space)))
-                    eol))
-           (push (match-string 1) addresses)))
+       (rx-let ((ws  (+ space))
+                (!ws (+ (not space))))
+         (while (blc-search-forward (rx bol "account" ws (group !ws) eol))
+           (when (blc-search-forward
+                  (rx bol "from" ws (group !ws ?@ !ws ?. !ws) eol))
+             (push (match-string 1) addresses))))
        (nreverse addresses))))
   "Return list of unique addresses in ~/.msmtprc.")
 
@@ -719,7 +717,7 @@ overrides them."
   (thunk-delay
    (mapcar
     (lambda (face)
-      (cons (blc-rx `(: symbol-start ,(symbol-name face) symbol-end)) face))
+      (cons (rx symbol-start (literal (symbol-name face)) symbol-end) face))
     '(font-lock-builtin-face
       font-lock-comment-delimiter-face
       font-lock-comment-face

@@ -2258,8 +2258,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; auctex
 
 (with-eval-after-load 'latex
-  (dolist (suffix '("fdb_latexmk" "vrb"))
-    (add-to-list 'LaTeX-clean-intermediate-suffixes (blc-rx `(: ?. ,suffix)))))
+  (add-to-list 'LaTeX-clean-intermediate-suffixes
+               (rx ?. (| "fdb_latexmk" "vrb"))))
 
 (with-eval-after-load 'tex
   (define-key TeX-mode-map [remap TeX-documentation-texdoc] #'blc-TeX-doc)
@@ -2299,8 +2299,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (map-do #'add-to-list
           `(;; Support Eircode
             (bbdb-legal-postcodes
-             . ,(let ((char '(in "A-N" "P-Z" digit)))
-                  (blc-rx `(: bos (= 3 ,char) (? ?\s) (= 4 ,char) eos))))
+             . ,(rx-let ((nchar (n) (= n (in "A-N" "P-Z" digit))))
+                  (rx bos (nchar 3) (? ?\s) (nchar 4) eos)))
             ;; Display `mail-name' xfield in gnus summary buffer
             (bbdb-mua-summary-unification-list . ,bbdb-mail-name)))
 
@@ -2534,8 +2534,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'dired
   (require 'dired-x)
 
-  (setq-default dired-omit-files (blc-rx `(| (: bos ?. (not (in ?.)))
-                                             (regexp ,dired-omit-files))))
+  (setq-default dired-omit-files (rx (| (: bos ?. (not ?.))
+                                        (regexp dired-omit-files))))
 
   (map-do (lambda (cmds suffs)
             (blc-put* dired-guess-shell-alist-user
@@ -2768,9 +2768,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; irfc
 
 (add-to-list 'auto-mode-alist
-             (cons (blc-rx `(: ,@(mapcar (lambda (c) `(in ,(upcase c) ,c))
-                                         "rfc")
-                               (group (+ digit)) ".txt" eos))
+             (cons (rx (eval `(: ,@(mapcar (lambda (c) `(in ,(upcase c) ,c))
+                                           "rfc")))
+                       (group (+ digit)) ".txt" eos)
                    #'irfc-mode))
 
 (with-eval-after-load 'irfc
@@ -2964,7 +2964,7 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
   ;; Expand special targets
   (let ((targets 'makefile-special-targets-list))
     ;; Remove old-fashioned suffix rules
-    (set targets (seq-remove (apply-partially #'string-match-p (rx "."))
+    (set targets (seq-remove (apply-partially #'string-match-p (rx ?.))
                              (symbol-value targets)))
 
     (mapc (lambda (target)
@@ -3065,7 +3065,7 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
   (mapc (lambda (icon)
           (blc-put* org-agenda-category-icon-alist
-                    (blc-rx `(: bos ,(file-name-base icon) eos))
+                    (rx bos (literal (file-name-base icon)) eos)
                     (list (file-truename icon) nil nil :ascent 'center)))
         (and-let* ((dir (blc-dir org-directory "icons"))
                    ((file-directory-p dir)))

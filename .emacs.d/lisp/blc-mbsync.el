@@ -104,7 +104,7 @@ See `blc--mbsync-crm' for valid CHANS."
          (maphash (lambda (_ dups)
                     (dolist (dup (butlast (sort dups #'file-newer-than-file-p)))
                       (let ((new (replace-regexp-in-string
-                                  (rx ",U=" (+ (not (in ?,)))) "" dup t t)))
+                                  (rx ",U=" (+ (not ?,))) "" dup t t)))
                         (insert (format "Rename %s\n    -> %s\n" dup new))
                         (push (cons dup new) renames))))
                   map))))))
@@ -125,7 +125,7 @@ found."
                        (read-number "Current max. valid UID: "))
                      (blc--mbsync-crm "Search mbsync maildirs: ")))
 
-  (let ((uidre (blc-rx `(: bol ,(number-to-string uid) eol)))
+  (let ((uidre (rx bol (literal (number-to-string uid)) eol))
         files)
     (with-temp-buffer
       (dolist (dir (apply #'blc--mbsync-chans-to-dirs chans))
