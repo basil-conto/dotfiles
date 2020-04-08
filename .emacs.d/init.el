@@ -281,18 +281,17 @@ for example excludes the effect of `ivy-format-functions-alist'."
 
 ;; magit-remote
 
-(define-advice magit-clone (:around (clone repo dir) blc-git-clone-subdir)
+(define-advice magit-clone-internal
+    (:around (clone repo dir &rest args) blc-git-clone-subdir)
   "Clone into subdirectory of DIR if non-empty."
-  (setq dir (blc-dir dir))
   (and (file-directory-p dir)
        (directory-files dir nil directory-files-no-dot-files-regexp t)
-       (setq dir (blc-dir dir
-                          (and (string-match
-                                (rx (* nonl) (in ?/ ?:) (group (+? nonl))
-                                    (? ".git") eos)
-                                repo)
-                               (match-string 1 repo)))))
-  (funcall clone repo dir))
+       (let* ((re  (rx (group (+? (not (in ?/ ?:)))) (? ".git") eos))
+              (sub (blc-dir dir (and (string-match re repo)
+                                     (match-string 1 repo)))))
+         (or (file-directory-p sub)
+             (setq dir sub))))
+  (apply clone repo dir args))
 
 ;; mail-extr
 
