@@ -258,6 +258,7 @@ Visit `package-user-dir' if such a directory is not found."
    restclient
    rmsbolt
 
+   scanner
    scribble-mode
    sicp
    skype
