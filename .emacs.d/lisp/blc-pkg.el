@@ -149,6 +149,7 @@ Visit `package-user-dir' if such a directory is not found."
    debbugs
    debian-el
    debpaste
+   deadgrep
    define-word
    delight
    dictionary
@@ -246,6 +247,7 @@ Visit `package-user-dir' if such a directory is not found."
    racket-mode
    rainbow-mode
    restclient
+   rg
    rmsbolt
 
    scanner
