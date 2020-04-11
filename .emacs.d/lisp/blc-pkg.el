@@ -165,7 +165,6 @@ Visit `package-user-dir' if such a directory is not found."
    enwc
    ess
    ewmctrl
-   exec-path-from-shell
    expand-region
 
    figlet

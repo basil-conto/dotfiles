@@ -2577,12 +2577,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
      ("p" . #'previous-line)
      ("w" . #'blc-eww-bookmark-save))))
 
-;; exec-path-from-shell
-
-(with-eval-after-load 'exec-path-from-shell
-  (mapc (apply-partially #'add-to-list 'exec-path-from-shell-variables)
-        '("SSH_AGENT_PID" "SSH_AUTH_SOCK")))
-
 ;; ffap
 
 (with-eval-after-load 'ffap
