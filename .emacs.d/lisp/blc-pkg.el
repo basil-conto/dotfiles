@@ -233,6 +233,7 @@ Visit `package-user-dir' if such a directory is not found."
    matlab-mode
    mines
    minimap
+   modus-operandi-theme
    mustache-mode
 
    neato-graph-bar
