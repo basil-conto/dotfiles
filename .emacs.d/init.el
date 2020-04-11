@@ -968,14 +968,6 @@ Intended for `term-exec-hook'."
                    (abbr (abbreviate-file-name (directory-file-name dir))))
                (rename-buffer (format "*%s %s*" base abbr) t)))))))))
 
-;; visual-fill-column
-
-(defun blc-visual-auto-fill-column ()
-  "Reconcile `visual-fill-column-mode' with `auto-fill-mode'.
-Keep `visual-fill-column-width' larger than `fill-column' for
-less jumpy auto-filling."
-  (setq visual-fill-column-width (+ fill-column 20)))
-
 ;; webjump
 
 (defun blc-webjump-browse-url (_name)
@@ -2057,9 +2049,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; term
   (:hooks term-exec-hook :fns blc-term-rename)
-
-  ;; writeroom-mode
-  (:hooks writeroom-mode-hook :fns blc-visual-auto-fill-column)
 
   ;; xt-mouse
   (:fns blc-turn-on-xterm-mouse :hooks (after-make-frame-functions
@@ -3276,15 +3265,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; winner
 
 (winner-mode)
-
-;; writeroom-mode
-
-(with-eval-after-load 'writeroom-mode
-  (blc-define-keys
-    (writeroom-mode-map
-     ([?\C-\M-<] . #'writeroom-decrease-width)
-     ([?\C-\M->] . #'writeroom-increase-width)
-     ([?\C-\M-=] . #'writeroom-adjust-width))))
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars unresolved)

@@ -280,7 +280,6 @@ Visit `package-user-dir' if such a directory is not found."
    web-mode
    wgrep
    wiki-summary
-   writeroom-mode
    wttrin
 
    xref-js2
