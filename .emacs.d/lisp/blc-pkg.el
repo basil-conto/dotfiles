@@ -255,7 +255,6 @@ Visit `package-user-dir' if such a directory is not found."
    skype
    sl
    slime-volleyball
-   solarized-theme
    sudoku
    swiper
    sx
