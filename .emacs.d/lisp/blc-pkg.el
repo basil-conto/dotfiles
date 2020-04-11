@@ -130,7 +130,6 @@ Visit `package-user-dir' if such a directory is not found."
 
    babel
    bbdb
-   better-shell
    biblio
    bison-mode
    bluetooth
@@ -144,7 +143,6 @@ Visit `package-user-dir' if such a directory is not found."
    counsel-gtags
    crontab-mode
    csharp-mode
-   cssh
    csv-mode
 
    dash
@@ -162,7 +160,6 @@ Visit `package-user-dir' if such a directory is not found."
    eglot
    el-search
    elisp-benchmarks
-   embrace
    emms
    engine-mode
    enwc
@@ -170,12 +167,10 @@ Visit `package-user-dir' if such a directory is not found."
    ewmctrl
    exec-path-from-shell
    expand-region
-   eyebrowse
 
    figlet
    fireplace
    flame
-   flx
    forge
    free-keys
 
@@ -209,7 +204,6 @@ Visit `package-user-dir' if such a directory is not found."
    ivy
    ivy-bibtex
    ivy-hydra
-   ivy-pages
    ivy-pass
 
    jq-mode
@@ -219,9 +213,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    know-your-http-well
 
-   latex-extra
    ledger-mode
-   list-unicode-display
    logview
    lorem-ipsum
    lyrics
@@ -280,8 +272,6 @@ Visit `package-user-dir' if such a directory is not found."
 
    w3m
    web-mode
-   wgrep
-   wiki-summary
    wttrin
 
    xref-js2
