@@ -224,7 +224,6 @@ Visit `package-user-dir' if such a directory is not found."
    markdown-mode
    matlab-mode
    mines
-   minimap
    modus-operandi-theme
    mustache-mode
 

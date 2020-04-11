@@ -1511,12 +1511,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  completing-read-function               #'ivy-completing-read
  completion-in-region-function          #'ivy-completion-in-region
 
- ;; minimap
- minimap-highlight-line                 nil
- minimap-recenter-type                  'relative
- minimap-width-fraction                 0.05
- minimap-window-location                'right
-
  ;; mm-decode
  mm-decrypt-option                      'ask
  mm-default-directory                   (blc-user-dir "DOWNLOAD")
