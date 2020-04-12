@@ -2201,7 +2201,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([down]                                . #'isearch-repeat-forward))
 
   (search-map
-   ("a"                                   . #'counsel-ag)
+   ("A"                                   . #'counsel-ag)
    ("g"                                   . #'counsel-git-grep)
    ("r"                                   . #'counsel-rg)
    ("s"                                   . #'counsel-grep-or-swiper)))
@@ -2495,10 +2495,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; dired
 
 (with-eval-after-load 'dired
-  (blc-define-keys
-    (dired-mode-map
-     ([?\M-s])
-     ("_" . #'dired-create-empty-file))))
+  (define-key dired-mode-map "_" #'dired-create-empty-file))
 
 ;; dired-aux
 
