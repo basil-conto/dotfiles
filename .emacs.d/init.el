@@ -105,7 +105,7 @@ Also transcribe battery status in ALIST to Unicode.")
 
 ;; bbdb-com
 
-(define-advice bbdb-complete-mail (:around (complete &rest args) blc-minibuffer)
+(define-advice bbdb-complete-mail (:around (&rest args) blc-minibuffer)
   "Replace *Completions* buffer with `completing-read'."
   (let* (cands
          (temp-buffer-show-function
@@ -122,7 +122,7 @@ Also transcribe battery status in ALIST to Unicode.")
              completion-base-position))))
     (blc-with-nonce display-completion-list
         :before (apply-partially #'set 'cands)
-      (apply complete args))))
+      (apply args))))
 
 ;; browse-url
 
@@ -230,17 +230,17 @@ for example excludes the effect of `ivy-format-functions-alist'."
 ;; magit-diff
 
 (define-advice magit-diff-show-or-scroll
-    (:around (fn &rest args) blc-visible-frames)
+    (:around (&rest args) blc-visible-frames)
   "Show and scroll Magit diff buffer across frames."
   (blc-with-nonce get-buffer-window :around
                   (lambda (get &optional buf _frames)
                     (funcall get buf 'visible))
-    (apply fn args)))
+    (apply args)))
 
 ;; magit-extras
 
 (define-advice magit-pop-revision-stack
-    (:around (fn &rest args) blc-message-narrow-to-body)
+    (:around (&rest args) blc-message-narrow-to-body)
   "Narrow to `message-mode' body before popping a revision."
   (let ((mail (derived-mode-p #'message-mode)))
     (save-restriction
@@ -253,7 +253,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
                               (re-search-backward message-signature-separator)
                               (end-of-line 0))
                             (point))))
-      (apply fn args))
+      (apply args))
     (save-excursion
       (and mail
            (message-goto-signature)
@@ -264,20 +264,20 @@ for example excludes the effect of `ivy-format-functions-alist'."
 ;; magit-log
 
 (define-advice magit-log-maybe-update-revision-buffer
-    (:around (fn &rest args) blc-all-frames)
+    (:around (&rest args) blc-all-frames)
   "Update Magit log buffer across frames."
   (blc-with-nonce magit-get-mode-buffer :filter-args #'butlast
-    (apply fn args)))
+    (apply args)))
 
 ;; magit-mode
 
 (define-advice magit-display-buffer-same-window-except-diff-v1
-    (:around (fn &rest args) blc-visible-frames)
+    (:around (&rest args) blc-visible-frames)
   "Display Magit diff buffers across frames."
   (blc-with-nonce display-buffer :around
                   (lambda (display buf &optional action _frame)
                     (funcall display buf action 'visible))
-    (apply fn args)))
+    (apply args)))
 
 ;; magit-remote
 
@@ -338,26 +338,26 @@ This is much less accurate but also much more performant than
 ;; newst-treeview
 
 (define-advice newsticker--treeview-frame-init
-    (:around (init &rest args) blc-anonymous-frame)
+    (:around (&rest args) blc-anonymous-frame)
   "Create frame sans `name' parameter."
   (blc-with-nonce make-frame :filter-args #'ignore
-    (apply init args)))
+    (apply args)))
 
 ;; org
 
-(define-advice org-read-date (:around (read &rest args) blc-avoid-frames)
+(define-advice org-read-date (:around (&rest args) blc-avoid-frames)
   "Temporarily disable `pop-up-frames'."
   (let (pop-up-frames)
-    (apply read args)))
+    (apply args)))
 
 ;; org-agenda
 
 (defvar org-agenda-window-setup)
 
-(define-advice org-agenda--quit (:around (fn &rest args) blc-spare-frame)
+(define-advice org-agenda--quit (:around (&rest args) blc-spare-frame)
   "Do not delete Org Agenda frame on exit."
   (let (org-agenda-window-setup)
-    (apply fn args)))
+    (apply args)))
 
 ;; org-capture
 
@@ -408,11 +408,11 @@ Offer all entities found in `org-entities-user' and
 
 ;; window
 
-(defun blc-pop-up-frame--advice (fn &rest args)
+(defun blc-pop-up-frame--advice (&rest args)
   "Keep focus on old frame when popping up a new one to display."
   (let ((frame (selected-frame)))
     (unwind-protect
-        (apply fn args)
+        (apply args)
       (select-frame-set-input-focus frame))))
 
 (add-function :around pop-up-frame-function #'blc-pop-up-frame--advice)
@@ -547,13 +547,12 @@ URL is parsed using the regular expressions found in
   "Read WWW browser name to open URL with completion.
 See `blc-browser-alist' for known browsers and `browse-url' for a
 description of the arguments to this function."
-  (when-let* ((prompt (if (string-blank-p url)
-                          "Open browser: "
-                        (blc--url-fmt "Open URL `%s' in: " url)))
-              (browser
-               (blc-get blc-browser-alist
-                        (completing-read prompt blc-browser-alist nil t))))
-    (apply browser url args)))
+  (let* ((prompt  (if (string-blank-p url)
+                      "Open browser: "
+                    (blc--url-fmt "Open URL `%s' in: " url)))
+         (browser (blc-get blc-browser-alist
+                           (completing-read prompt blc-browser-alist nil t))))
+    (when browser (apply browser url args))))
 
 (function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
