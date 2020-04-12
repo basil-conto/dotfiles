@@ -66,6 +66,9 @@
 
 ;; battery
 
+(defvar blc-battery-id nil
+  "ID of last battery notification or nil.")
+
 (defvar blc-battery-load 0
   "Last `battery' load percentage.")
 
@@ -79,23 +82,20 @@ ALIST is like that returned by `battery-status-function'."
                         :urgency 'critical
                         :image-path "battery-caution"))
 
-(defalias 'blc-battery-status--advice
-  (let (id)
-    (lambda (alist)
-      (let* ((cell (assq ?b alist))
-             (ac   (string-equal (cdr cell) "+")))
-        (setcdr cell (if ac "🔌" "🔋"))
-        (setq blc-battery-load (string-to-number (alist-get ?p alist)))
-        (cond ((unless ac (<= blc-battery-load battery-load-critical))
-               (let ((new (blc-battery-notify alist id)))
-                 (or id (setq id new))))
-              (id (notifications-close-notification
-                   (prog1 id (setq id nil))))))
-      alist))
+(define-advice battery-upower (:filter-return (alist) blc-notify-critical)
   "Send a notification if battery load percentage is critical.
-Also transcribe battery status in ALIST to Unicode.")
-
-(advice-add #'battery-upower :filter-return #'blc-battery-status--advice)
+Also transcribe battery status in ALIST to Unicode."
+  (let* ((cell (assq ?b alist))
+         (ac   (string-equal (cdr cell) "+")))
+    (setcdr cell (if ac "🔌" "🔋"))
+    (setq blc-battery-load (string-to-number (alist-get ?p alist)))
+    (cond ((unless ac (<= blc-battery-load battery-load-critical))
+           (let ((new (blc-battery-notify alist blc-battery-id)))
+             (or blc-battery-id (setq blc-battery-id new))))
+          (blc-battery-id
+           (notifications-close-notification
+            (prog1 blc-battery-id (setq blc-battery-id nil))))))
+  alist)
 
 (define-advice battery-update (:after () blc-battery-low)
   "Indicate low battery load percentage with the face `warning'."
