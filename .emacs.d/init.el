@@ -1182,7 +1182,7 @@ created.  FRAME defaults to the selected one."
 
  ;; dired
  dired-auto-revert-buffer               t
- dired-dwim-target                      t
+ dired-dwim-target                      #'dired-dwim-target-next-visible
  dired-listing-switches                 (string-join
                                          '("--almost-all"
                                            "--classify"
