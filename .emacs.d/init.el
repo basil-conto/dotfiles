@@ -146,14 +146,6 @@ Also transcribe battery status in ALIST to Unicode."
                       (not (string-suffix-p "--cmacro" (symbol-name sym)))))))
   ret)
 
-;; eww
-
-(define-advice eww (:around (eww url &optional arg) blc-toggle-prefix)
-  "Like `eww', but invert the sense of the prefix argument."
-  (funcall eww url (and (memq this-command '(eww eww-follow-link))
-                        (= (prefix-numeric-value arg) 1)
-                        4)))
-
 ;; find-func
 
 (define-advice find-function-search-for-symbol
@@ -590,10 +582,11 @@ Intended as an Ivy action for `counsel-M-x'."
 (defun blc-eww-bookmark-save ()
   "Copy the URL of the current bookmark into the kill ring."
   (interactive)
-  (if-let* ((eww-data
-             (get-text-property (line-beginning-position) 'eww-bookmark)))
-      (eww-copy-page-url)
-    (user-error "No bookmark on the current line")))
+  (defvar eww-data)
+  (let ((eww-data
+         (or (get-text-property (line-beginning-position) 'eww-bookmark)
+             (user-error "No bookmark on the current line"))))
+    (eww-copy-page-url)))
 
 (defun blc-eww-toggle-images ()
   "Toggle display of images in current `eww' buffer.
