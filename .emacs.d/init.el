@@ -103,27 +103,6 @@ Also transcribe battery status in ALIST to Unicode."
     (put-text-property 0 (length battery-mode-line-string)
                        'face 'warning battery-mode-line-string)))
 
-;; bbdb-com
-
-(define-advice bbdb-complete-mail (:around (&rest args) blc-minibuffer)
-  "Replace *Completions* buffer with `completing-read'."
-  (let* (cands
-         (temp-buffer-show-function
-          (lambda (buf)
-            (kill-buffer buf)
-            (choose-completion-string
-             (completing-read "Address: " cands nil 'confirm
-                              (buffer-substring
-                               (car completion-base-position)
-                               (or (cadr completion-base-position)
-                                   (point)))
-                              'blc-bbdb-mail-history)
-             (current-buffer)
-             completion-base-position))))
-    (blc-with-nonce display-completion-list
-        :before (apply-partially #'set 'cands)
-      (apply args))))
-
 ;; browse-url
 
 (define-advice browse-url-firefox (:around (fn &rest args) blc-no-wait)
@@ -1067,7 +1046,6 @@ created.  FRAME defaults to the selected one."
  battery-update-interval                30
 
  ;; bbdb
- bbdb-complete-mail-allow-cycling       t
  bbdb-default-country                   nil
  bbdb-mua-summary-mark                  "✓"
  bbdb-name-format                       'last-first
