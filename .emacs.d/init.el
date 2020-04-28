@@ -370,6 +370,7 @@ Offer all entities found in `org-entities-user' and
   "Advice intended for predicate `whitespace-enable-predicate'."
   (not (or (derived-mode-p #'dired-mode
                            #'markdown-mode
+                           #'nov-mode
                            #'shell-mode)
            (equal (buffer-name) "*scratch*"))))
 
@@ -1531,6 +1532,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     "https://wired.com/feed/rss"))
  newsticker-url-list-defaults           ()
 
+ ;; nov
+ nov-save-place-file                    (blc-file blc-index-dir "nov-places.el")
+ nov-text-width                         blc-chars-per-line
+
  ;; novice
  disabled-command-function              nil
 
@@ -1885,6 +1890,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  message-mode-hook
                                                  messages-buffer-mode-hook
                                                  minibuffer-setup-hook
+                                                 nov-mode-hook
                                                  term-mode-hook
                                                  youtube-dl-list-mode-hook))
 
@@ -2962,6 +2968,10 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
 (with-eval-after-load 'mpc
   (setq mpc-frame-alist (map-delete mpc-frame-alist 'font)))
+
+;; nov
+
+(add-to-list 'auto-mode-alist (cons (rx ".epub" eos) #'nov-mode))
 
 ;; org
 
