@@ -2768,7 +2768,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                  ,#'counsel-describe-variable
                                  ,#'counsel-faces
                                  ,#'elisp-completion-at-point
-                                 ,#'find-face-definition)))
+                                 ,#'find-face-definition
+                                 ,#'package-install)))
 
   (dolist (caller (list #'Info-menu #'webjump))
     (setq ivy-completing-read-handlers-alist
