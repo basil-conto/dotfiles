@@ -747,6 +747,11 @@ Return the name of the buffer as a string or `nil'."
 
 ;; ivy
 
+(defun blc-ivy-string< (_name cands)
+  "Sort CANDS in lexicographic order.
+Intended as a value for `ivy-sort-matches-functions-alist'."
+  (sort (copy-sequence cands) #'string-lessp))
+
 (defun blc-ivy-strip-init-inputs (regexp)
   "Undo some default settings for Ivy initial inputs.
 Delete from `ivy-initial-inputs-alist' those entries whose key
@@ -2759,17 +2764,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
               (blc-put ivy-sort-functions-alist caller sort)))
           `((nil                 t)
             (,#'blc-file-lessp   ,#'project-find-file)
-            (,#'blc-sort-reverse ,#'Info-complete-menu-item)
+            (,#'blc-sort-reverse ,#'Info-complete-menu-item
+                                 ,#'package-install)
             (,#'string-lessp     ,#'blc-scratch
                                  ,#'counsel-M-x
-                                 ,#'counsel-apropos
-                                 ,#'counsel-describe-face
-                                 ,#'counsel-describe-function
-                                 ,#'counsel-describe-variable
-                                 ,#'counsel-faces
-                                 ,#'elisp-completion-at-point
-                                 ,#'find-face-definition
-                                 ,#'package-install)))
+                                 ,#'find-face-definition)))
+
+  (blc-put ivy-sort-matches-functions-alist
+           #'ivy-completion-in-region #'blc-ivy-string<)
 
   (dolist (caller (list #'Info-menu #'webjump))
     (setq ivy-completing-read-handlers-alist
