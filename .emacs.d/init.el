@@ -607,8 +607,7 @@ Intended as a predicate for `confirm-kill-emacs'."
    :callback
    (lambda (nots &rest _)
      (notifications-notify
-      :title (blc-dom-to-xml
-              'a '((href . "https://github.com/notifications")) "GitHub")
+      :title "GitHub Notifications"
       :body (let ((repos '(("other" . 0))))
               (dolist (not nots)
                 (let ((name (map-nested-elt not '(repository name) "other")))
@@ -618,9 +617,12 @@ Intended as a predicate for `confirm-kill-emacs'."
                           (apply #'max (map-keys-apply #'string-width repos))
                           (1+ (floor (log (apply #'max 1 (map-values repos))
                                           10))))))
-                (mapconcat (pcase-lambda (`(,name . ,count))
-                             (format fmt name count))
-                           repos "\n")))))
+                ;; Include a URL that can be opened by Dunst.
+                (concat (blc-dom-to-xml
+                         'a '((href . "https://github.com/notifications")))
+                        (mapconcat (pcase-lambda (`(,name . ,count))
+                                     (format fmt name count))
+                                   repos "\n"))))))
    :errorback (lambda (err &rest _)
                 (signal 'error (list "GitHub error: %S" (cdr err))))))
 
