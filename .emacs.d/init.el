@@ -851,7 +851,7 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (let ((proj (project-current t (and (require 'magit-repos nil t)
                                       (blc-dir (magit-read-repository))))))
     (setq this-command #'project-find-file)
-    (project-find-file-in nil (project-roots proj) proj)))
+    (project-find-file-in nil (list (project-root proj)) proj)))
 
 ;; python
 
