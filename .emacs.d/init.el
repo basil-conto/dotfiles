@@ -716,8 +716,9 @@ Return the name of the buffer as a string or `nil'."
                                 ((/= (aref name 0) ?\s))
                                 (id   (buffer-local-value
                                        'mode-line-buffer-identification buf)))
-                       (cons (concat name (substring-no-properties (cadr id)))
-                             name)))
+                       (setq id (substring-no-properties (cadr id)))
+                       (setq id (replace-regexp-in-string "%%" "%" id t t))
+                       (cons (concat name id) name)))
                    (blc-derived-buffers #'Info-mode)))
             ((cdr bufs)))
       (blc-get bufs (completing-read
