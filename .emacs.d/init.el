@@ -41,6 +41,7 @@
 (autoload 'dired-jump-other-window          "dired-x" nil t)
 (autoload 'engine-mode-prefixed-map         "engine-mode" nil t 'keymap)
 (autoload 'ffap-gnus-hook                   "ffap")
+(autoload 'fileloop-continue                "fileloop" nil t)
 (autoload 'flex-mode                        "flex-mode" nil t)
 (autoload 'samba-generic-mode               "generic-x" nil t)
 (autoload 'gnus-find-subscribed-addresses   "gnus")
@@ -844,16 +845,6 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (dolist (sym '(auto-mode-alist magic-mode-alist))
     (set sym (rassq-delete-all #'pdf-tools-install (symbol-value sym)))))
 
-;; project
-
-(defun blc-project-switch ()
-  "Complete a file from another project to visit."
-  (interactive)
-  (let ((proj (project-current t (and (require 'magit-repos nil t)
-                                      (blc-dir (magit-read-repository))))))
-    (setq this-command #'project-find-file)
-    (project-find-file-in nil (list (project-root proj)) proj)))
-
 ;; python
 
 (defun blc-python-pep-8-comments ()
@@ -1653,6 +1644,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; proced
  proced-auto-update-flag                t
 
+ ;; project
+ project-switch-commands
+ `(("f" "Find file"    ,#'project-find-file)
+   ("g" "Magit status" ,#'magit-status)
+   ("d" "Dired"        ,#'project-dired)
+   ("s" "Find regexp"  ,#'project-find-regexp))
+
  ;; prolog
  prolog-system                          'swi
 
@@ -2032,6 +2030,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (define-prefix-command 'blc-jump-map)
 (define-prefix-command 'blc-org-map)
+(define-prefix-command 'blc-project-map)
 
 (fmakunbound 'sx-switchto-map)
 (autoload 'sx-switchto-map "sx-switchto" nil t 'keymap)
@@ -2101,6 +2100,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("m"                                   . #'blc-mbsync)
    ("n"                                   . #'blc-rename-buffer)
    ("o"                                   . #'blc-org-map)
+   ("p"                                   . #'blc-project-map)
    ("s"                                   . #'sx-switchto-map)
    ("u"                                   . #'counsel-unicode-char))
 
@@ -2108,11 +2108,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("b"                                   . #'ibuffer-jump)
    ("d"                                   . #'counsel-dired-jump)
    ("e"                                   . #'eww)
-   ("f"                                   . #'project-find-file)
    ("l"                                   . #'counsel-locate)
    ("m"                                   . #'magit-find-file)
    ("4m"                                  . #'magit-find-file-other-window)
-   ("p"                                   . #'blc-project-switch)
    ("r"                                   . #'ivy-resume)
    ("s"                                   . #'blc-scratch)
    ("t"                                   . #'blc-term)
@@ -2124,6 +2122,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("f"                                   . #'blc-org-find-file)
    ("4f"                                  . #'blc-org-find-file-other-window)
    ("l"                                   . #'org-store-link))
+
+  (blc-project-map
+   ("%"                                   . #'project-query-replace-regexp)
+   ("d"                                   . #'project-dired)
+   ("f"                                   . #'project-find-file)
+   ("p"                                   . #'project-switch-project))
 
   (ctl-x-map
    ("\C-j"                                . #'dired-jump)
@@ -2189,7 +2193,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   (search-map
    ("A"                                   . #'counsel-ag)
+   ("c"                                   . #'fileloop-continue)
+   ("f"                                   . #'project-find-regexp)
    ("g"                                   . #'counsel-git-grep)
+   ("p"                                   . #'project-search)
    ("r"                                   . #'counsel-rg)
    ("s"                                   . #'counsel-grep-or-swiper)))
 
@@ -3168,6 +3175,16 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; perl-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".latexmkrc" eos) #'perl-mode))
+
+;; project
+
+(with-eval-after-load 'project
+  (when (require 'magit-repos nil t)
+    (project--ensure-read-project-list)
+    (pcase-dolist (`(,_ . ,dir) (nreverse (magit-repos-alist)))
+      (setq dir (abbreviate-file-name (blc-dir dir)))
+      (unless (member dir project--list)
+        (push dir project--list)))))
 
 ;; prolog
 
