@@ -3076,9 +3076,9 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; org-pdfview
 
 (with-eval-after-load 'org
-  (require 'org-pdfview))
+  (require 'org-pdftools))
 (with-eval-after-load 'pdf-view
-  (require 'org-pdfview))
+  (require 'org-pdftools))
 
 ;; org-pomodoro
 

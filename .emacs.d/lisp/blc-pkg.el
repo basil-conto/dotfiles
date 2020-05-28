@@ -233,7 +233,7 @@ Visit `package-user-dir' if such a directory is not found."
    nov
 
    org-mime
-   org-pdfview
+   org-pdftools
    org-plus-contrib
    org-pomodoro
 
