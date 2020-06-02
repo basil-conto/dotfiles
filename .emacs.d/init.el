@@ -1649,7 +1649,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  `(("f" "Find file"    ,#'project-find-file)
    ("g" "Magit status" ,#'magit-status)
    ("d" "Dired"        ,#'project-dired)
-   ("s" "Find regexp"  ,#'project-find-regexp))
+   ("r" "Find regexp"  ,#'project-find-regexp)
+   ("s" "Shell"        ,#'project-shell)
+   ("v" "VC-Dir"       ,#'project-vc-dir))
 
  ;; prolog
  prolog-system                          'swi
