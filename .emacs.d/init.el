@@ -2127,6 +2127,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   (blc-project-map
    ("%"                                   . #'project-query-replace-regexp)
+   ("c"                                   . #'project-compile)
    ("d"                                   . #'project-dired)
    ("f"                                   . #'project-find-file)
    ("p"                                   . #'project-switch-project))
