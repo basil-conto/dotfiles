@@ -1645,13 +1645,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  proced-auto-update-flag                t
 
  ;; project
+ project-list-file                      (blc-file blc-index-dir "projects")
  project-switch-commands
- `(("f" "Find file"    ,#'project-find-file)
-   ("g" "Magit status" ,#'magit-status)
-   ("d" "Dired"        ,#'project-dired)
-   ("r" "Find regexp"  ,#'project-find-regexp)
-   ("s" "Shell"        ,#'project-shell)
-   ("v" "VC-Dir"       ,#'project-vc-dir))
+ `((?f "Find file"    ,#'project-find-file)
+   (?g "Magit status" ,#'magit-status)
+   (?d "Dired"        ,#'project-dired)
+   (?r "Find regexp"  ,#'project-find-regexp)
+   (?s "Shell"        ,#'project-shell)
+   (?v "VC-Dir"       ,#'project-vc-dir))
 
  ;; prolog
  prolog-system                          'swi
