@@ -3187,8 +3187,8 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
     (project--ensure-read-project-list)
     (pcase-dolist (`(,_ . ,dir) (nreverse (magit-repos-alist)))
       (setq dir (abbreviate-file-name (blc-dir dir)))
-      (unless (member dir project--list)
-        (push dir project--list)))))
+      (unless (assoc dir project--list)
+        (push (list dir) project--list)))))
 
 ;; prolog
 
