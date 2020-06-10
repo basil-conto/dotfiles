@@ -577,6 +577,12 @@ Adapted from URL
   (setq-local shr-inhibit-images (not shr-inhibit-images))
   (eww-reload t))
 
+(defun blc-eww-open-in-other-window ()
+  "Call `eww-open-in-new-buffer' in another window."
+  (interactive)
+  (let ((display-buffer-overriding-action blc-other-window-action))
+    (call-interactively #'eww-open-in-new-buffer)))
+
 ;; files
 
 (defun blc-confirm-kill-daemon (prompt)
@@ -2569,7 +2575,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
      ("T" . #'blc-eww-toggle-images)
      ("n" . #'next-line)
      ("p" . #'previous-line)
-     ("w" . #'blc-eww-bookmark-save))))
+     ("w" . #'blc-eww-bookmark-save))
+    (eww-mode-map
+     ([remap eww-open-in-new-buffer] . #'blc-eww-open-in-other-window))))
 
 ;; ffap
 
