@@ -7,9 +7,10 @@
 
 if [ -x "$(command -v status-notifier-watcher)" ]; then
   status-notifier-watcher &
-  [ -x "$(command -v nm-applet)" ] && nm-applet --indicator  &
-  [ -x "$(command -v pasystray)" ] && pasystray --notify=all &
-  [ -x "$(command -v taffybar)"  ] && taffybar               &
+  [ -x "$(command -v blueman-applet)" ] && blueman-applet         &
+  [ -x "$(command -v nm-applet)"      ] && nm-applet --indicator  &
+  [ -x "$(command -v pasystray)"      ] && pasystray --notify=all &
+  [ -x "$(command -v taffybar)"       ] && taffybar               &
 fi
 
 [ -x "$(command -v blc-xkb)"        ] && blc-xkb
