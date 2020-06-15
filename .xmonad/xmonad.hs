@@ -60,7 +60,7 @@ main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
               , (xF86XK_AudioMute,        pactl "sink"      0)
               , (xF86XK_AudioRaiseVolume, pactl "sink"      5)
               , (xF86XK_Display,          ["arandr"])
-              , (xF86XK_ScreenSaver,      ["xscreensaver-command", "-lock"])
+              , (xF86XK_ScreenSaver,      ["blc-lock"])
               ]
 
      ++
