@@ -144,8 +144,8 @@
       (insert in)
       (goto-char (point-min))
       (blc-fortune-filter)
-      (should (equal-including-properties
-               (delete-and-extract-region (point-min) (point-max)) out)))))
+      (should (equal (delete-and-extract-region (point-min) (point-max))
+                     out)))))
 
 (provide 'blc-lib-tests)
 
