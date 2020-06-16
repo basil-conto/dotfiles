@@ -490,6 +490,26 @@ with a prefix argument, read MODE with completion."
                            (string-remove-suffix "-mode" (symbol-name mode))))
     (call-interactively mode)))
 
+(defun blc-fortune-filter ()
+  "Translate all `fortune' program markup after point.
+This converts backspace escape sequences used by the `fortune'
+program to text representable in Emacs."
+  (while (blc-search-forward (rx (+ ?\b)))
+    (let ((len (- (point) (match-beginning 0))))
+      (replace-match "" t t)
+      (cond ((= (skip-chars-backward "_" (- (point) len)) (- len))
+             ;; "__\b\b" means underline next 2 chars, but we upcase instead.
+             (delete-char len)
+             (upcase-region (point) (min (+ (point) len) (point-max))))
+            ((< (point-min) (point) (point-max))
+             ;; "'\be" gets translated to "C-x 8 ' e".
+             (backward-char)
+             (let ((str (buffer-substring-no-properties (point) (+ (point) 2))))
+               (pcase (lookup-key #'iso-transl-ctl-x-8-map str)
+                 (`[,(and (pred characterp) char)]
+                  (delete-char 2)
+                  (insert char)))))))))
+
 ;;; Windows
 
 (defvar blc-other-window-action '(() (inhibit-same-window . t))

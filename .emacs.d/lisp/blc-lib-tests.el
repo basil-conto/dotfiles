@@ -127,6 +127,26 @@
   (should-not (blc-file-lessp "~/foo" ""))
   (should-not (blc-file-lessp "~/foo/" "")))
 
+(ert-deftest blc-fortune-filter ()
+  "Test `blc-fortune-filter' behaviour."
+  (with-temp-buffer
+    (pcase-dolist (`(,in . ,out)
+                   '((""          . "")
+                     ("a"         . "a")
+                     ("foo"       . "foo")
+                     ("\b"        . "")
+                     ("_\b"       . "")
+                     ("_\ba"      . "A")
+                     ("__\ba"     . "_A")
+                     ("__\b\ba"   . "A")
+                     ("__\b\bfoo" . "FOo")
+                     ("'\be"      . "é")))
+      (insert in)
+      (goto-char (point-min))
+      (blc-fortune-filter)
+      (should (equal-including-properties
+               (delete-and-extract-region (point-min) (point-max)) out)))))
+
 (provide 'blc-lib-tests)
 
 ;;; blc-lib-tests.el ends here

@@ -883,12 +883,8 @@ Defaults to `org-directory' and `org-default-notes-file'."
 Format contents as an `emacs-lisp-mode' comment suitable for
 `initial-scratch-message'."
   (blc-with-contents (or (getenv "COWTUNE_FILE") "~/.cowtune")
-    (while (re-search-forward (rx (+ ?_) (+ ?\b)) nil t)
-      ;; "__\b\b" means underline the next 2 characters, but we upcase instead.
-      (let ((len (ash (- (match-end 0) (match-beginning 0)) -1)))
-        (replace-match "" t t)
-        (upcase-region (point) (+ (point) len))))
-    (let ((comment-start       ";;")
+    (blc-fortune-filter)
+    (let ((comment-start ";;")
           (comment-empty-lines t)
           delete-trailing-lines)
       (comment-region (point-min) (point-max))
