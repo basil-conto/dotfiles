@@ -70,39 +70,31 @@
 (defvar blc-battery-id nil
   "ID of last battery notification or nil.")
 
-(defvar blc-battery-load 0
-  "Last `battery' load percentage.")
-
 (defun blc-battery-notify (alist &optional id)
   "Send a low battery notification optionally replacing ID.
 ALIST is like that returned by `battery-status-function'."
   (notifications-notify :title "Low Battery"
-                        :body (format "%d%% (%s mins) remaining"
-                                      blc-battery-load (alist-get ?m alist))
+                        :body (format "%s%% (%s mins) remaining"
+                                      (alist-get ?p alist)
+                                      (alist-get ?m alist))
                         :replaces-id id
                         :urgency 'critical
                         :image-path "battery-caution"))
 
 (define-advice battery-upower (:filter-return (alist) blc-notify-critical)
   "Send a notification if battery load percentage is critical.
-Also transcribe battery status in ALIST to Unicode."
-  (let* ((cell (assq ?b alist))
-         (ac   (string-equal (cdr cell) "+")))
-    (setcdr cell (if ac "🔌" "🔋"))
-    (setq blc-battery-load (string-to-number (alist-get ?p alist)))
-    (cond ((unless ac (<= blc-battery-load battery-load-critical))
+Also transcribe AC line status in ALIST to Unicode."
+  (let* ((load (read (alist-get ?p alist)))
+         (line (assq ?L alist))
+         (ac   (string-equal (cdr line) "on-line")))
+    (setcdr line (if ac "🔌" "🔋"))
+    (cond ((and (not ac) (numberp load) (<= load battery-load-critical))
            (let ((new (blc-battery-notify alist blc-battery-id)))
              (or blc-battery-id (setq blc-battery-id new))))
           (blc-battery-id
            (notifications-close-notification
             (prog1 blc-battery-id (setq blc-battery-id nil))))))
   alist)
-
-(define-advice battery-update (:after () blc-battery-low)
-  "Indicate low battery load percentage with the face `warning'."
-  (when (< battery-load-critical blc-battery-load battery-load-low)
-    (put-text-property 0 (length battery-mode-line-string)
-                       'face 'warning battery-mode-line-string)))
 
 ;; browse-url
 
@@ -1044,8 +1036,7 @@ created.  FRAME defaults to the selected one."
 
  ;; battery
  battery-load-low                       20
- battery-mode-line-format               "%b"
- battery-update-interval                30
+ battery-mode-line-format               "%L"
 
  ;; bbdb
  bbdb-default-country                   nil
