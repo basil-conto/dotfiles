@@ -1641,9 +1641,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  project-list-file                      (blc-file blc-index-dir "projects")
  project-switch-commands
  `((?f "Find file"    ,#'project-find-file)
-   (?g "Magit status" ,#'magit-status)
+   (?m "Magit status" ,#'magit-status)
+   (?g "Find regexp"  ,#'project-find-regexp)
    (?d "Dired"        ,#'project-dired)
-   (?r "Find regexp"  ,#'project-find-regexp)
    (?s "Shell"        ,#'project-shell)
    (?v "VC-Dir"       ,#'project-vc-dir))
 
@@ -2027,7 +2027,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (define-prefix-command 'blc-jump-map)
 (define-prefix-command 'blc-org-map)
-(define-prefix-command 'blc-project-map)
 
 (fmakunbound 'sx-switchto-map)
 (autoload 'sx-switchto-map "sx-switchto" nil t 'keymap)
@@ -2097,7 +2096,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("m"                                   . #'blc-mbsync)
    ("n"                                   . #'blc-rename-buffer)
    ("o"                                   . #'blc-org-map)
-   ("p"                                   . #'blc-project-map)
    ("s"                                   . #'sx-switchto-map)
    ("u"                                   . #'counsel-unicode-char))
 
@@ -2119,13 +2117,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("f"                                   . #'blc-org-find-file)
    ("4f"                                  . #'blc-org-find-file-other-window)
    ("l"                                   . #'org-store-link))
-
-  (blc-project-map
-   ("%"                                   . #'project-query-replace-regexp)
-   ("c"                                   . #'project-compile)
-   ("d"                                   . #'project-dired)
-   ("f"                                   . #'project-find-file)
-   ("p"                                   . #'project-switch-project))
 
   (ctl-x-map
    ("\C-j"                                . #'dired-jump)
@@ -2191,10 +2182,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   (search-map
    ("A"                                   . #'counsel-ag)
+   ("P"                                   . #'project-search)
    ("c"                                   . #'fileloop-continue)
-   ("f"                                   . #'project-find-regexp)
    ("g"                                   . #'counsel-git-grep)
-   ("p"                                   . #'project-search)
+   ("p"                                   . #'project-find-regexp)
    ("r"                                   . #'counsel-rg)
    ("s"                                   . #'counsel-grep-or-swiper)))
 
