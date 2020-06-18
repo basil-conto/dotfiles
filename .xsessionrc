@@ -13,6 +13,7 @@ if [ -x "$(command -v status-notifier-watcher)" ]; then
   [ -x "$(command -v taffybar)"       ] && taffybar               &
 fi
 
+[ -x "$(command -v xset)"           ] && xset b off
 [ -x "$(command -v blc-lock-setup)" ] && blc-lock-setup
 [ -x "$(command -v blc-xkb)"        ] && blc-xkb
 [ -x "$(command -v kbdd)"           ] && kbdd
