@@ -58,10 +58,6 @@ alias brighten='xbacklight -inc 10'
 alias gcc='gcc -fdiagnostics-color'
 alias g++='g++ -fdiagnostics-color'
 
-# emacsen
-alias ec='TERM=xterm-direct emacsclient --tty'
-alias em='TERM=xterm-direct emacs -nw'
-
 # youtube-dl
 alias ydl='youtube-dl'
 alias ydl-opus='ydl --extract-audio --audio-format opus --audio-quality 96K'
