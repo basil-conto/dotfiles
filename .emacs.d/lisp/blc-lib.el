@@ -682,6 +682,11 @@ overrides them."
   "Locally disable tab indentation."
   (setq indent-tabs-mode nil))
 
+(defun blc-turn-off-prettify-symbols (&rest _)
+  "Disable `prettify-symbols-mode'."
+  (interactive)
+  (blc-turn-off #'prettify-symbols-mode))
+
 (defun blc-turn-on-double-space-sentence-ends ()
   "Locally enable `sentence-end-double-space'."
   (setq-local sentence-end-double-space t))
@@ -690,10 +695,9 @@ overrides them."
   "Locally disable `show-trailing-whitespace'."
   (setq show-trailing-whitespace nil))
 
-(defun blc-turn-off-prettify-symbols (&rest _)
-  "Disable `prettify-symbols-mode'."
-  (interactive)
-  (blc-turn-off #'prettify-symbols-mode))
+(defun blc-turn-on-line-truncation ()
+  "Locally disable continuation lines."
+  (setq truncate-lines t))
 
 (defun blc-sort-reverse (_x _y)
   "Predicate that the order of X and Y should be swapped."

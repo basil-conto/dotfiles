@@ -1912,6 +1912,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; dafny-mode
   (:hooks dafny-mode-hook :fns blc-turn-off-prettify-symbols)
 
+  ;; dired
+  (:hooks dired-mode-hook :fns (auto-revert-mode
+                                blc-turn-on-line-truncation
+                                turn-on-gnus-dired-mode))
+
   ;; eldoc
   (:hooks ielm-mode-hook :fns eldoc-mode)
 
@@ -1949,10 +1954,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; gnus
   (:hooks gnus-started-hook :fns blc-gc-thresh-restore)
-
-  ;; gnus-dired
-  (:hooks dired-mode-hook :fns (auto-revert-mode
-                                turn-on-gnus-dired-mode))
 
   ;; haskell-mode
   (:hooks haskell-mode-hook :fns haskell-indent-mode)
