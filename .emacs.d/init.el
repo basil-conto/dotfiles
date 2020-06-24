@@ -399,6 +399,13 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
+;; bbdb
+
+(defun blc-kill-bbdb-buffer ()
+  "Kill `bbdb-buffer'."
+  (when (bound-and-true-p bbdb-buffer)
+    (kill-buffer bbdb-buffer)))
+
 ;; browse-url
 
 (defun blc-kill-url (url &rest _)
@@ -1877,7 +1884,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks auth-source-backend-parser-functions :fns blc-pass-backend-parse)
 
   ;; bbdb
-  (:hooks gnus-startup-hook :fns bbdb-insinuate-gnus)
+  (:hooks gnus-after-exiting-gnus-hook :fns blc-kill-bbdb-buffer)
+  (:hooks gnus-startup-hook            :fns bbdb-insinuate-gnus)
 
   ;; blc-lib
   (:fns blc-turn-off-trailing-whitespace :hooks (5x5-mode-hook
