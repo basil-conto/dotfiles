@@ -364,6 +364,7 @@ Offer all entities found in `org-entities-user' and
   (not (or (derived-mode-p #'dired-mode
                            #'markdown-mode
                            #'nov-mode
+                           #'org-mode
                            #'shell-mode)
            (equal (buffer-name) "*scratch*"))))
 
@@ -3022,6 +3023,9 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
                                     (number-sequence step (* step 3) step))
                                   '(15 60))
                           " ")))))
+
+  ;; TODO: Check if this can be removed after bug#40247 is fixed
+  (blc-put* org-file-apps (rx ".pdf" eos) 'emacs)
 
   (org-clock-persistence-insinuate))
 
