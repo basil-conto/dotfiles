@@ -1223,6 +1223,7 @@ created.  FRAME defaults to the selected one."
  confirm-kill-emacs                     #'blc-confirm-kill-daemon
  delete-old-versions                    t
  directory-free-space-args              "-hP"
+ find-file-suppress-same-file-warnings  t
  find-file-visit-truename               t
  kept-new-versions                      4
  kept-old-versions                      2
