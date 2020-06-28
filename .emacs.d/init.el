@@ -400,6 +400,13 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
+;; autorevert
+
+(defun blc-turn-on-silent-auto-revert ()
+  "Locally enable `auto-revert-mode' without revert messages."
+  (auto-revert-mode)
+  (setq-local auto-revert-verbose nil))
+
 ;; bbdb
 
 (defun blc-kill-bbdb-buffer ()
@@ -1922,7 +1929,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks dafny-mode-hook :fns blc-turn-off-prettify-symbols)
 
   ;; dired
-  (:hooks dired-mode-hook :fns (auto-revert-mode
+  (:hooks dired-mode-hook :fns (blc-turn-on-silent-auto-revert
                                 blc-turn-on-line-truncation
                                 turn-on-gnus-dired-mode))
 
