@@ -983,6 +983,10 @@ created.  FRAME defaults to the selected one."
  ;; callint.c
  mark-even-if-inactive                  nil
 
+ ;; dired.c
+ completion-ignored-extensions          `(".fdb_latexmk" ".fls"
+                                          ,@completion-ignored-extensions)
+
  ;; doc.c
  text-quoting-style                     'grave
 
