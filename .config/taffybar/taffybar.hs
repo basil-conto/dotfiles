@@ -1,24 +1,24 @@
-import qualified Data.Text as T
+import System.Taffybar.SimpleConfig           ( SimpleTaffyConfig(..)
+                                              , defaultSimpleTaffyConfig
+                                              , simpleTaffybar )
+import System.Taffybar.Widget.Battery         ( batteryIconNew, textBatteryNew )
+import System.Taffybar.Widget.Layout          ( defaultLayoutConfig, layoutNew )
+import System.Taffybar.Widget.SNITray         ( sniTrayNew )
+import System.Taffybar.Widget.SimpleClock     ( textClockNew )
+import System.Taffybar.Widget.Text.CPUMonitor ( textCpuMonitorNew )
+import System.Taffybar.Widget.Windows         ( defaultWindowsConfig
+                                              , windowsNew )
+import System.Taffybar.Widget.Workspaces      ( WorkspacesConfig(..)
+                                              , defaultWorkspacesConfig
+                                              , hideEmpty, workspacesNew )
 
-import System.Taffybar.SimpleConfig         ( SimpleTaffyConfig(..)
-                                            , defaultSimpleTaffyConfig
-                                            , simpleTaffybar )
-import System.Taffybar.Widget.Battery       ( textBatteryNew )
-import System.Taffybar.Widget.CommandRunner ( commandRunnerNew )
-import System.Taffybar.Widget.Layout        ( defaultLayoutConfig, layoutNew )
-import System.Taffybar.Widget.SNITray       ( sniTrayNew )
-import System.Taffybar.Widget.SimpleClock   ( textClockNew )
-import System.Taffybar.Widget.Windows       ( defaultWindowsConfig, windowsNew )
-import System.Taffybar.Widget.Workspaces    ( WorkspacesConfig(..)
-                                            , defaultWorkspacesConfig
-                                            , hideEmpty, workspacesNew )
 
 main :: IO ()
 main = do
   let secs = 10.0
       batt = textBatteryNew "$percentage$%"
       clck = textClockNew Nothing "%F %a %R %z" secs
-      load = commandRunnerNew 10.0 "cut" ["-c-4", "/proc/loadavg"] T.empty
+      load = textCpuMonitorNew "$total$%" secs
       lout = layoutNew defaultLayoutConfig
       wins = windowsNew defaultWindowsConfig
       work = workspacesNew defaultWorkspacesConfig
@@ -29,6 +29,7 @@ main = do
            }
   simpleTaffybar defaultSimpleTaffyConfig
                  { barHeight    = 22
-                 , endWidgets   = [ clck, batt, load, sniTrayNew ]
+                 , endWidgets   = [ clck, batt, batteryIconNew , sniTrayNew
+                                  , load ]
                  , startWidgets = [ work, lout, wins ]
                  }
