@@ -1937,9 +1937,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                 blc-turn-on-line-truncation
                                 turn-on-gnus-dired-mode))
 
-  ;; eldoc
-  (:hooks ielm-mode-hook :fns eldoc-mode)
-
   ;; electric
   (:fns blc-turn-off-electric-indent-local :hooks (haskell-cabal-mode-hook
                                                    haskell-mode-hook))
