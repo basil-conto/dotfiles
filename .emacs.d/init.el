@@ -1689,7 +1689,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; shr
  shr-bullet                             "• "
  shr-hr-line                            ?─
- shr-width                              blc-chars-per-line
 
  ;; simple
  async-shell-command-display-buffer     nil
