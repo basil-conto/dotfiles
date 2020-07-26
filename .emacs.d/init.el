@@ -1659,13 +1659,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; project
  project-list-file                      (blc-file blc-index-dir "projects")
- project-switch-commands
- `((?f "Find file"    ,#'project-find-file)
-   (?m "Magit status" ,#'magit-status)
-   (?g "Find regexp"  ,#'project-find-regexp)
-   (?d "Dired"        ,#'project-dired)
-   (?s "Shell"        ,#'project-shell)
-   (?v "VC-Dir"       ,#'project-vc-dir))
 
  ;; prolog
  prolog-system                          'swi
@@ -2198,12 +2191,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([up]                                  . #'isearch-repeat-backward)
    ([down]                                . #'isearch-repeat-forward))
 
+  (project-prefix-map
+   ("S"                                   . #'project-search))
+
   (search-map
    ("A"                                   . #'counsel-ag)
-   ("P"                                   . #'project-search)
    ("c"                                   . #'fileloop-continue)
    ("g"                                   . #'counsel-git-grep)
-   ("p"                                   . #'project-find-regexp)
    ("r"                                   . #'counsel-rg)
    ("s"                                   . #'counsel-grep-or-swiper)))
 
