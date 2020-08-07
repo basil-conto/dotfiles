@@ -163,15 +163,6 @@ last visible Emacs client frame."
 
 (advice-add #'find-lisp-object-file-name :filter-return #'blc-dataroot-to-src)
 
-;; hi-lock
-
-(define-advice turn-on-hi-lock-if-enabled (:before () blc-exclude-derived-modes)
-  "Exempt derived modes from hi-lock highlighting.
-Include every major mode derived from the current
-`hi-lock-exclude-modes' in that blacklist."
-  (when (apply #'derived-mode-p hi-lock-exclude-modes)
-    (add-to-list 'hi-lock-exclude-modes major-mode)))
-
 ;; ibuffer
 
 (define-advice ibuffer (:filter-args (args) blc-ibuffer)
@@ -692,13 +683,6 @@ Suspending or exiting Gnus deletes that frame."
   (interactive)
   (blc-make-frame)
   (blc-gnus))
-
-;; hi-lock
-
-(defun blc-hi-lock-no-eof-nl ()
-  "Highlight missing trailing EOF newlines."
-  (add-to-list 'hi-lock-interactive-patterns
-               '("^.+\\'" 0 'trailing-whitespace t)))
 
 ;; ibuffer
 
@@ -1848,7 +1832,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                     ""]))
 
  ;; whitespace
- whitespace-style                       '(face lines-tail tab-mark)
+ whitespace-style
+ '(face lines-tail missing-newline-at-eof tab-mark)
 
  ;; wid-edit
  widget-menu-minibuffer-flag            t
@@ -1898,6 +1883,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  calendar-mode-hook
                                                  comint-mode-hook
                                                  compilation-mode-hook
+                                                 eshell-mode-hook
                                                  eww-buffers-mode-hook
                                                  eww-mode-hook
                                                  help-mode-hook
@@ -1967,9 +1953,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; haskell-mode
   (:hooks haskell-mode-hook :fns haskell-indent-mode)
-
-  ;; hi-lock
-  (:hooks hi-lock-mode-hook :fns blc-hi-lock-no-eof-nl)
 
   ;; hl-line
   (:fns hl-line-mode :hooks (dired-mode-hook
@@ -2413,6 +2396,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     :major)
    (interactive-haskell-mode nil haskell)
 
+   ;; hi-lock
+   (hi-lock-mode
+    (:eval (if (or hi-lock-interactive-patterns hi-lock-file-patterns) "⛯" ""))
+    hi-lock)
+
    ;; ielm
    (inferior-emacs-lisp-mode "(>)" :major)
 
@@ -2653,26 +2641,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'haskell-mode
   (define-key haskell-mode-map [remap haskell-hoogle] #'haskell-hayoo))
-
-;; hi-lock
-
-(with-eval-after-load 'hi-lock
-  (mapc (apply-partially #'add-to-list 'hi-lock-exclude-modes)
-        '(comint-mode
-          compilation-mode
-          completion-list-mode
-          display-time-world-mode
-          erc-mode
-          eshell-mode
-          lyrics-show-mode
-          magit-mode
-          newsticker-treeview-item-mode
-          term-mode))
-
-  (when-let ((cell (assq 'hi-lock-mode minor-mode-alist)))
-    (setcdr cell (blc-sed-tree " .+" "⛯" (cdr cell)))))
-
-(global-hi-lock-mode)
 
 ;; hideshow
 
