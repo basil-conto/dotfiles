@@ -183,6 +183,7 @@ Visit `package-user-dir' if such a directory is not found."
    gitconfig-mode
    gitignore-mode
    gnus-desktop-notify
+   go-mode
    google-contacts
    google-maps
    google-this
