@@ -72,6 +72,12 @@
 [github]
   user               = basil-conto
 
+[gitlab]
+  user               = basil-conto
+
+[init]
+  defaultBranch      = main
+
 [interactive]
   diffFilter         = diff-highlight
 
