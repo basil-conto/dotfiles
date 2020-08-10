@@ -1081,6 +1081,7 @@ created.  FRAME defaults to the selected one."
  calendar-date-style                    'iso
  calendar-christian-all-holidays-flag   t
  calendar-islamic-all-holidays-flag     t
+ calendar-use-numeric-time-zones        t
 
  ;; cc-vars
  c-electric-pound-behavior              '(alignleft)
