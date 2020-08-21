@@ -291,7 +291,6 @@ convention (see the Info node `(gnus) Process/Prefix')."
     (gnus-summary-mode-map
      ([?\C-\M-s])
      ([?\M-r])
-     ([?\M-s])
      ([remap gnus-summary-goto-article] . #'blc-gnus-goto-article)
      ("va"                              . #'blc-gnus-apply-attachments))))
 
