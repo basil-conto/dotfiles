@@ -170,6 +170,9 @@ convention (see the Info node `(gnus) Process/Prefix')."
    (nntp "news.gwene.org"
          (nntp-record-commands t)))
 
+ ;; gnus-dbus
+ gnus-dbus-close-on-sleep               t
+
  ;; gnus-group
  gnus-goto-next-group-when-activating   nil
  gnus-group-line-format
