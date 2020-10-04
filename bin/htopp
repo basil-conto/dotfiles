@@ -1,3 +1,3 @@
 #!/bin/sh
 
-htop --pid="$(pgrep "$1" | tr '\n' ',')"
+htop --pid="$(pgrep --ignore-case "$1" | tr '\n' ',')"
