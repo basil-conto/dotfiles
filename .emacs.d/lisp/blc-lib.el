@@ -579,6 +579,18 @@ frames."
                #'modify-all-frames-parameters)
              `((font . ,font)))))
 
+(defun blc-export-frame (file &optional type &rest frames)
+  "Export image data of FRAMES in TYPE format to FILE.
+This is a thin interactive wrapper around `x-export-frames'."
+  (interactive
+   (let* ((types  '("pdf" "png" "svg"))
+          (prompt (format "Export as (default %s): " (car types)))
+          (type   (completing-read prompt types nil t nil nil types)))
+     (list (blc-read-file "Export to file: " (concat "emacs-frame." type))
+           (intern type))))
+  (with-temp-file file
+    (insert (x-export-frames frames type))))
+
 ;;; Settings
 
 (defmacro blc-hook (&rest plists)
