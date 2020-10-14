@@ -1157,6 +1157,7 @@ created.  FRAME defaults to the selected one."
                                            "--human-readable"
                                            "-l")
                                          " ")
+ dired-maybe-use-globstar               t
  dired-recursive-copies                 'always
 
  ;; dired-aux
