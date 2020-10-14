@@ -1078,10 +1078,10 @@ created.  FRAME defaults to the selected one."
  browse-url-firefox-new-window-is-tab   t
 
  ;; calendar
- calendar-date-style                    'iso
  calendar-christian-all-holidays-flag   t
+ calendar-date-style                    'iso
  calendar-islamic-all-holidays-flag     t
- calendar-use-numeric-time-zones        t
+ calendar-time-zone-style               'numeric
 
  ;; cc-vars
  c-electric-pound-behavior              '(alignleft)
