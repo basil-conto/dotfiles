@@ -37,8 +37,6 @@
 (autoload 'debbugs-gnu-apply-patch          "debbugs-gnu" nil t)
 (autoload 'debbugs-gnu-find-contributor     "debbugs-gnu" nil t)
 (autoload 'debbugs-gnu-make-control-message "debbugs-gnu" nil t)
-(autoload 'dired-jump                       "dired-x" nil t)
-(autoload 'dired-jump-other-window          "dired-x" nil t)
 (autoload 'engine-mode-prefixed-map         "engine-mode" nil t 'keymap)
 (autoload 'ffap-gnus-hook                   "ffap")
 (autoload 'fileloop-continue                "fileloop" nil t)
@@ -2115,7 +2113,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("l"                                   . #'org-store-link))
 
   (ctl-x-map
-   ("\C-j"                                . #'dired-jump)
    ("\C-n"                                . #'blc-open-next-line)
    ("\C-p"                                . #'blc-open-previous-line)
    ([?\M-g]                               . #'magit-dispatch)
@@ -2126,7 +2123,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("g"                                   . #'magit-status))
 
   (ctl-x-4-map
-   ("\C-j"                                . #'dired-jump-other-window)
    ("M"                                   . #'blc-gnus-other-window))
 
   (ctl-x-5-map
@@ -2749,8 +2745,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
               (blc-put ivy-sort-functions-alist caller sort)))
           `((nil                 t)
             (,#'blc-file-lessp   ,#'project-find-file)
-            (,#'blc-sort-reverse ,#'Info-complete-menu-item
-                                 ,#'package-install)
+            (,#'blc-sort-reverse ,#'package-install)
             (,#'string-lessp     ,#'blc-scratch
                                  ,#'counsel-M-x
                                  ,#'find-face-definition)))
