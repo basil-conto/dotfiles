@@ -1680,6 +1680,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  what-cursor-show-names                 t
  yank-pop-change-selection              t
 
+ ;; smiley
+ smiley-style                           'emoji
+
  ;; solar
  calendar-time-display-form
  '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")")))
@@ -2184,6 +2187,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 
 ;;;; PACKAGES
+
+;; fontset.c
+
+(set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
 
 ;; ace-window
 
