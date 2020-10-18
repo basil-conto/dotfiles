@@ -3065,11 +3065,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
   (setq-default org-pomodoro-format
                 (blc-sed-tree "pomodoro" "🍅" org-pomodoro-format nil t)))
 
-;; outline
-
-(with-eval-after-load 'outline
-  (define-key outline-minor-mode-map "\C-c\t" #'outline-toggle-children))
-
 ;; ox-html
 
 (with-eval-after-load 'ox-html
