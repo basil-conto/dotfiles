@@ -581,13 +581,19 @@ frames."
 
 (defun blc-export-frame (file &optional type &rest frames)
   "Export image data of FRAMES in TYPE format to FILE.
-This is a thin interactive wrapper around `x-export-frames'."
+Interactively, prompt for FILE and TYPE with completion.  With a
+prefix argument, FRAMES is all frames in Z order and TYPE is PDF.
+This is a thin interactive wrapper around `x-export-frames',
+which see."
   (interactive
-   (let* ((types  '("pdf" "png" "svg"))
-          (prompt (format "Export as (default %s): " (car types)))
-          (type   (completing-read prompt types nil t nil nil types)))
-     (list (blc-read-file "Export to file: " (concat "emacs-frame." type))
-           (intern type))))
+   (let* ((fmts '("pdf" "png" "svg"))
+          (fmt  (if current-prefix-arg
+                    (car fmts)
+                  (completing-read (format-prompt "Export as" fmts)
+                                   fmts nil t nil nil fmts))))
+     `(,(blc-read-file "Export to file: " (concat "emacs-scrot." fmt))
+       ,(intern fmt)
+       ,@(and current-prefix-arg (frame-list-z-order)))))
   (with-temp-file file
     (insert (x-export-frames frames type))))
 
