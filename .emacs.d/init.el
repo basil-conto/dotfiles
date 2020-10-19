@@ -526,6 +526,13 @@ description of the arguments to this function."
 (function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
+;; compile
+
+(defun blc-compilation-ansify ()
+  "Translate SGR colours in last compilation output.
+Intended for `compilation-filter-hook', which see."
+  (ansi-color-apply-on-region compilation-filter-start (point)))
+
 ;; counsel
 
 (defun blc-counsel-find-file (&optional file)
@@ -1907,6 +1914,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; cc-mode
   (:hooks c-mode-common-hook :fns hs-minor-mode)
+
+  ;; compile
+  (:hooks compilation-filter-hook :fns blc-compilation-ansify)
 
   ;; csv-mode
   (:hooks csv-mode-hook :fns blc-csv-align-all-fields)
