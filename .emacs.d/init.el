@@ -376,11 +376,15 @@ Offer all entities found in `org-entities-user' and
 
 ;; fontset.c
 
-(defun blc-turn-on-emoji-font (_frame)
+(defun blc-turn-on-emoji-font (&optional _frame)
   "Add an emoji font to the default fontset.
 Do this only once in the first non-daemon initial frame."
   (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
-  (remove-hook 'after-make-frame-functions #'blc-turn-on-emoji-font))
+  (dolist (hook '(after-make-frame-functions window-setup-hook))
+    (remove-hook hook #'blc-turn-on-emoji-font)))
+
+(add-hook (if (daemonp) 'after-make-frame-functions 'window-setup-hook)
+          #'blc-turn-on-emoji-font)
 
 ;; auctex
 
@@ -1883,9 +1887,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;;; HOOKS
 
 (blc-hook
-  ;; fontset.c
-  (:hooks after-make-frame-functions :fns blc-turn-on-emoji-font)
-
   ;; auctex
   (:hooks TeX-after-compilation-finished-functions
           :fns TeX-revert-document-buffer)
