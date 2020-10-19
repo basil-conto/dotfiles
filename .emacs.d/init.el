@@ -1160,7 +1160,7 @@ created.  FRAME defaults to the selected one."
                                            "--classify"
                                            "--group-directories-first"
                                            "--human-readable"
-                                           "-l")
+                                           "-lv")
                                          " ")
  dired-maybe-use-globstar               t
  dired-recursive-copies                 'always

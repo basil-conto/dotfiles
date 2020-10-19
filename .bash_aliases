@@ -9,7 +9,7 @@ alias rm='rm -I'
 alias forget='echo RELOADAGENT | gpg-connect-agent'
 
 # ls
-alias ls='ls --color=auto --group-directories-first'
+alias ls='ls --color=auto --group-directories-first -v'
 alias l='ls --classify'
 alias ll='l --human-readable -l'
 alias la='ll --almost-all'
