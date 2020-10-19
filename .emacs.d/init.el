@@ -2528,6 +2528,15 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'cc-mode
   (define-key c-mode-base-map "\C-cd" #'disaster))
 
+;; eglot
+
+(with-eval-after-load 'eglot
+  ;; Don't litter projects with ccls cache files.
+  (let ((init `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls")))))
+    (add-to-list 'eglot-server-programs
+                 `((,#'c++-mode ,#'c-mode)
+                   "ccls" ,(concat "--init=" (json-encode init))))))
+
 ;; engine-mode
 
 (with-eval-after-load 'engine-mode
