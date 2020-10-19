@@ -1377,6 +1377,7 @@ created.  FRAME defaults to the selected one."
 
  ;; isearch
  isearch-allow-scroll                   t
+ isearch-lazy-count                     t
  search-exit-option                     nil
 
  ;; ivy
