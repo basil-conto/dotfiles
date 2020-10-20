@@ -1193,6 +1193,7 @@ created.  FRAME defaults to the selected one."
 
  ;; eldoc
  eldoc-echo-area-use-multiline-p        t
+ eldoc-prefer-doc-buffer                t
 
  ;; emacsbug
  report-emacs-bug-no-explanations       t
@@ -1237,6 +1238,9 @@ created.  FRAME defaults to the selected one."
  mode-require-final-newline             nil
  version-control                        t
  view-read-only                         t
+
+ ;; flymake
+ flymake-suppress-zero-counters         t
 
  ;; footnote
  footnote-body-tag-spacing              1
@@ -2609,6 +2613,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; flex-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".lex" eos) #'flex-mode))
+
+;; flymake
+
+(with-eval-after-load 'flymake
+  (blc-define-keys
+    (flymake-mode-map
+     ([?\M-n] . #'flymake-goto-next-error)
+     ([?\M-p] . #'flymake-goto-prev-error))))
 
 ;; forge
 
