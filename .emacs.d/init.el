@@ -3025,9 +3025,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
                                   '(15 60))
                           " ")))))
 
-  ;; TODO: Check if this can be removed after bug#40247 is fixed
-  (blc-put* org-file-apps (rx ".pdf" eos) 'emacs)
-
   (org-clock-persistence-insinuate))
 
 ;; org-agenda
