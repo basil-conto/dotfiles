@@ -3207,7 +3207,7 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
      (when-let* ((cmd (seq-some #'executable-find cmds)))
        (set-default var cmd)))
    '((python-check-command     "epylint3" "epylint" "pyflakes")
-     (python-shell-interpreter "ipython3" "python3" "ipython" "python"))))
+     (python-shell-interpreter "python3" "python"))))
 
 ;; reftex
 
