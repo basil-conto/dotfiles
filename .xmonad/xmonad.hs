@@ -22,7 +22,8 @@ import Graphics.X11.ExtraTypes.XF86       ( xF86XK_AudioLowerVolume
                                           , xF86XK_MonBrightnessUp
                                           , xF86XK_ScreenSaver )
 import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
-                                          , xK_Print, xK_a, xK_f, xK_o, xK_s )
+                                          , xK_Print, xK_a, xK_d, xK_f, xK_o
+                                          , xK_s )
 import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
 import XMonad.Hooks.EwmhDesktops          ( ewmh )
@@ -48,11 +49,6 @@ main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
      , terminal           = "x-terminal-emulator"
      } $
 
-     [ ((modMask' .|. shiftMask, xK_s),
-        safeSpawn "sensible-browser" ["-private-window", "--incognito"])
-     ]
-
-     ++
      mapPairs ((noModMask,), safeSpawn')
               [ (xK_Print,                ["scrot"])
               , (xF86XK_AudioLowerVolume, pactl "sink"   (-5))
@@ -79,10 +75,18 @@ main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
      ++
      mapPairs ((modMask',), safeSpawn')
               [ (xK_a, ["sensible-editor" ])
+              , (xK_d, ["signal-desktop"  ])
               , (xK_f, ["nautilus"        ])
               , (xK_o, ["passmenu"        ])
               , (xK_s, ["sensible-browser"])
               ]
+
+     ++
+     mapPairs ((modMask' .|. shiftMask,), safeSpawn')
+              [ (xK_d, ["discord"])
+              , (xK_s, ["sensible-browser", "-private-window", "--incognito"])
+              ]
+
   where
     volStep    = 5.0
     lightStep  = "10"
