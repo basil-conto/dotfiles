@@ -985,7 +985,7 @@ created.  FRAME defaults to the selected one."
  mark-even-if-inactive                  nil
 
  ;; dired.c
- completion-ignored-extensions          `(".fdb_latexmk" ".fls"
+ completion-ignored-extensions          `(".fdb_latexmk" ".fls" ".xdv"
                                           ,@completion-ignored-extensions)
 
  ;; doc.c
@@ -2025,7 +2025,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
 
   ;; pdf-view
-  (:hooks pdf-view-mode-hook :fns blc-pdf-tools-undefer)
+  (:hooks pdf-view-mode-hook :fns (auto-revert-mode
+                                   blc-pdf-tools-undefer))
 
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
@@ -2254,19 +2255,19 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
       (push (list 'output-pdf viewer) TeX-view-program-selection)))
 
   ;; Configure latexmk commands
-  (let* ((exe "latexmk")
-         (nom (setq-default TeX-command-default (capitalize exe))))
-
-    (dolist (pvc '(nil t))
-      (let* ((nom (format "%s%s"     nom (if pvc " PVC" "")))
-             (cmd (format "%s%s %%t" exe (if pvc "-pvc -view=none" "")))
-             (dsc (format "Run %s"   nom)))
-        (blc-put* TeX-command-list nom           ; Name
-                  (list cmd                      ; Non-expanded command
-                        #'TeX-run-command        ; Process handler
-                        nil                      ; Confirm expanded command
-                        '(latex-mode LaTeX-mode) ; Applicable modes
-                        :help dsc))))))          ; Command
+  (let ((exe "latexmk"))
+    (mapc (pcase-lambda (`(,desc ,suffix ,args))
+            (let ((name (concat exe suffix)))
+              (blc-put* TeX-command-list name
+                        (list (format "%s %s %%t" exe args)
+                              #'TeX-run-command
+                              nil
+                              '(latex-mode LaTeX-mode)
+                              :help desc))))
+          '(("Run latexmk with --shell-escape" " --shell-escape"
+             "-e 'set_tex_cmds(q(--shell-escape %%O %%S))'")
+            ("Run latexmk" "" "")))
+    (setq-default TeX-command-default exe)))
 
 ;; auth-source
 
