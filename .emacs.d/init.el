@@ -415,6 +415,14 @@ Like `TeX-doc', but with prefix ARG pass it to
   (when (bound-and-true-p bbdb-buffer)
     (kill-buffer bbdb-buffer)))
 
+;; bog
+
+(defun blc-bog-dired-stage ()
+  "Visit `bog-stage-directory' in Dired."
+  (interactive)
+  (require 'bog)
+  (dired bog-stage-directory))
+
 ;; browse-url
 
 (defun blc-kill-url (url &rest _)
@@ -2141,6 +2149,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("f"                                   . #'blc-org-find-file)
    ("4f"                                  . #'blc-org-find-file-other-window)
    ("l"                                   . #'org-store-link))
+
+  (bog-command-map
+   ("S"                                   . #'blc-bog-dired-stage))
 
   (ctl-x-map
    ("\C-n"                                . #'blc-open-next-line)
