@@ -203,12 +203,12 @@ relevant major-mode."
 (defun blc--opusenc-files (dir)
   "Return mapping of new flac to opus filenames under DIR.
 See `blc-opusenc-flac'."
-  (let ((flacre (rx ?. "flac" eos))
-        files)
-    (dolist (flac (directory-files-recursively dir flacre) files)
-      (when-let* ((opus (blc-sed flacre ".opus" flac t t))
-                  ((file-newer-than-file-p flac opus)))
-        (push (cons flac opus) files)))))
+  (let ((flacre (rx ".flac" eos)))
+    (mapcan (lambda (flac)
+              (and-let* ((opus (blc-sed flacre ".opus" flac t t))
+                         ((file-newer-than-file-p flac opus)))
+                (list (cons flac opus))))
+            (directory-files-recursively dir flacre))))
 
 (defvar blc-opusenc-switches '("--bitrate" "128" "--quiet")
   "List of `opusenc' switches for `blc-opusenc-flac'.")

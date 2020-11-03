@@ -238,7 +238,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
     (:around (clone repo dir &rest args) blc-git-clone-subdir)
   "Clone into subdirectory of DIR if non-empty."
   (and (file-directory-p dir)
-       (directory-files dir nil directory-files-no-dot-files-regexp t)
+       (directory-files dir nil directory-files-no-dot-files-regexp t 1)
        (let* ((re  (rx (group (+? (not (in ?/ ?:)))) (? ".git") eos))
               (sub (blc-dir dir (and (string-match re repo)
                                      (match-string 1 repo)))))

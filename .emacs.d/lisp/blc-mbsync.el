@@ -53,11 +53,11 @@ See `blc--mbsync-crm' for valid CHANS."
 (defun blc--mbsync-folders (&rest chans)
   "Return subdirectories of maildirs of mbsync CHANS.
 See `blc--mbsync-crm' for valid CHANS."
-  (let (dirs)
-    (dolist (dir (apply #'blc--mbsync-chans-to-dirs chans) (nreverse dirs))
-      (dolist (file (directory-files dir t directory-files-no-dot-files-regexp))
-        (when (file-accessible-directory-p file)
-          (push file dirs))))))
+  (mapcan (lambda (dir)
+            (seq-filter #'file-accessible-directory-p
+                        (directory-files dir t
+                                         directory-files-no-dot-files-regexp)))
+          (apply #'blc--mbsync-chans-to-dirs chans)))
 
 (defun blc--mbsync-uid (file)
   "Return maildir UID of FILE or nil."
