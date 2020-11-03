@@ -1148,7 +1148,6 @@ created.  FRAME defaults to the selected one."
  debbugs-gnu-branch-directory
  (blc-dir (blc-parent-dir source-directory) "emacs27")
  debbugs-gnu-emacs-current-release      "27.1"
- debbugs-gnu-send-mail-function         #'message-send-mail-with-sendmail
  debbugs-gnu-suppress-closed            nil
  debbugs-gnu-trunk-directory            source-directory
 
@@ -1491,7 +1490,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  message-forward-before-signature       nil
  message-make-forward-subject-function  #'message-forward-subject-fwd
  message-mail-alias-type                nil
- message-send-mail-function             #'message-send-mail-with-sendmail
  message-sendmail-envelope-from         'header
  message-signature                      (car (split-string user-full-name))
 
@@ -1681,6 +1679,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  save-place-file                        (blc-file blc-index-dir "places.el")
 
  ;; sendmail
+ send-mail-function                     #'sendmail-send-it
  sendmail-program                       "msmtp"
 
  ;; sh-script
