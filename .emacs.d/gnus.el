@@ -40,7 +40,6 @@
   (defvar gnus-tmp-group)
   (defvar gnus-topic-mode-map)
   (defvar gnus-visible-headers)
-  (defvar nnir-imap-search-arguments)
 
   (declare-function bbdb-mua-summary-unify                "bbdb-mua")
   (declare-function diff-file-next                        "diff-mode")
@@ -66,8 +65,6 @@
   (declare-function gnus-topic-goto-topic                 "gnus-topic")
   (declare-function gnus-topic-mode                       "gnus-topic")
   (declare-function gnus-completing-read                  "gnus-util"))
-
-(autoload 'nnir-run-blc-notmuch "blc-notmuch")
 
 ;;; Utilities
 
@@ -163,8 +160,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
                                 (nnimap-address         "127.0.0.1")
                                 (nnimap-record-commands t)
                                 (nnimap-stream          network)
-                                (nnimap-user            ,user)
-                                (nnir-search-engine     imap)))
+                                (nnimap-user            ,user)))
                      (blc-mbsync-chandirs))
    ;; FIXME: Firewall
    (nntp "news.gwene.org"
@@ -198,6 +194,9 @@ convention (see the Info node `(gnus) Process/Prefix')."
  gnus-inhibit-slow-scoring              t
  gnus-score-expiry-days                 nil
  gnus-score-find-score-files-function   #'gnus-score-find-single
+
+ ;; gnus-search
+ gnus-search-use-parsed-queries         t
 
  ;; gnus-start
  gnus-activate-level                    gnus-level-default-subscribed
@@ -246,11 +245,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
  gnus-widen-article-window              t
 
  ;; nnheader
- gnus-verbose-backends                  10
-
- ;; nnir
- nnir-notmuch-remove-prefix
- (regexp-opt (map-values (blc-mbsync-chandirs))))
+ gnus-verbose-backends                  10)
 
 ;;; Hooks
 
@@ -308,13 +303,5 @@ convention (see the Info node `(gnus) Process/Prefix')."
 (gnus-add-configuration '(article (frame 1.0
                                          (summary 1.0 point frame-focus)
                                          (article 1.0))))
-
-;; nnir
-
-(with-eval-after-load 'nnir
-  (map-do
-   #'add-to-list
-   `((nnir-engines               . (blc-notmuch ,#'nnir-run-blc-notmuch ()))
-     (nnir-imap-search-arguments . ("gmail" . "X-GM-RAW")))))
 
 ;;; gnus.el ends here
