@@ -861,11 +861,18 @@ Defaults to `org-directory' and `org-default-notes-file'."
 
 ;; pdf-tools
 
-(defun blc-pdf-tools-undefer ()
-  "Clean up remnants of deferred `pdf-tools' loading."
-  (remove-hook 'pdf-view-mode-hook #'blc-pdf-tools-undefer)
+(defun blc-pdf-tools-defer ()
+  "Install `pdf-tools' before turning on `pdf-view-mode'.
+Uninstall self from `auto-mode-alist' and `magic-mode-alist', as
+`pdf-tools-install' will install itself there.  Intended as a
+deferred way of autoloading the `pdf-tools' package."
+  (unless (with-demoted-errors "Error activating PDF Tools: %S"
+            (pdf-tools-install)
+            (pdf-view-mode)
+            t)
+    (doc-view-mode-maybe))
   (dolist (sym '(auto-mode-alist magic-mode-alist))
-    (set sym (rassq-delete-all #'pdf-tools-install (symbol-value sym)))))
+    (set sym (rassq-delete-all #'blc-pdf-tools-defer (symbol-value sym)))))
 
 ;; python
 
@@ -2032,8 +2039,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
 
   ;; pdf-view
-  (:hooks pdf-view-mode-hook :fns (auto-revert-mode
-                                   blc-pdf-tools-undefer))
+  (:hooks pdf-view-mode-hook :fns auto-revert-mode)
 
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
@@ -3188,7 +3194,7 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; pdf-tools
 
 (map-do (lambda (alist key)
-          (add-to-list alist (cons key #'pdf-tools-install)))
+          (add-to-list alist (cons key #'blc-pdf-tools-defer)))
         `((auto-mode-alist  . ,(rx ".pdf" eos))
           (magic-mode-alist . "%PDF")))
 
