@@ -2116,19 +2116,18 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([remap zap-to-char]                   . #'zap-up-to-char))
 
   (mode-specific-map
-   ([?\M-g]                               . #'blc-github-notifications)
    ([?\M-n]                               . #'next-logical-line)
    ([?\M-p]                               . #'previous-logical-line)
    ("/"                                   . #'define-word-at-point)
    ("["                                   . #'raise-sexp)
    ("]"                                   . #'delete-pair)
    ("C"                                   . #'copy-from-above-command)
+   ("G"                                   . #'blc-github-notifications)
    ("M"                                   . #'blc-mbsync-all)
    ("b"                                   . #'bog-command-map)
    ("c"                                   . #'compile)
    ("e"                                   . #'ielm)
    ("4e"                                  . #'blc-ielm-other-window)
-   ("g"                                   . #'magit-file-dispatch)
    ("i"                                   . #'blc-indent-relative)
    ("j"                                   . #'blc-jump-map)
    ("m"                                   . #'blc-mbsync)
@@ -2162,12 +2161,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (ctl-x-map
    ("\C-n"                                . #'blc-open-next-line)
    ("\C-p"                                . #'blc-open-previous-line)
-   ([?\M-g]                               . #'magit-dispatch)
    ("/"                                   . #'engine-mode-prefixed-map)
    ("7"                                   . #'blc-transpose-split)
    ("B"                                   . #'blc-bury-buffer)
-   ("M"                                   . #'blc-gnus)
-   ("g"                                   . #'magit-status))
+   ("M"                                   . #'blc-gnus))
 
   (ctl-x-4-map
    ("M"                                   . #'blc-gnus-other-window))
@@ -2909,15 +2906,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 %h %ci
 https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
          (caddr magit-pop-revision-stack-format))))
-
-;; magit-files
-
-(with-eval-after-load 'magit-files
-  (blc-define-keys
-    (magit-file-mode-map
-     ([?\C-c ?\M-g])
-     ([?\C-x ?\M-g])
-     ("\C-xg"))))
 
 ;; magit-log
 
