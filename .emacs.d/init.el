@@ -1690,9 +1690,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  reftex-plug-into-AUCTeX                t
  reftex-revisit-to-follow               t
 
- ;; saveplace
- save-place-file                        (blc-file blc-index-dir "places.el")
-
  ;; sendmail
  send-mail-function                     #'sendmail-send-it
  sendmail-program                       "msmtp"
@@ -3219,10 +3216,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 (with-eval-after-load 'reftex
   (mapc (apply-partially #'add-to-list 'reftex-default-bibliography)
         (blc-bib-files)))
-
-;; saveplace
-
-(save-place-mode)
 
 ;; simple
 
