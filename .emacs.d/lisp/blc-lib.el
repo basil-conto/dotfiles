@@ -595,6 +595,7 @@ which see."
        ,(intern fmt)
        ,@(and current-prefix-arg (frame-list-z-order)))))
   (with-temp-file file
+    (set-buffer-multibyte nil)
     (insert (x-export-frames frames type))))
 
 ;;; Settings
