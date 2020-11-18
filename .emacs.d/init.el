@@ -3190,6 +3190,7 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; project
 
 (with-eval-after-load 'project
+  (blc-put project-switch-commands ?b `("Buffer" ,#'project-switch-to-buffer))
   (when (require 'magit-repos nil t)
     (project--ensure-read-project-list)
     (pcase-dolist (`(,_ . ,dir) (nreverse (magit-repos-alist)))
