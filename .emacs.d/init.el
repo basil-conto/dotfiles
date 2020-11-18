@@ -1596,15 +1596,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-log-into-drawer                    t
  org-log-redeadline                     'note
  org-log-reschedule                     'note
- org-modules                            '(org-bibtex
-                                          org-bookmark
-                                          org-docview
-                                          org-eshell
-                                          org-eww
-                                          org-gnus
-                                          org-id
-                                          org-info
-                                          org-man)
+ org-modules                            ()
  org-outline-path-complete-in-steps     nil
  org-property-format                    "%-20s %s"
  org-refile-allow-creating-parent-nodes 'confirm
