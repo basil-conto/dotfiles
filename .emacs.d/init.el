@@ -2101,7 +2101,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([remap switch-to-buffer]              . #'ivy-switch-buffer)
    ([remap switch-to-buffer-other-window] . #'ivy-switch-buffer-other-window)
    ([remap upcase-word]                   . #'upcase-dwim)
-   ([remap yank-pop]                      . #'counsel-yank-pop)
    ([remap zap-to-char]                   . #'zap-up-to-char))
 
   (mode-specific-map
