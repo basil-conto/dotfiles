@@ -140,7 +140,6 @@ Visit `package-user-dir' if such a directory is not found."
    chess
    cmake-mode
    counsel
-   counsel-gtags
    crontab-mode
    csharp-mode
    csv-mode
@@ -174,7 +173,6 @@ Visit `package-user-dir' if such a directory is not found."
    forge
    free-keys
 
-   ggtags
    ghub
    gif-screencast
    git-annex
@@ -200,8 +198,6 @@ Visit `package-user-dir' if such a directory is not found."
    ialign
    idris-mode
    interleave
-   irony
-   irony-eldoc
    ivy
    ivy-bibtex
    ivy-hydra

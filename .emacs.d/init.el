@@ -1272,9 +1272,6 @@ created.  FRAME defaults to the selected one."
  ;; generic-x
  generic-use-find-file-hook             nil
 
- ;; ggtags
- ggtags-enable-navigation-keys          nil
-
  ;; git-annex
  git-annex-commit                       nil
 
@@ -1401,9 +1398,6 @@ created.  FRAME defaults to the selected one."
 
  ;; image-dired
  image-dired-dir                        (blc-dir blc-index-dir "image-dired")
-
- ;; irony-eldoc
- irony-eldoc-use-unicode                t
 
  ;; isearch
  isearch-allow-scroll                   t
@@ -2000,10 +1994,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                              org-agenda-mode-hook
                              tabulated-list-mode-hook))
 
-  ;; irony
-  (:hooks irony-mode-hook :fns (irony-cdb-autosetup-compile-options
-                                irony-eldoc))
-
   ;; isearch
   (:hooks isearch-mode-hook :fns blc-isearch-delight)
 
@@ -2437,9 +2427,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ;; info
    (Info-mode "📘" :major)
 
-   ;; irony
-   (irony-mode "🜜" irony)
-
    ;; ivy
    (ivy-mode nil ivy)
 
@@ -2632,14 +2619,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; frame
 
 (window-divider-mode)
-
-;; ggtags
-
-(with-eval-after-load 'ggtags
-  (blc-define-keys
-    (ggtags-mode-map
-     ([?\M-\]]) ; `ggtags-find-reference'
-     ([?\M-F]  . #'ggtags-find-reference))))
 
 ;; gif-screencast
 
