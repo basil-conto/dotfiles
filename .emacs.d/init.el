@@ -1884,6 +1884,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                  (format "%s, %s" loc (plist-get country :name)))
                blc-locations))
 
+ ;; xref
+ xref-search-program                    'ripgrep
+
  ;; youtube-dl
  youtube-dl-directory                   (blc-user-dir "VIDEOS"))
 
