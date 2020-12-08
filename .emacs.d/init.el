@@ -1013,7 +1013,7 @@ created.  FRAME defaults to the selected one."
  indent-tabs-mode                       nil
 
  ;; keyboard.c
- echo-keystrokes                        0.5
+ echo-keystrokes                        0.3
 
  ;; minibuffer.c
  enable-recursive-minibuffers           t
