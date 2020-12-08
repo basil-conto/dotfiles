@@ -1123,6 +1123,7 @@ created.  FRAME defaults to the selected one."
 
  ;; comint
  comint-input-ignoredups                t
+ comint-terminfo-terminal               "dumb-emacs-ansi"
 
  ;; compile
  compilation-message-face               'default
