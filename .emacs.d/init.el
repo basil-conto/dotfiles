@@ -548,7 +548,36 @@ description of the arguments to this function."
 
 ;; compile
 
-(defun blc-compilation-ansify ()
+(defvar blc-compile-duration 30
+  "Seconds of compilation after which to notify of end.")
+
+(defvar blc-compile-buffers (make-hash-table :test #'eq :size 4 :weakness 'key)
+  "Map buffers to compilation start times and notification IDs.")
+
+(defun blc-compile-start (proc)
+  "Clock in compilation PROC.
+Intended for `compilation-start-hook'."
+  (let* ((buf (process-buffer proc))
+         (val (gethash buf blc-compile-buffers)))
+    (when-let (id (plist-get val :id))
+      (notifications-close-notification id))
+    (setq val (plist-put val :start (current-time)))
+    (puthash buf val blc-compile-buffers)))
+
+(defun blc-compile-end (buf msg)
+  "Clock out compilation BUF and notify with MSG.
+Intended for `compilation-finish-functions'."
+  (let* ((val (gethash buf blc-compile-buffers))
+         (beg (plist-get val :start))
+         (id  (plist-get val :id)))
+    (cond ((get-buffer-window buf 'visible)
+           (when id (notifications-close-notification id)))
+          ((< (float-time (time-subtract nil beg)) blc-compile-duration))
+          ((plist-put val :id (notifications-notify
+                               :title (format "%s %s" buf msg)
+                               :replaces-id id))))))
+
+(defun blc-compile-ansify ()
   "Translate SGR colours in last compilation output.
 Intended for `compilation-filter-hook', which see."
   (ansi-color-apply-on-region compilation-filter-start (point)))
@@ -1933,7 +1962,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks c-mode-common-hook :fns hs-minor-mode)
 
   ;; compile
-  (:hooks compilation-filter-hook :fns blc-compilation-ansify)
+  (:hooks compilation-filter-hook      :fns blc-compile-ansify)
+  (:hooks compilation-finish-functions :fns blc-compile-end)
+  (:hooks compilation-start-hook       :fns blc-compile-start)
 
   ;; csv-mode
   (:hooks csv-mode-hook :fns blc-csv-align-all-fields)
