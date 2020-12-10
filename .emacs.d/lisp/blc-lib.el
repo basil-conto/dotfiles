@@ -493,11 +493,16 @@ with a prefix argument, read MODE with completion."
 (defun blc-fortune-filter ()
   "Translate all `fortune' program markup after point.
 This converts backspace escape sequences used by the `fortune'
-program to text representable in Emacs."
-  (while (blc-search-forward (rx (+ ?\b)))
-    (let ((len (- (point) (match-beginning 0))))
+program to text representable in Emacs.  See also the URL
+`https://www.emacswiki.org/emacs/UnterminalString'."
+  (while (blc-search-forward (rx (+ (in ?\C-g ?\b))))
+    (let ((len (- (point) (match-beginning 0)))
+          (chr (preceding-char)))
       (replace-match "" t t)
-      (cond ((= (skip-chars-backward "_" (- (point) len)) (- len))
+      (cond ((= chr ?\C-g)
+             ;; Ignore C-g.
+             (delete-char len))
+            ((= (skip-chars-backward "_" (- (point) len)) (- len))
              ;; "__\b\b" means underline next 2 chars, but we upcase instead.
              (delete-char len)
              (upcase-region (point) (min (+ (point) len) (point-max))))
