@@ -44,6 +44,12 @@ export GIT_PS1_SHOW{DIRTYSTATE,STASHSTATE,UPSTREAM}=auto
 # For gpg-agent
 export GPG_TTY="$(tty)"
 
+# Pyenv
+if [ -x "$(command -v pyenv)" ]; then
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
 # Allow safe usage of boolean expressions without spamming error return codes;
 # actual errors should (hopefully) manifest by other means
 true
