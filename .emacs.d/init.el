@@ -337,6 +337,14 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
+;; python
+
+(define-advice python-shell-make-comint (:around (&rest args) blc-dumb-term)
+  "Start inferior Python with TERM=dumb."
+  (defvar comint-terminfo-terminal)
+  (let ((comint-terminfo-terminal "dumb"))
+    (apply args)))
+
 ;; sx-question-mode
 
 (define-advice sx-question-mode--get-window (:override () blc-sx-question-win)
