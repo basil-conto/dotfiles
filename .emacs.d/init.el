@@ -1079,6 +1079,9 @@ created.  FRAME defaults to the selected one."
  ;; xfns.c
  x-gtk-use-system-tooltips              nil
 
+ ;; xterm.c
+ x-wait-for-event-timeout               0.2
+
  ;; ag
  ag-highlight-search                    t
 
