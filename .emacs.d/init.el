@@ -1211,7 +1211,6 @@ created.  FRAME defaults to the selected one."
  ;; dictionary
  dictionary-create-buttons              nil
  dictionary-default-strategy            "re"
- dictionary-server                      "localhost"
 
  ;; diff-mode
  diff-font-lock-prettify                t
@@ -1621,7 +1620,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-catch-invisible-edits              'smart
  org-columns-default-format             "%ITEM %TODO %LOCATION %TAGS"
  org-ctrl-k-protect-subtree             t
- org-fontify-done-headline              t
  org-goto-interface                     'outline-path-completion
  org-goto-max-level                     10
  org-hierarchical-todo-statistics       nil
@@ -1706,6 +1704,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; project
  project-list-file                      (blc-file blc-index-dir "projects")
+ project-switch-use-entire-map          t
 
  ;; prolog
  prolog-system                          'swi
@@ -3205,7 +3204,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; project
 
 (with-eval-after-load 'project
-  (blc-put project-switch-commands ?b `("Buffer" ,#'project-switch-to-buffer))
   (when (require 'magit-repos nil t)
     (project--ensure-read-project-list)
     (pcase-dolist (`(,_ . ,dir) (nreverse (magit-repos-alist)))

@@ -153,7 +153,6 @@ Visit `package-user-dir' if such a directory is not found."
    deadgrep
    define-word
    delight
-   dictionary
    disaster
    discover-my-major
    dropbox
