@@ -271,6 +271,7 @@ Visit `package-user-dir' if such a directory is not found."
    web-mode
    wttrin
 
+   xr
    xref-js2
 
    yaml-mode))
