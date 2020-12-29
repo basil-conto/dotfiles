@@ -34,7 +34,8 @@ clean: clean-themes clean-libs clean-gnus clean-inits clean-tests
 
 .PHONY: distclean
 distclean: clean
-	$(RM) --recursive $(pkgdir) index/package-quickstart.el
+	$(RM) --recursive $(pkgdir) index/package-quickstart.el \
+		index/package-quickstart.elc
 
 .PHONY: themes clean-themes
 themes:               $(themes)
