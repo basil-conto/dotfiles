@@ -84,11 +84,11 @@ Visit `package-user-dir' if such a directory is not found."
 
 ;; Archives
 (seq-do-indexed (pcase-lambda (`(,id . ,url) i)
-                  (blc-put* package-archives           id url)
+                  (when url (blc-put* package-archives id url))
                   (blc-put* package-archive-priorities id (1+ i)))
-                '(("melpa"  . "https://melpa.org/packages/")
-                  ("org"    . "https://orgmode.org/elpa/")
-                  ("nongnu" . "https://elpa.gnu.org/nongnu/")))
+                '(("melpa" . "https://melpa.org/packages/")
+                  ("org"   . "https://orgmode.org/elpa/")
+                  ("nongnu")))
 
 (setq-default
  ;; abbrev
