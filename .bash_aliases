@@ -48,11 +48,11 @@ alias feh='feh   \
 --sort filename'
 
 # xbacklight
-alias dark='xbacklight -set 0'
-alias half='xbacklight -set 50'
-alias bright='xbacklight -set 100'
-alias dim='xbacklight -dec 10'
-alias brighten='xbacklight -inc 10'
+alias dark='lux -S 0%'
+alias half='lux -S 50%'
+alias bright='lux -S 100%'
+alias dim='lux -s 10%'
+alias brighten='lux -a 10%'
 
 # GNU compilers
 alias gcc='gcc -fdiagnostics-color'

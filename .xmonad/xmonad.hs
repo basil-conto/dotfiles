@@ -67,9 +67,9 @@ main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
               ]
 
      ++
-     mapPairs ((noModMask,), safeSpawn "xbacklight")
-              [ (xF86XK_MonBrightnessDown, ["-dec", lightStep])
-              , (xF86XK_MonBrightnessUp,   ["-inc", lightStep])
+     mapPairs ((noModMask,), safeSpawn "lux")
+              [ (xF86XK_MonBrightnessDown, ["-s", lightStep])
+              , (xF86XK_MonBrightnessUp,   ["-a", lightStep])
               ]
 
      ++
@@ -89,7 +89,7 @@ main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
 
   where
     volStep    = 5.0
-    lightStep  = "10"
+    lightStep  = "10%"
     modMask'   = mod4Mask
     mapPairs   = map . uncurry (***)
     safeSpawn' = maybe mempty (uncurry safeSpawn) . uncons
