@@ -345,15 +345,6 @@ Offer all entities found in `org-entities-user' and
   (let ((comint-terminfo-terminal "dumb"))
     (apply args)))
 
-;; sx-question-mode
-
-(define-advice sx-question-mode--get-window (:override () blc-sx-question-win)
-  "Return first SX question window found on any visible frame."
-  (get-window-with-predicate (lambda (win)
-                               (with-selected-window win
-                                 (derived-mode-p #'sx-question-mode)))
-                             'never 'visible))
-
 ;; whitespace
 
 (defun blc-whitespace-enable--advice ()
@@ -1085,9 +1076,6 @@ created.  FRAME defaults to the selected one."
  ;; ag
  ag-highlight-search                    t
 
- ;; alert
- alert-default-style                    'notifications
-
  ;; apt-utils
  apt-utils-show-all-versions            t
 
@@ -1231,10 +1219,6 @@ created.  FRAME defaults to the selected one."
 
  ;; dired-aux
  dired-create-destination-dirs          'ask
-
- ;; disaster
- disaster-objdump
- "objdump -D -M att -Sl --no-show-raw-insn"
 
  ;; doc-view
  doc-view-resolution                    150
@@ -1409,11 +1393,6 @@ created.  FRAME defaults to the selected one."
    ("Process" (and (name . "Async Shell Command")
                    (starred-name)))
    ("REPL   " (saved . "REPL"))
-   ("SX     " (or (derived-mode . sx-compose-mode)
-                  (derived-mode . sx-question-list-mode)
-                  (derived-mode . sx-question-mode)
-                  (and (name . "sx temp buffer")
-                       (starred-name))))
    ("TeX    " (saved . "TeX"))
    ("Text   " (saved . "text document"))
    ("Web    " (saved . "web")))
@@ -1767,10 +1746,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; swiper
  swiper-goto-start-of-match             t
 
- ;; sx
- sx-cache-directory                     (blc-dir blc-index-dir "sx")
- sx-question-mode-comments-format       "%s:\n   %s\n"
-
  ;; term
  term-ansi-buffer-base-name             "term"
  term-suppress-hard-newline             t
@@ -1913,14 +1888,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
  split-window-keep-point                nil
-
- ;; wttrin
- wttrin-default-accept-language         '("Accept-Language" . "el,en,*")
- wttrin-default-cities
- (cons "Moon" (map-apply
-               (pcase-lambda (loc (app (apply #'blc--country-xref) country))
-                 (format "%s, %s" loc (plist-get country :name)))
-               blc-locations))
 
  ;; xref
  xref-file-name-display                 'project-relative
@@ -2091,9 +2058,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (define-prefix-command 'blc-jump-map)
 (define-prefix-command 'blc-org-map)
 
-(fmakunbound 'sx-switchto-map)
-(autoload 'sx-switchto-map "sx-switchto" nil t 'keymap)
-
 (blc-define-keys
   ((current-global-map)
    ([?\C-\S-v]                            . #'scroll-other-window)
@@ -2157,7 +2121,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("m"                                   . #'blc-mbsync)
    ("n"                                   . #'blc-rename-buffer)
    ("o"                                   . #'blc-org-map)
-   ("s"                                   . #'sx-switchto-map)
    ("u"                                   . #'counsel-unicode-char))
 
   (blc-jump-map
@@ -2213,7 +2176,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("f"                                   . #'avy-goto-line))
 
   (help-map
-   ("\C-m"                                . #'discover-my-major)
    ("\C-f"                                . #'find-function)
    ("4f"                                  . #'find-function-other-window)
    ("4\C-f"                               . #'find-function-other-window)
@@ -2270,12 +2232,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                           (: "sources" (? ".list.d/" (+ anychar)) ".list"))
                        eos)
                    #'apt-sources-list-mode))
-
-;; atomic-chrome
-
-(with-eval-after-load 'atomic-chrome
-  (setq-default atomic-chrome-extension-type-list '(ghost-text))
-  (blc-put* atomic-chrome-url-major-mode-alist "github\\.com" #'gfm-mode))
 
 ;; auctex
 
@@ -2570,11 +2526,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (("optipng")        "png")
             (("pdf")            "pdf"))))
 
-;; disaster
-
-(with-eval-after-load 'cc-mode
-  (define-key c-mode-base-map "\C-cd" #'disaster))
-
 ;; eglot
 
 (with-eval-after-load 'eglot
@@ -2707,11 +2658,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    hacker-typer-random-range
    (mapcar (apply-partially #'* 2)
            hacker-typer-random-range)))
-
-;; haskell-mode
-
-(with-eval-after-load 'haskell-mode
-  (define-key haskell-mode-map [remap haskell-hoogle] #'haskell-hayoo))
 
 ;; hideshow
 
@@ -3246,12 +3192,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; subword
 
 (global-subword-mode)
-
-;; sx
-
-(with-eval-after-load 'sx-question-list
-  (define-key sx-question-list-mode-map
-    [remap sx-question-list-hide] #'describe-mode))
 
 ;; term
 

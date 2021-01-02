@@ -121,11 +121,9 @@ Visit `package-user-dir' if such a directory is not found."
    academic-phrases
    ace-window
    ag
-   alert
    apache-mode
    apt-sources-list
    ascii-art-to-unicode
-   atomic-chrome
    auctex
    auctex-latexmk
    avy
@@ -149,12 +147,9 @@ Visit `package-user-dir' if such a directory is not found."
    dash
    debbugs
    debian-el
-   debpaste
    deadgrep
    define-word
    delight
-   disaster
-   discover-my-major
    dropbox
    ducpel
 
@@ -165,14 +160,12 @@ Visit `package-user-dir' if such a directory is not found."
    engine-mode
    enwc
    ess
-   ewmctrl
    expand-region
 
    figlet
    fireplace
    flame
    forge
-   free-keys
 
    ghub
    gif-screencast
@@ -185,13 +178,11 @@ Visit `package-user-dir' if such a directory is not found."
    go-mode
    google-contacts
    google-maps
-   google-this
    gscholar-bibtex
 
    hacker-typer
    hackernews
    haskell-mode
-   hayoo
    helm-make
    highlight-escape-sequences
    htmlize
@@ -222,13 +213,11 @@ Visit `package-user-dir' if such a directory is not found."
    markdown-mode
    matlab-mode
    mines
-   mustache-mode
 
    neato-graph-bar
    nodejs-repl
    nov
 
-   org-mime
    org-pdftools
    org-plus-contrib
    org-pomodoro
@@ -238,7 +227,6 @@ Visit `package-user-dir' if such a directory is not found."
    pass
    passmm
    pdf-tools
-   playerctl
    pomidor
    pulseaudio-control
 
@@ -251,12 +239,10 @@ Visit `package-user-dir' if such a directory is not found."
    scanner
    scribble-mode
    sicp
-   skype
    sl
    slime-volleyball
    sudoku
    swiper
-   sx
    systemd
 
    threes
@@ -267,9 +253,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    visual-fill-column
 
-   w3m
    web-mode
-   wttrin
 
    xr
    xref-js2
