@@ -349,7 +349,8 @@ Offer all entities found in `org-entities-user' and
 
 (defun blc-whitespace-enable--advice ()
   "Advice intended for predicate `whitespace-enable-predicate'."
-  (not (or (derived-mode-p #'dired-mode
+  (not (or (derived-mode-p #'csv-mode
+                           #'dired-mode
                            #'markdown-mode
                            #'nov-mode
                            #'org-mode
@@ -602,12 +603,6 @@ Intended as an Ivy action for `counsel-M-x'."
     (setq this-command      cmd)
     (setq prefix-arg        current-prefix-arg)
     (command-execute cmd t)))
-
-;; csv-mode
-
-(defun blc-csv-align-all-fields ()
-  "Align all fields in the current CSV buffer."
-  (csv-align-fields nil (point-min) (point-max)))
 
 ;; eww
 
@@ -1177,6 +1172,7 @@ created.  FRAME defaults to the selected one."
 
  ;; csv-mode
  csv-align-style                        'auto
+ csv-invisibility-default               nil
 
  ;; cus-edit
  custom-unlispify-menu-entries          nil
@@ -1944,9 +1940,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks compilation-filter-hook      :fns blc-compile-ansify)
   (:hooks compilation-finish-functions :fns blc-compile-end)
   (:hooks compilation-start-hook       :fns blc-compile-start)
-
-  ;; csv-mode
-  (:hooks csv-mode-hook :fns blc-csv-align-all-fields)
 
   ;; dafny-mode
   (:hooks dafny-mode-hook :fns blc-turn-off-prettify-symbols)
