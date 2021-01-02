@@ -65,7 +65,7 @@
                   :filter #'blc-backup--filter)))
 
 (defun blc-backup ()
-  "Sequentially run back up functions in `blc-backup-hook'."
+  "Sequentially run backup functions in `blc-backup-hook'."
   (interactive)
   (run-hooks 'blc-backup-hook))
 
