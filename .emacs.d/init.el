@@ -1471,7 +1471,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; magit-mode
  magit-display-buffer-function
  #'magit-display-buffer-same-window-except-diff-v1
- magit-refresh-verbose                  t
 
  ;; magit-process
  magit-process-finish-apply-ansi-colors t
