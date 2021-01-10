@@ -1057,6 +1057,7 @@ created.  FRAME defaults to the selected one."
  ;; xdisp.c
  auto-hscroll-mode                      'current-line
  line-number-display-limit-width        (ash blc-chars-per-line 3)
+ redisplay-skip-fontification-on-input  t
  scroll-conservatively                  most-positive-fixnum
  scroll-margin                          1
  scroll-step                            1
