@@ -3156,16 +3156,6 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
 (add-to-list 'auto-mode-alist (cons (rx ".pl" eos) #'prolog-mode))
 
-;; python
-
-(with-eval-after-load 'python
-  (map-do
-   (lambda (var cmds)
-     (when-let* ((cmd (seq-some #'executable-find cmds)))
-       (set-default var cmd)))
-   '((python-check-command     "epylint3" "epylint" "pyflakes")
-     (python-shell-interpreter "python3" "python"))))
-
 ;; reftex
 
 (with-eval-after-load 'reftex
