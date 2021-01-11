@@ -495,12 +495,12 @@ with a prefix argument, read MODE with completion."
 This converts backspace escape sequences used by the `fortune'
 program to text representable in Emacs.  See also the URL
 `https://www.emacswiki.org/emacs/UnterminalString'."
-  (while (blc-search-forward (rx (+ (in ?\C-g ?\b))))
+  (while (blc-search-forward (rx (+ (in ?\^G ?\b))))
     (let ((len (- (point) (match-beginning 0)))
           (chr (preceding-char)))
       (replace-match "" t t)
-      (cond ((= chr ?\C-g)
-             ;; Ignore C-g.
+      (cond ((= chr ?\^G)
+             ;; Ignore ^G.
              (delete-char len))
             ((= (skip-chars-backward "_" (- (point) len)) (- len))
              ;; "__\b\b" means underline next 2 chars, but we upcase instead.
