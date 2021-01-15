@@ -66,12 +66,10 @@
   "Insert the head of `magit-revision-stack' before point.
 Format the Git revision as per CONTRIBUTE guidelines."
   (interactive)
-  (let* ((default-directory (or (cadar magit-revision-stack)
-                                (user-error "Revision stack is empty")))
-         (lines (process-lines "git" "show" "--quiet" "--format=%aD\n%aE"
-                               (caar magit-revision-stack))))
-    (insert (format-time-string "%FT%TZ" (date-to-time (car lines)) t)
-            ?! (cadr lines))))
+  (let ((default-directory (or (cadar magit-revision-stack)
+                               (user-error "Revision stack is empty"))))
+    (insert (car (process-lines "git" "show" "--no-patch" "--format=%cd \"%s\""
+                                "--date=short" (caar magit-revision-stack))))))
 
 ;; Add signature revision headers
 (magit-add-section-hook 'magit-revision-sections-hook
