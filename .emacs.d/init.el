@@ -1284,6 +1284,7 @@ created.  FRAME defaults to the selected one."
  ;; forge
  forge-database-file                    (blc-file blc-index-dir
                                                   "forge-db.sqlite")
+ forge-topic-list-limit                 '(60 . -1)
 
  ;; frame
  window-divider-default-right-width     2
