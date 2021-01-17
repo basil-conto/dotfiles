@@ -360,17 +360,6 @@ Offer all entities found in `org-entities-user' and
 (with-eval-after-load 'whitespace
   (add-function :before-while whitespace-enable-predicate
                 #'blc-whitespace-enable--advice))
-
-;; window
-
-(defun blc-pop-up-frame--advice (&rest args)
-  "Keep focus on old frame when popping up a new one to display."
-  (let ((frame (selected-frame)))
-    (unwind-protect
-        (apply args)
-      (select-frame-set-input-focus frame))))
-
-(add-function :around pop-up-frame-function #'blc-pop-up-frame--advice)
 
 ;;;; DEFINITIONS
 
