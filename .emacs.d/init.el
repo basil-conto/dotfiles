@@ -897,6 +897,15 @@ deferred way of autoloading the `pdf-tools' package."
   (dolist (sym '(auto-mode-alist magic-mode-alist))
     (set sym (rassq-delete-all #'blc-pdf-tools-defer (symbol-value sym)))))
 
+;; project
+
+(defun blc-project-complete-regexp ()
+  "Like `project-find-regexp', but using Xref completion."
+  (interactive)
+  (defvar xref-show-xrefs-function)
+  (let ((xref-show-xrefs-function #'xref-show-definitions-completing-read))
+    (call-interactively #'project-find-regexp)))
+
 ;; python
 
 (defun blc-python-pep-8-comments ()
@@ -2197,7 +2206,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([down]                                . #'isearch-repeat-forward))
 
   (project-prefix-map
-   ("S"                                   . #'project-search))
+   ("S"                                   . #'project-search)
+   ("o"                                   . #'blc-project-complete-regexp))
 
   (search-map
    ("A"                                   . #'counsel-ag)
