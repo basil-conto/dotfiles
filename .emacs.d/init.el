@@ -1686,6 +1686,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; prolog
  prolog-system                          'swi
 
+ ;; python
+ python-indent-guess-indent-offset-verbose
+ nil
+
  ;; reftex
  reftex-cite-format                     'biblatex
  reftex-comment-citations               t
