@@ -351,6 +351,7 @@ Offer all entities found in `org-entities-user' and
   "Advice intended for predicate `whitespace-enable-predicate'."
   (not (or (derived-mode-p #'csv-mode
                            #'dired-mode
+                           #'json-mode
                            #'markdown-mode
                            #'nov-mode
                            #'org-mode
@@ -2815,6 +2816,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'js2-refactor
   (js2r-add-keybindings-with-prefix "\C-c\C-m"))
+
+;; json-mode
+
+(add-to-list 'auto-mode-alist (cons (rx ?. (| "jl" "jsonl") eos) #'json-mode))
 
 ;; ledger-mode
 

@@ -113,7 +113,8 @@ Visit `package-user-dir' if such a directory is not found."
 
  ;; package
  package-menu-hide-low-priority t
- package-pinned-packages        '((slime-volleyball . "gnu"))
+ package-pinned-packages        '((json-mode        . "gnu")
+                                  (slime-volleyball . "gnu"))
  package-quickstart-file        (blc-file blc-index-dir "package-quickstart.el")
  package-selected-packages
  '(2048-game
