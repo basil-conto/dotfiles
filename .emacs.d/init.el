@@ -103,6 +103,13 @@ Also transcribe AC line status in ALIST to Unicode."
                     (apply #'call-process prog nil 0 nil args))
     (apply fn args)))
 
+;; eldoc
+
+(define-advice eldoc--format-doc-buffer (:filter-return (buf) blc-nbsp)
+  "Ignore non-ASCII space and hyphen chars in ElDoc buffer."
+  (with-current-buffer buf (setq-local nobreak-char-display nil))
+  buf)
+
 ;; elisp-mode
 
 (define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
