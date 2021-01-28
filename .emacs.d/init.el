@@ -356,17 +356,10 @@ Offer all entities found in `org-entities-user' and
 
 (defun blc-whitespace-enable--advice ()
   "Advice intended for predicate `whitespace-enable-predicate'."
-  (not (or (derived-mode-p #'csv-mode
-                           #'dired-mode
-                           #'json-mode
-                           #'markdown-mode
-                           #'nov-mode
-                           #'org-mode
-                           #'shell-mode)
-           (equal (buffer-name) "*scratch*"))))
+  (not (equal (buffer-name) "*scratch*")))
 
 (with-eval-after-load 'whitespace
-  (add-function :before-while whitespace-enable-predicate
+  (add-function :after-while whitespace-enable-predicate
                 #'blc-whitespace-enable--advice))
 
 ;;;; DEFINITIONS
@@ -1879,6 +1872,15 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                     ""]))
 
  ;; whitespace
+ whitespace-global-modes
+ (list 'not
+       #'csv-mode
+       #'dired-mode
+       #'json-mode
+       #'markdown-mode
+       #'nov-mode
+       #'org-mode
+       #'shell-mode)
  whitespace-style
  '(face lines-tail missing-newline-at-eof tab-mark)
 
