@@ -1510,6 +1510,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; markdown-mode
  markdown-fontify-code-blocks-natively  t
+ markdown-gfm-use-electric-backquote    nil
  markdown-header-scaling                t
  markdown-spaces-after-code-fence       0
 
