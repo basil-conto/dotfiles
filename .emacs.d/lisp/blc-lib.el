@@ -365,12 +365,6 @@ Use `async-shell-command' when called interactively."
 (defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
   "List of buffer names associated with Gnus logs.")
 
-(defun blc-revert-buffer ()
-  "Reconcile current buffer with what lives on the disk.
-Offer to revert from the auto-save file, if that exists."
-  (interactive)
-  (revert-buffer nil t))
-
 (defun blc-count-lines ()
   "Like `count-lines-page', but not limited to current page."
   (interactive)
