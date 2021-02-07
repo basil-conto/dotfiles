@@ -1296,7 +1296,6 @@ created.  FRAME defaults to the selected one."
 
  ;; git-commit
  git-commit-summary-max-length          50
- global-git-commit-mode                 nil
 
  ;; gnus
  gnus-home-directory                    user-emacs-directory
@@ -2636,10 +2635,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (require 'git-annex nil t))
 
 ;; git-commit
-
-(when (boundp 'git-commit-filename-regexp)
-  (add-to-list 'auto-mode-alist
-               (cons git-commit-filename-regexp #'git-commit-setup)))
 
 (with-eval-after-load 'git-commit
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line))
