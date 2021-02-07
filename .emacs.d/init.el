@@ -185,7 +185,8 @@ last visible Emacs client frame."
 `ivy-bibtex-default-action' only considers `frame-width', which
 for example excludes the effect of `ivy-format-functions-alist'."
   (let ((str (funcall (ivy-alist-setting ivy-format-functions-alist) '(""))))
-    (funcall fmt entry (blc-but-fringes width (string-width str)))))
+    (funcall fmt entry (apply #'- width (string-width str)
+                              (mapcar #'fringe-columns '(left right))))))
 
 ;; magit-diff
 

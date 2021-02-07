@@ -561,10 +561,6 @@ Display is determined by the environment variable DISPLAY."
   (unless (eq (next-frame) (selected-frame))
     (delete-frame frame force)))
 
-(defun blc-but-fringes (width &rest subtrahends)
-  "Subtract SUBTRAHENDS and total fringe columns from WIDTH."
-  (apply #'- width `(,@subtrahends ,@(mapcar #'fringe-columns '(left right)))))
-
 (defun blc-set-font-height (height &optional frame)
   "Set font HEIGHT in 1/10 pt for FRAME.
 When called interactively without a prefix argument, or when
