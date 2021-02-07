@@ -1457,6 +1457,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  lpr-add-switches                       nil
  lpr-command                            "hp-print"
 
+ ;; magit
+ magit-define-global-key-bindings       nil
+
  ;; magit-branch
  magit-branch-popup-show-variables      t
 
@@ -2109,6 +2112,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([remap zap-to-char]                   . #'zap-up-to-char))
 
   (mode-specific-map
+   ([?\M-g]                               . #'magit-file-dispatch)
    ([?\M-n]                               . #'next-logical-line)
    ([?\M-p]                               . #'previous-logical-line)
    ("/"                                   . #'define-word-at-point)
