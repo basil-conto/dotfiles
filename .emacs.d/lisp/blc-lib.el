@@ -368,11 +368,9 @@ Use `async-shell-command' when called interactively."
 (defun blc-count-lines ()
   "Like `count-lines-page', but not limited to current page."
   (interactive)
-  (save-restriction
-    (widen)
-    (let* ((total  (line-number-at-pos (point-max)))
-           (before (line-number-at-pos)))
-      (message "Buffer has %d lines (%d + %d)" total before (- total before)))))
+  (let ((total  (line-number-at-pos (point-max)))
+        (before (line-number-at-pos)))
+    (message "Buffer has %d lines (%d + %d)" total before (- total before))))
 
 (defun blc-derived-buffers (&rest modes)
   "Return subset of `buffer-list' derived from MODES."
