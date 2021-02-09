@@ -1668,9 +1668,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; password-cache
  password-cache                         nil
 
- ;; pcomplete
- pcomplete-ignore-case                  t
-
  ;; pdf-misc
  pdf-misc-print-programm                lpr-command
 
