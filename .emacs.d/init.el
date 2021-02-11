@@ -304,6 +304,10 @@ This is much less accurate but also much more performant than
   (blc-with-nonce make-frame :filter-args #'ignore
     (apply args)))
 
+;; octave
+
+(advice-add #'octave-maybe-mode :override #'octave-mode)
+
 ;; org
 
 (define-advice org-read-date (:around (&rest args) blc-avoid-frames)
