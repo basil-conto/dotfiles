@@ -82,14 +82,6 @@ Visit `package-user-dir' if such a directory is not found."
   (interactive (list (blc--package-read-dir)))
   (find-file-other-frame pkg))
 
-;; Archives
-(seq-do-indexed (pcase-lambda (`(,id . ,url) i)
-                  (when url (blc-put* package-archives id url))
-                  (blc-put* package-archive-priorities id (1+ i)))
-                '(("melpa" . "https://melpa.org/packages/")
-                  ("org"   . "https://orgmode.org/elpa/")
-                  ("nongnu")))
-
 (setq-default
  ;; abbrev
  abbrev-file-name               (blc-file blc-index-dir "abbrevs.el")
@@ -112,6 +104,13 @@ Visit `package-user-dir' if such a directory is not found."
  url-configuration-directory    (blc-dir blc-index-dir "url")
 
  ;; package
+ package-archives
+ '(("gnu"    . "https://elpa.gnu.org/devel/")
+   ("nongnu" . "https://elpa.nongnu.org/nongnu-devel/")
+   ("melpa"  . "https://melpa.org/packages/")
+   ("org"    . "https://orgmode.org/elpa/"))
+ package-archive-priorities     (seq-map-indexed (lambda (a i) (cons (car a) i))
+                                                 (reverse package-archives))
  package-menu-hide-low-priority t
  package-pinned-packages        '((json-mode        . "gnu")
                                   (slime-volleyball . "gnu"))
