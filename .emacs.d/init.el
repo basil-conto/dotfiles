@@ -1716,6 +1716,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  kill-whole-line                        t
  mail-user-agent                        'gnus-user-agent
  next-error-recenter                    '(4)
+ read-extended-command-predicate        #'command-completion-default-include-p
  read-mail-command                      'gnus
  save-interprogram-paste-before-kill    t
  set-mark-command-repeat-pop            t
