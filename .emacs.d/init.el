@@ -754,7 +754,7 @@ Return the name of the buffer as a string or `nil'."
                                 (id   (buffer-local-value
                                        'mode-line-buffer-identification buf)))
                        (setq id (substring-no-properties (cadr id)))
-                       (setq id (replace-regexp-in-string "%%" "%" id t t))
+                       (setq id (string-replace "%%" "%" id))
                        (cons (concat name id) name)))
                    (blc-derived-buffers #'Info-mode)))
             ((cdr bufs)))
