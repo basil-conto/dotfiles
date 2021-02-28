@@ -59,10 +59,6 @@
 
 ;;;; ADVICE
 
-;; fns.c
-
-(advice-add #'yes-or-no-p :override #'y-or-n-p)
-
 ;; battery
 
 (defvar blc-battery-id nil
@@ -1032,6 +1028,9 @@ created.  FRAME defaults to the selected one."
 
  ;; doc.c
  text-quoting-style                     'grave
+
+ ;; fns.c
+ use-short-answers                      t
 
  ;; frame.c
  frame-resize-pixelwise                 t
