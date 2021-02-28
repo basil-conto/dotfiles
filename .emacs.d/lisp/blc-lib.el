@@ -135,8 +135,8 @@ Return result of last form in BODY or nil if PATH is unreadable."
   "Return non-nil if FILE1 precedes FILE2.
 Order is breadth-first lexicographic."
   (let (cmp beg1 end1 beg2 end2)
-    (while (and (setq end1 (string-match-p "/" file1 beg1)
-                      end2 (string-match-p "/" file2 beg2))
+    (while (and (setq end1 (string-search "/" file1 beg1)
+                      end2 (string-search "/" file2 beg2))
                 end1
                 (eq t (setq cmp (compare-strings file1 beg1 end1
                                                  file2 beg2 end2))))
@@ -350,7 +350,7 @@ Use `shell-command' when called interactively."
 Use `async-shell-command' when called interactively."
   (interactive "p")
   (when (or shell
-            (not (seq-some (apply-partially #'string-match-p "\\`dropbox\\'")
+            (not (seq-some (apply-partially #'equal "dropbox")
                            (blc-system-procs-by-attr 'comm ""))))
     (blc--dropbox shell "start" "&")))
 

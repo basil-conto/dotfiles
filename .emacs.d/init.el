@@ -2914,7 +2914,7 @@ https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=%H\n"
   ;; Expand special targets
   (let ((targets 'makefile-special-targets-list))
     ;; Remove old-fashioned suffix rules
-    (set targets (seq-remove (apply-partially #'string-match-p (rx ?.))
+    (set targets (seq-remove (apply-partially #'string-search ".")
                              (symbol-value targets)))
 
     (mapc (lambda (target)
