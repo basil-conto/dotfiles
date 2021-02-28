@@ -723,6 +723,13 @@ Suspending or exiting Gnus deletes that frame."
   (blc-make-frame)
   (blc-gnus))
 
+;; go-mode
+
+(defun blc-go-whitespace-style ()
+  "Adapt `whitespace-style' to Go's indentation style."
+  (setq-local whitespace-style (append (remq 'tab-mark whitespace-style)
+                                       '(space-before-tab))))
+
 ;; ibuffer
 
 (defun blc-ibuffer-ffap ()
@@ -2000,6 +2007,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; gnus
   (:hooks gnus-started-hook :fns blc-gc-thresh-restore)
+
+  ;; go-mode
+  (:hooks go-mode-hook :fns blc-go-whitespace-style)
 
   ;; haskell-mode
   (:hooks haskell-mode-hook :fns haskell-indent-mode)
