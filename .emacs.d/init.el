@@ -3172,6 +3172,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;; project
 
 (with-eval-after-load 'project
+  (require 'magit-extras nil t)
   (when (require 'magit-repos nil t)
     (project--ensure-read-project-list)
     (pcase-dolist (`(,_ . ,dir) (nreverse (magit-repos-alist)))
