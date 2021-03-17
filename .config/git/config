@@ -92,6 +92,9 @@
   log                = diff-highlight | pager
   show               = diff-highlight | pager
 
+[pull]
+  ff                 = only
+
 [status]
   showUntrackedFiles = all
   submoduleSummary   = true
