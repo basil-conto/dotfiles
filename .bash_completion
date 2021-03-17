@@ -14,6 +14,11 @@ _pip_completion()
 }
 complete -o default -F _pip_completion pip
 
+# pyenv
+if [ -r "${PYENV_ROOT}/completions/pyenv.bash" ]; then
+  . "${PYENV_ROOT}/completions/pyenv.bash"
+fi
+
 # stack
 if [ -r "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion" ]; then
   . "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion"

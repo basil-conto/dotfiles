@@ -22,11 +22,12 @@ export PSVIEWER='ecc  --no-wait'      # texdoc
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Rubbish (bin)
-[ -d "${HOME}/go/bin"     ] && PATH="${HOME}/go/bin:${PATH}"
-[ -d "${HOME}/.cargo/bin" ] && PATH="${HOME}/.cargo/bin:${PATH}"
-[ -d "${HOME}/.cabal/bin" ] && PATH="${HOME}/.cabal/bin:${PATH}"
-[ -d "${LOCAL_DIR}/bin"   ] && PATH="${LOCAL_DIR}/bin:${PATH}"
-[ -d "${HOME}/bin"        ] && PATH="${HOME}/bin:${PATH}"
+[ -d "${HOME}/.luarocks/bin" ] && PATH="${HOME}/.luarocks/bin:${PATH}"
+[ -d "${HOME}/go/bin"        ] && PATH="${HOME}/go/bin:${PATH}"
+[ -d "${HOME}/.cargo/bin"    ] && PATH="${HOME}/.cargo/bin:${PATH}"
+[ -d "${HOME}/.cabal/bin"    ] && PATH="${HOME}/.cabal/bin:${PATH}"
+[ -d "${LOCAL_DIR}/bin"      ] && PATH="${LOCAL_DIR}/bin:${PATH}"
+[ -d "${HOME}/bin"           ] && PATH="${HOME}/bin:${PATH}"
 export PATH
 
 # Hoard (include)
@@ -44,8 +45,11 @@ fi
 
 # Pyenv
 if [ -d "${HOME}/.pyenv" ]; then
-  export PYENV_ROOT="${HOME}/.pyenv"
-  export PATH="${PYENV_ROOT}/bin:${PATH}"
+  PYENV_ROOT="${HOME}/.pyenv"
+  for d in bin shims plugins/pyenv-virtualenv/shims; do
+    [ -d "${PYENV_ROOT}/${d}" ] && PATH="${PYENV_ROOT}/${d}:${PATH}"
+  done
+  export PATH PYENV_ROOT
 fi
 
 # Allow safe usage of boolean expressions without spamming error return codes;
