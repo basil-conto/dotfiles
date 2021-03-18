@@ -300,8 +300,12 @@ convention (see the Info node `(gnus) Process/Prefix')."
 
 ;; gnus-win
 
-(gnus-add-configuration '(article (frame 1.0
-                                         (summary 1.0 point frame-focus)
-                                         (article 1.0))))
+(with-eval-after-load 'gnus-win
+  (let ((oconf (cadr (assq 'article gnus-buffer-configuration))))
+    (gnus-add-configuration `(article (if (display-graphic-p)
+                                          '(frame 1.0
+                                                  (summary 1.0 point frame-focus)
+                                                  (article 1.0))
+                                        ,oconf)))))
 
 ;;; gnus.el ends here

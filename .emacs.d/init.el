@@ -370,7 +370,8 @@ Offer all entities found in `org-entities-user' and
 (defun blc-turn-on-emoji-font (&optional _frame)
   "Add an emoji font to the default fontset.
 Do this only once in the first non-daemon initial frame."
-  (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append)
+  (when (fboundp 'set-fontset-font)
+    (set-fontset-font t 'symbol "Noto Color Emoji" nil 'append))
   (dolist (hook '(after-make-frame-functions window-setup-hook))
     (remove-hook hook #'blc-turn-on-emoji-font)))
 
