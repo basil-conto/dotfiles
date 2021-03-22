@@ -961,7 +961,7 @@ non-nil, create a new `term' buffer instead."
       (pop-to-buffer name)
     (let ((switch-to-buffer-obey-display-actions t))
       (funcall (if non-ansi #'term #'ansi-term)
-               (or explicit-shell-file-name
+               (or (bound-and-true-p explicit-shell-file-name)
                    (getenv "ESHELL")
                    shell-file-name)))))
 
