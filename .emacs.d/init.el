@@ -889,8 +889,7 @@ Uninstall self from `auto-mode-alist' and `magic-mode-alist', as
 `pdf-tools-install' will install itself there.  Intended as a
 deferred way of autoloading the `pdf-tools' package."
   (unless (with-demoted-errors "Error activating PDF Tools: %S"
-            (pdf-tools-install)
-            (pdf-view-mode)
+            (pdf-tools-install nil t)
             t)
     (doc-view-mode-maybe))
   (dolist (sym '(auto-mode-alist magic-mode-alist))
@@ -3079,13 +3078,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
      ("p" . ("Playlist" entry (file+olp "ents.org" "Playlist")
              "* %?"
              :prepend t :unnarrowed t)))))
-
-;; org-pdfview
-
-(with-eval-after-load 'org
-  (require 'org-pdftools))
-(with-eval-after-load 'pdf-view
-  (require 'org-pdftools))
 
 ;; org-pomodoro
 

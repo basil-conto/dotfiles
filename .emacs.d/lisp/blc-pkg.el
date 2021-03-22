@@ -218,7 +218,6 @@ Visit `package-user-dir' if such a directory is not found."
    nodejs-repl
    nov
 
-   org-pdftools
    org-plus-contrib
    org-pomodoro
 
