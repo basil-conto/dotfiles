@@ -1318,6 +1318,9 @@ created.  FRAME defaults to the selected one."
  gnus-desktop-notify-format             "%3n: %G"
  gnus-desktop-notify-function           #'gnus-desktop-notify-send
 
+ ;; go-mode
+ godoc-reuse-buffer                     t
+
  ;; hacker-typer
  hacker-typer-show-hackerman            t
 
@@ -2656,6 +2659,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'gnus
   (blc-gc-thresh-maximise))
+
+;; go-mode
+
+(with-eval-after-load 'go-mode
+  (when (executable-find "goimports")
+    (setq-default gofmt-command "goimports")))
 
 ;; gscholar-bibtex
 
