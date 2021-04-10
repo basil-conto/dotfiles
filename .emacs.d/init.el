@@ -2134,6 +2134,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("C"                                   . #'copy-from-above-command)
    ("G"                                   . #'blc-github-notifications)
    ("M"                                   . #'blc-mbsync-all)
+   ("O"                                   . #'ff-find-other-file)
    ("b"                                   . #'bog-command-map)
    ("c"                                   . #'compile)
    ("e"                                   . #'ielm)
@@ -2330,10 +2331,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; cc-mode
 
 (with-eval-after-load 'cc-mode
-  (blc-define-keys
-    (c-mode-base-map
-     ("\C-cO" . #'ff-find-other-file)
-     ("\C-m"  . #'c-context-line-break)))
+  (define-key c-mode-base-map "\C-m" #'c-context-line-break)
 
   (let ((name "blc"))
     (c-add-style name '("linux"
