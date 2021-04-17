@@ -183,6 +183,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
          "%(%-40,40c%)"                 ; Collapsed group name
          "%9u&dgroup;"                  ; Last read
          "\n")
+ gnus-group-mode-line-format            "Gnus: %%b"
 
  ;; gnus-msg
  gnus-gcc-mark-as-read                  t
