@@ -1,5 +1,5 @@
 # -*- perl -*-
 
-# Use XeLaTeX
-$pdf_mode = 5;
+# Use LuaLaTeX
+$pdf_mode = 4;
 $postscript_mode = $dvi_mode = 0;

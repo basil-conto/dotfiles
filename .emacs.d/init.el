@@ -1765,7 +1765,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; tex
  TeX-auto-save                          t
- TeX-engine                             'xetex
+ TeX-engine                             'luatex
  TeX-parse-self                         t
  TeX-PDF-mode                           t
 
