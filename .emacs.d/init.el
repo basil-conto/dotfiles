@@ -1692,6 +1692,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  proced-auto-update-flag                t
 
  ;; project
+ project-compilation-buffer-name-function
+ #'project-prefixed-buffer-name
  project-list-file                      (blc-file blc-index-dir "projects")
  project-switch-use-entire-map          t
 
