@@ -189,7 +189,6 @@ Visit `package-user-dir' if such a directory is not found."
 
    ialign
    idris-mode
-   interleave
    ivy
    ivy-bibtex
    ivy-hydra
