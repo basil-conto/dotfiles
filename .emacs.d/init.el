@@ -2324,9 +2324,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'bibtex
   (bibtex-set-dialect reftex-cite-format)
-  (map-do #'add-to-list
-          '((bibtex-entry-format . realign)
-            (bibtex-files        . bibtex-file-path))))
+  (setq bibtex-entry-format (delq 'numerical-fields bibtex-entry-format))
+  (dolist (fmt '(delimiters realign))
+    (add-to-list 'bibtex-entry-format fmt))
+  (add-to-list 'bibtex-files 'bibtex-file-path))
 
 ;; cc-mode
 
