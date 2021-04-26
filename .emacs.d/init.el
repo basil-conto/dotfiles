@@ -1891,6 +1891,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
        #'csv-mode
        #'dired-mode
        #'json-mode
+       #'magit-mode
        #'markdown-mode
        #'nov-mode
        #'org-mode
@@ -2038,6 +2039,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks js2-mode-hook :fns (js2-highlight-unused-variables-mode
                               js2-refactor-mode
                               blc-xref-js2-install-backend))
+
+  ;; magit-diff
+  (:hooks magit-diff-mode-hook :fns blc-turn-on-visual-lines)
 
   ;; markdown-mode
   (:hooks markdown-mode-hook :fns visual-line-mode)

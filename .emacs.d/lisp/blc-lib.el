@@ -710,6 +710,10 @@ overrides them."
 (defun blc-turn-on-line-truncation ()
   "Locally disable continuation lines."
   (setq truncate-lines t))
+(defun blc-turn-on-visual-lines ()
+  "Locally enable word wrap and continuation lines."
+  (setq truncate-lines nil)
+  (setq word-wrap t))
 
 (defconst blc-chars-per-line 80
   "Target maximum number of characters per line.")
