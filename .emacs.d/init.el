@@ -2789,7 +2789,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
               (blc-put ivy-sort-functions-alist caller sort)))
           `((nil                 t)
             (,#'blc-file-lessp   ,#'project-find-file)
-            (,#'blc-sort-reverse ,#'package-install)
+            (,#'always           ,#'package-install)
             (,#'string-lessp     ,#'blc-scratch
                                  ,#'counsel-M-x
                                  ,#'find-face-definition)))

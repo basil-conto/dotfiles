@@ -711,10 +711,6 @@ overrides them."
   "Locally disable continuation lines."
   (setq truncate-lines t))
 
-(defun blc-sort-reverse (_x _y)
-  "Predicate that the order of X and Y should be swapped."
-  t)
-
 (defconst blc-chars-per-line 80
   "Target maximum number of characters per line.")
 
