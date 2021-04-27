@@ -393,6 +393,21 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
+(defun blc-latexmk-sentinel (proc _msg)
+  "Run `TeX-after-compilation-finished-functions' on PROC success."
+  (when (blc-process-success-p proc)
+    (defvar TeX-command-buffer)
+    (run-hook-with-args 'TeX-after-compilation-finished-functions
+                        (with-current-buffer TeX-command-buffer
+                          (expand-file-name
+                           (TeX-active-master (TeX-output-extension)))))))
+
+(defun blc-TeX-run-latexmk (&rest args)
+  "Like `TeX-run-format', but also run TeX compilation hooks."
+  (let ((proc (apply #'TeX-run-format args)))
+    (add-function :after (process-sentinel proc) #'blc-latexmk-sentinel)
+    proc))
+
 ;; autorevert
 
 (defun blc-turn-on-silent-auto-revert ()
@@ -2059,9 +2074,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; org
   (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
 
-  ;; pdf-view
-  (:hooks pdf-view-mode-hook :fns auto-revert-mode)
-
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
 
@@ -2283,7 +2295,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (let ((name (concat exe suffix)))
               (blc-put* TeX-command-list name
                         (list (format "%s %s %%t" exe args)
-                              #'TeX-run-command
+                              #'blc-TeX-run-latexmk
                               nil
                               '(latex-mode LaTeX-mode)
                               :help desc))))
