@@ -2041,7 +2041,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                               blc-xref-js2-install-backend))
 
   ;; magit-diff
-  (:hooks magit-diff-mode-hook :fns blc-turn-on-visual-lines)
+  (:fns blc-turn-on-visual-lines :hooks (magit-diff-mode-hook
+                                         magit-status-mode-hook))
 
   ;; markdown-mode
   (:hooks markdown-mode-hook :fns visual-line-mode)
