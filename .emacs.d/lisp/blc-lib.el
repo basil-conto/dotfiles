@@ -276,10 +276,10 @@ the base file name when a directory is selected."
              (setq file (read-file-name prompt blc-read-file-dir nil nil def))
              (when (file-directory-p file)
                (setq file (expand-file-name init file)))
+             (setq blc-read-file-dir (file-name-directory file))
              (and (file-exists-p file)
                   (not (yes-or-no-p
                         (format "File `%s' exists; overwrite? " file)))))
-      (setq blc-read-file-dir (file-name-directory file))
       (setq def (file-name-nondirectory file)))
     file))
 
