@@ -825,6 +825,14 @@ name matches REGEXP."
                  (string-match-p regexp (symbol-name cmd)))
                ivy-initial-inputs-alist)))
 
+;; magit-autorevert
+
+(defun blc-magit-auto-revert-p (buf)
+  "Return non-nil if BUF should be auto-reverted by Magit.
+Intended for `auto-revert-buffer-list-filter'."
+  (not (provided-mode-derived-p (buffer-local-value 'major-mode buf)
+                                #'pdf-view-mode)))
+
 ;; man
 
 (defun blc--man-other-buffer (&optional prev)
@@ -1485,6 +1493,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; lpr
  lpr-add-switches                       nil
  lpr-command                            "hp-print"
+
+ ;; magit-autorevert
+ auto-revert-buffer-list-filter         #'blc-magit-auto-revert-p
 
  ;; magit-branch
  magit-branch-popup-show-variables      t
