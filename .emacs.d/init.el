@@ -3248,10 +3248,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
 (global-whitespace-mode)
 
-;; winner
-
-(winner-mode)
-
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars unresolved)
 ;; End:
