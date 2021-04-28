@@ -1142,6 +1142,7 @@ created.  FRAME defaults to the selected one."
  bibtex-autokey-titlewords-stretch      0
  bibtex-autokey-year-length             4
  bibtex-autokey-year-title-separator    ""
+ bibtex-comment-start                   "%"
  bibtex-entry-kill-ring-max             kill-ring-max
  bibtex-field-kill-ring-max             kill-ring-max
  bibtex-maintain-sorted-entries         t
