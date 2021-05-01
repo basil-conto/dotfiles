@@ -380,9 +380,9 @@ Do this only once in the first non-daemon initial frame."
 
 ;; auctex
 
-(defun blc-LaTeX-command-default ()
-  "Locally restore `default-value' of `TeX-command-default'."
-  (setq TeX-command-default (default-value 'TeX-command-default)))
+(defun blc-TeX-command-default ()
+  "Set `TeX-command-default' based on `TeX-command-list'."
+  (setq TeX-command-default (caar TeX-command-list)))
 
 (defun blc-TeX-doc (arg)
   "Prompt for and display TeX documentation.
@@ -392,21 +392,6 @@ Like `TeX-doc', but with prefix ARG pass it to
   (if arg
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
-
-(defun blc-latexmk-sentinel (proc _msg)
-  "Run `TeX-after-compilation-finished-functions' on PROC success."
-  (when (blc-process-success-p proc)
-    (defvar TeX-command-buffer)
-    (run-hook-with-args 'TeX-after-compilation-finished-functions
-                        (with-current-buffer TeX-command-buffer
-                          (expand-file-name
-                           (TeX-active-master (TeX-output-extension)))))))
-
-(defun blc-TeX-run-latexmk (&rest args)
-  "Like `TeX-run-format', but also run TeX compilation hooks."
-  (let ((proc (apply #'TeX-run-format args)))
-    (add-function :after (process-sentinel proc) #'blc-latexmk-sentinel)
-    proc))
 
 ;; autorevert
 
@@ -1794,9 +1779,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; tex
  TeX-auto-save                          t
- TeX-engine                             'luatex
+ TeX-debug-warnings                     t
  TeX-parse-self                         t
- TeX-PDF-mode                           t
 
  ;; tex-style
  LaTeX-csquotes-open-quote              "\\enquote{"
@@ -1953,7 +1937,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; auctex
   (:hooks TeX-after-compilation-finished-functions
           :fns TeX-revert-document-buffer)
-  (:hooks LaTeX-mode-hook :fns (blc-LaTeX-command-default
+  (:hooks LaTeX-mode-hook :fns (blc-TeX-command-default
                                 turn-on-reftex))
 
   ;; auth-source
@@ -2284,8 +2268,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;; auctex
 
 (with-eval-after-load 'latex
-  (add-to-list 'LaTeX-clean-intermediate-suffixes
-               (rx ?. (| "fdb_latexmk" "vrb"))))
+  (add-to-list 'LaTeX-clean-intermediate-suffixes (rx ".vrb"))
+  (auctex-latexmk-setup))
 
 (with-eval-after-load 'tex
   (define-key TeX-mode-map [remap TeX-documentation-texdoc] #'blc-TeX-doc)
@@ -2293,22 +2277,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; Set priority of pre-configured PDF viewers
   (dolist (viewer '("Zathura" "PDF Tools"))
     (when (assoc viewer TeX-view-program-list-builtin)
-      (push (list 'output-pdf viewer) TeX-view-program-selection)))
-
-  ;; Configure latexmk commands
-  (let ((exe "latexmk"))
-    (mapc (pcase-lambda (`(,desc ,suffix ,args))
-            (let ((name (concat exe suffix)))
-              (blc-put* TeX-command-list name
-                        (list (format "%s %s %%t" exe args)
-                              #'blc-TeX-run-latexmk
-                              nil
-                              '(latex-mode LaTeX-mode)
-                              :help desc))))
-          '(("Run latexmk with --shell-escape" " --shell-escape"
-             "-e 'set_tex_cmds(q(--shell-escape %%O %%S))'")
-            ("Run latexmk" "" "")))
-    (setq-default TeX-command-default exe)))
+      (push (list 'output-pdf viewer) TeX-view-program-selection))))
 
 ;; auth-source
 
@@ -3189,10 +3158,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
           (add-to-list alist (cons key #'blc-pdf-tools-defer)))
         `((auto-mode-alist  . ,(rx ".pdf" eos))
           (magic-mode-alist . "%PDF")))
-
-;; perl-mode
-
-(add-to-list 'auto-mode-alist (cons (rx ".latexmkrc" eos) #'perl-mode))
 
 ;; project
 
