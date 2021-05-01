@@ -2220,8 +2220,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("#"                                   . #'avy-goto-word-or-subword-1)
    ("+"                                   . #'er/expand-region)
    ("R"                                   . #'redraw-display)
-   ("V"                                   . #'scroll-other-window-down)
-   ("o"                                   . #'ace-window))
+   ("V"                                   . #'scroll-other-window-down))
 
   (goto-map
    ("\t"                                  . #'blc-move-to-column)
@@ -2268,11 +2267,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 
 ;;;; PACKAGES
-
-;; ace-window
-
-(with-eval-after-load 'ace-window
-  (ace-window-display-mode))
 
 ;; ag
 

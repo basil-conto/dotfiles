@@ -119,11 +119,9 @@ Visit `package-user-dir' if such a directory is not found."
  '(2048-game
 
    academic-phrases
-   ace-window
    ag
    apache-mode
    apt-sources-list
-   ascii-art-to-unicode
    auctex
    auctex-latexmk
    avy
