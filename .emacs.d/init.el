@@ -2272,7 +2272,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (auctex-latexmk-setup))
 
 (with-eval-after-load 'tex
-  (define-key TeX-mode-map [remap TeX-documentation-texdoc] #'blc-TeX-doc)
+  (blc-define-keys
+    (TeX-mode-map
+     ([remap TeX-documentation-texdoc] . #'blc-TeX-doc)
+     ([remap TeX-complete-symbol]      . #'completion-at-point)))
 
   ;; Set priority of pre-configured PDF viewers
   (dolist (viewer '("Zathura" "PDF Tools"))
