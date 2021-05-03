@@ -43,9 +43,6 @@
 (autoload 'flex-mode                        "flex-mode" nil t)
 (autoload 'samba-generic-mode               "generic-x" nil t)
 (autoload 'gnus-find-subscribed-addresses   "gnus")
-(autoload 'irfc-follow                      "irfc" nil t)
-(autoload 'irfc-mode                        "irfc" nil t)
-(autoload 'irfc-visit                       "irfc" nil t)
 (autoload 'ivy-completion-in-region         "ivy")
 (autoload 'mailcap-file-name-to-mime-type   "mailcap")
 (autoload 'meme                             "meme" nil t)
@@ -477,22 +474,6 @@ See `browse-url' for a description of the arguments."
 (function-put
  #'blc-print-url-pdf 'interactive-form (interactive-form #'browse-url))
 
-(defun blc-browse-url-irfc (url &rest _)
-  "Visit RFC URL via `irfc-visit'.
-URL is parsed using the regular expressions found in
-`auto-mode-alist' and `ffap-alist' for `irfc-mode' and
-`ffap-rfc', respectively."
-  (require 'ffap)
-  (if-let ((res (blc-keep (pcase-lambda (`(,key . ,alist))
-                            (and-let* ((re (car (rassq key alist))))
-                              `(regexp ,re)))
-                          `((irfc-mode . ,auto-mode-alist)
-                            (ffap-rfc  . ,ffap-alist)))))
-      (if (string-match (blc-rx `(| ,@res)) (url-file-nondirectory url))
-          (irfc-visit (string-to-number (match-string 1)))
-        (user-error "Invalid RFC URL: %s" url))
-    (user-error "Regexp not found for RFC URL: %s" url)))
-
 (defvar browse-url-firefox-arguments)
 (defvar browse-url-generic-program)
 
@@ -515,7 +496,6 @@ URL is parsed using the regular expressions found in
     ("Kill"               . ,#'blc-kill-url          )
     ("Print"              . ,#'blc-print-url         )
     ("Print to PDF"       . ,#'blc-print-url-pdf     )
-    ("Emacs IRFC"         . ,#'blc-browse-url-irfc   )
     ("XDG"                . ,#'browse-url-xdg-open   )
     ("Surf"               . ,#'blc-browse-url-surf   )
     ("Chromium"           . ,#'browse-url-chromium   )
@@ -1273,7 +1253,8 @@ created.  FRAME defaults to the selected one."
  dired-at-point-require-prefix          t
  ffap-file-finder                       #'blc-counsel-find-file
  ffap-require-prefix                    t
- ffap-rfc-path                          "https://ietf.org/rfc/rfc%s.txt"
+ ffap-rfc-directories
+ (list (blc-dir (blc-user-dir "DOCUMENTS") "rfc"))
 
  ;; files
  auto-save-visited-interval             auto-save-timeout
@@ -1721,6 +1702,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  reftex-comment-citations               t
  reftex-plug-into-AUCTeX                t
  reftex-revisit-to-follow               t
+
+ ;; rfc-mode
+ rfc-mode-browse-input-function         #'completing-read
+ rfc-mode-directory                     (car ffap-rfc-directories)
 
  ;; sendmail
  send-mail-function                     #'sendmail-send-it
@@ -2598,11 +2583,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (eww-mode-map
      ([remap eww-open-in-new-buffer] . #'blc-eww-open-in-other-window))))
 
-;; ffap
-
-(with-eval-after-load 'ffap
-  (add-to-list 'ffap-rfc-directories (blc-dir user-emacs-directory "rfc")))
-
 ;; files
 
 (add-to-list 'safe-local-variable-values
@@ -2735,27 +2715,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'info
   (define-key Info-mode-map "k" #'blc-info-kill))
-
-;; irfc
-
-(add-to-list 'auto-mode-alist
-             (cons (rx (eval `(: ,@(mapcar (lambda (c) `(in ,(upcase c) ,c))
-                                           "rfc")))
-                       (group (+ digit)) ".txt" eos)
-                   #'irfc-mode))
-
-(with-eval-after-load 'irfc
-  (require 'ffap)
-
-  (blc-define-keys
-    (irfc-mode-map
-     ([remap scroll-down] . #'scroll-down-command)
-     ([remap scroll-up]   . #'scroll-up-command)
-     ("\C-?"              . #'scroll-down-command)))
-
-  (setq-default
-   irfc-directory         (seq-find #'identity ffap-rfc-directories)
-   irfc-download-base-url (url-file-directory  ffap-rfc-path)))
 
 ;; ivy
 

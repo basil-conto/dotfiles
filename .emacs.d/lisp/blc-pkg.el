@@ -229,6 +229,7 @@ Visit `package-user-dir' if such a directory is not found."
    racket-mode
    rainbow-mode
    restclient
+   rfc-mode
    rg
    rmsbolt
 
