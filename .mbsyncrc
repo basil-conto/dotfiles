@@ -11,6 +11,7 @@ SSLVersions             TLSv1.2
 MaildirStore            foo-local
 Path                    ~/Mail/foo/
 Inbox                   ~/Mail/foo/INBOX
+SubFolders              Verbatim
 Flatten                 .
 
 Channel                 foo
