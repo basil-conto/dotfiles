@@ -28,9 +28,9 @@ alias cdtemp='cd $(mktemp --directory)'
 alias venture='pushd .; cd'
 
 # apt
-alias uu='sudo apt-get update && \
-sudo apt-get dist-upgrade     && \
-sudo apt-get autoremove       && \
+alias uu='sudo apt update && \
+sudo apt full-upgrade     && \
+sudo apt autoremove       && \
 sudo apt-get autoclean'
 
 # xdg
