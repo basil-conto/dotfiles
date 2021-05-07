@@ -1155,6 +1155,8 @@ created.  FRAME defaults to the selected one."
 
  ;; counsel
  counsel-describe-function-preselect    #'ivy-function-called-at-point
+ counsel-git-grep-cmd-function
+ #'counsel-git-grep-cmd-function-ignore-order
  counsel-grep-base-command              (string-join '("rg"
                                                        "--color" "never"
                                                        "--line-number"
