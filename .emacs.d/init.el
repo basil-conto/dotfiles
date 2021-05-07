@@ -1226,8 +1226,8 @@ created.  FRAME defaults to the selected one."
  dropbox-verbose                        t
 
  ;; eldoc
+ eldoc-echo-area-prefer-doc-buffer      t
  eldoc-echo-area-use-multiline-p        t
- eldoc-prefer-doc-buffer                t
 
  ;; emacsbug
  report-emacs-bug-no-explanations       t
