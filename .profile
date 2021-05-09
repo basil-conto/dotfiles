@@ -40,7 +40,7 @@ fi
 
 # Books (bib)
 if [ -d "${HOME}/.bibs" ]; then
-  export BIBINPUTS="${HOME}/.bibs:${BIBINPUTS}"
+  export BIBINPUTS="$(realpath -- "${HOME}/.bibs"):${BIBINPUTS}"
 fi
 
 # Pyenv
