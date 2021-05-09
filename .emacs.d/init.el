@@ -1117,6 +1117,7 @@ created.  FRAME defaults to the selected one."
  mode-line-percent-position             '(-3 "%o")
 
  ;; bog
+ bog-citekey-file-name-separators       (rx ?.)
  bog-keymap-prefix                      "\C-cb"
  bog-root-directory                     (blc-parent-dir blc-bib-dir)
 
