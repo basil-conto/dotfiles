@@ -1123,6 +1123,7 @@ created.  FRAME defaults to the selected one."
 
  ;; bookmark
  bookmark-default-file                  (blc-file blc-index-dir "bookmarks.el")
+ bookmark-fontify                       nil
  bookmark-save-flag                     1
  bookmark-search-delay                  0
 
