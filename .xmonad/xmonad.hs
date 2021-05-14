@@ -22,8 +22,8 @@ import Graphics.X11.ExtraTypes.XF86       ( xF86XK_AudioLowerVolume
                                           , xF86XK_MonBrightnessUp
                                           , xF86XK_ScreenSaver )
 import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
-                                          , xK_Print, xK_a, xK_d, xK_f, xK_o
-                                          , xK_s )
+                                          , xK_Print, xK_a, xK_d, xK_f, xK_l
+                                          , xK_o, xK_s, xK_u )
 import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
 import XMonad.Hooks.EwmhDesktops          ( ewmh )
@@ -50,7 +50,7 @@ main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
      } $
 
      mapPairs ((noModMask,), safeSpawn')
-              [ (xK_Print,                ["scrot"])
+              [ (xK_Print,                ["scrot", "--silent"])
               , (xF86XK_AudioLowerVolume, pactl "sink"   (-5))
               , (xF86XK_AudioMicMute,     pactl "source"    0)
               , (xF86XK_AudioMute,        pactl "sink"      0)
@@ -84,7 +84,9 @@ main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
      ++
      mapPairs ((modMask' .|. shiftMask,), safeSpawn')
               [ (xK_d, ["discord"])
+              , (xK_l, ["blc-lock"])
               , (xK_s, ["sensible-browser", "-private-window", "--incognito"])
+              , (xK_u, ["systemctl", "suspend"])
               ]
 
   where
