@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+ecc --eval '(message-mailto "'"$1"'")'

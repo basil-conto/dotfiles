@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-# See https://www.emacswiki.org/emacs/MailtoHandler
-emacsclient --create-frame --eval "(browse-url-mail \"$@\")"
