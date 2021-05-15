@@ -547,6 +547,8 @@ Intended for `compilation-finish-functions'."
           ((< (float-time (time-subtract nil beg)) blc-compile-duration))
           ((plist-put val :id (notifications-notify
                                :title (format "%s %s" buf msg)
+                               :actions '("default" "Pop to buffer")
+                               :on-action (apply-partially #'pop-to-buffer buf)
                                :replaces-id id))))))
 
 (defun blc-compile-ansify ()
