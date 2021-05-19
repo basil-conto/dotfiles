@@ -242,11 +242,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
 
  ;; gnus-util
  gnus-add-timestamp-to-message          'log
- gnus-verbose                           10
- gnus-widen-article-window              t
-
- ;; nnheader
- gnus-verbose-backends                  10)
+ gnus-widen-article-window              t)
 
 ;;; Hooks
 
