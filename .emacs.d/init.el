@@ -1149,6 +1149,10 @@ created.  FRAME defaults to the selected one."
  comint-input-ignoredups                t
  comint-terminfo-terminal               "dumb-emacs-ansi"
 
+ ;; comp
+ native-comp-async-report-warnings-errors
+ 'silent
+
  ;; compile
  compilation-message-face               'default
  compilation-scroll-output              'first-error
