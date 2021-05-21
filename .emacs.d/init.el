@@ -1344,6 +1344,7 @@ created.  FRAME defaults to the selected one."
  helm-make-require-match                nil
 
  ;; help
+ describe-bindings-outline              t
  help-window-select                     'other
 
  ;; holidays
@@ -1542,6 +1543,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  completion-in-region-function          #'ivy-completion-in-region
  completions-detailed                   t
  completions-format                     'one-column
+ completions-group                      t
 
  ;; mm-decode
  mm-decrypt-option                      'ask
