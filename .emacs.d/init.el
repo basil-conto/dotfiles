@@ -1672,6 +1672,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; org-list
  org-checkbox-hierarchical-statistics   nil
+ org-list-allow-alphabetical            t
  org-list-demote-modify-bullet          '(("+" . "-") ("-" . "+"))
  org-list-use-circular-motion           t
 
