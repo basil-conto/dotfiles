@@ -1225,6 +1225,7 @@ created.  FRAME defaults to the selected one."
 
  ;; dired-aux
  dired-create-destination-dirs          'ask
+ dired-do-revert-buffer                 t
 
  ;; doc-view
  doc-view-resolution                    150
