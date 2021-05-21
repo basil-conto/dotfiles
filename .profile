@@ -43,6 +43,11 @@ if [ -d "${HOME}/.bibs" ]; then
   export BIBINPUTS="$(realpath -- "${HOME}/.bibs"):${BIBINPUTS}"
 fi
 
+# OPAM (see ~/.opam/opam-init/init.sh)
+if [ -r "${HOME}/.opam/opam-init/variables.sh" ]; then
+  . "${HOME}/.opam/opam-init/variables.sh" >/dev/null 2>&1
+fi
+
 # Pyenv
 if [ -d "${HOME}/.pyenv" ]; then
   PYENV_ROOT="${HOME}/.pyenv"

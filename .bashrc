@@ -39,6 +39,13 @@ export GIT_PS1_SHOW{DIRTYSTATE,STASHSTATE,UPSTREAM}=auto
 # For gpg-agent
 export GPG_TTY="$(tty)"
 
+# OPAM (see ~/.opam/opam-init/init.sh)
+for f in complete env_hook; do
+  if [ -r "${HOME}/.opam/opam-init/${f}.sh" ]; then
+    . "${HOME}/.opam/opam-init/${f}.sh" >/dev/null 2>&1
+  fi
+done
+
 # Pyenv
 export PYENV_SHELL=bash
 export PYENV_VIRTUALENV_INIT=1
