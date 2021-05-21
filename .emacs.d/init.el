@@ -1456,6 +1456,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  js2-mode-assume-strict                 t
  js2-skip-preprocessor-directives       t
 
+ ;; keycast
+ keycast-insert-after                   'mode-line-misc-info
+ keycast-remove-tail-elements           nil
+ keycast-separator-width                0
+
  ;; ledger-mode
  ledger-post-amount-alignment-at        :decimal
  ledger-report-auto-refresh-sticky-cursor

@@ -197,6 +197,7 @@ Visit `package-user-dir' if such a directory is not found."
    js2-refactor
    json-mode
 
+   keycast
    know-your-http-well
 
    ledger-mode
