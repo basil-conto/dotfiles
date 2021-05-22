@@ -412,6 +412,12 @@ Like `TeX-doc', but with prefix ARG pass it to
   (require 'bog)
   (dired bog-stage-directory))
 
+(defun blc-bog-staged-bib ()
+  "Like `bog-clean-and-rename-staged-bibs' but with completion."
+  (let* ((bibs (directory-files bog-stage-directory nil (rx ".bib" eos)))
+         (bib  (completing-read "Staged bib: " bibs nil t)))
+    (bog--prepare-bib-file (expand-file-name bib bog-stage-directory) t)))
+
 ;; browse-url
 
 (defun blc-kill-url (url &rest _)
@@ -2192,6 +2198,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("l"                                   . #'org-store-link))
 
   (bog-command-map
+   ("B"                                   . #'blc-bog-staged-bib)
    ("S"                                   . #'blc-bog-dired-stage))
 
   (ctl-x-map
