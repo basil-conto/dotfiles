@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-;;;; BOOTSTRAPPING
+;;; Bootstrapping
 
 (defalias 'blc-report-init-time
   (let ((file load-file-name))
@@ -54,9 +54,9 @@
 (autoload 'youtube-dl-list                  "youtube-dl" nil t)
 (autoload 'youtube-dl-playlist              "youtube-dl" nil t)
 
-;;;; ADVICE
+;;; Advice
 
-;; battery
+;;;; battery
 
 (defvar blc-battery-id nil
   "ID of last battery notification or nil.")
@@ -87,7 +87,7 @@ Also transcribe AC line status in ALIST to Unicode."
             (prog1 blc-battery-id (setq blc-battery-id nil))))))
   alist)
 
-;; browse-url
+;;;; browse-url
 
 (define-advice browse-url-firefox (:around (fn &rest args) blc-no-wait)
   "Detach from spawned subprocess."
@@ -96,14 +96,14 @@ Also transcribe AC line status in ALIST to Unicode."
                     (apply #'call-process prog nil 0 nil args))
     (apply fn args)))
 
-;; eldoc
+;;;; eldoc
 
 (define-advice eldoc--format-doc-buffer (:filter-return (buf) blc-nbsp)
   "Ignore non-ASCII space and hyphen chars in ElDoc buffer."
   (with-current-buffer buf (setq-local nobreak-char-display nil))
   buf)
 
-;; elisp-mode
+;;;; elisp-mode
 
 (define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
   "Filter unwanted symbols from `elisp-completion-at-point'."
@@ -116,14 +116,14 @@ Also transcribe AC line status in ALIST to Unicode."
                       (not (string-suffix-p "--cmacro" (symbol-name sym)))))))
   ret)
 
-;; find-func
+;;;; find-func
 
 (define-advice find-function-search-for-symbol
     (:around (search sym type lib) blc-dataroot-to-src)
   "Pass LIB through `blc-dataroot-to-src'."
   (funcall search sym type (blc-dataroot-to-src lib)))
 
-;; gnus-sum
+;;;; gnus-sum
 
 (define-advice gnus-summary-exit (:after (&rest _) blc-gnus-single-group-frame)
   "Allow only the selected frame to display `gnus-group-buffer'."
@@ -131,7 +131,7 @@ Also transcribe AC line status in ALIST to Unicode."
     (when (frame-root-window-p win)
       (blc-delete-spare-frame (window-frame win)))))
 
-;; gnus-win
+;;;; gnus-win
 
 (define-advice gnus-configure-frame (:before (&rest _) blc-no-gnus-frames)
   "Empty lists of frames kept by Gnus.
@@ -143,7 +143,7 @@ last visible Emacs client frame."
   (setq gnus-frame-list     ())
   (setq gnus-created-frames ()))
 
-;; help
+;;;; help
 
 (define-advice view-echo-area-messages (:filter-return (win) blc-select-window)
   "Pop to `messages-buffer'."
@@ -152,7 +152,7 @@ last visible Emacs client frame."
     (select-window win))
   win)
 
-;; help-fns
+;;;; help-fns
 
 (define-advice help-fns-short-filename (:around (abbr file) blc-src-load-path)
   "Dynamically bind `load-path' with `blc-src-path'."
@@ -161,7 +161,7 @@ last visible Emacs client frame."
 
 (advice-add #'find-lisp-object-file-name :filter-return #'blc-dataroot-to-src)
 
-;; ibuffer
+;;;; ibuffer
 
 (define-advice ibuffer (:filter-args (args) blc-ibuffer)
   "Like `ibuffer', but prefer default `ibuffer-filter-groups'."
@@ -170,7 +170,7 @@ last visible Emacs client frame."
                  (or filters (default-value 'ibuffer-filter-groups)))
            tail)))
 
-;; ivy-bibtex
+;;;; ivy-bibtex
 
 (define-advice bibtex-completion-format-entry
     (:around (fmt entry width) blc-narrow)
@@ -181,7 +181,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
     (funcall fmt entry (apply #'- width (string-width str)
                               (mapcar #'fringe-columns '(left right))))))
 
-;; magit-diff
+;;;; magit-diff
 
 (define-advice magit-diff-show-or-scroll
     (:around (&rest args) blc-visible-frames)
@@ -191,7 +191,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
                     (funcall get buf 'visible))
     (apply args)))
 
-;; magit-extras
+;;;; magit-extras
 
 (define-advice magit-pop-revision-stack
     (:around (&rest args) blc-message-narrow-to-body)
@@ -215,7 +215,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
            (or (= (line-beginning-position 0) (line-end-position 0))
                (insert ?\n))))))
 
-;; magit-log
+;;;; magit-log
 
 (define-advice magit-log-maybe-update-revision-buffer
     (:around (&rest args) blc-all-frames)
@@ -223,7 +223,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
   (blc-with-nonce magit-get-mode-buffer :filter-args #'butlast
     (apply args)))
 
-;; magit-mode
+;;;; magit-mode
 
 (define-advice magit-display-buffer-same-window-except-diff-v1
     (:around (&rest args) blc-visible-frames)
@@ -233,7 +233,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
                     (funcall display buf action 'visible))
     (apply args)))
 
-;; magit-remote
+;;;; magit-remote
 
 (define-advice magit-clone-internal
     (:around (clone repo dir &rest args) blc-git-clone-subdir)
@@ -247,7 +247,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
              (setq dir sub))))
   (apply clone repo dir args))
 
-;; mail-extr
+;;;; mail-extr
 
 (define-advice mail-extract-address-components
     (:before-until (address &optional all) blc-delegate-gnus)
@@ -258,7 +258,7 @@ This is much less accurate but also much more performant than
        (stringp address)
        (gnus-extract-address-components address)))
 
-;; make-mode
+;;;; make-mode
 
 (defun blc-delete-hspace-backward--advice (&rest _)
   "Delete horizontal whitespace before point."
@@ -268,7 +268,7 @@ This is much less accurate but also much more performant than
                   #'makefile-insert-target-ref))
   (advice-add fn :after #'blc-delete-hspace-backward--advice))
 
-;; mpc
+;;;; mpc
 
 (define-advice mpc (:around (mpc) blc-ensure-dedicated)
   "Start mpd and temporarily dedicate selected window."
@@ -289,7 +289,7 @@ This is much less accurate but also much more performant than
           (call-interactively mpc))
       (set-window-dedicated-p win flag))))
 
-;; newst-treeview
+;;;; newst-treeview
 
 (define-advice newsticker--treeview-frame-init
     (:around (&rest args) blc-anonymous-frame)
@@ -297,18 +297,18 @@ This is much less accurate but also much more performant than
   (blc-with-nonce make-frame :filter-args #'ignore
     (apply args)))
 
-;; octave
+;;;; octave
 
 (advice-add #'octave-maybe-mode :override #'octave-mode)
 
-;; org
+;;;; org
 
 (define-advice org-read-date (:around (&rest args) blc-avoid-frames)
   "Temporarily disable `pop-up-frames'."
   (let (pop-up-frames)
     (apply args)))
 
-;; org-agenda
+;;;; org-agenda
 
 (defvar org-agenda-window-setup)
 
@@ -317,7 +317,7 @@ This is much less accurate but also much more performant than
   (let (org-agenda-window-setup)
     (apply args)))
 
-;; org-capture
+;;;; org-capture
 
 (define-advice org-capture-refile (:after (&rest _) blc-org-save)
   "Save target buffer of `org-capture-refile'."
@@ -325,7 +325,7 @@ This is much less accurate but also much more performant than
     (org-capture-goto-last-stored)
     (save-buffer)))
 
-;; org-pcomplete
+;;;; org-pcomplete
 
 (define-advice pcomplete/org-mode/tex (:override () blc-complete-entity)
   "Perform Org entity completion via `completion-in-region'.
@@ -342,7 +342,7 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
-;; python
+;;;; python
 
 (define-advice python-shell-make-comint (:around (&rest args) blc-dumb-term)
   "Start inferior Python with TERM=dumb."
@@ -350,7 +350,7 @@ Offer all entities found in `org-entities-user' and
   (let ((comint-terminfo-terminal "dumb"))
     (apply args)))
 
-;; whitespace
+;;;; whitespace
 
 (defun blc-whitespace-enable--advice ()
   "Advice intended for predicate `whitespace-enable-predicate'."
@@ -360,9 +360,9 @@ Offer all entities found in `org-entities-user' and
   (add-function :after-while whitespace-enable-predicate
                 #'blc-whitespace-enable--advice))
 
-;;;; DEFINITIONS
+;;; Definitions
 
-;; fontset.c
+;;;; fontset.c
 
 (defun blc-turn-on-emoji-font (&optional _frame)
   "Add an emoji font to the default fontset.
@@ -375,7 +375,7 @@ Do this only once in the first non-daemon initial frame."
 (add-hook (if (daemonp) 'after-make-frame-functions 'window-setup-hook)
           #'blc-turn-on-emoji-font)
 
-;; auctex
+;;;; auctex
 
 (defun blc-TeX-command-default ()
   "Set `TeX-command-default' based on `TeX-command-list'."
@@ -390,21 +390,21 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
-;; autorevert
+;;;; autorevert
 
 (defun blc-turn-on-silent-auto-revert ()
   "Locally enable `auto-revert-mode' without revert messages."
   (auto-revert-mode)
   (setq-local auto-revert-verbose nil))
 
-;; bbdb
+;;;; bbdb
 
 (defun blc-kill-bbdb-buffer ()
   "Kill `bbdb-buffer'."
   (when (bound-and-true-p bbdb-buffer)
     (kill-buffer bbdb-buffer)))
 
-;; bog
+;;;; bog
 
 (defun blc-bog-dired-stage ()
   "Visit `bog-stage-directory' in Dired."
@@ -418,7 +418,7 @@ Like `TeX-doc', but with prefix ARG pass it to
          (bib  (completing-read "Staged bib: " bibs nil t)))
     (bog--prepare-bib-file (expand-file-name bib bog-stage-directory) t)))
 
-;; browse-url
+;;;; browse-url
 
 (defun blc-kill-url (url &rest _)
   "Make URL the latest kill in the kill ring."
@@ -524,7 +524,7 @@ description of the arguments to this function."
 (function-put
  #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
-;; compile
+;;;; compile
 
 (defvar blc-compile-duration 30
   "Seconds of compilation after which to notify of end.")
@@ -562,7 +562,7 @@ Intended for `compilation-finish-functions'."
 Intended for `compilation-filter-hook', which see."
   (ansi-color-apply-on-region compilation-filter-start (point)))
 
-;; counsel
+;;;; counsel
 
 (defun blc-counsel-find-file (&optional file)
   "Like `counsel-find-file', but return buffer, not name of FILE.
@@ -584,7 +584,7 @@ Intended as an Ivy action for `counsel-M-x'."
     (setq prefix-arg        current-prefix-arg)
     (command-execute cmd t)))
 
-;; eww
+;;;; eww
 
 (defun blc-eww-bookmark-save ()
   "Copy the URL of the current bookmark into the kill ring."
@@ -609,7 +609,7 @@ Adapted from URL
   (let ((display-buffer-overriding-action blc-other-window-action))
     (call-interactively #'eww-open-in-new-buffer)))
 
-;; files
+;;;; files
 
 (defun blc-confirm-kill-daemon (prompt)
   "Ask whether to kill daemon Emacs with PROMPT.
@@ -617,7 +617,7 @@ Intended as a predicate for `confirm-kill-emacs'."
   (or (not (daemonp))
       (yes-or-no-p prompt)))
 
-;; flycheck
+;;;; flycheck
 
 (defun blc-turn-off-flycheck (&rest _)
   "Disable `flycheck-mode'."
@@ -625,7 +625,7 @@ Intended as a predicate for `confirm-kill-emacs'."
   (when (bound-and-true-p flycheck-mode)
     (blc-turn-off #'flycheck-mode)))
 
-;; ghub
+;;;; ghub
 
 (defconst blc-github-token-scopes '(notifications)
   "List of `ghub' scopes for `blc'.")
@@ -659,14 +659,14 @@ Intended as a predicate for `confirm-kill-emacs'."
    :errorback (lambda (err &rest _)
                 (signal 'error (list "GitHub error: %S" (cdr err))))))
 
-;; git-commit
+;;;; git-commit
 
 (defun blc-git-commit-set-fill-column ()
   "Set local `fill-column' for `git-commit-mode' buffers."
   ;; Benefit over setq: displays debugging message
   (set-fill-column 68))
 
-;; gnus
+;;;; gnus
 
 (defun blc--gnus-switch-buffer (action)
   "Call ACTION on first desirable Gnus buffer found.
@@ -712,14 +712,14 @@ Suspending or exiting Gnus deletes that frame."
   (blc-make-frame)
   (blc-gnus))
 
-;; go-mode
+;;;; go-mode
 
 (defun blc-go-whitespace-style ()
   "Adapt `whitespace-style' to Go's indentation style."
   (setq-local whitespace-style (append (remq 'tab-mark whitespace-style)
                                        '(space-before-tab))))
 
-;; ibuffer
+;;;; ibuffer
 
 (defun blc-ibuffer-ffap ()
   "Like `ibuffer-find-file', but backed by `ffap-file-finder'."
@@ -730,7 +730,7 @@ Suspending or exiting Gnus deletes that frame."
          (default-directory (buffer-local-value 'default-directory buffer)))
     (call-interactively ffap-file-finder)))
 
-;; ielm
+;;;; ielm
 
 (defun blc-ielm-other-window ()
   "Call `ielm' in another window."
@@ -738,7 +738,7 @@ Suspending or exiting Gnus deletes that frame."
   (let ((display-buffer-overriding-action blc-other-window-action))
     (call-interactively #'ielm)))
 
-;; info
+;;;; info
 
 (defun blc-info-read-buffer ()
   "Read the name, file and node of an Info buffer.
@@ -775,13 +775,13 @@ Return the name of the buffer as a string or `nil'."
       (save-buffers-kill-emacs)
     (quit-window t)))
 
-;; isearch
+;;;; isearch
 
 (defun blc-isearch-delight ()
   "Shorten lighter of `isearch-mode'."
   (setq isearch-mode "🔍"))
 
-;; ivy
+;;;; ivy
 
 (defun blc-ivy-string< (_name cands)
   "Sort CANDS in lexicographic order.
@@ -798,7 +798,7 @@ name matches REGEXP."
                  (string-match-p regexp (symbol-name cmd)))
                ivy-initial-inputs-alist)))
 
-;; magit-autorevert
+;;;; magit-autorevert
 
 (defun blc-magit-auto-revert-p (buf)
   "Return non-nil if BUF should be auto-reverted by Magit.
@@ -806,7 +806,7 @@ Intended for `auto-revert-buffer-list-filter'."
   (not (provided-mode-derived-p (buffer-local-value 'major-mode buf)
                                 #'pdf-view-mode)))
 
-;; man
+;;;; man
 
 (defun blc--man-other-buffer (&optional prev)
   "Switch to next `man' buffer (previous if PREV is non-nil)."
@@ -826,7 +826,7 @@ Intended for `auto-revert-buffer-list-filter'."
   (interactive)
   (blc--man-other-buffer t))
 
-;; message
+;;;; message
 
 (defun blc-message-set-msmtp-from ()
   "Replace From header with address read from `~/.msmtprc'."
@@ -853,7 +853,7 @@ Intended for `auto-revert-buffer-list-filter'."
       (y-or-n-p "No attachments; send anyway? ")
       (keyboard-quit)))
 
-;; org
+;;;; org
 
 (defun blc-org-read-file ()
   "Read `org' filename.
@@ -877,7 +877,7 @@ Defaults to `org-directory' and `org-default-notes-file'."
   (org-set-property
    "captured" (format-time-string (org-time-stamp-format t t))))
 
-;; pdf-tools
+;;;; pdf-tools
 
 (defun blc-pdf-tools-defer ()
   "Install `pdf-tools' before turning on `pdf-view-mode'.
@@ -891,7 +891,7 @@ deferred way of autoloading the `pdf-tools' package."
   (dolist (sym '(auto-mode-alist magic-mode-alist))
     (set sym (rassq-delete-all #'blc-pdf-tools-defer (symbol-value sym)))))
 
-;; project
+;;;; project
 
 (defun blc-project-complete-regexp ()
   "Like `project-find-regexp', but using Xref completion."
@@ -900,20 +900,20 @@ deferred way of autoloading the `pdf-tools' package."
   (let ((xref-show-xrefs-function #'xref-show-definitions-completing-read))
     (call-interactively #'project-find-regexp)))
 
-;; python
+;;;; python
 
 (defun blc-python-pep-8-comments ()
   "Adapt `comment-inline-offset' to PEP-8 recommendations."
   (setq-local comment-inline-offset 2))
 
-;; simple
+;;;; simple
 
 (defun blc-messages-trailing-whitespace ()
   "Disable `show-trailing-whitespace' in *Messages* buffer."
   (with-current-buffer (messages-buffer)
     (blc-turn-off-trailing-whitespace)))
 
-;; solar
+;;;; solar
 
 (defun blc-solar-set-location (&optional location)
   "Reconcile solar calendar with LOCATION from `blc-locations'."
@@ -925,7 +925,7 @@ deferred way of autoloading the `pdf-tools' package."
                   calendar-longitude     long
                   calendar-location-name (format "%s, %s" location country))))
 
-;; startup
+;;;; startup
 
 (defun blc-scratch-cowtune ()
   "Return string contents of cowtune file or nil if non-existent.
@@ -940,7 +940,7 @@ Format contents as an `emacs-lisp-mode' comment suitable for
       (delete-trailing-whitespace (point-min) (point-max)))
     (buffer-string)))
 
-;; term
+;;;; term
 
 (defun blc-term (&optional non-ansi)
   "Complete `ansi-term' and `term' buffer to switch to.
@@ -990,19 +990,19 @@ Intended for `term-exec-hook'."
                    (abbr (abbreviate-file-name (directory-file-name dir))))
                (rename-buffer (format "*%s %s*" base abbr) t)))))))))
 
-;; webjump
+;;;; webjump
 
 (defun blc-webjump-browse-url (_name)
   "Wrap `browse-url-interactive-arg' for use in `webjump-sites'."
   (car (browse-url-interactive-arg "URL: ")))
 
-;; xref-js2
+;;;; xref-js2
 
 (defun blc-xref-js2-install-backend ()
   "Locally install `xref-js2-xref-backend'."
   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
 
-;; xt-mouse
+;;;; xt-mouse
 
 (defun blc-turn-on-xterm-mouse (&optional frame)
   "Conditionally enable `xterm-mouse-mode' on FRAME.
@@ -1013,7 +1013,7 @@ created.  FRAME defaults to the selected one."
       xterm-mouse-mode
       (xterm-mouse-mode)))
 
-;;;; VARIABLES
+;;; Variables
 
 (setq-default
  ;; buffer.c
@@ -1949,7 +1949,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; youtube-dl
  youtube-dl-directory                   (blc-user-dir "VIDEOS"))
 
-;;;; HOOKS
+;;; Hooks
 
 (blc-hook
   ;; auctex
@@ -2108,7 +2108,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:fns blc-turn-on-xterm-mouse :hooks (after-make-frame-functions
                                         window-setup-hook)))
 
-;;;; BINDINGS
+;;; Bindings
 
 (define-prefix-command 'blc-jump-map)
 (define-prefix-command 'blc-org-map)
@@ -2269,14 +2269,14 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("s"                                   . #'counsel-grep-or-swiper)))
 
 
-;;;; PACKAGES
+;;; Packages
 
-;; ag
+;;;; ag
 
 (with-eval-after-load 'ag
   (add-to-list 'ag-arguments "--context=5"))
 
-;; apt-sources-list
+;;;; apt-sources-list
 
 (add-to-list 'auto-mode-alist
              (cons (rx (| ".sources"
@@ -2284,7 +2284,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                        eos)
                    #'apt-sources-list-mode))
 
-;; auctex
+;;;; auctex
 
 (with-eval-after-load 'latex
   (add-to-list 'LaTeX-clean-intermediate-suffixes (rx ".vrb"))
@@ -2301,16 +2301,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (when (assoc viewer TeX-view-program-list-builtin)
       (push (list 'output-pdf viewer) TeX-view-program-selection))))
 
-;; auth-source
+;;;; auth-source
 
 (with-eval-after-load 'auth-source
   (blc-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587")))
 
-;; battery
+;;;; battery
 
 (display-battery-mode)
 
-;; bbdb
+;;;; bbdb
 
 (with-eval-after-load 'bbdb
   (map-do #'add-to-list
@@ -2330,13 +2330,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                        (blc-msmtp-addresses))
                'words)))
 
-;; biblio-download
+;;;; biblio-download
 
 (with-eval-after-load 'biblio-download
   (when (require 'bog nil t)
     (setq-default biblio-download-directory bog-stage-directory)))
 
-;; bibtex
+;;;; bibtex
 
 (with-eval-after-load 'bibtex
   (bibtex-set-dialect reftex-cite-format)
@@ -2345,7 +2345,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (add-to-list 'bibtex-entry-format fmt))
   (add-to-list 'bibtex-files 'bibtex-file-path))
 
-;; cc-mode
+;;;; cc-mode
 
 (with-eval-after-load 'cc-mode
   (define-key c-mode-base-map "\C-m" #'c-context-line-break)
@@ -2371,22 +2371,22 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
         (c-toggle-comment-style
          (if (string-equal c-indentation-style name) -1 1))))))
 
-;; chess
+;;;; chess
 
 (with-eval-after-load 'chess
   (setq-default chess-images-directory
                 (blc-dir (blc-package-dir 'chess) "pieces" "xboard")))
 
-;; comint
+;;;; comint
 
 (with-eval-after-load 'comint
   (define-key comint-mode-map "\C-c\C-r" nil))
 
-;; conf-mode
+;;;; conf-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".dirs" eos) #'conf-unix-mode))
 
-;; counsel
+;;;; counsel
 
 (with-eval-after-load 'counsel
   (ivy-add-actions #'counsel-M-x
@@ -2395,34 +2395,34 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; Do not match start of input for counsel commands
   (blc-ivy-strip-init-inputs (rx bos "counsel-")))
 
-;; cus-edit
+;;;; cus-edit
 
 (when (file-exists-p
        (setq-default custom-file
                      (expand-file-name "custom.el" user-emacs-directory)))
   (lwarn 'blc :warning "Custom file %s exists but not loaded" custom-file))
 
-;; custom
+;;;; custom
 
 (load-theme 'modus-operandi t)
 
-;; dash
+;;;; dash
 
 (with-eval-after-load 'dash
   (dash-enable-font-lock))
 
-;; deb-view
+;;;; deb-view
 
 (add-to-list 'auto-mode-alist (cons (rx ".deb" eos) #'deb-view-mode))
 (with-eval-after-load 'dired
   (require 'deb-view nil t))
 
-;; debbugs-gnu
+;;;; debbugs-gnu
 
 (with-eval-after-load 'debbugs-gnu
   (setq-default debbugs-gnu-default-severities debbugs-gnu-all-severities))
 
-;; delight
+;;;; delight
 
 (delight
  '(;; abbrev
@@ -2521,29 +2521,29 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ;; whitespace
    (global-whitespace-mode nil whitespace)))
 
-;; delsel
+;;;; delsel
 
 (delete-selection-mode)
 
-;; diff
+;;;; diff
 
 (with-eval-after-load 'diff
   (setq diff-switches (blc-as-list diff-switches))
   (add-to-list 'diff-switches "--show-c-function"))
 
-;; dired
+;;;; dired
 
 (with-eval-after-load 'dired
   (define-key dired-mode-map "_" #'dired-create-empty-file))
 
-;; dired-aux
+;;;; dired-aux
 
 (with-eval-after-load 'dired-aux
   (mapc (apply-partially #'add-to-list 'dired-compress-files-alist)
         '(("\\.tar\\.7z\\'" . "tar -c %i | 7zr a -si %o")
           ("\\.7z\\'"       . "7zr a %o %i"))))
 
-;; dired-x
+;;;; dired-x
 
 (with-eval-after-load 'dired
   (require 'dired-x)
@@ -2563,7 +2563,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (("optipng")        "png")
             (("pdf")            "pdf"))))
 
-;; eglot
+;;;; eglot
 
 (with-eval-after-load 'eglot
   ;; Don't litter projects with ccls cache files.
@@ -2571,7 +2571,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (blc-put* eglot-server-programs (list #'c++-mode #'c-mode)
               (list "ccls" (concat "--init=" (json-encode init))))))
 
-;; engine-mode
+;;;; engine-mode
 
 (with-eval-after-load 'engine-mode
   ;; No eager autoloaded macro expansion
@@ -2605,7 +2605,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   (engine-mode))
 
-;; eww
+;;;; eww
 
 (with-eval-after-load 'eww
   (blc-define-keys
@@ -2617,22 +2617,22 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (eww-mode-map
      ([remap eww-open-in-new-buffer] . #'blc-eww-open-in-other-window))))
 
-;; files
+;;;; files
 
 (add-to-list 'safe-local-variable-values
              '(eval . (when buffer-file-name (view-mode))))
 (auto-save-visited-mode)
 
-;; find-func
+;;;; find-func
 
 (with-eval-after-load 'find-func
   (setq-default find-function-source-path (blc-src-path)))
 
-;; flex-mode
+;;;; flex-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".lex" eos) #'flex-mode))
 
-;; flymake
+;;;; flymake
 
 (with-eval-after-load 'flymake
   (blc-define-keys
@@ -2640,48 +2640,48 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
      ([?\M-n] . #'flymake-goto-next-error)
      ([?\M-p] . #'flymake-goto-prev-error))))
 
-;; forge
+;;;; forge
 
 (with-eval-after-load 'forge
   (remove-hook 'forge-post-mode-hook #'turn-on-flyspell))
 
-;; frame
+;;;; frame
 
 (window-divider-mode)
 
-;; gif-screencast
+;;;; gif-screencast
 
 (with-eval-after-load 'gif-screencast
   (define-key gif-screencast-mode-map [f7] #'gif-screencast-stop))
 
-;; git-annex
+;;;; git-annex
 
 (with-eval-after-load 'dired
   (require 'git-annex nil t))
 
-;; git-commit
+;;;; git-commit
 
 (with-eval-after-load 'git-commit
   (add-to-list 'git-commit-style-convention-checks 'overlong-summary-line))
 
-;; gnus
+;;;; gnus
 
 (with-eval-after-load 'gnus
   (blc-gc-thresh-maximise))
 
-;; go-mode
+;;;; go-mode
 
 (with-eval-after-load 'go-mode
   (when (executable-find "goimports")
     (setq-default gofmt-command "goimports")))
 
-;; gscholar-bibtex
+;;;; gscholar-bibtex
 
 (with-eval-after-load 'gscholar-bibtex
   (when-let ((src (assoc "Google Scholar" gscholar-bibtex-available-sources)))
     (setq-default gscholar-bibtex-default-source (car src))))
 
-;; hacker-typer
+;;;; hacker-typer
 
 (with-eval-after-load 'hacker-typer
   (require 'mm-util)
@@ -2693,16 +2693,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    (mapcar (apply-partially #'* 2)
            hacker-typer-random-range)))
 
-;; hideshow
+;;;; hideshow
 
 (with-eval-after-load 'hideshow
   (define-key hs-minor-mode-map "\C-c\t" #'hs-toggle-hiding))
 
-;; highlight-escape-sequences
+;;;; highlight-escape-sequences
 
 (turn-on-hes-mode)
 
-;; holidays
+;;;; holidays
 
 (with-eval-after-load 'holidays
   ;; Remove redundant full-stops
@@ -2723,7 +2723,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                   (cdr (assoc-string day lut t)))
                                 calendar-holidays))))
 
-;; ibuf-ext
+;;;; ibuf-ext
 
 (with-eval-after-load 'ibuf-ext
   (mapc (apply-partially #'add-to-list 'ibuffer-saved-filters)
@@ -2737,7 +2737,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                          (derived-mode . inferior-emacs-lisp-mode)
                          (derived-mode . lisp-interaction-mode))))))
 
-;; ibuffer
+;;;; ibuffer
 
 (with-eval-after-load 'ibuffer
   (define-key ibuffer-mode-map [remap ibuffer-find-file] #'blc-ibuffer-ffap)
@@ -2745,12 +2745,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (mapc (apply-partially #'add-to-list 'ibuffer-help-buffer-modes)
         '(Man-mode woman-mode)))
 
-;; info
+;;;; info
 
 (with-eval-after-load 'info
   (define-key Info-mode-map "k" #'blc-info-kill))
 
-;; ivy
+;;;; ivy
 
 (with-eval-after-load 'ivy
   ;; Keys
@@ -2795,7 +2795,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; Do not match start of input for org commands
   (blc-ivy-strip-init-inputs (rx bos "org-")))
 
-;; ivy-bibtex
+;;;; ivy-bibtex
 
 (with-eval-after-load 'ivy-bibtex
   (add-to-list 'bibtex-completion-additional-search-fields "date")
@@ -2806,19 +2806,19 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
     (setq-default bibtex-completion-library-path bog-file-directory
                   bibtex-completion-notes-path   bog-note-directory)))
 
-;; jq-mode
+;;;; jq-mode
 
 (with-eval-after-load 'json-mode
   (define-key json-mode-map "\C-c\C-q" #'jq-interactively))
 
-;; js
+;;;; js
 
 (with-eval-after-load 'js
   (setq-default js-enabled-frameworks
                 (seq-intersection '(dojo javascript prototype)
                                   js-enabled-frameworks)))
 
-;; js2-mode
+;;;; js2-mode
 
 (map-do (lambda (alist re)
           (add-to-list alist (cons re #'js2-mode)))
@@ -2831,16 +2831,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
      ("\r" . #'js2-line-break)
      ([?\M-.]))))
 
-;; js2-refactor
+;;;; js2-refactor
 
 (with-eval-after-load 'js2-refactor
   (js2r-add-keybindings-with-prefix "\C-c\C-m"))
 
-;; json-mode
+;;;; json-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ?. (| "jl" "jsonl") eos) #'json-mode))
 
-;; ledger-mode
+;;;; ledger-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".ledger" eos) #'ledger-mode))
 
@@ -2856,7 +2856,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                      "register %(account)")
                                    " ")))
 
-;; lunar
+;;;; lunar
 
 (with-eval-after-load 'lunar
   (setq-default
@@ -2865,12 +2865,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
              (char-to-string (char-from-name (concat name " symbol") t)))
            lunar-phase-names)))
 
-;; magit
+;;;; magit
 
 (with-eval-after-load 'magit
   (require 'blc-magit))
 
-;; magit-extras
+;;;; magit-extras
 
 (with-eval-after-load 'magit-extras
   ;; Adapted from URL `https://github.com/npostavs/emacs.d'
@@ -2883,18 +2883,18 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
          (caddr magit-pop-revision-stack-format))))
 
-;; magit-log
+;;;; magit-log
 
 (with-eval-after-load 'magit-log
   (setq-default magit-log-margin
                 '(t age-abbreviated magit-log-margin-width t 16)))
 
-;; magit-utils
+;;;; magit-utils
 
 (with-eval-after-load 'magit-utils
   (require 'ivy))
 
-;; make-mode
+;;;; make-mode
 
 (with-eval-after-load 'make-mode
   (define-key makefile-mode-map "\C-c$" #'makefile-insert-macro-ref)
@@ -2938,7 +2938,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
     (set-default targets (sort (symbol-value targets) #'string-lessp))))
 
-;; man
+;;;; man
 
 (with-eval-after-load 'man
   (blc-define-keys
@@ -2946,14 +2946,14 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
      ("]" . #'blc-man-next-buffer)
      ("[" . #'blc-man-previous-buffer))))
 
-;; markdown-mode
+;;;; markdown-mode
 
 (with-eval-after-load 'markdown-mode
   (let ((lang "lang-el"))               ; For StackExchange
     (add-to-list 'markdown-gfm-additional-languages lang)
     (blc-put* markdown-code-lang-modes lang #'emacs-lisp-mode)))
 
-;; message
+;;;; message
 
 (with-eval-after-load 'message
   (define-key message-mode-map "\C-c\C-ff" #'blc-message-set-msmtp-from)
@@ -2974,16 +2974,16 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
   (setq-default message-expand-name-databases
                 (delq 'eudc message-expand-name-databases)))
 
-;; mpc
+;;;; mpc
 
 (with-eval-after-load 'mpc
   (setq mpc-frame-alist (map-delete mpc-frame-alist 'font)))
 
-;; nov
+;;;; nov
 
 (add-to-list 'auto-mode-alist (cons (rx ".epub" eos) #'nov-mode))
 
-;; org
+;;;; org
 
 (with-eval-after-load 'org
   (require 'dom)
@@ -3020,7 +3020,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
   (org-clock-persistence-insinuate))
 
-;; org-agenda
+;;;; org-agenda
 
 (with-eval-after-load 'org-agenda
   (if-let* ((key "n")
@@ -3039,7 +3039,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
           (nreverse
            (directory-files dir t directory-files-no-dot-files-regexp t)))))
 
-;; org-capture
+;;;; org-capture
 
 (with-eval-after-load 'org-capture
   (setq-default
@@ -3076,13 +3076,13 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
              "* %?"
              :prepend t :unnarrowed t)))))
 
-;; org-pomodoro
+;;;; org-pomodoro
 
 (with-eval-after-load 'org-pomodoro
   (setq-default org-pomodoro-format
                 (blc-sed-tree "pomodoro" "🍅" org-pomodoro-format nil t)))
 
-;; ox-html
+;;;; ox-html
 
 (with-eval-after-load 'ox-html
   (setq-default
@@ -3107,7 +3107,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
             org-export-default-language
             (list (blc-dom-to-xml 'p '((class . modification)) "Updated: %C"))))
 
-;; ox-publish
+;;;; ox-publish
 
 (with-eval-after-load 'ox-publish
   (setq-default
@@ -3140,22 +3140,22 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
            '("daft" "recipes"))
    org-publish-timestamp-directory (blc-dir blc-index-dir "org-timestamps")))
 
-;; paren
+;;;; paren
 
 (show-paren-mode)
 
-;; paren-face
+;;;; paren-face
 
 (global-paren-face-mode)
 
-;; pdf-tools
+;;;; pdf-tools
 
 (map-do (lambda (alist key)
           (add-to-list alist (cons key #'blc-pdf-tools-defer)))
         `((auto-mode-alist  . ,(rx ".pdf" eos))
           (magic-mode-alist . "%PDF")))
 
-;; project
+;;;; project
 
 (with-eval-after-load 'project
   (require 'magit-extras nil t)
@@ -3166,31 +3166,31 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
       (unless (assoc dir project--list)
         (push (list dir) project--list)))))
 
-;; prolog
+;;;; prolog
 
 (add-to-list 'auto-mode-alist (cons (rx ".pl" eos) #'prolog-mode))
 
-;; reftex
+;;;; reftex
 
 (with-eval-after-load 'reftex
   (mapc (apply-partially #'add-to-list 'reftex-default-bibliography)
         (blc-bib-files)))
 
-;; simple
+;;;; simple
 
 (column-number-mode)
 
-;; solar
+;;;; solar
 
 (with-eval-after-load 'solar
   (when-let* ((loc (blc-system-location)))
     (blc-solar-set-location loc)))
 
-;; subword
+;;;; subword
 
 (global-subword-mode)
 
-;; term
+;;;; term
 
 (with-eval-after-load 'term
   (dolist (mapsym '(term-mode-map term-raw-map))
@@ -3198,20 +3198,20 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
       (define-key (symbol-value mapsym)
         (vector 'remap fn) #'blc-toggle-subterm-mode))))
 
-;; time
+;;;; time
 
 (display-time-mode)
 
-;; url
+;;;; url
 
 (with-eval-after-load 'url-cookie
   (add-to-list 'url-cookie-untrusted-urls "economist\\.com"))
 
-;; web-mode
+;;;; web-mode
 
 (add-to-list 'auto-mode-alist (cons (rx ".mustache" eos) #'web-mode))
 
-;; whitespace
+;;;; whitespace
 
 (global-whitespace-mode)
 

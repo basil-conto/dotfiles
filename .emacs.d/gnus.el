@@ -257,7 +257,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
 
 ;;; Libraries
 
-;; gnus-art
+;;;; gnus-art
 
 (with-eval-after-load 'gnus-art
   (blc-define-keys
@@ -279,7 +279,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
    (rx (| (: bol (| "Delivered-To" "To") ?:)
           (regexp gnus-visible-headers)))))
 
-;; gnus-sum
+;;;; gnus-sum
 
 (with-eval-after-load 'gnus-sum
   (blc-define-keys
@@ -289,13 +289,13 @@ convention (see the Info node `(gnus) Process/Prefix')."
      ([remap gnus-summary-goto-article] . #'blc-gnus-goto-article)
      ("va"                              . #'blc-gnus-apply-attachments))))
 
-;; gnus-topic
+;;;; gnus-topic
 
 (with-eval-after-load 'gnus-topic
   (define-key
     gnus-topic-mode-map [remap gnus-topic-indent] #'blc-gnus-topic-fold))
 
-;; gnus-win
+;;;; gnus-win
 
 (with-eval-after-load 'gnus-win
   (let ((oconf (cadr (assq 'article gnus-buffer-configuration))))
