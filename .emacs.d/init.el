@@ -414,6 +414,7 @@ Like `TeX-doc', but with prefix ARG pass it to
 
 (defun blc-bog-staged-bib ()
   "Like `bog-clean-and-rename-staged-bibs' but with completion."
+  (interactive)
   (let* ((bibs (directory-files bog-stage-directory nil (rx ".bib" eos)))
          (bib  (completing-read "Staged bib: " bibs nil t)))
     (bog--prepare-bib-file (expand-file-name bib bog-stage-directory) t)))
