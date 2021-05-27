@@ -342,6 +342,40 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
+;;;; project
+
+(defvar blc--project-death-row ()
+  "List of buffers `project-kill-buffers' is about to kill.")
+
+(defun blc--project-death-row ()
+  "Print `blc--project-death-row' to `standard-output'."
+  (dolist (buf (prog1 blc--project-death-row
+                 (setq blc--project-death-row ())))
+    (princ buf)
+    (terpri)))
+
+(define-advice project--buffers-to-kill (:filter-return (bufs) blc-store)
+  "Store buffers about to be killed."
+  (setq blc--project-death-row bufs))
+
+(define-advice project-kill-buffers (:around (&rest args) blc-list)
+  "List buffers `project-kill-buffers' is about to kill."
+  (let* ((buf (get-buffer-create " *Project Buffers*" t))
+         ;; See `dired-mark-pop-up'.
+         (win (display-buffer buf `(display-buffer-below-selected
+                                    (window-height . fit-window-to-buffer)
+                                    (preserve-size . (nil . t)))))
+         (standard-output buf))
+    (blc-with-nonce yes-or-no-p :around
+                    (lambda (&rest args)
+                      (unwind-protect
+                          (progn (blc--project-death-row)
+                                 (fit-window-to-buffer win)
+                                 (apply args))
+                        (when (window-live-p win)
+                          (quit-restore-window win 'kill))))
+      (apply args))))
+
 ;;;; python
 
 (define-advice python-shell-make-comint (:around (&rest args) blc-dumb-term)
