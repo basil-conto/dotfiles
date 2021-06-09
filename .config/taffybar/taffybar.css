@@ -52,11 +52,13 @@
 }
 
 .active .contents {
-	background-color: rgba(0.0, 0.0, 0.0, 0.5);
+    /* modus-themes-intense-green */
+    background-color: #5ada88;
 }
 
 .visible .contents {
-	background-color: rgba(0.0, 0.0, 0.0, 0.2);
+    /* modus-themes-nuanced-green */
+    background-color: #ecf7ed;
 }
 
 .window-icon-container {
