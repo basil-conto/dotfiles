@@ -41,11 +41,11 @@ pactl s n = case n of 0 -> cmd "mute"   $ "toggle"
 main :: IO ()
 main = xmonad . docks . ewmh . pagerHints $ additionalKeys def
      { borderWidth        = 2
-     , focusedBorderColor = "#5ada88" -- modus-themes-intense-green
+     , focusedBorderColor = "#5ada88" -- modus-operandi green-intense-bg
      , focusFollowsMouse  = False
      , layoutHook         = avoidStruts $ layoutHook def
      , modMask            = modMask'
-     , normalBorderColor  = "#ecf7ed" -- modus-themes-nuanced-green
+     , normalBorderColor  = "#ecf7ed" -- modus-operandi green-nuanced-bg
      , terminal           = "x-terminal-emulator"
      } $
 
