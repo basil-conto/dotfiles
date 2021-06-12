@@ -2603,10 +2603,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;;; eglot
 
 (with-eval-after-load 'eglot
-  ;; Don't litter projects with ccls cache files.
-  (let ((init `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls")))))
-    (blc-put* eglot-server-programs (list #'c++-mode #'c-mode)
-              (list "ccls" (concat "--init=" (json-encode init))))))
+  (let ((modes (list #'c++-mode #'c-mode))
+        ;; Don't litter projects with `ccls' cache files.
+        (init (json-serialize
+               `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls"))))))
+    (dolist (server `(("ccls" ,(concat "--init=" init)) ("clangd")))
+      (push (cons modes server) eglot-server-programs))))
 
 ;;;; engine-mode
 
