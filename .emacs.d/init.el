@@ -1531,6 +1531,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  magit-diff-adjust-tab-width            t
  magit-diff-refine-hunk                 t
 
+ ;; magit-extras
+ magit-bind-magit-project-status        nil
+
  ;; magit-git
  magit-list-refs-sortby                 "-creatordate"
  magit-prefer-remote-upstream           t
@@ -3209,13 +3212,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 ;;;; project
 
 (with-eval-after-load 'project
-  (require 'magit-extras nil t)
-  (when (require 'magit-repos nil t)
-    (project--ensure-read-project-list)
-    (pcase-dolist (`(,_ . ,dir) (nreverse (magit-repos-alist)))
-      (setq dir (abbreviate-file-name (blc-dir dir)))
-      (unless (assoc dir project--list)
-        (push (list dir) project--list)))))
+  (define-key project-prefix-map "m" #'magit-project-status)
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 ;;;; prolog
 
