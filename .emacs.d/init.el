@@ -2789,6 +2789,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'info
   (define-key Info-mode-map "k" #'blc-info-kill))
 
+;;;; info-look
+
+(with-eval-after-load 'info-look
+  (dash-register-info-lookup))
+
 ;;;; ivy
 
 (with-eval-after-load 'ivy
