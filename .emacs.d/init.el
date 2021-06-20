@@ -163,15 +163,6 @@ last visible Emacs client frame."
 
 (advice-add #'find-lisp-object-file-name :filter-return #'blc-dataroot-to-src)
 
-;;;; ibuffer
-
-(define-advice ibuffer (:filter-args (args) blc-ibuffer)
-  "Like `ibuffer', but prefer default `ibuffer-filter-groups'."
-  (seq-let (other name quals nosel shrink filters &rest tail) args
-    (nconc (list other name quals nosel shrink
-                 (or filters (default-value 'ibuffer-filter-groups)))
-           tail)))
-
 ;;;; ivy-bibtex
 
 (define-advice bibtex-completion-format-entry
@@ -758,13 +749,17 @@ Suspending or exiting Gnus deletes that frame."
 
 ;;;; ibuffer
 
+(defun blc-ibuffer-filter-groups ()
+  "Set up custom `ibuffer-filter-groups'."
+  (ibuffer-switch-to-saved-filter-groups "blc"))
+
 (defun blc-ibuffer-ffap ()
   "Like `ibuffer-find-file', but backed by `ffap-file-finder'."
   (interactive)
   (require 'ffap)
-  (let* ((buffer            (ibuffer-current-buffer))
-         (buffer            (if (buffer-live-p buffer) buffer (current-buffer)))
-         (default-directory (buffer-local-value 'default-directory buffer)))
+  (let* ((buf (ibuffer-current-buffer))
+         (buf (if (buffer-live-p buf) buf (current-buffer)))
+         (default-directory (buffer-local-value 'default-directory buf)))
     (call-interactively ffap-file-finder)))
 
 ;;;; ielm
@@ -1401,57 +1396,58 @@ created.  FRAME defaults to the selected one."
  htmlize-html-major-mode                #'mhtml-mode
 
  ;; ibuf-ext
- ibuffer-filter-groups
- '(("Book   " (or (derived-mode . bookmark-bmenu-mode)
-                  (derived-mode . bookmark-edit-annotation-mode)
-                  (and (name . "Bookmark Annotation")
-                       (starred-name))))
-   ("Code   " (and (or (derived-mode . prog-mode)
-                       (derived-mode . conf-mode))
-                   (not (saved . "package"))
-                   (not (saved . "REPL"))))
-   ("Custom " (derived-mode . Custom-mode))
-   ("Dired  " (derived-mode . dired-mode))
-   ("Git    "  (or (derived-mode . magit-mode)
-                   (derived-mode . magit-repolist-mode)))
-   ("Gnus   " (or (saved . "gnus")
-                  (derived-mode . gnus-server-mode)
-                  (predicate . (equal (bound-and-true-p gnus-dribble-buffer)
-                                      (buffer-name)))))
-   ("Help   " (or (predicate . (apply #'derived-mode-p
-                                      ibuffer-help-buffer-modes))
-                  (and (name . "Ivy Help")
-                       (starred-name))))
-   ("Image  " (derived-mode . image-mode))
-   ("IRC    " (or (derived-mode . erc-mode)
-                  (and (name . "erc-protocol")
-                       (starred-name))))
-   ("Log    " (or (derived-mode . TeX-output-mode)
-                  (derived-mode . compilation-mode)
-                  (derived-mode . ivy-occur-mode)
-                  (derived-mode . messages-buffer-mode)
-                  (derived-mode . tags-table-mode)
-                  (predicate . (seq-some
-                                (apply-partially #'equal (buffer-name))
+ ibuffer-saved-filter-groups
+ '(("blc"
+    ("Book   " (or (derived-mode . bookmark-bmenu-mode)
+                   (derived-mode . bookmark-edit-annotation-mode)
+                   (and (name . "Bookmark Annotation")
+                        (starred-name))))
+    ("Code   " (and (or (derived-mode . prog-mode)
+                        (derived-mode . conf-mode))
+                    (not (saved . "package"))
+                    (not (saved . "REPL"))))
+    ("Custom " (derived-mode . Custom-mode))
+    ("Dired  " (derived-mode . dired-mode))
+    ("Git    "  (or (derived-mode . magit-mode)
+                    (derived-mode . magit-repolist-mode)))
+    ("Gnus   " (or (saved . "gnus")
+                   (derived-mode . gnus-server-mode)
+                   (predicate . (equal (bound-and-true-p gnus-dribble-buffer)
+                                       (buffer-name)))))
+    ("Help   " (or (predicate . (apply #'derived-mode-p
+                                       ibuffer-help-buffer-modes))
+                   (and (name . "Ivy Help")
+                        (starred-name))))
+    ("Image  " (derived-mode . image-mode))
+    ("IRC    " (or (derived-mode . erc-mode)
+                   (and (name . "erc-protocol")
+                        (starred-name))))
+    ("Log    " (or (derived-mode . TeX-output-mode)
+                   (derived-mode . compilation-mode)
+                   (derived-mode . ivy-occur-mode)
+                   (derived-mode . messages-buffer-mode)
+                   (derived-mode . tags-table-mode)
+                   (predicate
+                    . (seq-some (apply-partially #'equal (buffer-name))
                                 (append blc-gnus-log-buffers
                                         (blc-as-list
                                          (bound-and-true-p dired-log-buffer)))))
-                  (and (starred-name)
-                       (or (name . "Backtrace")
-                           (name . "Warnings")
-                           (name . "WoMan-Log")
-                           (name . "dropbox")
-                           (name . "mbsync")))))
-   ("PDF    " (derived-mode . pdf-view-mode))
-   ("Package" (and (saved . "package")
-                   (not (saved . "REPL"))))
-   ("Process" (and (name . "Async Shell Command")
-                   (starred-name)))
-   ("REPL   " (saved . "REPL"))
-   ("TeX    " (saved . "TeX"))
-   ("Text   " (saved . "text document"))
-   ("Web    " (saved . "web")))
- ibuffer-old-time                       12
+                   (and (starred-name)
+                        (or (name . "Backtrace")
+                            (name . "Warnings")
+                            (name . "WoMan-Log")
+                            (name . "dropbox")
+                            (name . "mbsync")))))
+    ("PDF    " (derived-mode . pdf-view-mode))
+    ("Package" (and (saved . "package")
+                    (not (saved . "REPL"))))
+    ("Process" (and (name . "Async Shell Command")
+                    (starred-name)))
+    ("REPL   " (saved . "REPL"))
+    ("TeX    " (saved . "TeX"))
+    ("Text   " (saved . "text document"))
+    ("Web    " (saved . "web"))))
+ ibuffer-old-time                       24
  ibuffer-show-empty-filter-groups       nil
 
  ;; ibuffer
@@ -1459,7 +1455,6 @@ created.  FRAME defaults to the selected one."
  ibuffer-default-sorting-mode           'alphabetic
  ibuffer-jump-offer-only-visible-buffers
  t
- ibuffer-use-other-window               t
 
  ;; ido
  ido-enable-flex-matching               t
@@ -2104,6 +2099,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                              org-agenda-mode-hook
                              tabulated-list-mode-hook))
 
+  ;; ibuffer
+  (:hooks ibuffer-hook :fns blc-ibuffer-filter-groups)
+
   ;; isearch
   (:hooks isearch-mode-hook :fns blc-isearch-delight)
 
@@ -2187,7 +2185,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ([remap info-other-window]             . #'blc-info-other-window)
    ([remap info-lookup-symbol]            . #'counsel-info-lookup-symbol)
    ([remap just-one-space]                . #'cycle-spacing)
-   ([remap list-buffers]                  . #'ibuffer)
+   ([remap list-buffers]                  . #'ibuffer-list-buffers)
    ([remap load-library]                  . #'counsel-load-library)
    ([remap load-theme]                    . #'counsel-load-theme)
    ([remap menu-bar-open]                 . #'counsel-tmm)
