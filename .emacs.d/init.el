@@ -1720,6 +1720,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  org-list-demote-modify-bullet          '(("+" . "-") ("-" . "+"))
  org-list-use-circular-motion           t
 
+ ;; outline
+ outline-minor-mode-cycle               t
+
  ;; ox
  org-export-coding-system               'utf-8
 
@@ -2545,6 +2548,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
    ;; message
    (message-mode "🖹" :major)
+
+   ;; outline
+   (outline-minor-mode "ⓞ" outline)
 
    ;; rainbow-mode
    (rainbow-mode "🌈" rainbow-mode)
