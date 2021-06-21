@@ -750,8 +750,9 @@ Suspending or exiting Gnus deletes that frame."
 ;;;; ibuffer
 
 (defun blc-ibuffer-filter-groups ()
-  "Set up custom `ibuffer-filter-groups'."
-  (ibuffer-switch-to-saved-filter-groups "blc"))
+  "Set custom `ibuffer-filter-groups'."
+  (require 'ibuf-ext)
+  (setq ibuffer-filter-groups (blc-get ibuffer-saved-filter-groups "blc")))
 
 (defun blc-ibuffer-ffap ()
   "Like `ibuffer-find-file', but backed by `ffap-file-finder'."
@@ -2050,7 +2051,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                              tabulated-list-mode-hook))
 
   ;; ibuffer
-  (:hooks ibuffer-hook :fns blc-ibuffer-filter-groups)
+  (:hooks ibuffer-mode-hook :fns blc-ibuffer-filter-groups)
 
   ;; isearch
   (:hooks isearch-mode-hook :fns blc-isearch-delight)
@@ -2728,8 +2729,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                (and (name . "Ivy Help") (starred-name))))
           ,@(mapcar
              (lambda (root)
-               `(,(directory-file-name root)
-                 (directory . ,(regexp-quote (expand-file-name root)))))
+               (let ((pr (project-current nil root)))
+                 `(,(directory-file-name root)
+                   (predicate . (equal (project-current) ',pr)))))
              (project-known-project-roots))
           ("Package" (saved . "package"))
           ("Code"
@@ -2771,9 +2773,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                (and (name . "Bookmark Annotation") (starred-name)))))
         ibuffer-saved-filter-groups)
 
-  (let ((re (regexp-opt (mapcar #'expand-file-name
-                                (list blc-dataroot-dir package-user-dir)))))
-    (add-to-list 'ibuffer-saved-filters `("package" (directory . ,re)))))
+  (let* ((dirs (list blc-dataroot-dir package-user-dir))
+         (full (mapcar #'expand-file-name dirs))
+         (abbr (mapcar #'abbreviate-file-name full))
+         (re   (blc-rx `(: bos (| ,@full ,@abbr)))))
+    (add-to-list 'ibuffer-saved-filters `("package" (filename . ,re)))))
 
 ;;;; ibuffer
 
