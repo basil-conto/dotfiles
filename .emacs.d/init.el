@@ -1396,58 +1396,8 @@ created.  FRAME defaults to the selected one."
  htmlize-html-major-mode                #'mhtml-mode
 
  ;; ibuf-ext
- ibuffer-saved-filter-groups
- '(("blc"
-    ("Book   " (or (derived-mode . bookmark-bmenu-mode)
-                   (derived-mode . bookmark-edit-annotation-mode)
-                   (and (name . "Bookmark Annotation")
-                        (starred-name))))
-    ("Code   " (and (or (derived-mode . prog-mode)
-                        (derived-mode . conf-mode))
-                    (not (saved . "package"))
-                    (not (saved . "REPL"))))
-    ("Custom " (derived-mode . Custom-mode))
-    ("Dired  " (derived-mode . dired-mode))
-    ("Git    "  (or (derived-mode . magit-mode)
-                    (derived-mode . magit-repolist-mode)))
-    ("Gnus   " (or (saved . "gnus")
-                   (derived-mode . gnus-server-mode)
-                   (predicate . (equal (bound-and-true-p gnus-dribble-buffer)
-                                       (buffer-name)))))
-    ("Help   " (or (predicate . (apply #'derived-mode-p
-                                       ibuffer-help-buffer-modes))
-                   (and (name . "Ivy Help")
-                        (starred-name))))
-    ("Image  " (derived-mode . image-mode))
-    ("IRC    " (or (derived-mode . erc-mode)
-                   (and (name . "erc-protocol")
-                        (starred-name))))
-    ("Log    " (or (derived-mode . TeX-output-mode)
-                   (derived-mode . compilation-mode)
-                   (derived-mode . ivy-occur-mode)
-                   (derived-mode . messages-buffer-mode)
-                   (derived-mode . tags-table-mode)
-                   (predicate
-                    . (seq-some (apply-partially #'equal (buffer-name))
-                                (append blc-gnus-log-buffers
-                                        (blc-as-list
-                                         (bound-and-true-p dired-log-buffer)))))
-                   (and (starred-name)
-                        (or (name . "Backtrace")
-                            (name . "Warnings")
-                            (name . "WoMan-Log")
-                            (name . "dropbox")
-                            (name . "mbsync")))))
-    ("PDF    " (derived-mode . pdf-view-mode))
-    ("Package" (and (saved . "package")
-                    (not (saved . "REPL"))))
-    ("Process" (and (name . "Async Shell Command")
-                    (starred-name)))
-    ("REPL   " (saved . "REPL"))
-    ("TeX    " (saved . "TeX"))
-    ("Text   " (saved . "text document"))
-    ("Web    " (saved . "web"))))
  ibuffer-old-time                       24
+ ibuffer-save-with-custom               nil
  ibuffer-show-empty-filter-groups       nil
 
  ;; ibuffer
@@ -2772,16 +2722,58 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;;; ibuf-ext
 
 (with-eval-after-load 'ibuf-ext
-  (mapc (apply-partially #'add-to-list 'ibuffer-saved-filters)
-        `(("package" (directory . ,(regexp-opt
-                                    (mapcar
-                                     #'expand-file-name
-                                     (list blc-dataroot-dir
-                                           source-directory
-                                           package-user-dir)))))
-          ("REPL"    (or (derived-mode . eshell-mode)
-                         (derived-mode . inferior-emacs-lisp-mode)
-                         (derived-mode . lisp-interaction-mode))))))
+  (push `("blc"
+          ("Help"
+           (or (predicate . (apply #'derived-mode-p ibuffer-help-buffer-modes))
+               (and (name . "Ivy Help") (starred-name))))
+          ,@(mapcar
+             (lambda (root)
+               `(,(directory-file-name root)
+                 (directory . ,(regexp-quote (expand-file-name root)))))
+             (project-known-project-roots))
+          ("Package" (saved . "package"))
+          ("Code"
+           (or (derived-mode . prog-mode)
+               (derived-mode . conf-mode)))
+          ("Dired" (derived-mode . dired-mode))
+          ("Gnus"
+           (or (saved . "gnus")
+               (derived-mode . gnus-server-mode)
+               (predicate . (equal (bound-and-true-p gnus-dribble-buffer)
+                                   (buffer-name)))))
+          ("Log"
+           (or (derived-mode . TeX-output-mode)
+               (derived-mode . compilation-mode)
+               (derived-mode . ivy-occur-mode)
+               (derived-mode . messages-buffer-mode)
+               (derived-mode . tags-table-mode)
+               (predicate . (seq-some
+                             (apply-partially #'equal (buffer-name))
+                             (append blc-gnus-log-buffers
+                                     (blc-as-list
+                                      (bound-and-true-p dired-log-buffer)))))
+               (and (starred-name)
+                    (or (name . "Async Shell Command")
+                        (name . "Backtrace")
+                        (name . "Warnings")
+                        (name . "WoMan-Log")
+                        (name . "dropbox")
+                        (name . "mbsync")))))
+          ("PDF" (derived-mode . pdf-view-mode))
+          ("Image" (derived-mode . image-mode))
+          ("Process" (or (process) (derived-mode . eshell-mode)))
+          ("TeX" (saved . "TeX"))
+          ("Text" (saved . "text document"))
+          ("Web" (saved . "web"))
+          ("Book"
+           (or (derived-mode . bookmark-bmenu-mode)
+               (derived-mode . bookmark-edit-annotation-mode)
+               (and (name . "Bookmark Annotation") (starred-name)))))
+        ibuffer-saved-filter-groups)
+
+  (let ((re (regexp-opt (mapcar #'expand-file-name
+                                (list blc-dataroot-dir package-user-dir)))))
+    (add-to-list 'ibuffer-saved-filters `("package" (directory . ,re)))))
 
 ;;;; ibuffer
 
@@ -2789,7 +2781,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (define-key ibuffer-mode-map [remap ibuffer-find-file] #'blc-ibuffer-ffap)
 
   (mapc (apply-partially #'add-to-list 'ibuffer-help-buffer-modes)
-        '(Man-mode woman-mode)))
+        '(Custom-mode Man-mode woman-mode)))
 
 ;;;; info
 
