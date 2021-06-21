@@ -337,6 +337,9 @@ Offer all entities found in `org-entities-user' and
 
 ;;;; project
 
+(defvar-local blc-project 'unset
+  "Per-buffer cached `project-current' or `unset'.")
+
 (defvar blc--project-death-row ()
   "List of buffers `project-kill-buffers' is about to kill.")
 
@@ -2727,40 +2730,43 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
           ("Help"
            (or (predicate . (apply #'derived-mode-p ibuffer-help-buffer-modes))
                (and (name . "Ivy Help") (starred-name))))
+          ("Gnus"
+           (or (saved . "gnus")
+               (name . "mbsync")
+               (derived-mode . gnus-server-mode)
+               (predicate . (memq (current-buffer)
+                                  (list (bound-and-true-p gnus-dribble-buffer)
+                                        (bound-and-true-p bbdb-buffer))))
+               (predicate . (seq-some (apply-partially #'equal (buffer-name))
+                                      blc-gnus-log-buffers))))
           ,@(mapcar
              (lambda (root)
                (let ((pr (project-current nil root)))
                  `(,(directory-file-name root)
-                   (predicate . (equal (project-current) ',pr)))))
+                   (predicate . (equal (if (eq blc-project 'unset)
+                                           (setq blc-project (project-current))
+                                         blc-project)
+                                       ',pr)))))
              (project-known-project-roots))
           ("Package" (saved . "package"))
           ("Code"
            (or (derived-mode . prog-mode)
                (derived-mode . conf-mode)))
           ("Dired" (derived-mode . dired-mode))
-          ("Gnus"
-           (or (saved . "gnus")
-               (derived-mode . gnus-server-mode)
-               (predicate . (equal (bound-and-true-p gnus-dribble-buffer)
-                                   (buffer-name)))))
           ("Log"
            (or (derived-mode . TeX-output-mode)
                (derived-mode . compilation-mode)
                (derived-mode . ivy-occur-mode)
                (derived-mode . messages-buffer-mode)
                (derived-mode . tags-table-mode)
-               (predicate . (seq-some
-                             (apply-partially #'equal (buffer-name))
-                             (append blc-gnus-log-buffers
-                                     (blc-as-list
-                                      (bound-and-true-p dired-log-buffer)))))
+               (predicate . (equal (bound-and-true-p dired-log-buffer)
+                                   (buffer-name)))
                (and (starred-name)
                     (or (name . "Async Shell Command")
                         (name . "Backtrace")
                         (name . "Warnings")
                         (name . "WoMan-Log")
-                        (name . "dropbox")
-                        (name . "mbsync")))))
+                        (name . "dropbox")))))
           ("PDF" (derived-mode . pdf-view-mode))
           ("Image" (derived-mode . image-mode))
           ("Process" (or (process) (derived-mode . eshell-mode)))
@@ -2785,7 +2791,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (define-key ibuffer-mode-map [remap ibuffer-find-file] #'blc-ibuffer-ffap)
 
   (mapc (apply-partially #'add-to-list 'ibuffer-help-buffer-modes)
-        '(Custom-mode Man-mode woman-mode)))
+        '(Custom-mode Man-mode shortdoc-mode woman-mode)))
 
 ;;;; info
 
