@@ -2737,6 +2737,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                (predicate . (memq (current-buffer)
                                   (list (bound-and-true-p gnus-dribble-buffer)
                                         (bound-and-true-p bbdb-buffer))))
+               (predicate . (equal (bound-and-true-p bbdb-buffer-name)
+                                   (buffer-name)))
                (predicate . (seq-some (apply-partially #'equal (buffer-name))
                                       blc-gnus-log-buffers))))
           ,@(mapcar
