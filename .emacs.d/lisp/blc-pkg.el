@@ -136,6 +136,7 @@ Visit `package-user-dir' if such a directory is not found."
    boogie-friends
 
    chess
+   cider
    cmake-mode
    counsel
    crontab-mode
