@@ -209,6 +209,7 @@ Visit `package-user-dir' if such a directory is not found."
    macrostep
    magit
    magit-annex
+   magit-tbdiff
    markdown-mode
    matlab-mode
    mines
