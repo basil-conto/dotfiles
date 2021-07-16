@@ -1728,6 +1728,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  reftex-plug-into-AUCTeX                t
  reftex-revisit-to-follow               t
 
+ ;; replace
+ list-matching-lines-current-line-face  'highlight
+ list-matching-lines-jump-to-current-line
+ t
+
  ;; rfc-mode
  rfc-mode-browse-input-function         #'completing-read
  rfc-mode-directory                     (car ffap-rfc-directories)
