@@ -588,11 +588,6 @@ Intended for `compilation-finish-functions'."
                                :on-action (lambda (_ _) (pop-to-buffer buf))
                                :replaces-id id))))))
 
-(defun blc-compile-ansify ()
-  "Translate SGR colours in last compilation output.
-Intended for `compilation-filter-hook', which see."
-  (ansi-color-apply-on-region compilation-filter-start (point)))
-
 ;;;; counsel
 
 (defun blc-counsel-find-file (&optional file)
@@ -1992,7 +1987,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks c-mode-common-hook :fns hs-minor-mode)
 
   ;; compile
-  (:hooks compilation-filter-hook      :fns blc-compile-ansify)
+  (:hooks compilation-filter-hook      :fns ansi-color-compilation-filter)
   (:hooks compilation-finish-functions :fns blc-compile-end)
   (:hooks compilation-start-hook       :fns blc-compile-start)
 
