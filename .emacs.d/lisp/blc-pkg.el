@@ -226,11 +226,11 @@ Visit `package-user-dir' if such a directory is not found."
    pass
    passmm
    pdf-tools
-   pomidor
    pulseaudio-control
 
    racket-mode
    rainbow-mode
+   redtick
    restclient
    rfc-mode
    rg

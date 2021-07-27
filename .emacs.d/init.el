@@ -938,6 +938,22 @@ deferred way of autoloading the `pdf-tools' package."
   "Adapt `comment-inline-offset' to PEP-8 recommendations."
   (setq-local comment-inline-offset 2))
 
+;;;; redtick
+
+(defun blc-redtick-notify-break ()
+  "Notify of start of break time."
+  (notifications-notify :title "Break" :body "🏖"))
+
+(defun blc-redtick-notify-work ()
+  "Notify of end of break time."
+  (notifications-notify :title "Work" :body "💼"))
+
+(defun blc-stop-redtick ()
+  "Stop `redtick' when disabling `redtick-mode'."
+  (unless redtick-mode
+    (cancel-timer redtick--timer)
+    (redtick--stop-sound)))
+
 ;;;; simple
 
 (defun blc-messages-trailing-whitespace ()
@@ -1718,6 +1734,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  python-indent-guess-indent-offset-verbose
  nil
 
+ ;; redtick
+ redtick-history-file                   nil
+ redtick-work-sound                     ""
+
  ;; reftex
  reftex-cite-format                     'biblatex
  reftex-comment-citations               t
@@ -2086,6 +2106,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
+
+  ;; redtick
+  (:hooks redtick-after-rest-hook :fns blc-redtick-notify-work)
+  (:hooks redtick-before-rest-hook :fns blc-redtick-notify-break)
+  (:hooks redtick-mode-hook :fns blc-stop-redtick)
 
   ;; simple
   (:fns display-line-numbers-mode :hooks visual-line-mode-hook)
