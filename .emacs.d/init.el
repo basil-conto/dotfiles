@@ -3260,6 +3260,10 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
 (column-number-mode)
 
+;;;; so-long
+
+(global-so-long-mode)
+
 ;;;; solar
 
 (with-eval-after-load 'solar
