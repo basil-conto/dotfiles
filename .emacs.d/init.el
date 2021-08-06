@@ -407,6 +407,11 @@ Do this only once in the first non-daemon initial frame."
 
 ;;;; auctex
 
+(defvar blc-tex-auxtensions
+  '(".bcf" ".lol" ".fdb_latexmk" ".fls" ".glg" ".glg-abr" ".glo-abr" ".gls"
+    ".gls-abr" ".log" ".out" ".run.xml" ".slg" ".slo" ".sls" ".xdv" ".xdy")
+  "LaTeX-related file extensions to ignore or delete.")
+
 (defun blc-TeX-command-default ()
   "Set `TeX-command-default' based on `TeX-command-list'."
   (setq TeX-command-default (caar TeX-command-list)))
@@ -1074,8 +1079,8 @@ created.  FRAME defaults to the selected one."
  mark-even-if-inactive                  nil
 
  ;; dired.c
- completion-ignored-extensions          `(".fdb_latexmk" ".fls" ".xdv"
-                                          ,@completion-ignored-extensions)
+ completion-ignored-extensions          (append blc-tex-auxtensions
+                                                completion-ignored-extensions)
 
  ;; doc.c
  text-quoting-style                     'grave
@@ -2309,7 +2314,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;;; auctex
 
 (with-eval-after-load 'latex
-  (add-to-list 'LaTeX-clean-intermediate-suffixes (rx ".vrb"))
+  (add-to-list 'LaTeX-clean-intermediate-suffixes
+               (regexp-opt blc-tex-auxtensions))
   (auctex-latexmk-setup))
 
 (with-eval-after-load 'tex
