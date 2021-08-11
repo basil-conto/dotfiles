@@ -177,6 +177,7 @@ Visit `package-user-dir' if such a directory is not found."
    go-mode
    google-contacts
    google-maps
+   graphviz-dot-mode
    gscholar-bibtex
 
    hacker-typer

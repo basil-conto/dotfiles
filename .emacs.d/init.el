@@ -145,6 +145,22 @@ last visible Emacs client frame."
   (setq gnus-frame-list     ())
   (setq gnus-created-frames ()))
 
+;;;; graphviz-dot-mode
+
+(define-advice graphviz-compile-command (:before-until (name) blc-dot2tex)
+  "Add suport for `dot2tex'."
+  (defvar graphviz-dot-dot-program)
+  (defvar graphviz-dot-preview-extension)
+  (when (and name (string-search "dot2tex" graphviz-dot-dot-program))
+    (let* ((graphviz-dot-preview-extension "tex")
+           (tex  (shell-quote-argument (graphviz-output-file-name name)))
+           (graphviz-dot-preview-extension "pdf")
+           (pdf  (shell-quote-argument (graphviz-output-file-name name)))
+           (name (shell-quote-argument name)))
+      (setq compile-command
+            (format "%s -c -tmath -o %s %s && latexmk %s && pdfcrop %s %s"
+                    graphviz-dot-dot-program tex name tex pdf pdf)))))
+
 ;;;; help
 
 (define-advice view-echo-area-messages (:filter-return (win) blc-select-window)
@@ -1380,6 +1396,10 @@ created.  FRAME defaults to the selected one."
 
  ;; go-mode
  godoc-reuse-buffer                     t
+
+ ;; graphviz-dot-mode
+ graphviz-dot-dot-program               "dot2tex"
+ graphviz-dot-preview-extension         "pdf"
 
  ;; hacker-typer
  hacker-typer-show-hackerman            t
