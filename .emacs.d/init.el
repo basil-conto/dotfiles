@@ -1355,6 +1355,7 @@ created.  FRAME defaults to the selected one."
  kept-new-versions                      4
  kept-old-versions                      2
  mode-require-final-newline             nil
+ revert-buffer-quick-short-answers      t
  version-control                        t
  view-read-only                         t
 
