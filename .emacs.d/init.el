@@ -319,10 +319,10 @@ This is much less accurate but also much more performant than
 
 ;;;; org-agenda
 
-(defvar org-agenda-window-setup)
 
 (define-advice org-agenda--quit (:around (&rest args) blc-spare-frame)
   "Do not delete Org Agenda frame on exit."
+  (defvar org-agenda-window-setup)
   (let (org-agenda-window-setup)
     (apply args)))
 
@@ -533,16 +533,15 @@ See `browse-url' for a description of the arguments."
 (function-put
  #'blc-print-url-pdf 'interactive-form (interactive-form #'browse-url))
 
-(defvar browse-url-firefox-arguments)
-(defvar browse-url-generic-program)
-
 (defun blc-browse-url-surf (&rest args)
   "Like `browse-url-generic', but using the Surf browser."
+  (defvar browse-url-generic-program)
   (let ((browse-url-generic-program "surf"))
     (apply #'browse-url-generic args)))
 
 (defun blc-browse-url-firefox (&rest args)
   "Like `browse-url-firefox', but private."
+  (defvar browse-url-firefox-arguments)
   (let ((browse-url-firefox-arguments
          `("-P" "private" "-private-window" ,@browse-url-firefox-arguments)))
     (apply #'browse-url-firefox args)))
@@ -740,11 +739,10 @@ order of descending priority, start `gnus'."
   (unless (blc--gnus-switch-buffer #'pop-to-buffer-same-window)
     (gnus)))
 
-(defvar gnus-inhibit-startup-message)
-
 (defun blc-gnus-other-window ()
   "Like `blc-gnus', but use another window."
   (interactive)
+  (defvar gnus-inhibit-startup-message)
   (let (break) ; Infloop should never happen, but avoid famous last words
     (while (not (or (blc--gnus-switch-buffer #'pop-to-buffer)
                     break))
