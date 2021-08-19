@@ -107,8 +107,7 @@ Visit `package-user-dir' if such a directory is not found."
  package-archives
  '(("gnu"    . "https://elpa.gnu.org/devel/")
    ("nongnu" . "https://elpa.nongnu.org/nongnu-devel/")
-   ("melpa"  . "https://melpa.org/packages/")
-   ("org"    . "https://orgmode.org/elpa/"))
+   ("melpa"  . "https://melpa.org/packages/"))
  package-archive-priorities     (seq-map-indexed (lambda (a i) (cons (car a) i))
                                                  (reverse package-archives))
  package-menu-hide-low-priority t
@@ -219,7 +218,7 @@ Visit `package-user-dir' if such a directory is not found."
    nodejs-repl
    nov
 
-   org-plus-contrib
+   org-contrib
    org-pomodoro
 
    pacmacs
