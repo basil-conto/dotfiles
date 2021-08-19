@@ -2311,6 +2311,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    ("A"                                   . #'counsel-ag)
    ("c"                                   . #'fileloop-continue)
    ("g"                                   . #'counsel-git-grep)
+   ("k"                                   . #'counsel-ack)
    ("r"                                   . #'counsel-rg)
    ("s"                                   . #'counsel-grep-or-swiper)))
 
