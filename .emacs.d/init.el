@@ -1562,6 +1562,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  markdown-spaces-after-code-fence       0
 
  ;; message
+ message-citation-line-format           "%N [%Y-%m-%d %R %z] wrote:\n"
+ message-citation-line-function         #'message-insert-formatted-citation-line
  message-cite-function                  #'message-cite-original
  message-confirm-send                   t
  message-expand-name-standard-ui        t
