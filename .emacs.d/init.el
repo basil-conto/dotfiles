@@ -441,6 +441,14 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
+;;;; autoconf
+
+(defun blc-toggle-autoconf-comments ()
+  "Toggle the comment style between \"#\" and \"dnl\"."
+  (interactive)
+  (setq comment-start (if (equal comment-start "#") "dnl" "#"))
+  (message "Comments now start with %S" comment-start))
+
 ;;;; autorevert
 
 (defun blc-turn-on-silent-auto-revert ()
@@ -2355,6 +2363,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'auth-source
   (blc-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587")))
+
+;;;; autoconf
+
+(with-eval-after-load 'autoconf
+  (define-key autoconf-mode-map "\C-c\C-k" #'blc-toggle-autoconf-comments))
 
 ;;;; battery
 
