@@ -118,6 +118,16 @@ Also transcribe AC line status in ALIST to Unicode."
                       (not (string-suffix-p "--cmacro" (symbol-name sym)))))))
   ret)
 
+;;;; files
+
+(define-advice kill-some-buffers (:around (&rest args) my-save-windows)
+  "Wrap ARGS in `save-window-excursion'."
+  (save-window-excursion (apply args)))
+
+(define-advice kill-buffer-ask (:before (buf) my-show-buffer)
+  "Switch to BUF before asking whether to kill it."
+  (switch-to-buffer buf t t))
+
 ;;;; find-func
 
 (define-advice find-function-search-for-symbol
