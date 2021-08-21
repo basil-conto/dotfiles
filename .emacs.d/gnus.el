@@ -178,9 +178,9 @@ convention (see the Info node `(gnus) Process/Prefix')."
          "%m"                           ; New mail
          "%B"                           ; Open summary buffer
          "%P"                           ; Topic indentation
-         "%5y? %3T!"                    ; Unread and ticked articles
+         "%5y"                          ; Unread and ticked articles
          " : "                          ; Colon
-         "%(%-40,40c%)"                 ; Collapsed group name
+         "%(%-30,30c%)"                 ; Collapsed group name
          "%9u&dgroup;"                  ; Last read
          "\n")
  gnus-group-mode-line-format            "Gnus: %%b"
