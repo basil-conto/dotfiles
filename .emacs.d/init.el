@@ -431,6 +431,12 @@ Do this only once in the first non-daemon initial frame."
 (add-hook (if (daemonp) 'after-make-frame-functions 'window-setup-hook)
           #'blc-turn-on-emoji-font)
 
+;;;; ansi-color
+
+(defun blc-turn-off-ansi-compilation ()
+  "Locally disable `ansi-color-for-compilation-mode'."
+  (setq-local ansi-color-for-compilation-mode nil))
+
 ;;;; auctex
 
 (defvar blc-tex-auxtensions
@@ -2010,6 +2016,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;; Hooks
 
 (blc-hook
+  ;; ansi-color
+  (:hooks compilation-filter-hook :fns ansi-color-compilation-filter)
+  ;; Work around `https://bugs.gnu.org/50207'.
+  (:hooks grep-mode-hook          :fns blc-turn-off-ansi-compilation)
+
   ;; auctex
   (:hooks TeX-after-compilation-finished-functions
           :fns TeX-revert-document-buffer)
@@ -2052,8 +2063,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; cc-mode
   (:hooks c-mode-common-hook :fns hs-minor-mode)
 
+  ;; comint
+  (:hooks comint-output-filter-functions :fns comint-osc-process-output)
+
   ;; compile
-  (:hooks compilation-filter-hook      :fns ansi-color-compilation-filter)
   (:hooks compilation-finish-functions :fns blc-compile-end)
   (:hooks compilation-start-hook       :fns blc-compile-start)
 
