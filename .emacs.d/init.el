@@ -3314,6 +3314,14 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
 (add-to-list 'auto-mode-alist (cons (rx ".pl" eos) #'prolog-mode))
 
+;;;; python
+
+(with-eval-after-load 'python
+  (when-let (ipython (seq-find #'executable-find '("ipython3" "ipython")))
+    (setq-default python-shell-interpreter ipython
+                  python-shell-interpreter-args
+                  (concat python-shell-interpreter-args " --simple-prompt"))))
+
 ;;;; reftex
 
 (with-eval-after-load 'reftex
