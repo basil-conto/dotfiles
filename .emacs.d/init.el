@@ -40,7 +40,6 @@
 (autoload 'engine-mode-prefixed-map         "engine-mode" nil t 'keymap)
 (autoload 'ffap-gnus-hook                   "ffap")
 (autoload 'fileloop-continue                "fileloop" nil t)
-(autoload 'flex-mode                        "flex-mode" nil t)
 (autoload 'samba-generic-mode               "generic-x" nil t)
 (autoload 'gnus-find-subscribed-addresses   "gnus")
 (autoload 'ivy-completion-in-region         "ivy")
@@ -2150,6 +2149,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; markdown-mode
   (:hooks markdown-mode-hook :fns visual-line-mode)
 
+  ;; merlin
+  (:fns merlin-mode :hooks (tuareg-mode-hook
+                            caml-mode-hook))
+
   ;; message
   (:hooks message-mode-hook :fns blc-turn-on-double-space-sentence-ends)
   (:hooks message-send-hook :fns blc-message-confirm-attach)
@@ -2718,10 +2721,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'find-func
   (setq-default find-function-source-path (blc-src-path)))
-
-;;;; flex-mode
-
-(add-to-list 'auto-mode-alist (cons (rx ".lex" eos) #'flex-mode))
 
 ;;;; flymake
 

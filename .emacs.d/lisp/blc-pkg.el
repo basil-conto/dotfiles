@@ -136,6 +136,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    chess
    cider
+   clojure-mode
    cmake-mode
    counsel
    crontab-mode
@@ -188,6 +189,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    ialign
    idris-mode
+   inf-clojure
    ivy
    ivy-bibtex
    ivy-hydra
@@ -204,6 +206,7 @@ Visit `package-user-dir' if such a directory is not found."
    ledger-mode
    logview
    lorem-ipsum
+   lua-mode
    lyrics
 
    macrostep
@@ -212,9 +215,11 @@ Visit `package-user-dir' if such a directory is not found."
    magit-tbdiff
    markdown-mode
    matlab-mode
+   merlin
    mines
 
    neato-graph-bar
+   nginx-mode
    nodejs-repl
    nov
 
@@ -235,12 +240,14 @@ Visit `package-user-dir' if such a directory is not found."
    rfc-mode
    rg
    rmsbolt
+   rust-mode
 
    scanner
    scribble-mode
    sicp
    sl
    slime-volleyball
+   sly
    sudoku
    swiper
    systemd
