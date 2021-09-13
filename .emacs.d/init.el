@@ -1480,8 +1480,10 @@ created.  FRAME defaults to the selected one."
  image-dired-dir                        (blc-dir blc-index-dir "image-dired")
 
  ;; isearch
+ isearch-allow-motion                   t
  isearch-allow-scroll                   t
  isearch-lazy-count                     t
+ isearch-motion-changes-direction       t
  search-exit-option                     nil
 
  ;; ivy
