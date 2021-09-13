@@ -2928,7 +2928,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
             (,#'blc-file-lessp   ,#'project-find-file)
             (,#'string-lessp     ,#'blc-scratch
                                  ,#'counsel-M-x
-                                 ,#'find-face-definition)))
+                                 ,#'find-face-definition
+                                 ,#'find-function)))
 
   (blc-put ivy-sort-matches-functions-alist
            #'ivy-completion-in-region #'blc-ivy-string<)
