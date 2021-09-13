@@ -1498,9 +1498,6 @@ created.  FRAME defaults to the selected one."
  '((t . "\
 ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
- ;; jit-lock
- jit-lock-stealth-time                  4
-
  ;; js-2
  js2-allow-rhino-new-expr-initializer   nil
  js2-bounce-indent-p                    t
