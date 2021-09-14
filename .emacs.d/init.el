@@ -1221,7 +1221,6 @@ created.  FRAME defaults to the selected one."
 
  ;; bookmark
  bookmark-default-file                  (blc-file blc-index-dir "bookmarks.el")
- bookmark-fontify                       nil
  bookmark-save-flag                     1
  bookmark-search-delay                  0
 
@@ -2719,7 +2718,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;;; find-func
 
 (with-eval-after-load 'find-func
-  (setq-default find-function-source-path (blc-src-path)))
+  (setq-default find-library-source-path (blc-src-path)))
 
 ;;;; flymake
 
