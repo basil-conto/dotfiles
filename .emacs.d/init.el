@@ -28,12 +28,12 @@
 (eval-when-compile
   (require 'subr-x))
 
+(autoload 'auth-source-pass-backend-parse   "auth-source-pass")
 (autoload 'blc-backup                       "blc-backup" nil t)
 (autoload 'blc-mbsync                       "blc-mbsync" nil t)
 (autoload 'blc-mbsync-all                   "blc-mbsync" nil t)
 (autoload 'blc-mbsync-deduplicate           "blc-mbsync" nil t)
 (autoload 'blc-mbsync-maximise-uid          "blc-mbsync" nil t)
-(autoload 'blc-pass-backend-parse           "blc-pass")
 (autoload 'debbugs-gnu-apply-patch          "debbugs-gnu" nil t)
 (autoload 'debbugs-gnu-find-contributor     "debbugs-gnu" nil t)
 (autoload 'debbugs-gnu-make-control-message "debbugs-gnu" nil t)
@@ -1177,7 +1177,7 @@ created.  FRAME defaults to the selected one."
  ;; auth-source
  auth-source-cache-expiry               (blc-mins-to-secs 15)
  auth-source-debug                      'trivia
- auth-sources                           '(blc-pass)
+ auth-sources                           '(password-store)
 
  ;; autorevert
  auto-revert-avoid-polling              t
@@ -2025,7 +2025,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                 turn-on-reftex))
 
   ;; auth-source
-  (:hooks auth-source-backend-parser-functions :fns blc-pass-backend-parse)
+  (:hooks auth-source-backend-parser-functions
+          :fns auth-source-pass-backend-parse)
 
   ;; bbdb
   (:hooks gnus-after-exiting-gnus-hook :fns blc-kill-bbdb-buffer)
