@@ -27,11 +27,6 @@
 
 ;;; Sequences
 
-(defun blc-as-list (object)
-  "Ensure OBJECT is either a list or within one."
-  (declare (pure t))
-  (funcall (if (listp object) #'identity #'list) object))
-
 (defun blc-keep (fn seq &optional copy)
   "Map FN over SEQ and return list of non-nil results.
 SEQ is modified destructively unless COPY is non-nil."
@@ -613,8 +608,8 @@ or a list thereof.
              (mapcan (lambda (hook)
                        (mapcar (lambda (fn)
                                  `(add-hook ',hook #',fn ,depth ,local))
-                               (blc-as-list fns)))
-                     (blc-as-list hooks)))
+                               (ensure-list fns)))
+                     (ensure-list hooks)))
            plists)))
 
 (defmacro blc-define-keys (&rest alist)
