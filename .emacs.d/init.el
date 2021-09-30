@@ -1220,6 +1220,7 @@ created.  FRAME defaults to the selected one."
  calendar-date-style                    'iso
  calendar-islamic-all-holidays-flag     t
  calendar-time-zone-style               'numeric
+ calendar-week-start-day                1
 
  ;; cc-vars
  c-electric-pound-behavior              '(alignleft)
