@@ -3294,7 +3294,11 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
 
 (with-eval-after-load 'project
   (define-key project-prefix-map "m" #'magit-project-status)
-  (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)
+  (dolist (root (project-known-project-roots))
+    ;; Instead of `file-remote-p' to avoid loading `tramp'.
+    (when (string-match-p tramp-file-name-regexp root)
+      (project-forget-project root))))
 
 ;;;; prolog
 
