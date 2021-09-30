@@ -3275,10 +3275,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%H\n"
            '("daft" "recipes"))
    org-publish-timestamp-directory (blc-dir blc-index-dir "org-timestamps")))
 
-;;;; paren
-
-(show-paren-mode)
-
 ;;;; paren-face
 
 (global-paren-face-mode)
