@@ -100,7 +100,6 @@ Also transcribe AC line status in ALIST to Unicode."
 (define-advice eldoc--format-doc-buffer (:filter-return (buf) blc-nbsp)
   "Ignore non-ASCII space and hyphen chars in ElDoc buffer."
   (with-current-buffer buf
-    (setq-local nobreak-char-display nil)
     (blc-turn-off-trailing-whitespace))
   buf)
 
