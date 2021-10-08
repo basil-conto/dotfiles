@@ -77,9 +77,9 @@ _pyenv_virtualenv_hook() {
   return $ret
 }
 
-[ -d "${HOME}/.pyenv" ]                                \
-  && [[ "$PROMPT_COMMAND" =~ _pyenv_virtualenv_hook ]] \
-  || PROMPT_COMMAND="_pyenv_virtualenv_hook;$PROMPT_COMMAND"
+[ -d "${HOME}/.pyenv" ]                                      \
+  && ( ! [[ "$PROMPT_COMMAND" =~ _pyenv_virtualenv_hook ]] ) \
+  && PROMPT_COMMAND="_pyenv_virtualenv_hook;$PROMPT_COMMAND"
 
 # Alias definitions
 [ -r ~/.bash_aliases    ] && . ~/.bash_aliases
