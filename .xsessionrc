@@ -10,6 +10,7 @@ if [ -x "$(command -v status-notifier-watcher)" ]; then
   [ -x "$(command -v blueman-applet)" ] && blueman-applet         &
   [ -x "$(command -v nm-applet)"      ] && nm-applet --indicator  &
   [ -x "$(command -v pasystray)"      ] && pasystray --notify=all &
+  [ -x "$(command -v redshift-gtk)"   ] && redshift-gtk           &
   [ -x "$(command -v taffybar)"       ] && taffybar               &
 fi
 
