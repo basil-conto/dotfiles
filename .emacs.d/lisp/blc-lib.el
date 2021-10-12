@@ -218,8 +218,7 @@ many opusenc processes as there are available processing units."
   (let* ((start  (current-time))
          (files  (blc--opusenc-files dir))
          (nfile  (length files))
-         (npart  (max 1 (min nfile
-                             (string-to-number (car (process-lines "nproc"))))))
+         (npart  (max 1 (min nfile (num-processors))))
          (parts  (make-vector npart ()))
          (journo (make-progress-reporter
                   (format "Transcoding %d flac(s)..." nfile) 0 nfile)))
