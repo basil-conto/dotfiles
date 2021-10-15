@@ -2019,6 +2019,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks gnus-after-exiting-gnus-hook :fns blc-kill-bbdb-buffer)
   (:hooks gnus-startup-hook            :fns bbdb-insinuate-gnus)
 
+  ;; bibtex
+  (:hooks bibtex-mode-hook :fns auto-revert-mode)
+
   ;; blc-lib
   (:fns blc-turn-off-trailing-whitespace :hooks (5x5-mode-hook
                                                  Info-mode-hook
