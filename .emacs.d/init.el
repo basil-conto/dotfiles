@@ -1338,6 +1338,7 @@ created.  FRAME defaults to the selected one."
  ess-indent-from-lhs                    nil
 
  ;; eww
+ eww-auto-rename-buffer                 'title
  eww-bookmarks-directory                blc-index-dir
  eww-search-prefix
  "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q="
@@ -2693,12 +2694,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'eww
   (blc-define-keys
     (eww-bookmark-mode-map
-     ("T" . #'blc-eww-toggle-images)
      ("n" . #'next-line)
      ("p" . #'previous-line)
      ("w" . #'blc-eww-bookmark-save))
     (eww-mode-map
-     ([remap eww-open-in-new-buffer] . #'blc-eww-open-in-other-window))))
+     ([remap eww-open-in-new-buffer] . #'blc-eww-open-in-other-window)
+     ("T"                            . #'blc-eww-toggle-images))))
 
 ;;;; files
 
