@@ -487,9 +487,8 @@ Like `TeX-doc', but with prefix ARG pass it to
   (kill-new url))
 
 (defun blc-print-url--lpr (url)
-  "Asynchronously print URL using `lpr-command'.
-This function is written with a print command like `hp-print' in
-mind, which is passed `lpr-switches' and URL as arguments."
+  "Asynchronously print URL.
+This passes URL to `lpr-command' and `lpr-switches', which see."
   (interactive "fPrint file: ")
   (make-process :name            "LPR Print"
                 :command         `(,lpr-command ,@lpr-switches ,url)
@@ -1512,8 +1511,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  logview-views-file                    (blc-file blc-index-dir "logview.views")
 
  ;; lpr
- lpr-add-switches                       nil
- lpr-command                            "hp-print"
+ lpr-command                            "gtklp"
 
  ;; magit-autorevert
  auto-revert-buffer-list-filter         #'blc-magit-auto-revert-p
@@ -1764,6 +1762,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; prolog
  prolog-system                          'swi
+
+ ;; ps-print
+ ps-paper-type                          'a4
 
  ;; python
  python-indent-guess-indent-offset-verbose
