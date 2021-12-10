@@ -262,11 +262,11 @@ convention (see the Info node `(gnus) Process/Prefix')."
 (with-eval-after-load 'gnus-art
   (blc-define-keys
     (gnus-article-mode-map
-     ("vN" . #'diff-file-next)
-     ("vP" . #'diff-file-prev)
-     ("vd" . #'blc-download)
-     ("vn" . #'diff-hunk-next)
-     ("vp" . #'diff-hunk-prev)))
+     ("vN" #'diff-file-next)
+     ("vP" #'diff-file-prev)
+     ("vd" #'blc-download)
+     ("vn" #'diff-hunk-next)
+     ("vp" #'diff-hunk-prev)))
 
   (setq-default
    gnus-sorted-header-list
@@ -284,10 +284,10 @@ convention (see the Info node `(gnus) Process/Prefix')."
 (with-eval-after-load 'gnus-sum
   (blc-define-keys
     (gnus-summary-mode-map
-     ([?\C-\M-s])
-     ([?\M-r])
-     ([remap gnus-summary-goto-article] . #'blc-gnus-goto-article)
-     ("va"                              . #'blc-gnus-apply-attachments))))
+     ([?\C-\M-s]                        nil t)
+     ([?\M-r]                           nil t)
+     ([remap gnus-summary-goto-article] #'blc-gnus-goto-article)
+     ("va"                              #'blc-gnus-apply-attachments))))
 
 ;;;; gnus-topic
 

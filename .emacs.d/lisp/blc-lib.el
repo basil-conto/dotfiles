@@ -615,15 +615,15 @@ or a list thereof.
   "Bind multiple keys per multiple keymaps.
 Elements of ALIST should have the form (KEYMAP . BINDINGS), where
 KEYMAP is an expression evaluating to a keymap.  For each element
-of the alist BINDINGS of the form (KEY . DEF), `define-key' is
-called on KEYMAP, KEY and DEF."
+of the alist BINDINGS of the form (KEY DEF [REMOVE]),
+`define-key' is called on KEYMAP, KEY, DEF, and REMOVE."
   (declare (indent 0))
   (macroexp-progn
    (map-apply (lambda (map bindings)
                 (macroexp-let2 nil map map
                   (macroexp-progn
                    (map-apply (lambda (key def)
-                                `(define-key ,map ,key ,def))
+                                `(define-key ,map ,key ,(car def) ,(cadr def)))
                               bindings))))
               alist)))
 

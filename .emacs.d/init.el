@@ -2187,159 +2187,159 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (blc-define-keys
   ((current-global-map)
-   ([?\C-\S-v]                            . #'scroll-other-window)
-   ([S-next]                              . #'blc-small-scroll-up)
-   ([S-prior]                             . #'blc-small-scroll-down)
-   ([S-up]                                . #'windmove-up)
-   ([S-down]                              . #'windmove-down)
-   ([S-left]                              . #'windmove-left)
-   ([S-right]                             . #'windmove-right)
-   ([f6]                                  . #'gif-screencast)
-   ([remap bookmark-jump]                 . #'counsel-bookmark)
-   ([remap capitalize-word]               . #'capitalize-dwim)
-   ([remap count-lines-page]              . #'blc-count-lines)
-   ([remap describe-bindings]             . #'counsel-descbinds)
-   ([remap describe-function]             . #'counsel-describe-function)
-   ([remap describe-symbol]               . #'counsel-describe-symbol)
-   ([remap describe-variable]             . #'counsel-describe-variable)
-   ([remap dired]                         . #'dired-at-point)
-   ([remap dired-other-window]            . #'ffap-dired-other-window)
-   ([remap dired-other-frame]             . #'ffap-dired-other-frame)
-   ([remap downcase-word]                 . #'downcase-dwim)
-   ([remap execute-extended-command]      . #'counsel-M-x)
-   ([remap fill-paragraph]                . #'unfill-toggle)
-   ([remap find-file]                     . #'find-file-at-point)
-   ([remap find-file-other-window]        . #'ffap-other-window)
-   ([remap find-file-other-frame]         . #'ffap-other-frame)
-   ([remap imenu]                         . #'counsel-imenu)
-   ([remap info]                          . #'blc-info)
-   ([remap info-other-window]             . #'blc-info-other-window)
-   ([remap info-lookup-symbol]            . #'counsel-info-lookup-symbol)
-   ([remap just-one-space]                . #'cycle-spacing)
-   ([remap list-buffers]                  . #'ibuffer-list-buffers)
-   ([remap load-library]                  . #'counsel-load-library)
-   ([remap load-theme]                    . #'counsel-load-theme)
-   ([remap menu-bar-open]                 . #'counsel-tmm)
-   ([remap org-goto]                      . #'counsel-org-goto)
-   ([remap org-set-tags-command]          . #'counsel-org-tag)
-   ([remap pop-global-mark]               . #'counsel-mark-ring)
-   ([remap rename-buffer]                 . #'blc-rename-buffer)
-   ([remap save-buffers-kill-terminal]    . #'save-buffers-kill-emacs)
-   ([remap switch-to-buffer]              . #'ivy-switch-buffer)
-   ([remap switch-to-buffer-other-window] . #'ivy-switch-buffer-other-window)
-   ([remap upcase-word]                   . #'upcase-dwim)
-   ([remap zap-to-char]                   . #'zap-up-to-char))
+   ([?\C-\S-v]                            #'scroll-other-window)
+   ([S-next]                              #'blc-small-scroll-up)
+   ([S-prior]                             #'blc-small-scroll-down)
+   ([S-up]                                #'windmove-up)
+   ([S-down]                              #'windmove-down)
+   ([S-left]                              #'windmove-left)
+   ([S-right]                             #'windmove-right)
+   ([f6]                                  #'gif-screencast)
+   ([remap bookmark-jump]                 #'counsel-bookmark)
+   ([remap capitalize-word]               #'capitalize-dwim)
+   ([remap count-lines-page]              #'blc-count-lines)
+   ([remap describe-bindings]             #'counsel-descbinds)
+   ([remap describe-function]             #'counsel-describe-function)
+   ([remap describe-symbol]               #'counsel-describe-symbol)
+   ([remap describe-variable]             #'counsel-describe-variable)
+   ([remap dired]                         #'dired-at-point)
+   ([remap dired-other-window]            #'ffap-dired-other-window)
+   ([remap dired-other-frame]             #'ffap-dired-other-frame)
+   ([remap downcase-word]                 #'downcase-dwim)
+   ([remap execute-extended-command]      #'counsel-M-x)
+   ([remap fill-paragraph]                #'unfill-toggle)
+   ([remap find-file]                     #'find-file-at-point)
+   ([remap find-file-other-window]        #'ffap-other-window)
+   ([remap find-file-other-frame]         #'ffap-other-frame)
+   ([remap imenu]                         #'counsel-imenu)
+   ([remap info]                          #'blc-info)
+   ([remap info-other-window]             #'blc-info-other-window)
+   ([remap info-lookup-symbol]            #'counsel-info-lookup-symbol)
+   ([remap just-one-space]                #'cycle-spacing)
+   ([remap list-buffers]                  #'ibuffer-list-buffers)
+   ([remap load-library]                  #'counsel-load-library)
+   ([remap load-theme]                    #'counsel-load-theme)
+   ([remap menu-bar-open]                 #'counsel-tmm)
+   ([remap org-goto]                      #'counsel-org-goto)
+   ([remap org-set-tags-command]          #'counsel-org-tag)
+   ([remap pop-global-mark]               #'counsel-mark-ring)
+   ([remap rename-buffer]                 #'blc-rename-buffer)
+   ([remap save-buffers-kill-terminal]    #'save-buffers-kill-emacs)
+   ([remap switch-to-buffer]              #'ivy-switch-buffer)
+   ([remap switch-to-buffer-other-window] #'ivy-switch-buffer-other-window)
+   ([remap upcase-word]                   #'upcase-dwim)
+   ([remap zap-to-char]                   #'zap-up-to-char))
 
   (mode-specific-map
-   ([?\M-n]                               . #'next-logical-line)
-   ([?\M-p]                               . #'previous-logical-line)
-   ("/"                                   . #'define-word-at-point)
-   ("["                                   . #'raise-sexp)
-   ("]"                                   . #'delete-pair)
-   ("C"                                   . #'copy-from-above-command)
-   ("G"                                   . #'blc-github-notifications)
-   ("M"                                   . #'blc-mbsync-all)
-   ("O"                                   . #'ff-find-other-file)
-   ("b"                                   . #'bog-command-map)
-   ("c"                                   . #'compile)
-   ("e"                                   . #'ielm)
-   ("4e"                                  . #'blc-ielm-other-window)
-   ("i"                                   . #'blc-indent-relative)
-   ("j"                                   . #'blc-jump-map)
-   ("m"                                   . #'blc-mbsync)
-   ("o"                                   . #'blc-org-map)
-   ("u"                                   . #'counsel-unicode-char))
+   ([?\M-n]                               #'next-logical-line)
+   ([?\M-p]                               #'previous-logical-line)
+   ("/"                                   #'define-word-at-point)
+   ("["                                   #'raise-sexp)
+   ("]"                                   #'delete-pair)
+   ("C"                                   #'copy-from-above-command)
+   ("G"                                   #'blc-github-notifications)
+   ("M"                                   #'blc-mbsync-all)
+   ("O"                                   #'ff-find-other-file)
+   ("b"                                   #'bog-command-map)
+   ("c"                                   #'compile)
+   ("e"                                   #'ielm)
+   ("4e"                                  #'blc-ielm-other-window)
+   ("i"                                   #'blc-indent-relative)
+   ("j"                                   #'blc-jump-map)
+   ("m"                                   #'blc-mbsync)
+   ("o"                                   #'blc-org-map)
+   ("u"                                   #'counsel-unicode-char))
 
   (blc-jump-map
-   ("b"                                   . #'ibuffer-jump)
-   ("d"                                   . #'counsel-dired-jump)
-   ("e"                                   . #'eww)
-   ("l"                                   . #'counsel-locate)
-   ("m"                                   . #'magit-find-file)
-   ("4m"                                  . #'magit-find-file-other-window)
-   ("r"                                   . #'ivy-resume)
-   ("s"                                   . #'blc-scratch)
-   ("t"                                   . #'blc-term)
-   ("w"                                   . #'webjump))
+   ("b"                                   #'ibuffer-jump)
+   ("d"                                   #'counsel-dired-jump)
+   ("e"                                   #'eww)
+   ("l"                                   #'counsel-locate)
+   ("m"                                   #'magit-find-file)
+   ("4m"                                  #'magit-find-file-other-window)
+   ("r"                                   #'ivy-resume)
+   ("s"                                   #'blc-scratch)
+   ("t"                                   #'blc-term)
+   ("w"                                   #'webjump))
 
   (blc-org-map
-   ("a"                                   . #'org-agenda)
-   ("c"                                   . #'org-capture)
-   ("f"                                   . #'blc-org-find-file)
-   ("4f"                                  . #'blc-org-find-file-other-window)
-   ("l"                                   . #'org-store-link))
+   ("a"                                   #'org-agenda)
+   ("c"                                   #'org-capture)
+   ("f"                                   #'blc-org-find-file)
+   ("4f"                                  #'blc-org-find-file-other-window)
+   ("l"                                   #'org-store-link))
 
   (bog-command-map
-   ("B"                                   . #'blc-bog-staged-bib)
-   ("S"                                   . #'blc-bog-dired-stage))
+   ("B"                                   #'blc-bog-staged-bib)
+   ("S"                                   #'blc-bog-dired-stage))
 
   (ctl-x-map
-   ("\C-n"                                . #'blc-open-next-line)
-   ("\C-p"                                . #'blc-open-previous-line)
-   ("/"                                   . #'engine-mode-prefixed-map)
-   ("7"                                   . #'blc-transpose-split)
-   ("B"                                   . #'blc-bury-buffer)
-   ("M"                                   . #'blc-gnus))
+   ("\C-n"                                #'blc-open-next-line)
+   ("\C-p"                                #'blc-open-previous-line)
+   ("/"                                   #'engine-mode-prefixed-map)
+   ("7"                                   #'blc-transpose-split)
+   ("B"                                   #'blc-bury-buffer)
+   ("M"                                   #'blc-gnus))
 
   (ctl-x-4-map
-   ("M"                                   . #'blc-gnus-other-window))
+   ("M"                                   #'blc-gnus-other-window))
 
   (ctl-x-5-map
-   ("3"                                   . #'blc-make-graphic-display)
-   ("M"                                   . #'blc-gnus-other-frame))
+   ("3"                                   #'blc-make-graphic-display)
+   ("M"                                   #'blc-gnus-other-frame))
 
   (ctl-x-r-map
-   ("4b"                                  . #'bookmark-jump-other-window))
+   ("4b"                                  #'bookmark-jump-other-window))
 
   (esc-map
-   ("#"                                   . #'avy-goto-word-or-subword-1)
-   ("+"                                   . #'er/expand-region)
-   ("R"                                   . #'redraw-display)
-   ("V"                                   . #'scroll-other-window-down))
+   ("#"                                   #'avy-goto-word-or-subword-1)
+   ("+"                                   #'er/expand-region)
+   ("R"                                   #'redraw-display)
+   ("V"                                   #'scroll-other-window-down))
 
   (goto-map
-   ("\t"                                  . #'blc-move-to-column)
-   ("e"                                   . #'first-error)
-   ("f"                                   . #'avy-goto-line))
+   ("\t"                                  #'blc-move-to-column)
+   ("e"                                   #'first-error)
+   ("f"                                   #'avy-goto-line))
 
   (help-map
-   ("\C-f"                                . #'find-function)
-   ("4f"                                  . #'find-function-other-window)
-   ("4\C-f"                               . #'find-function-other-window)
-   ("5f"                                  . #'find-function-other-frame)
-   ("5\C-f"                               . #'find-function-other-frame)
-   ("\C-j"                                . #'find-face-definition)
-   ("j"                                   . #'counsel-faces)
-   ("\C-k"                                . #'find-function-on-key)
-   ("4k"                                  . #'find-function-on-key-other-window)
-   ("4\C-k"                               . #'find-function-on-key-other-window)
-   ("5k"                                  . #'find-function-on-key-other-frame)
-   ("5\C-k"                               . #'find-function-on-key-other-frame)
-   ("\C-l"                                . #'find-library)
-   ("4l"                                  . #'find-library-other-window)
-   ("4\C-l"                               . #'find-library-other-window)
-   ("5l"                                  . #'find-library-other-frame)
-   ("5\C-l"                               . #'find-library-other-frame)
-   ("\C-v"                                . #'find-variable)
-   ("4\C-v"                               . #'find-variable-other-window)
-   ("5\C-v"                               . #'find-variable-other-frame))
+   ("\C-f"                                #'find-function)
+   ("4f"                                  #'find-function-other-window)
+   ("4\C-f"                               #'find-function-other-window)
+   ("5f"                                  #'find-function-other-frame)
+   ("5\C-f"                               #'find-function-other-frame)
+   ("\C-j"                                #'find-face-definition)
+   ("j"                                   #'counsel-faces)
+   ("\C-k"                                #'find-function-on-key)
+   ("4k"                                  #'find-function-on-key-other-window)
+   ("4\C-k"                               #'find-function-on-key-other-window)
+   ("5k"                                  #'find-function-on-key-other-frame)
+   ("5\C-k"                               #'find-function-on-key-other-frame)
+   ("\C-l"                                #'find-library)
+   ("4l"                                  #'find-library-other-window)
+   ("4\C-l"                               #'find-library-other-window)
+   ("5l"                                  #'find-library-other-frame)
+   ("5\C-l"                               #'find-library-other-frame)
+   ("\C-v"                                #'find-variable)
+   ("4\C-v"                               #'find-variable-other-window)
+   ("5\C-v"                               #'find-variable-other-frame))
 
   (isearch-mode-map
-   ([?\C-']                               . #'avy-isearch)
-   ([up]                                  . #'isearch-repeat-backward)
-   ([down]                                . #'isearch-repeat-forward))
+   ([?\C-']                               #'avy-isearch)
+   ([up]                                  #'isearch-repeat-backward)
+   ([down]                                #'isearch-repeat-forward))
 
   (project-prefix-map
-   ("S"                                   . #'project-search)
-   ("o"                                   . #'blc-project-complete-regexp))
+   ("S"                                   #'project-search)
+   ("o"                                   #'blc-project-complete-regexp))
 
   (search-map
-   ("A"                                   . #'counsel-ag)
-   ("c"                                   . #'fileloop-continue)
-   ("g"                                   . #'counsel-git-grep)
-   ("k"                                   . #'counsel-ack)
-   ("r"                                   . #'counsel-rg)
-   ("s"                                   . #'counsel-grep-or-swiper)))
+   ("A"                                   #'counsel-ag)
+   ("c"                                   #'fileloop-continue)
+   ("g"                                   #'counsel-git-grep)
+   ("k"                                   #'counsel-ack)
+   ("r"                                   #'counsel-rg)
+   ("s"                                   #'counsel-grep-or-swiper)))
 
 
 ;;; Packages
@@ -2367,8 +2367,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'tex
   (blc-define-keys
     (TeX-mode-map
-     ([remap TeX-documentation-texdoc] . #'blc-TeX-doc)
-     ([remap TeX-complete-symbol]      . #'completion-at-point)))
+     ([remap TeX-documentation-texdoc] #'blc-TeX-doc)
+     ([remap TeX-complete-symbol]      #'completion-at-point)))
 
   ;; Set priority of pre-configured PDF viewers
   (dolist (viewer '("Zathura" "PDF Tools"))
@@ -2455,11 +2455,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'chess
   (setq-default chess-images-directory
                 (blc-dir (blc-package-dir 'chess) "pieces" "xboard")))
-
-;;;; comint
-
-(with-eval-after-load 'comint
-  (define-key comint-mode-map "\C-c\C-r" nil))
 
 ;;;; conf-mode
 
@@ -2694,12 +2689,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'eww
   (blc-define-keys
     (eww-bookmark-mode-map
-     ("n" . #'next-line)
-     ("p" . #'previous-line)
-     ("w" . #'blc-eww-bookmark-save))
+     ("n" #'next-line)
+     ("p" #'previous-line)
+     ("w" #'blc-eww-bookmark-save))
     (eww-mode-map
-     ([remap eww-open-in-new-buffer] . #'blc-eww-open-in-other-window)
-     ("T"                            . #'blc-eww-toggle-images))))
+     ([remap eww-open-in-new-buffer] #'blc-eww-open-in-other-window)
+     ("T"                            #'blc-eww-toggle-images))))
 
 ;;;; files
 
@@ -2717,8 +2712,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'flymake
   (blc-define-keys
     (flymake-mode-map
-     ([?\M-n] . #'flymake-goto-next-error)
-     ([?\M-p] . #'flymake-goto-prev-error))))
+     ([?\M-n] #'flymake-goto-next-error)
+     ([?\M-p] #'flymake-goto-prev-error))))
 
 ;;;; forge
 
@@ -2893,10 +2888,10 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; Keys
   (blc-define-keys
     (ivy-minibuffer-map
-     ([?\S-\s]))
+     ([?\S-\s] nil t))
     (ivy-occur-mode-map
-     ("n" . #'ivy-occur-next-line)
-     ("p" . #'ivy-occur-previous-line)))
+     ("n" #'ivy-occur-next-line)
+     ("p" #'ivy-occur-previous-line)))
 
   (mapc (pcase-lambda (`[,olddef ,newdef ,oldmap])
           (substitute-key-definition olddef newdef ivy-minibuffer-map oldmap))
@@ -2967,8 +2962,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'js2-mode
   (blc-define-keys
     (js2-mode-map
-     ("\r" . #'js2-line-break)
-     ([?\M-.]))))
+     ([?\M-.] nil t)
+     ("\r"    #'js2-line-break))))
 
 ;;;; js2-refactor
 
@@ -3082,8 +3077,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'man
   (blc-define-keys
     (Man-mode-map
-     ("]" . #'blc-man-next-buffer)
-     ("[" . #'blc-man-previous-buffer))))
+     ("]" #'blc-man-next-buffer)
+     ("[" #'blc-man-previous-buffer))))
 
 ;;;; markdown-mode
 
