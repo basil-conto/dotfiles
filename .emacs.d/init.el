@@ -1432,7 +1432,6 @@ created.  FRAME defaults to the selected one."
  helm-make-require-match                nil
 
  ;; help
- describe-bindings-outline              t
  help-window-select                     'other
 
  ;; holidays
