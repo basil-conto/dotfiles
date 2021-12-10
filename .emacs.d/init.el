@@ -364,38 +364,6 @@ Offer all entities found in `org-entities-user' and
 (defvar-local blc-project 'unset
   "Per-buffer cached `project-current' or `unset'.")
 
-(defvar blc--project-death-row ()
-  "List of buffers `project-kill-buffers' is about to kill.")
-
-(defun blc--project-death-row ()
-  "Print `blc--project-death-row' to `standard-output'."
-  (dolist (buf (prog1 blc--project-death-row
-                 (setq blc--project-death-row ())))
-    (princ buf)
-    (terpri)))
-
-(define-advice project--buffers-to-kill (:filter-return (bufs) blc-store)
-  "Store buffers about to be killed."
-  (setq blc--project-death-row bufs))
-
-(define-advice project-kill-buffers (:around (&rest args) blc-list)
-  "List buffers `project-kill-buffers' is about to kill."
-  (let* ((buf (get-buffer-create " *Project Buffers*" t))
-         ;; See `dired-mark-pop-up'.
-         (win (display-buffer buf `(display-buffer-below-selected
-                                    (window-height . fit-window-to-buffer)
-                                    (preserve-size . (nil . t)))))
-         (standard-output buf))
-    (blc-with-nonce yes-or-no-p :around
-                    (lambda (&rest args)
-                      (unwind-protect
-                          (progn (blc--project-death-row)
-                                 (fit-window-to-buffer win)
-                                 (apply args))
-                        (when (window-live-p win)
-                          (quit-restore-window win 'kill))))
-      (apply args))))
-
 ;;;; python
 
 (define-advice python-shell-make-comint (:around (&rest args) blc-dumb-term)
@@ -1756,6 +1724,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
    (derived-mode . diff-mode)
    (derived-mode . dired-mode)
    (derived-mode . magit-section-mode))
+ project-kill-buffers-display-buffer-list
+ t
  project-list-file                      (blc-file blc-index-dir "projects")
  project-switch-use-entire-map          t
 
