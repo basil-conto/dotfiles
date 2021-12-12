@@ -2009,6 +2009,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                                  messages-buffer-mode-hook
                                                  minibuffer-setup-hook
                                                  nov-mode-hook
+                                                 sqlite-mode-hook
                                                  term-mode-hook
                                                  youtube-dl-list-mode-hook))
 
