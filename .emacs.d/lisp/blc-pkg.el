@@ -170,9 +170,7 @@ Visit `package-user-dir' if such a directory is not found."
    gif-screencast
    git-annex
    git-commit
-   gitattributes-mode
-   gitconfig-mode
-   gitignore-mode
+   git-modes
    gnus-desktop-notify
    go-mode
    google-contacts
