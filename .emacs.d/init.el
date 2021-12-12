@@ -2667,6 +2667,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
      ([remap eww-open-in-new-buffer] #'blc-eww-open-in-other-window)
      ("T"                            #'blc-eww-toggle-images))))
 
+;;;; faces
+
+;; Consistently avoid variable-pitch mode line.
+(dolist (face '(mode-line-active mode-line-inactive))
+  (pcase (face-attribute face :inherit)
+    ((and (pred consp) (pred (memq 'variable-pitch)) inherit)
+     (set-face-attribute face nil :inherit (remq 'variable-pitch inherit)))
+    ('variable-pitch
+     (set-face-attribute face nil :inherit nil))))
+
 ;;;; files
 
 (add-to-list 'safe-local-variable-values
