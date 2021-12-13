@@ -3266,6 +3266,10 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
         `((auto-mode-alist  . ,(rx ".pdf" eos))
           (magic-mode-alist . "%PDF")))
 
+;;;; pixel-scroll
+
+(pixel-scroll-precision-mode)
+
 ;;;; project
 
 (with-eval-after-load 'project
