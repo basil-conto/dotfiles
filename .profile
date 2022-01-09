@@ -2,14 +2,9 @@
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
 
-if [ -z "${BASH_VERSION}" ]; then
-  opt=p
-else
-  opt=u
-  [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
-fi
-ulimit -${opt} 1024
-unset opt
+[ -n "${BASH_VERSION}" ]      \
+  && [ -r "${HOME}/.bashrc" ] \
+  && . "${HOME}/.bashrc"
 
 export ALTERNATE_EDITOR=              # Lazy emacs daemonisation
 export CACA_DRIVER=ncurses            # libcaca
