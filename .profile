@@ -38,6 +38,13 @@ if [ -d "${HOME}/.bibs" ]; then
   export BIBINPUTS="$(realpath -- "${HOME}/.bibs"):${BIBINPUTS}"
 fi
 
+# Gnulib
+if [ -d "${LOCAL_DIR}/src/gnulib" ]; then
+  export GNULIB_SRCDIR="${LOCAL_DIR}/src/gnulib"
+elif [ -d /usr/share/gnulib ]; then
+  export GNULIB_SRCDIR=/usr/share/gnulib
+fi
+
 # OPAM (see ~/.opam/opam-init/init.sh)
 if [ -r "${HOME}/.opam/opam-init/variables.sh" ]; then
   . "${HOME}/.opam/opam-init/variables.sh" >/dev/null 2>&1
