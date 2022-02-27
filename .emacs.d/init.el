@@ -1113,7 +1113,7 @@ created.  FRAME defaults to the selected one."
  show-trailing-whitespace               t
 
  ;; xfns.c
- x-gtk-use-system-tooltips              nil
+ use-system-tooltips                    nil
 
  ;; xterm.c
  x-wait-for-event-timeout               0.2
@@ -1720,6 +1720,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  `(buffer-file-name
    (and ,(rx bos (not ?\s))
         (major-mode . fundamental-mode))
+   (derived-mode . change-log-mode)
+   (derived-mode . comint-mode)
    (derived-mode . compilation-mode)
    (derived-mode . diff-mode)
    (derived-mode . dired-mode)
