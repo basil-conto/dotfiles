@@ -1847,6 +1847,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; tramp-cache
  tramp-persistency-file-name            (blc-file blc-index-dir "tramp")
 
+ ;; tramp-sh
+ tramp-use-scp-direct-remote-copying    t
+
  ;; transient
  transient-enable-popup-navigation      t
 
