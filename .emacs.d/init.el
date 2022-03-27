@@ -1568,6 +1568,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; mml-sec
  mml-secure-verbose                     t
 
+ ;; modus-themes
+ modus-themes-completions               '((t accented background intense))
+
  ;; mpc
  mpc-frame-alist                        '((tool-bar-lines . 1))
 
