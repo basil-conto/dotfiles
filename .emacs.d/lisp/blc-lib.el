@@ -310,9 +310,11 @@ for compatibility with `browse-url' and ignored."
 
 (defun blc-system-procs-by-attr (attr &optional def)
   "Return ATTR or DEF of all running processes."
-  (mapcar (lambda (pid)
-            (alist-get attr (process-attributes pid) def))
-          (list-system-processes)))
+  ;; Look only at local, not remote, processes.
+  (let ((default-directory temporary-file-directory))
+    (mapcar (lambda (pid)
+              (alist-get attr (process-attributes pid) def))
+            (list-system-processes))))
 
 ;;; Buffers
 
