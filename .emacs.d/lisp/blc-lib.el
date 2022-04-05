@@ -314,46 +314,6 @@ for compatibility with `browse-url' and ignored."
             (alist-get attr (process-attributes pid) def))
           (list-system-processes)))
 
-(defun blc--dropbox (shell &rest args)
-  "Call external dropbox daemon with ARGS.
-Use `shell-command' when SHELL is non-nil."
-  (if-let* ((nom "dropbox")
-            (cmd (cons nom args))
-            (buf (get-buffer-create (format "*%s*" nom)))
-            (shell))
-      (shell-command (string-join cmd " ") buf)
-    (with-current-buffer buf
-      (insert (propertize (format-time-string "%F %T") 'font-lock-face 'shadow)
-              ?\n)
-      (make-process :name            nom
-                    :buffer          buf
-                    :command         cmd
-                    :connection-type 'pty
-                    :filter          #'comint-output-filter)
-      (unless (derived-mode-p #'shell-mode)
-        (shell-mode)))))
-
-(defun blc-dropbox-status (&optional shell)
-  "Print status of external dropbox daemon.
-Use `shell-command' when called interactively."
-  (interactive "p")
-  (blc--dropbox shell "status"))
-
-(defun blc-dropbox-start (&optional shell)
-  "Start external dropbox daemon.
-Use `async-shell-command' when called interactively."
-  (interactive "p")
-  (when (or shell
-            (not (seq-some (apply-partially #'equal "dropbox")
-                           (blc-system-procs-by-attr 'comm ""))))
-    (blc--dropbox shell "start" "&")))
-
-(defun blc-dropbox-stop (&optional shell)
-  "Stop external dropbox daemon.
-Use `async-shell-command' when called interactively."
-  (interactive "p")
-  (blc--dropbox shell "stop" "&"))
-
 ;;; Buffers
 
 (defvar blc-gnus-log-buffers '("*imap log*" "*nntp-log*")
@@ -714,35 +674,6 @@ overrides them."
   "Target maximum number of characters per line.")
 
 ;;; Modes
-
-(defvar blc-dropbox-timers ()
-  "List of active timers for `blc-dropbox-mode'.")
-
-(defvar blc-dropbox-interval (blc-mins-to-secs 5)
-  "Number of seconds between dropbox start/stop runs.")
-
-(defun blc-turn-off-dropbox-mode ()
-  "Disable `blc-dropbox-mode'."
-  (blc-turn-off #'blc-dropbox-mode))
-
-(define-minor-mode blc-dropbox-mode
-  "Periodically start/stop dropbox with timers."
-  :global t
-  :group  'blc
-  (if blc-dropbox-mode
-      (progn
-        (setq blc-dropbox-timers
-              (map-apply (lambda (off fn)
-                           (run-at-time (blc-mins-to-secs off)
-                                        blc-dropbox-interval
-                                        fn))
-                         `((1 . ,#'blc-dropbox-start)
-                           (2 . ,#'blc-dropbox-stop))))
-        (add-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode))
-    (remove-hook 'kill-emacs-hook #'blc-turn-off-dropbox-mode)
-    (while blc-dropbox-timers
-      (cancel-timer (pop blc-dropbox-timers)))
-    (blc-dropbox-stop)))
 
 (defalias 'blc-rainbow--faces
   (thunk-delay

@@ -1279,10 +1279,6 @@ created.  FRAME defaults to the selected one."
  ;; doc-view
  doc-view-resolution                    150
 
- ;; dropbox
- dropbox-locale                         "en_IE"
- dropbox-verbose                        t
-
  ;; eldoc
  eldoc-echo-area-prefer-doc-buffer      t
  eldoc-echo-area-use-multiline-p        t
@@ -2824,8 +2820,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                     (or (name . "Async Shell Command")
                         (name . "Backtrace")
                         (name . "Warnings")
-                        (name . "WoMan-Log")
-                        (name . "dropbox")))))
+                        (name . "WoMan-Log")))))
           ("PDF" (derived-mode . pdf-view-mode))
           ("Image" (derived-mode . image-mode))
           ("Process" (or (process) (derived-mode . eshell-mode)))
