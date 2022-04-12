@@ -23,7 +23,7 @@ import Graphics.X11.ExtraTypes.XF86       ( xF86XK_AudioLowerVolume
                                           , xF86XK_ScreenSaver )
 import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
                                           , xK_Print, xK_a, xK_d, xK_f, xK_l
-                                          , xK_o, xK_s, xK_u )
+                                          , xK_o, xK_s, xK_u, xK_v )
 import System.Directory                   ( getHomeDirectory )
 import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
@@ -34,7 +34,7 @@ import XMonad.Util.EZConfig               ( additionalKeys )
 import XMonad.Util.Run                    ( safeSpawn, safeSpawnProg )
 
 pactl :: String -> Int -> [String]
-pactl s n = case n of 0 -> cmd "mute"   $ "toggle"
+pactl s n = case n of 0 -> cmd "mute" "toggle"
                       _ -> cmd "volume" $ printf "%+d%%" n
   where def     = printf "@DEFAULT_%s@" $ map toUpper s
         cmd k v = ["pactl", printf "set-%s-%s" s k, def, v]
@@ -88,6 +88,7 @@ main = do
              , (xK_f, ["nautilus"        ])
              , (xK_o, ["passmenu"        ])
              , (xK_s, ["sensible-browser"])
+             , (xK_v, ["pavucontrol"     ])
              ]
 
     ++
