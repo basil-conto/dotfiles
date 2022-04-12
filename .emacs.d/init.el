@@ -2347,7 +2347,11 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 (with-eval-after-load 'latex
   (add-to-list 'LaTeX-clean-intermediate-suffixes
                (regexp-opt blc-tex-auxtensions))
-  (auctex-latexmk-setup))
+  (blc-with-nonce require :around
+                  (lambda (fn feature &rest args)
+                    (unless (eq feature 'tex-buf)
+                      (apply fn feature args)))
+    (auctex-latexmk-setup)))
 
 (with-eval-after-load 'tex
   (blc-define-keys
