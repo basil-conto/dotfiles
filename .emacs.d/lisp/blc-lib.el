@@ -104,7 +104,7 @@ TESTFN is as in `alist-get'."
   "Evaluate BODY in a buffer with the contents of file PATH.
 Return result of last form in BODY or nil if PATH is unreadable."
   (declare (indent 1) (debug t))
-  (macroexp-let2 nil path path
+  (macroexp-let2* (path)
     `(when (file-readable-p ,path)
        (with-temp-buffer
          (insert-file-contents ,path)
@@ -582,7 +582,7 @@ of the alist BINDINGS of the form (KEY DEF [REMOVE]),
   (declare (indent 0))
   (macroexp-progn
    (map-apply (lambda (map bindings)
-                (macroexp-let2 nil map map
+                (macroexp-let2* (map)
                   (macroexp-progn
                    (map-apply (lambda (key def)
                                 `(define-key ,map ,key ,(car def) ,(cadr def)))
@@ -592,7 +592,7 @@ of the alist BINDINGS of the form (KEY DEF [REMOVE]),
 (defmacro blc-with-nonce (sym where fn &rest body)
   "Run BODY with SYM temporarily advised at WHERE by FN."
   (declare (indent 3))
-  (macroexp-let2 nil fn fn
+  (macroexp-let2* (fn)
     `(unwind-protect
          ,(macroexp-progn
            `((advice-add ',sym ,where ,fn)
