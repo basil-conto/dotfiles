@@ -11,9 +11,9 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'image)
-  (defvar gnus-mode-line-image-cache))
+  (require 'image))
 
+(defvar gnus-mode-line-image-cache)
 (autoload 'image--set-property "image")
 
 (deftheme blc-dark
