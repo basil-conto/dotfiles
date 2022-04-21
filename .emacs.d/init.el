@@ -359,15 +359,6 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
-;;;; pdf-tools
-
-(define-advice pdf-tools-locate-build-directory (:after-until () blc-fix-dir)
-  "Look for directory `server' in correct place.
-See URL `https://github.com/vedang/pdf-tools/issues/90'."
-  (defvar pdf-tools-directory)
-  (pdf-tools-identify-build-directory
-   (expand-file-name "server" pdf-tools-directory)))
-
 ;;;; project
 
 (defvar-local blc-project 'unset
