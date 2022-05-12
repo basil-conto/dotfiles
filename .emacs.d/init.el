@@ -1100,6 +1100,9 @@ created.  FRAME defaults to the selected one."
  ;; terminal.c
  ring-bell-function                     #'ignore
 
+ ;; timefns.c
+ current-time-list                      nil
+
  ;; window.c
  fast-but-imprecise-scrolling           t
  recenter-redisplay                     nil
