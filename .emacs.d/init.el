@@ -2420,6 +2420,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (let ((name "blc"))
     (c-add-style name '("linux"
                         (c-basic-offset . 2)
+                        (indent-tabs-mode . nil)
                         (c-offsets-alist
                          (access-label      .  /)
                          (arglist-close     .  0)
