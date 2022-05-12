@@ -434,7 +434,7 @@ with a prefix argument, read MODE with completion."
                                     t nil 'extended-command-history
                                     (symbol-name initial-major-mode))))))
   (if (or (not mode) (eq mode initial-major-mode))
-      (pop-to-buffer (startup--get-buffer-create-scratch))
+      (pop-to-buffer (get-scratch-buffer-create))
     (pop-to-buffer (format "*scratch-%s*"
                            (string-remove-suffix "-mode" (symbol-name mode))))
     (call-interactively mode)))
