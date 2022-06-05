@@ -104,11 +104,9 @@ TESTFN is as in `alist-get'."
   "Evaluate BODY in a buffer with the contents of file PATH.
 Return result of last form in BODY or nil if PATH is unreadable."
   (declare (indent 1) (debug t))
-  (macroexp-let2* (path)
-    `(when (file-readable-p ,path)
-       (with-temp-buffer
-         (insert-file-contents ,path)
-         ,@body))))
+  `(with-temp-buffer
+     (when (ignore-error file-error (insert-file-contents ,path))
+       ,@body)))
 
 (defun blc-file (&rest paths)
   "Join PATHS as a file truename."

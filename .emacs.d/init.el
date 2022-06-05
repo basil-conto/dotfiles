@@ -361,6 +361,14 @@ Offer all entities found in `org-entities-user' and
 
 ;;; Definitions
 
+;;;; process.c
+
+(defun blc-pipe-max-size ()
+  "Return maximum Linux pipe size in bytes, or nil on failure."
+  (blc-with-contents "/proc/sys/fs/pipe-max-size"
+    (let ((obj (read (current-buffer))))
+      (and (natnump obj) obj))))
+
 ;;;; ansi-color
 
 (defun blc-turn-off-ansi-compilation ()
@@ -1096,6 +1104,10 @@ created.  FRAME defaults to the selected one."
  ;; print.c
  print-circle                           t
  print-gensym                           t
+
+ ;; process.c
+ read-process-output-max                (or (blc-pipe-max-size)
+                                            read-process-output-max)
 
  ;; terminal.c
  ring-bell-function                     #'ignore
