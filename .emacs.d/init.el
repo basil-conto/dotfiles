@@ -57,34 +57,11 @@
 
 ;;;; battery
 
-(defvar blc-battery-id nil
-  "ID of last battery notification or nil.")
-
-(defun blc-battery-notify (alist &optional id)
-  "Send a low battery notification optionally replacing ID.
-ALIST is like that returned by `battery-status-function'."
-  (notifications-notify :title "Low Battery"
-                        :body (format "%s%% (%s mins) remaining"
-                                      (alist-get ?p alist)
-                                      (alist-get ?m alist))
-                        :replaces-id id
-                        :urgency 'critical
-                        :image-path "battery-caution"))
-
-(define-advice battery-upower (:filter-return (alist) blc-notify-critical)
-  "Send a notification if battery load percentage is critical.
-Also transcribe AC line status in ALIST to Unicode."
-  (let* ((load (read (alist-get ?p alist)))
-         (line (assq ?L alist))
-         (ac   (string-equal (cdr line) "on-line")))
-    (setcdr line (if ac "🔌" "🔋"))
-    (cond ((and (not ac) (numberp load) (<= load battery-load-critical))
-           (let ((new (blc-battery-notify alist blc-battery-id)))
-             (or blc-battery-id (setq blc-battery-id new))))
-          (blc-battery-id
-           (notifications-close-notification
-            (prog1 blc-battery-id (setq blc-battery-id nil))))))
-  alist)
+(define-advice battery-upower (:filter-return (data) blc-notify-critical)
+  "Transcribe AC line status in alist DATA to Unicode."
+  (setq battery-mode-line-format
+        (if (string-equal (alist-get ?L data) "on-line") "🔌" "🔋"))
+  data)
 
 ;;;; browse-url
 
@@ -424,6 +401,29 @@ Like `TeX-doc', but with prefix ARG pass it to
   "Locally enable `auto-revert-mode' without revert messages."
   (auto-revert-mode)
   (setq-local auto-revert-verbose nil))
+
+;;;; battery
+
+(defvar blc-battery-id nil
+  "ID of last battery notification or nil.")
+
+(defun blc-battery-notify (data)
+  "Send a notification if battery load percentage is critical.
+DATA is the alist passed to `battery-update-functions'."
+  (let ((load (read (alist-get ?p data)))
+        (ac   (string-equal (alist-get ?L data) "on-line")))
+    (cond ((and (not ac) (numberp load) (<= load battery-load-critical))
+           (let ((new (notifications-notify
+                       :title "Low Battery"
+                       :body (format "%s%% (%s mins) remaining"
+                                     load (alist-get ?m data))
+                       :replaces-id blc-battery-id
+                       :urgency 'critical
+                       :image-path "battery-caution")))
+             (or blc-battery-id (setq blc-battery-id new))))
+          (blc-battery-id
+           (notifications-close-notification
+            (prog1 blc-battery-id (setq blc-battery-id nil)))))))
 
 ;;;; bbdb
 
@@ -1147,7 +1147,6 @@ created.  FRAME defaults to the selected one."
 
  ;; battery
  battery-load-low                       20
- battery-mode-line-format               "%L"
 
  ;; bbdb
  bbdb-default-country                   nil
@@ -1997,6 +1996,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   ;; auth-source
   (:hooks auth-source-backend-parser-functions
           :fns auth-source-pass-backend-parse)
+
+  ;; battery
+  (:hooks battery-update-functions :fns blc-battery-notify)
 
   ;; bbdb
   (:hooks gnus-after-exiting-gnus-hook :fns blc-kill-bbdb-buffer)
