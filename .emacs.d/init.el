@@ -2643,12 +2643,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 ;;;; eglot
 
 (with-eval-after-load 'eglot
-  (let ((modes (list #'c++-mode #'c-mode))
-        ;; Don't litter projects with `ccls' cache files.
-        (init (json-serialize
-               `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls"))))))
-    (dolist (server `(("ccls" ,(concat "--init=" init)) ("clangd")))
-      (push (cons modes server) eglot-server-programs))))
+  (let* ((modes (list #'c++-mode #'c-mode))
+         ;; Don't litter projects with `ccls' cache files.
+         (init `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls"))))
+         ;; TODO: Replace --init with :initializationOptions when
+         ;; https://github.com/joaotavora/eglot/issues/940 is fixed.
+         (alts `("clangd" ("ccls" ,(concat "--init=" (json-serialize init))))))
+    (push (cons modes (eglot-alternatives alts)) eglot-server-programs)))
 
 ;;;; engine-mode
 
