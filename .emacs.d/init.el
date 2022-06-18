@@ -1967,7 +1967,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
        #'shell-mode
        #'wdired-mode)
  whitespace-style
- '(face lines-tail missing-newline-at-eof tab-mark)
+ '(face lines-char missing-newline-at-eof tab-mark)
 
  ;; wid-edit
  widget-menu-minibuffer-flag            t
