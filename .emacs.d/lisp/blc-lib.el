@@ -401,10 +401,9 @@ See URL `http://emacsblog.org/2007/01/17/indent-whole-buffer/'."
 
 (defun blc-move-to-column (col)
   "Like `move-to-column', but extend short lines if needed."
+  ;; Sync with (interactive-form #'move-to-column).
+  (interactive "NMove to column: ")
   (move-to-column col t))
-
-(function-put
- #'blc-move-to-column 'interactive-form (interactive-form #'move-to-column))
 
 (defun blc-indent-relative (&optional below)
   "Indent relative to previous or next line.

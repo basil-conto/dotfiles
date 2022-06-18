@@ -34,6 +34,7 @@
 (autoload 'blc-mbsync-all                   "blc-mbsync" nil t)
 (autoload 'blc-mbsync-deduplicate           "blc-mbsync" nil t)
 (autoload 'blc-mbsync-maximise-uid          "blc-mbsync" nil t)
+(autoload 'browse-url-interactive-arg       "browse-url")
 (autoload 'debbugs-gnu-apply-patch          "debbugs-gnu" nil t)
 (autoload 'debbugs-gnu-find-contributor     "debbugs-gnu" nil t)
 (autoload 'debbugs-gnu-make-control-message "debbugs-gnu" nil t)
@@ -486,6 +487,8 @@ Call CALLBACK with no arguments on success."
 (defun blc-print-url (url &rest _)
   "Print contents of URL.
 See `browse-url' for a description of the arguments."
+  ;; Sync with (interactive-form #'browse-url).
+  (interactive (browse-url-interactive-arg "URL: "))
   (require 'eww)
   (let ((mime   (mailcap-file-name-to-mime-type url))
         (remote (url-handler-file-remote-p url)))
@@ -499,11 +502,11 @@ See `browse-url' for a description of the arguments."
              (blc-print-url--webkit
               url tmp (apply-partially #'blc-print-url--lpr tmp)))))))
 
-(function-put #'blc-print-url 'interactive-form (interactive-form #'browse-url))
-
 (defun blc-print-url-pdf (url &rest _)
   "Save contents of URL as a PDF file.
 See `browse-url' for a description of the arguments."
+  ;; Sync with (interactive-form #'browse-url).
+  (interactive (browse-url-interactive-arg "URL: "))
   (cond ((not (equal (mailcap-file-name-to-mime-type url) "application/pdf"))
          (let* ((base (file-name-sans-extension (url-file-nondirectory url)))
                 (pdf  (blc-read-file (blc--url-fmt "Save URL `%s' to: " url)
@@ -513,9 +516,6 @@ See `browse-url' for a description of the arguments."
          (blc-download url))
         (t
          (message "PDF `%s' already saved" url))))
-
-(function-put
- #'blc-print-url-pdf 'interactive-form (interactive-form #'browse-url))
 
 (defun blc-browse-url-surf (&rest args)
   "Like `browse-url-generic', but using the Surf browser."
@@ -550,15 +550,14 @@ See `browse-url' for a description of the arguments."
   "Read WWW browser name to open URL with completion.
 See `blc-browser-alist' for known browsers and `browse-url' for a
 description of the arguments to this function."
+  ;; Sync with (interactive-form #'browse-url).
+  (interactive (browse-url-interactive-arg "URL: "))
   (let* ((prompt  (if (string-blank-p url)
                       "Open browser: "
                     (blc--url-fmt "Open URL `%s' in: " url)))
          (browser (blc-get blc-browser-alist
                            (completing-read prompt blc-browser-alist nil t))))
     (when browser (apply browser url args))))
-
-(function-put
- #'blc-browse-url 'interactive-form (interactive-form #'browse-url))
 
 ;;;; compile
 
