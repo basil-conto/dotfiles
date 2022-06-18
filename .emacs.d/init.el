@@ -1735,14 +1735,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  project-kill-buffer-conditions
  `(buffer-file-name
    (and ,(rx bos (not ?\s))
-        ,(lambda (buf)
-           (not (eq (buffer-local-value 'major-mode buf) #'fundamental-mode))))
-   (major-mode . change-log-mode)
-   (major-mode . comint-mode)
-   (major-mode . compilation-mode)
-   (major-mode . diff-mode)
-   (major-mode . dired-mode)
-   (major-mode . magit-section-mode))
+        (major-mode . fundamental-mode))
+   (derived-mode . change-log-mode)
+   (derived-mode . comint-mode)
+   (derived-mode . compilation-mode)
+   (derived-mode . diff-mode)
+   (derived-mode . dired-mode)
+   (derived-mode . magit-section-mode))
  project-kill-buffers-display-buffer-list
  t
  project-list-file                      (blc-file blc-index-dir "projects")
