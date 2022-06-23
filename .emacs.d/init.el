@@ -337,6 +337,16 @@ Offer all entities found in `org-entities-user' and
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
+;;;; pdf-tools
+
+(defun blc-pdf-tools-install (&rest _)
+  "Install `pdf-tools' in a deferred way.
+Uninstall self as advice on `pdf-view-mode'."
+  (advice-remove #'pdf-view-mode #'blc-pdf-tools-install)
+  (pdf-tools-install nil t))
+
+(advice-add #'pdf-view-mode :before #'blc-pdf-tools-install)
+
 ;;;; project
 
 (defvar-local blc-project 'unset
@@ -921,12 +931,12 @@ Defaults to `org-directory' and `org-default-notes-file'."
 Uninstall self from `auto-mode-alist' and `magic-mode-alist', as
 `pdf-tools-install' will install itself there.  Intended as a
 deferred way of autoloading the `pdf-tools' package."
-  (unless (with-demoted-errors "Error activating PDF Tools: %S"
-            (pdf-tools-install nil t)
-            t)
-    (doc-view-mode-maybe))
   (dolist (sym '(auto-mode-alist magic-mode-alist))
-    (set sym (rassq-delete-all #'blc-pdf-tools-defer (symbol-value sym)))))
+    (set sym (rassq-delete-all #'blc-pdf-tools-defer (symbol-value sym))))
+  (unless (with-demoted-errors "Error activating PDF Tools: %S"
+            (blc-pdf-tools-install)
+            t)
+    (doc-view-mode-maybe)))
 
 ;;;; project
 
