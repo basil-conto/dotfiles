@@ -120,10 +120,6 @@ Return result of last form in BODY or nil if PATH is unreadable."
   "Join PATHS as a directory truename."
   (file-name-as-directory (apply #'blc-file paths)))
 
-(defun blc-parent-dir (path)
-  "Return parent directory of absolute PATH."
-  (file-name-directory (directory-file-name path)))
-
 (defun blc-file-lessp (file1 file2)
   "Return non-nil if FILE1 precedes FILE2.
 Order is breadth-first lexicographic."
@@ -148,7 +144,7 @@ Order is breadth-first lexicographic."
 (defvar blc-index-dir (blc-dir user-emacs-directory "index")
   "Directory containing bookmarks, caches, symlinks, etc.")
 
-(defvar blc-dataroot-dir (blc-parent-dir data-directory)
+(defvar blc-dataroot-dir (file-parent-directory data-directory)
   "Machine-independent data root directory.")
 
 (defun blc-dataroot-to-src (file)
@@ -512,19 +508,6 @@ Display is determined by the environment variable DISPLAY."
   "Delegate to `delete-frame' unless FRAME is alone in terminal."
   (unless (eq (next-frame) (selected-frame))
     (delete-frame frame force)))
-
-(defun blc-set-font-height (height &optional frame)
-  "Set font HEIGHT in 1/10 pt for FRAME.
-When called interactively without a prefix argument, or when
-FRAME is nil, set font height for the current as well as all new
-frames."
-  (interactive (list (read-face-attribute 'default :height)
-                     (and current-prefix-arg (selected-frame))))
-  (let ((font (format "%s-%d" (face-attribute 'default :family) (/ height 10))))
-    (funcall (if frame
-                 (apply-partially #'modify-frame-parameters frame)
-               #'modify-all-frames-parameters)
-             `((font . ,font)))))
 
 (defun blc-export-frame (file &optional type &rest frames)
   "Export image data of FRAMES in TYPE format to FILE.
