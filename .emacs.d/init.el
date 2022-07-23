@@ -1191,6 +1191,7 @@ created.  FRAME defaults to the selected one."
  ;; browse-url
  browse-url-browser-function            #'blc-browse-url
  browse-url-firefox-new-window-is-tab   t
+ browse-url-default-scheme              "https"
 
  ;; calendar
  calendar-christian-all-holidays-flag   t
