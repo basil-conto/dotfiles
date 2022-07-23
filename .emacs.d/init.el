@@ -73,14 +73,6 @@
                     (apply #'call-process prog nil 0 nil args))
     (apply fn args)))
 
-;;;; eldoc
-
-(define-advice eldoc--format-doc-buffer (:filter-return (buf) blc-nbsp)
-  "Ignore non-ASCII space and hyphen chars in ElDoc buffer."
-  (with-current-buffer buf
-    (blc-turn-off-trailing-whitespace))
-  buf)
-
 ;;;; elisp-mode
 
 (define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
@@ -968,13 +960,6 @@ deferred way of autoloading the `pdf-tools' package."
   (unless redtick-mode
     (cancel-timer redtick--timer)
     (redtick--stop-sound)))
-
-;;;; simple
-
-(defun blc-messages-trailing-whitespace ()
-  "Disable `show-trailing-whitespace' in *Messages* buffer."
-  (with-current-buffer (messages-buffer)
-    (blc-turn-off-trailing-whitespace)))
 
 ;;;; solar
 
@@ -2028,25 +2013,15 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
   (:hooks bibtex-mode-hook :fns auto-revert-mode)
 
   ;; blc-lib
-  (:fns blc-turn-off-trailing-whitespace :hooks (5x5-mode-hook
-                                                 Info-mode-hook
-                                                 calendar-mode-hook
+  (:fns blc-turn-off-trailing-whitespace :hooks (calendar-mode-hook
                                                  comint-mode-hook
                                                  compilation-mode-hook
                                                  eshell-mode-hook
-                                                 eww-buffers-mode-hook
-                                                 eww-mode-hook
-                                                 help-mode-hook
-                                                 image-dired-thumbnail-mode
-                                                 log-view-mode-hook
                                                  logview-mode-hook
                                                  message-mode-hook
-                                                 messages-buffer-mode-hook
                                                  minibuffer-setup-hook
-                                                 nov-mode-hook
-                                                 sqlite-mode-hook
-                                                 term-mode-hook
-                                                 youtube-dl-list-mode-hook))
+                                                 special-mode-hook
+                                                 term-mode-hook))
 
   ;; bog
   (:hooks org-mode-hook :fns bog-mode)
@@ -2176,8 +2151,7 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
                                           org-mode-hook))
 
   ;; startup
-  (:hooks window-setup-hook :depth t :fns (blc-messages-trailing-whitespace
-                                           blc-report-init-time))
+  (:hooks window-setup-hook :depth t :fns blc-report-init-time)
 
   ;; term
   (:hooks term-exec-hook :fns blc-term-rename)
