@@ -2927,9 +2927,9 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 ;;;; jq-mode
 
-(pcase-dolist ((`(,feature . ,map)
-                '((js        . js-mode-map)
-                  (json-mode . json-mode-map))))
+(pcase-dolist (`(,feature . ,map)
+               '((js        . js-mode-map)
+                 (json-mode . json-mode-map)))
   (with-eval-after-load feature
     (define-key map "\C-c\C-q" #'jq-interactively)))
 
