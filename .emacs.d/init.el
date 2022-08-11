@@ -1861,9 +1861,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; tramp-sh
  tramp-use-scp-direct-remote-copying    t
 
- ;; transient
- transient-enable-popup-navigation      t
-
  ;; type-break
  type-break-demo-boring-stats           t
  type-break-file-name                   nil
