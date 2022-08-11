@@ -2930,10 +2930,16 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 ;;;; jq-mode
 
-(with-eval-after-load 'json-mode
-  (define-key json-mode-map "\C-c\C-q" #'jq-interactively))
+(pcase-dolist ((`(,feature . ,map)
+                '((js        . js-mode-map)
+                  (json-mode . json-mode-map))))
+  (with-eval-after-load feature
+    (define-key map "\C-c\C-q" #'jq-interactively)))
 
 ;;;; js
+
+(add-to-list 'auto-mode-alist (cons (rx ?. (| "jl" "jsonl") eos)
+                                    #'js-json-mode))
 
 (with-eval-after-load 'js
   (setq-default js-enabled-frameworks
@@ -2957,10 +2963,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'js2-refactor
   (js2r-add-keybindings-with-prefix "\C-c\C-m"))
-
-;;;; json-mode
-
-(add-to-list 'auto-mode-alist (cons (rx ?. (| "jl" "jsonl") eos) #'json-mode))
 
 ;;;; ledger-mode
 
