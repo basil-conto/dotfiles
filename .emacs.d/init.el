@@ -178,30 +178,6 @@ for example excludes the effect of `ivy-format-functions-alist'."
                     (funcall get buf 'visible))
     (apply args)))
 
-;;;; magit-extras
-
-(define-advice magit-pop-revision-stack
-    (:around (&rest args) blc-message-narrow-to-body)
-  "Narrow to `message-mode' body before popping a revision."
-  (let ((mail (derived-mode-p #'message-mode)))
-    (save-restriction
-      (when mail
-        (narrow-to-region (if (message-in-body-p)
-                              (save-excursion (message-goto-body))
-                            (point-min))
-                          (save-excursion
-                            (when (message-goto-signature)
-                              (re-search-backward message-signature-separator)
-                              (end-of-line 0))
-                            (point))))
-      (apply args))
-    (save-excursion
-      (and mail
-           (message-goto-signature)
-           (re-search-backward message-signature-separator)
-           (or (= (bol 0) (eol 0))
-               (insert ?\n))))))
-
 ;;;; magit-log
 
 (define-advice magit-log-maybe-update-revision-buffer
@@ -1500,6 +1476,12 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
  ;; magit-extras
  magit-bind-magit-project-status        nil
+ ;; Adapted from URL `https://github.com/npostavs/emacs.d'
+ magit-pop-revision-stack-format
+ '("%s
+%h %ci
+https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
+   nil nil)
 
  ;; magit-git
  magit-list-refs-sortby                 "-creatordate"
@@ -2990,19 +2972,6 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
 
 (with-eval-after-load 'magit
   (require 'blc-magit))
-
-;;;; magit-extras
-
-(with-eval-after-load 'magit-extras
-  ;; Adapted from URL `https://github.com/npostavs/emacs.d'
-  (setq-default
-   magit-pop-revision-stack-format
-   (list "format:[%N] "
-         "\
-[%N]: %s
-%h %ci
-https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
-         (caddr magit-pop-revision-stack-format))))
 
 ;;;; magit-log
 
