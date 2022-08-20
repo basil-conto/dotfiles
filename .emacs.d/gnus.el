@@ -86,9 +86,7 @@
     (with-current-buffer log
       (goto-char (point-max))
       (let ((inhibit-read-only t))
-        (delete-region (point-min)
-                       (line-beginning-position
-                        (- 1 message-log-max)))))))
+        (delete-region (point-min) (bol (- 1 message-log-max)))))))
 
 (defun blc-gnus-topic-fold ()
   "Toggle folding of current topic.

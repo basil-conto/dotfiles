@@ -199,7 +199,7 @@ for example excludes the effect of `ivy-format-functions-alist'."
       (and mail
            (message-goto-signature)
            (re-search-backward message-signature-separator)
-           (or (= (line-beginning-position 0) (line-end-position 0))
+           (or (= (bol 0) (eol 0))
                (insert ?\n))))))
 
 ;;;; magit-log
@@ -623,7 +623,7 @@ Intended as an Ivy action for `counsel-M-x'."
   (interactive)
   (defvar eww-data)
   (let ((eww-data
-         (or (get-text-property (line-beginning-position) 'eww-bookmark)
+         (or (get-text-property (bol) 'eww-bookmark)
              (user-error "No bookmark on the current line"))))
     (eww-copy-page-url)))
 
