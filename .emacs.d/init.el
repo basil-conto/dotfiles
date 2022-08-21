@@ -599,7 +599,7 @@ Intended as an Ivy action for `counsel-M-x'."
   (interactive)
   (defvar eww-data)
   (let ((eww-data
-         (or (get-text-property (bol) 'eww-bookmark)
+         (or (get-text-property (pos-bol) 'eww-bookmark)
              (user-error "No bookmark on the current line"))))
     (eww-copy-page-url)))
 
