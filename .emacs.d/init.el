@@ -1280,6 +1280,7 @@ created.  FRAME defaults to the selected one."
  ;; enwc
  enwc-ask-to-save-interfaces            nil
  enwc-default-backend                   'nm
+ enwc-display-mode-line                 nil
 
  ;; epg-config
  epg-pinentry-mode                      'loopback
