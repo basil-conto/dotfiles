@@ -1861,6 +1861,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  uniquify-min-dir-content               1
  uniquify-trailing-separator-p          t
 
+ ;; vc-git
+ vc-git-log-edit-summary-target-len     50
+
  ;; vc-hooks
  vc-handled-backends                    '(Git)
 
