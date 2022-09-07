@@ -20,6 +20,9 @@ export PSVIEWER='ecc  --no-wait'      # texdoc
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Rubbish (bin)
+
+[ -d "${LOCAL_DIR}/share/JetBrains/Toolbox/scripts" ] \
+  && PATH="${LOCAL_DIR}/share/JetBrains/Toolbox/scripts:${PATH}"
 [ -d "${HOME}/.luarocks/bin" ] && PATH="${HOME}/.luarocks/bin:${PATH}"
 [ -d "${HOME}/go/bin"        ] && PATH="${HOME}/go/bin:${PATH}"
 [ -d "${HOME}/.ghcup/bin"    ] && PATH="${PATH}:${HOME}/.ghcup/bin"
