@@ -24,7 +24,7 @@ alias psgrep='ps -A --no-headers \
 
 # directories
 alias mkdir='mkdir --parents --verbose'
-alias cdtemp='cd $(mktemp --directory)'
+alias cdtemp='cd "$(mktemp --directory)"'
 alias venture='pushd .; cd'
 
 # apt
