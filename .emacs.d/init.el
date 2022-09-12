@@ -1245,6 +1245,7 @@ created.  FRAME defaults to the selected one."
  dictionary-default-strategy            "re"
 
  ;; diff-mode
+ diff-add-log-use-relative-names        t
  diff-font-lock-prettify                t
 
  ;; dired
