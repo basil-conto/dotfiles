@@ -1756,6 +1756,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  rfc-mode-browse-input-function         #'completing-read
  rfc-mode-directory                     (car ffap-rfc-directories)
 
+ ;; rust-rustfmt
+ rust-rustfmt-switches                  ()
+
  ;; sendmail
  send-mail-function                     #'sendmail-send-it
  sendmail-program                       "msmtp"
