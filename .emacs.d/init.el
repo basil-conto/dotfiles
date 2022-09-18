@@ -186,16 +186,6 @@ for example excludes the effect of `ivy-format-functions-alist'."
   (blc-with-nonce magit-get-mode-buffer :filter-args #'butlast
     (apply args)))
 
-;;;; magit-mode
-
-(define-advice magit-display-buffer-same-window-except-diff-v1
-    (:around (&rest args) blc-visible-frames)
-  "Display Magit diff buffers across frames."
-  (blc-with-nonce display-buffer :around
-                  (lambda (display buf &optional action _frame)
-                    (funcall display buf action 'visible))
-    (apply args)))
-
 ;;;; magit-remote
 
 (define-advice magit-clone-internal
@@ -820,6 +810,31 @@ name matches REGEXP."
 Intended for `auto-revert-buffer-list-filter'."
   (not (provided-mode-derived-p (buffer-local-value 'major-mode buf)
                                 #'pdf-view-mode)))
+
+;;;; magit-mode
+
+(defun blc-magit-display-buffer (buf)
+  "Display BUF in selected window except for some modes.
+Like `magit-display-buffer-same-window-except-diff-v1', but
+consider windows on all visible frames and try to avoid selecting
+any new frames (though WMs do not always comply)."
+  (let ((mode (buffer-local-value 'major-mode (get-buffer buf))))
+    (display-buffer buf (if (provided-mode-derived-p mode
+                                                     #'magit-diff-mode
+                                                     #'magit-process-mode)
+                            '(()
+                              (inhibit-same-window     . t)
+                              (inhibit-switch-frame    . t)
+                              (pop-up-frame-parameters
+                               (no-focus-on-map        . t))
+                              (reusable-frames         . visible))
+                          '(display-buffer-same-window)))))
+
+(defun blc-magit-set-input-focus ()
+  "Set input focus on selected frame.
+Intended for `magit-post-display-buffer-hook' to work around WMs
+that ignore `inhibit-switch-frame' or `no-focus-on-map'."
+  (select-frame-set-input-focus (selected-frame)))
 
 ;;;; man
 
@@ -1490,8 +1505,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  magit-prefer-remote-upstream           t
 
  ;; magit-mode
- magit-display-buffer-function
- #'magit-display-buffer-same-window-except-diff-v1
+ magit-display-buffer-function          #'blc-magit-display-buffer
 
  ;; magit-process
  magit-process-finish-apply-ansi-colors t
@@ -2104,6 +2118,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   ;; magit-diff
   (:fns blc-turn-on-visual-lines :hooks (magit-diff-mode-hook
                                          magit-status-mode-hook))
+
+  ;; magit-mode
+  (:hooks magit-post-display-buffer-hook :fns blc-magit-set-input-focus)
 
   ;; markdown-mode
   (:hooks markdown-mode-hook :fns visual-line-mode)
