@@ -1693,6 +1693,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  org-list-demote-modify-bullet          '(("+" . "-") ("-" . "+"))
  org-list-use-circular-motion           t
 
+ ;; osc
+ osc-for-compilation-buffer             t
+
  ;; outline
  outline-minor-mode-cycle               t
 
@@ -1989,11 +1992,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;; Hooks
 
 (blc-hook
-  ;; ansi-color
-  (:hooks compilation-filter-hook :fns ansi-color-compilation-filter)
-  ;; Work around `https://bugs.gnu.org/50207'.
-  (:hooks grep-mode-hook          :fns blc-turn-off-ansi-compilation)
-
   ;; auctex
   (:hooks TeX-after-compilation-finished-functions
           :fns TeX-revert-document-buffer)
@@ -2039,6 +2037,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (:hooks comint-output-filter-functions :fns comint-osc-process-output)
 
   ;; compile
+  (:hooks compilation-filter-hook :fns (ansi-color-compilation-filter
+                                        osc-compilation-filter))
   (:hooks compilation-finish-functions :fns blc-compile-end)
   (:hooks compilation-start-hook       :fns blc-compile-start)
 
@@ -2087,6 +2087,10 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
   ;; go-mode
   (:hooks go-mode-hook :fns blc-go-whitespace-style)
+
+  ;; grep
+  ;; Work around `https://bugs.gnu.org/50207'.
+  (:hooks grep-mode-hook :fns blc-turn-off-ansi-compilation)
 
   ;; haskell-mode
   (:hooks haskell-mode-hook :fns haskell-indent-mode)
