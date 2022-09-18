@@ -2623,9 +2623,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (let* ((modes (list #'c++-mode #'c-mode))
          ;; Don't litter projects with `ccls' cache files.
          (init `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls"))))
-         ;; TODO: Replace --init with :initializationOptions when
-         ;; https://github.com/joaotavora/eglot/issues/940 is fixed.
-         (alts `("clangd" ("ccls" ,(concat "--init=" (json-serialize init))))))
+         (alts `("clangd" ("ccls" :initializationOptions ,init))))
     (push (cons modes (eglot-alternatives alts)) eglot-server-programs)))
 
 ;;;; engine-mode
