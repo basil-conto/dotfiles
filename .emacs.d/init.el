@@ -916,10 +916,10 @@ Uninstall self from `auto-mode-alist' and `magic-mode-alist', as
 deferred way of autoloading the `pdf-tools' package."
   (dolist (sym '(auto-mode-alist magic-mode-alist))
     (set sym (rassq-delete-all #'blc-pdf-tools-defer (symbol-value sym))))
-  (unless (with-demoted-errors "Error activating PDF Tools: %S"
-            (blc-pdf-tools-install)
-            t)
-    (doc-view-mode-maybe)))
+  (condition-case-unless-debug err
+      (blc-pdf-tools-install)
+    (error (lwarn 'blc :error "Error activating PDF Tools: %S" err)
+           (doc-view-mode-maybe))))
 
 ;;;; project
 
