@@ -1172,7 +1172,7 @@ created.  FRAME defaults to the selected one."
  ;; bog
  bog-citekey-file-name-separators       (rx ?.)
  bog-keymap-prefix                      "\C-cb"
- bog-root-directory                     (file-parent-directory blc-bib-dir)
+ bog-root-directory                     (file-name-parent-directory blc-bib-dir)
 
  ;; bookmark
  bookmark-default-file                  (blc-file blc-index-dir "bookmarks.el")
@@ -1245,7 +1245,7 @@ created.  FRAME defaults to the selected one."
 
  ;; debbugs
  debbugs-gnu-branch-directory
- (blc-dir (file-parent-directory source-directory) "emacs27")
+ (blc-dir (file-name-parent-directory source-directory) "emacs27")
  debbugs-gnu-emacs-current-release      "27.1"
  debbugs-gnu-send-mail-function         #'message-send-mail-with-sendmail
  debbugs-gnu-suppress-closed            nil

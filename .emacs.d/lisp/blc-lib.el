@@ -144,7 +144,7 @@ Order is breadth-first lexicographic."
 (defvar blc-index-dir (blc-dir user-emacs-directory "index")
   "Directory containing bookmarks, caches, symlinks, etc.")
 
-(defvar blc-dataroot-dir (file-parent-directory data-directory)
+(defvar blc-dataroot-dir (file-name-parent-directory data-directory)
   "Machine-independent data root directory.")
 
 (defun blc-dataroot-to-src (file)
