@@ -151,6 +151,7 @@ Order is breadth-first lexicographic."
   "Map FILE under `blc-dataroot-dir' to `source-directory'.
 Return FILE unchanged if not under `blc-dataroot-dir'."
   (if (and (stringp file)
+           (file-name-absolute-p file)
            (file-in-directory-p file blc-dataroot-dir))
       (expand-file-name (file-relative-name file blc-dataroot-dir)
                         source-directory)
