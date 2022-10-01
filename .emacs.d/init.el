@@ -2472,7 +2472,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; custom
 
 (let* ((conf (blc-file (xdg-config-home) "gtk-3.0/settings.ini"))
-       (dark (blc-with-contents conf (search-forward "dark" nil t))))
+       (dark (blc-with-contents conf
+               (search-forward "dark-theme = true" nil t))))
   (load-theme (if dark 'modus-vivendi 'modus-operandi) t))
 
 ;;;; dash
