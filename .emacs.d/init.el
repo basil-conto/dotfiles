@@ -1124,6 +1124,9 @@ created.  FRAME defaults to the selected one."
  ;; ag
  ag-highlight-search                    t
 
+ ;; ansi-osc
+ ansi-osc-for-compilation-buffer        t
+
  ;; apt-utils
  apt-utils-show-all-versions            t
 
@@ -1693,9 +1696,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  org-list-demote-modify-bullet          '(("+" . "-") ("-" . "+"))
  org-list-use-circular-motion           t
 
- ;; osc
- osc-for-compilation-buffer             t
-
  ;; outline
  outline-minor-mode-cycle               t
 
@@ -2038,7 +2038,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
   ;; compile
   (:hooks compilation-filter-hook :fns (ansi-color-compilation-filter
-                                        osc-compilation-filter))
+                                        ansi-osc-compilation-filter))
   (:hooks compilation-finish-functions :fns blc-compile-end)
   (:hooks compilation-start-hook       :fns blc-compile-start)
 
