@@ -2814,16 +2814,20 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                                    (buffer-name)))
                (predicate . (seq-some (apply-partially #'equal (buffer-name))
                                       blc-gnus-log-buffers))))
-          ,@(mapcar
+          ,@(mapcan
              (lambda (root)
-               (let ((pr (project-current nil root)))
-                 `(,(directory-file-name root)
-                   (predicate . (equal (if (eq blc-project 'unset)
-                                           (setq blc-project (project-current))
-                                         blc-project)
-                                       ',pr))
-                   (predicate . (not (eq (bound-and-true-p ielm-working-buffer)
-                                         (current-buffer)))))))
+               (if (file-exists-p root)
+                   (let ((pr (project-current nil root)))
+                     `((,(directory-file-name root)
+                        (predicate
+                         . (equal (if (eq blc-project 'unset)
+                                      (setq blc-project (project-current))
+                                    blc-project)
+                                  ',pr))
+                        (predicate
+                         . (not (eq (bound-and-true-p ielm-working-buffer)
+                                    (current-buffer)))))))
+                 (ignore (lwarn 'blc :warning "Zombie project root: %S" root))))
              (project-known-project-roots))
           ("Package" (saved . "package"))
           ("Code"
