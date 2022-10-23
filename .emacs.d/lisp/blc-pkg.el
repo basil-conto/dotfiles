@@ -151,7 +151,6 @@ Visit `package-user-dir' if such a directory is not found."
    delight
    ducpel
 
-   eglot
    el-search
    elisp-benchmarks
    emms
