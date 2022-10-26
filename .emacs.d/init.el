@@ -2350,11 +2350,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'latex
   (add-to-list 'LaTeX-clean-intermediate-suffixes
                (regexp-opt blc-tex-auxtensions))
-  (blc-with-nonce require :around
-                  (lambda (fn feature &rest args)
-                    (unless (eq feature 'tex-buf)
-                      (apply fn feature args)))
-    (auctex-latexmk-setup)))
+  (auctex-latexmk-setup))
 
 (with-eval-after-load 'tex
   (blc-define-keys
