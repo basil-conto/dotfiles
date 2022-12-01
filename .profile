@@ -38,6 +38,9 @@ export PATH
 # Books (lib)
 if [ -d "${LOCAL_DIR}/lib" ]; then
   export LD_LIBRARY_PATH="${LOCAL_DIR}/lib:${LD_LIBRARY_PATH}"
+  if [ -d "${LOCAL_DIR}/lib/pkgconfig" ]; then
+    export PKG_CONFIG_PATH="${LOCAL_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+  fi
 fi
 
 # Books (bib)
