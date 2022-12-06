@@ -2375,7 +2375,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
 ;;;; battery
 
-(display-battery-mode)
+(require 'battery)
+(when battery-status-function
+  (display-battery-mode))
 
 ;;;; bbdb
 
