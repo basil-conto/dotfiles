@@ -2638,6 +2638,12 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
             (("optipng")        "png")
             (("pdf")            "pdf"))))
 
+;;;; dockerfile-mode
+
+(add-to-list 'auto-mode-alist
+             (cons (rx "/Dockerfile" (? (in ".-") (+ (not ?/))) eos)
+                   #'dockerfile-mode))
+
 ;;;; eglot
 
 (with-eval-after-load 'eglot
