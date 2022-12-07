@@ -1724,6 +1724,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
  ;; proced
  proced-auto-update-flag                t
+ proced-enable-color-flag               t
 
  ;; project
  project-compilation-buffer-name-function
