@@ -1325,7 +1325,8 @@ created.  FRAME defaults to the selected one."
  auto-save-visited-interval             auto-save-timeout
  backup-by-copying                      t
  backup-directory-alist
- `(("" . ,(blc-dir (xdg-cache-home) "emacs")))
+ `((,tramp-file-name-regexp)
+   ("" . ,(blc-dir (xdg-cache-home) "emacs")))
  confirm-kill-emacs                     #'blc-confirm-kill-daemon
  delete-old-versions                    t
  directory-free-space-args              "-hP"
@@ -1334,6 +1335,8 @@ created.  FRAME defaults to the selected one."
  kept-new-versions                      4
  kept-old-versions                      2
  mode-require-final-newline             nil
+ remote-file-name-inhibit-auto-save-visited
+ t
  revert-buffer-quick-short-answers      t
  version-control                        t
  view-read-only                         t
