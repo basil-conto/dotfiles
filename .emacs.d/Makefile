@@ -22,7 +22,7 @@ libdir := lisp/
 libs   := $(call lib,backup lib magit mbsync pkg)
 themes := $(call liball,theme)
 tests  := $(call liball,tests)
-inits  := $(addsuffix .elc,early-init init)
+inits  := $(addsuffix c,early-init.el init.el $(wildcard $(libdir)default.el))
 
 ## Actions
 

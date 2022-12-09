@@ -1825,7 +1825,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; startup
  auto-save-list-file-prefix             (blc-file blc-index-dir
                                                   "auto-save-list/.saves-")
- inhibit-default-init                   t
  inhibit-startup-screen                 t
  initial-scratch-message                (or (blc-scratch-cowtune)
                                             initial-scratch-message)
