@@ -59,9 +59,13 @@
 ;;;; battery
 
 (define-advice battery-upower (:filter-return (data) blc-notify-critical)
-  "Transcribe AC line status in alist DATA to Unicode."
-  (setq battery-mode-line-format
-        (if (string-equal (alist-get ?L data) "on-line") "🔌" "🔋"))
+  "Transcribe AC line status in alist DATA to Unicode.
+Disable `display-battery-mode' on unrecognised supply."
+  (unless (setq battery-mode-line-format
+                (pcase (alist-get ?L data)
+                  ( "on-line" "🔌")
+                  ("off-line" "🔋")))
+    (display-battery-mode 0))
   data)
 
 ;;;; browse-url
