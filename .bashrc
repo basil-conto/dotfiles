@@ -12,10 +12,11 @@ HISTSIZE=4096
 [ -x "$(command -v lesspipe)" ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Enable ls colour support
-[ -x "$(command -v dircolors)" ]         \
-  && [ -r "${HOME}/.dircolors" ]         \
-  && eval "$(dircolors -b ~/.dircolors)" \
-  || eval "$(dircolors -b)"
+if [ -x "$(command -v dircolors)" ]; then
+  [ -r "${HOME}/.dircolors" ]                      \
+    && eval "$(dircolors -b "${HOME}/.dircolors")" \
+    || eval "$(dircolors -b)"
+fi
 
 # Prompt
 #
