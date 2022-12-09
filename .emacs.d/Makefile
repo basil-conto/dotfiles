@@ -1,7 +1,7 @@
 ## Build Emacs configuration for blc
 
 ## Author:   Basil L. Contovounesios <basil.conto@gmail.com>
-## Homepage: https://gitlab.com/basil-conto/dotfiles
+## Homepage: https://git.sr.ht/~blc/dotfiles
 
 ## Emacs Lisp
 

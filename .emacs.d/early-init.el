@@ -1,7 +1,7 @@
 ;;; early-init.el --- early init file for blc -*- lexical-binding: t -*-
 
 ;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
-;; Homepage: https://gitlab.com/basil-conto/dotfiles
+;; Homepage: https://git.sr.ht/~blc/dotfiles
 
 ;;; Code:
 
