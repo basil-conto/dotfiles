@@ -2,9 +2,7 @@
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
 
-[ -n "${BASH_VERSION}" ]      \
-  && [ -r "${HOME}/.bashrc" ] \
-  && . "${HOME}/.bashrc"
+[ -n "${BASH_VERSION}" -a -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 
 # Do not display messages from other users
 mesg n
@@ -21,6 +19,7 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Rubbish (bin)
 
+[ -d "${HOME}/.screenlayout" ] && PATH="${HOME}/.screenlayout:${PATH}"
 [ -d "${LOCAL_DIR}/share/JetBrains/Toolbox/scripts" ] \
   && PATH="${LOCAL_DIR}/share/JetBrains/Toolbox/scripts:${PATH}"
 [ -d "${HOME}/.luarocks/bin" ] && PATH="${HOME}/.luarocks/bin:${PATH}"

@@ -1,12 +1,11 @@
 #!/usr/bin/env sh
 
-if [ -x "$(command -v xset)" ]; then
-  xset s 600 10
-fi
+[ -x "$(command -v xset)" ] && xset s 600 10
 
-if [ -x "$(command -v xss-lock)" ]                    \
-     && [ -x /usr/libexec/xsecurelock/dimmer ]        \
-     && [ -x "$(command -v blc-lock)"        ]; then  \
-  xss-lock --notifier=/usr/libexec/xsecurelock/dimmer \
-           --transfer-sleep-lock -- blc-lock &        \
-fi
+[ -x "$(command -v xss-lock)"                            \
+     -a -x /usr/libexec/xsecurelock/dimmer               \
+     -a -x "$(command -v blc-lock)" ]                    \
+  && xss-lock --notifier=/usr/libexec/xsecurelock/dimmer \
+              --transfer-sleep-lock -- blc-lock &
+
+true

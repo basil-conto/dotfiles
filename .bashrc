@@ -59,11 +59,11 @@ pyenv() {
     shift
   fi
 
-  case "$command" in
-  activate|deactivate|rehash|shell)
-    eval "$(pyenv "sh-$command" "$@")";;
-  *)
-    command pyenv "$command" "$@";;
+  case "${command}" in
+    activate|deactivate|rehash|shell)
+      eval "$(pyenv "sh-${command}" "$@")" ;;
+    *)
+      command pyenv "$command" "$@" ;;
   esac
 }
 
@@ -75,12 +75,11 @@ _pyenv_virtualenv_hook() {
   else
     eval "$(pyenv sh-activate --quiet || true)" || true
   fi
-  return $ret
+  return "${ret}"
 }
 
-[ -d "${HOME}/.pyenv" ]                                      \
-  && ( ! [[ "$PROMPT_COMMAND" =~ _pyenv_virtualenv_hook ]] ) \
-  && PROMPT_COMMAND="_pyenv_virtualenv_hook;$PROMPT_COMMAND"
+[[ -d "${HOME}/.pyenv" && ! "${PROMPT_COMMAND}" =~ _pyenv_virtualenv_hook ]] \
+  && PROMPT_COMMAND="_pyenv_virtualenv_hook;${PROMPT_COMMAND}"
 
 # Alias definitions
 [ -r ~/.bash_aliases    ] && . ~/.bash_aliases
