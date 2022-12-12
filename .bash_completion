@@ -14,6 +14,9 @@ _pip_completion()
 }
 complete -o default -F _pip_completion pip
 
+# pipenv
+[ -x "$(command -v pipenv)" ] && eval "$(_PIPENV_COMPLETE=bash_source pipenv)"
+
 # pyenv
 if [ -r "${PYENV_ROOT}/completions/pyenv.bash" ]; then
   . "${PYENV_ROOT}/completions/pyenv.bash"
