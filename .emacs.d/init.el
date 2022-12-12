@@ -1323,7 +1323,8 @@ created.  FRAME defaults to the selected one."
  ffap-file-finder                       #'blc-counsel-find-file
  ffap-require-prefix                    t
  ffap-rfc-directories
- (list (blc-dir (blc-user-dir "DOCUMENTS") "rfc"))
+ (and-let* ((docs (blc-user-dir "DOCUMENTS")))
+   (list (blc-dir docs "rfc")))
 
  ;; files
  auto-save-visited-interval             auto-save-timeout
