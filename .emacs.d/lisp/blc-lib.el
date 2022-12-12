@@ -525,6 +525,7 @@ which see."
      `(,(blc-read-file "Export to file: " (concat "emacs-scrot." fmt))
        ,(intern fmt)
        ,@(and current-prefix-arg (frame-list-z-order)))))
+  (declare-function x-export-frames "xfns.c" (&optional frames type))
   (with-temp-file file
     (set-buffer-multibyte nil)
     (insert (x-export-frames frames type))))
