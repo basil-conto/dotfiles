@@ -2656,7 +2656,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; eglot
 
 (with-eval-after-load 'eglot
-  (let* ((modes (list #'c++-mode #'c-mode))
+  (let* ((modes (list #'c++-mode #'c++-ts-mode #'c-mode #'c-ts-mode))
          ;; Don't litter projects with `ccls' cache files.
          (init `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls"))))
          (alts `("clangd" ("ccls" :initializationOptions ,init))))
