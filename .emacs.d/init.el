@@ -1123,6 +1123,8 @@ created.  FRAME defaults to the selected one."
  use-system-tooltips                    nil
 
  ;; xterm.c
+ x-lax-frame-positioning                t
+ x-use-fast-mouse-position              t
  x-wait-for-event-timeout               0.2
 
  ;; ag
