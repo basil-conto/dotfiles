@@ -1299,7 +1299,19 @@ created.  FRAME defaults to the selected one."
  ;; emacsbug
  report-emacs-bug-no-explanations       t
 
- ;; emms
+ ;; emms-browser
+ emms-browser-switch-to-playlist-on-add t
+
+ ;; emms-playlist-mode
+ emms-playlist-mode-center-when-go      t
+
+ ;; emms-source-file
+ emms-source-file-default-directory     (blc-user-dir "MUSIC")
+ emms-source-file-directory-tree-function
+ #'emms-source-file-directory-tree-find
+
+ ;; emms-volume
+ emms-volume-change-amount              5
  emms-volume-change-function            #'emms-volume-pulse-change
 
  ;; enwc
@@ -2235,6 +2247,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    ("["                                   #'raise-sexp)
    ("]"                                   #'delete-pair)
    ("C"                                   #'copy-from-above-command)
+   ("E"                                   #'emms-smart-browse)
    ("G"                                   #'blc-github-notifications)
    ("M"                                   #'blc-mbsync-all)
    ("O"                                   #'ff-find-other-file)
@@ -2664,6 +2677,15 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
          (init `(:cache (:directory ,(blc-dir (xdg-cache-home) "ccls"))))
          (alts `("clangd" ("ccls" :initializationOptions ,init))))
     (push (cons modes (eglot-alternatives alts)) eglot-server-programs)))
+
+;;;; emms
+
+(with-eval-after-load 'emms
+  ;; TODO:
+  ;; - Also set info functions
+  ;; - Check MPRIS2 integration
+  (emms-minimalistic)
+  (emms-default-players))
 
 ;;;; engine-mode
 
