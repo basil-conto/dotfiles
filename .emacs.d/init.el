@@ -2253,6 +2253,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    ("d"                                   #'counsel-dired-jump)
    ("e"                                   #'eww)
    ("f"                                   #'counsel-file-jump)
+   ("h"                                   #'shell)
    ("l"                                   #'counsel-locate)
    ("m"                                   #'magit-find-file)
    ("4m"                                  #'magit-find-file-other-window)
