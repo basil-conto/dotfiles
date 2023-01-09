@@ -232,6 +232,7 @@ Visit `package-user-dir' if such a directory is not found."
    racket-mode
    rainbow-mode
    redtick
+   relint
    restclient
    rfc-mode
    rg
