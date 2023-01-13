@@ -314,6 +314,10 @@ Uninstall self as advice on `pdf-view-mode'."
 (defvar-local blc-project 'unset
   "Per-buffer cached `project-current' or `unset'.")
 
+(define-advice project-switch-project (:after (&rest _) blc-clear-echo)
+  "Clear echo area."
+  (message nil))
+
 ;;;; python
 
 (define-advice python-shell-make-comint (:around (&rest args) blc-dumb-term)
