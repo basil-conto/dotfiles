@@ -1294,6 +1294,7 @@ created.  FRAME defaults to the selected one."
  dired-do-revert-buffer                 t
 
  ;; doc-view
+ doc-view-mupdf-use-svg                 (image-type-available-p 'svg)
  doc-view-resolution                    150
 
  ;; eldoc
