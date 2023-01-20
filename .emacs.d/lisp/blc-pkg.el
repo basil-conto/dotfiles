@@ -216,6 +216,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    neato-graph-bar
    nginx-mode
+   nix-mode
    nodejs-repl
    nov
 
