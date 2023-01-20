@@ -2368,6 +2368,10 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'ag
   (add-to-list 'ag-arguments "--context=5"))
 
+;;;; antlr-mode
+
+(add-to-list 'auto-mode-alist (cons (rx ".g4" eos) #'antlr-mode))
+
 ;;;; apt-sources-list
 
 (add-to-list 'auto-mode-alist
