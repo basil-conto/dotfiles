@@ -59,8 +59,13 @@ alias gcc='gcc -fdiagnostics-color'
 alias g++='g++ -fdiagnostics-color'
 
 # emacsen
-alias ec='emacsclient --tty'
-alias em='emacs -nw'
+if [[ "${TERM}" =~ tmux ]]; then
+  alias ec='TERM=xterm-direct emacsclient --tty'
+  alias em='TERM=xterm-direct emacs -nw'
+else
+  alias ec='emacsclient --tty'
+  alias em='emacs -nw'
+fi
 
 # youtube-dl
 alias ydl='youtube-dl'
