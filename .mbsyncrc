@@ -6,7 +6,8 @@ User                    foo@bar.baz
 PassCmd                 "pass foo/bar"
 Host                    imap.bar.baz
 SSLType                 IMAPS
-SSLVersions             TLSv1.2
+SSLVersions             TLSv1.3
+Timeout                 120
 
 MaildirStore            foo-local
 Path                    ~/Mail/foo/
