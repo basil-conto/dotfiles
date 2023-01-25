@@ -15,12 +15,54 @@ _pip_completion()
 complete -o default -F _pip_completion pip
 
 # pipenv
-[ -x "$(command -v pipenv)" ] && eval "$(_PIPENV_COMPLETE=bash_source pipenv)"
+# Extracted from "$(_PIPENV_COMPLETE=bash_source pipenv)"
+_pipenv_completion() {
+    local IFS=$'\n'
+    local response
+
+    response=$(env COMP_WORDS="${COMP_WORDS[*]}" COMP_CWORD=$COMP_CWORD _PIPENV_COMPLETE=bash_complete $1)
+
+    for completion in $response; do
+        IFS=',' read type value <<< "$completion"
+
+        if [[ $type == 'dir' ]]; then
+            COMREPLY=()
+            compopt -o dirnames
+        elif [[ $type == 'file' ]]; then
+            COMREPLY=()
+            compopt -o default
+        elif [[ $type == 'plain' ]]; then
+            COMPREPLY+=($value)
+        fi
+    done
+
+    return 0
+}
+
+_pipenv_completion_setup() {
+    complete -o nosort -F _pipenv_completion pipenv
+}
+
+_pipenv_completion_setup;
 
 # pyenv
-if [ -r "${PYENV_ROOT}/completions/pyenv.bash" ]; then
-  . "${PYENV_ROOT}/completions/pyenv.bash"
-fi
+# Sourced from "${PYENV_ROOT}/completions/pyenv.bash"
+_pyenv() {
+  COMPREPLY=()
+  local word="${COMP_WORDS[COMP_CWORD]}"
+
+  if [ "$COMP_CWORD" -eq 1 ]; then
+    COMPREPLY=( $(compgen -W "$(pyenv commands)" -- "$word") )
+  else
+    local words=("${COMP_WORDS[@]}")
+    unset words[0]
+    unset words[$COMP_CWORD]
+    local completions=$(pyenv completions "${words[@]}")
+    COMPREPLY=( $(compgen -W "$completions" -- "$word") )
+  fi
+}
+
+complete -F _pyenv pyenv
 
 # stack
 if [ -r "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion" ]; then
