@@ -311,8 +311,76 @@ Uninstall self as advice on `pdf-view-mode'."
 
 ;;;; project
 
+(defvar blc-ibuffer-filter-groups
+  (list
+   '("Help"
+     (or (predicate . (apply #'derived-mode-p ibuffer-help-buffer-modes))
+         (and (name . "Ivy Help") (starred-name))))
+   '("Gnus"
+     (or (saved . "gnus")
+         (name . "mbsync")
+         (derived-mode . gnus-server-mode)
+         (predicate . (memq (current-buffer)
+                            (list (bound-and-true-p gnus-dribble-buffer)
+                                  (bound-and-true-p bbdb-buffer))))
+         (predicate . (equal (bound-and-true-p bbdb-buffer-name)
+                             (buffer-name)))
+         (predicate . (seq-some (apply-partially #'equal (buffer-name))
+                                blc-gnus-log-buffers))))
+   '("Package" (saved . "package"))
+   '("Code"
+     (or (derived-mode . prog-mode)
+         (derived-mode . conf-mode)))
+   '("Dired" (derived-mode . dired-mode))
+   '("Log"
+     (or (derived-mode . TeX-output-mode)
+         (derived-mode . compilation-mode)
+         (derived-mode . ivy-occur-mode)
+         (derived-mode . messages-buffer-mode)
+         (derived-mode . native-comp-limple-mode)
+         (derived-mode . tags-table-mode)
+         (predicate . (equal (bound-and-true-p dired-log-buffer)
+                             (buffer-name)))
+         (and (starred-name)
+              (or (name . "Async Shell Command")
+                  (name . "Async-native-compile-log")
+                  (name . "Backtrace")
+                  (name . "Warnings")
+                  (name . "WoMan-Log")))))
+   '("PDF" (derived-mode . pdf-view-mode))
+   '("Image" (derived-mode . image-mode))
+   '("Process" (or (process) (derived-mode . eshell-mode)))
+   '("TeX" (saved . "TeX"))
+   '("Text" (saved . "text document"))
+   '("Web" (saved . "web"))
+   '("Book"
+     (or (derived-mode . bookmark-bmenu-mode)
+         (derived-mode . bookmark-edit-annotation-mode)
+         (and (name . "Bookmark Annotation") (starred-name)))))
+  "Custom `ibuffer-filter-groups' value.
+Intended as the cdr of an `ibuffer-saved-filter-groups' entry.
+Should be kept in sync with `project-current@blc-ibuffer-cache'.")
+
+(defvar blc-projects (make-hash-table :test #'equal)
+  "Hash table cache of `project' instances encountered so far.")
+
 (defvar-local blc-project 'unset
   "Per-buffer cached `project-current' or `unset'.")
+
+(define-advice project-current (:filter-return (project) blc-ibuffer-cache)
+  "Create an Ibuffer filter group for any hitherto unseen PROJECT.
+Destructively adds the group to `blc-ibuffer-filter-groups'."
+  (when (and project (not (gethash project blc-projects)))
+    (puthash project t blc-projects)
+    (push `(,(directory-file-name (project-root project))
+            (predicate . (equal (if (eq blc-project 'unset)
+                                    (setq blc-project (project-current))
+                                  blc-project)
+                                ',project))
+            (predicate . (not (eq (bound-and-true-p ielm-working-buffer)
+                                  (current-buffer)))))
+          (cddr blc-ibuffer-filter-groups)))
+  project)
 
 (define-advice project-switch-project (:after (&rest _) blc-clear-echo)
   "Clear echo area."
@@ -729,7 +797,7 @@ Suspending or exiting Gnus deletes that frame."
 (defun blc-ibuffer-filter-groups ()
   "Set custom `ibuffer-filter-groups'."
   (require 'ibuf-ext)
-  (setq ibuffer-filter-groups (blc-get ibuffer-saved-filter-groups "blc")))
+  (setq ibuffer-filter-groups blc-ibuffer-filter-groups))
 
 (defun blc-ibuffer-ffap ()
   "Like `ibuffer-find-file', but backed by `ffap-file-finder'."
@@ -2847,68 +2915,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; ibuf-ext
 
 (with-eval-after-load 'ibuf-ext
-  (push `("blc"
-          ("Help"
-           (or (predicate . (apply #'derived-mode-p ibuffer-help-buffer-modes))
-               (and (name . "Ivy Help") (starred-name))))
-          ("Gnus"
-           (or (saved . "gnus")
-               (name . "mbsync")
-               (derived-mode . gnus-server-mode)
-               (predicate . (memq (current-buffer)
-                                  (list (bound-and-true-p gnus-dribble-buffer)
-                                        (bound-and-true-p bbdb-buffer))))
-               (predicate . (equal (bound-and-true-p bbdb-buffer-name)
-                                   (buffer-name)))
-               (predicate . (seq-some (apply-partially #'equal (buffer-name))
-                                      blc-gnus-log-buffers))))
-          ,@(mapcan
-             (lambda (root)
-               (if (file-exists-p root)
-                   (let ((pr (project-current nil root)))
-                     `((,(directory-file-name root)
-                        (predicate
-                         . (equal (if (eq blc-project 'unset)
-                                      (setq blc-project (project-current))
-                                    blc-project)
-                                  ',pr))
-                        (predicate
-                         . (not (eq (bound-and-true-p ielm-working-buffer)
-                                    (current-buffer)))))))
-                 (ignore (lwarn 'blc :warning "Zombie project root: %S" root))))
-             (project-known-project-roots))
-          ("Package" (saved . "package"))
-          ("Code"
-           (or (derived-mode . prog-mode)
-               (derived-mode . conf-mode)))
-          ("Dired" (derived-mode . dired-mode))
-          ("Log"
-           (or (derived-mode . TeX-output-mode)
-               (derived-mode . compilation-mode)
-               (derived-mode . ivy-occur-mode)
-               (derived-mode . messages-buffer-mode)
-               (derived-mode . native-comp-limple-mode)
-               (derived-mode . tags-table-mode)
-               (predicate . (equal (bound-and-true-p dired-log-buffer)
-                                   (buffer-name)))
-               (and (starred-name)
-                    (or (name . "Async Shell Command")
-                        (name . "Async-native-compile-log")
-                        (name . "Backtrace")
-                        (name . "Warnings")
-                        (name . "WoMan-Log")))))
-          ("PDF" (derived-mode . pdf-view-mode))
-          ("Image" (derived-mode . image-mode))
-          ("Process" (or (process) (derived-mode . eshell-mode)))
-          ("TeX" (saved . "TeX"))
-          ("Text" (saved . "text document"))
-          ("Web" (saved . "web"))
-          ("Book"
-           (or (derived-mode . bookmark-bmenu-mode)
-               (derived-mode . bookmark-edit-annotation-mode)
-               (and (name . "Bookmark Annotation") (starred-name)))))
-        ibuffer-saved-filter-groups)
-
+  (push (cons "blc" blc-ibuffer-filter-groups) ibuffer-saved-filter-groups)
   (let* ((dirs (list blc-dataroot-dir package-user-dir))
          (full (mapcar #'expand-file-name dirs))
          (abbr (mapcar #'abbreviate-file-name full))
@@ -3334,10 +3341,13 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'project
   (define-key project-prefix-map "m" #'magit-project-status)
   (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)
-  (dolist (root (project-known-project-roots))
-    ;; Instead of `file-remote-p' to avoid loading `tramp'.
-    (when (string-match-p tramp-file-name-regexp root)
-      (project-forget-project root))))
+  (dolist-with-progress-reporter (root (project-known-project-roots))
+      "Cleaning up known project roots..."
+    (cond (;; Instead of `file-remote-p' to avoid loading `tramp'.
+           (string-match-p tramp-file-name-regexp root)
+           (project-forget-project root))
+          ((not (file-exists-p root))
+           (lwarn 'blc :warning "Zombie project root: %S" root)))))
 
 ;;;; prolog
 
