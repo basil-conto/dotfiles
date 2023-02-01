@@ -1443,6 +1443,7 @@ created.  FRAME defaults to the selected one."
  footnote-spaced-footnotes              nil
 
  ;; forge
+ forge-database-connector               'sqlite-builtin
  forge-database-file                    (blc-file blc-index-dir
                                                   "forge-db.sqlite")
  forge-topic-list-limit                 '(60 . -1)

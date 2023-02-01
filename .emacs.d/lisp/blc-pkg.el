@@ -153,6 +153,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    el-search
    elisp-benchmarks
+   emacsql-sqlite-builtin
    emms
    engine-mode
    enwc
