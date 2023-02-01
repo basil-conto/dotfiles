@@ -585,6 +585,8 @@ of the alist BINDINGS of the form (KEY DEF [REMOVE]),
 (defvar blc-locations
   '(("Athens"
      :country "GR" :lat [37 59 north] :long [23 44 east])
+    ("Budapest"
+     :country "HU" :lat [47 30 north] :long [19 02 east])
     ("Dublin"
      :country "IE" :lat [53 21 north] :long [06 16 west])
     ("Harare"
@@ -599,6 +601,7 @@ of the alist BINDINGS of the form (KEY DEF [REMOVE]),
 
 (defvar blc-countries
   '(("GR" :name "Greece"   :area "Europe")
+    ("HU" :name "Hungary"  :area "Europe")
     ("IE" :name "Ireland"  :area "Europe")
     ("IL" :name "Israel"   :area "Asia"  )
     ("ZW" :name "Zimbabwe" :area "Africa"))
