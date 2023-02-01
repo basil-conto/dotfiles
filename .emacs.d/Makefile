@@ -20,26 +20,21 @@ liball = $(patsubst %.el,%.elc,$(wildcard $(libdir)blc-*-$(1).el))
 pkgdir := elpa/
 libdir := lisp/
 libs   := $(call lib,backup lib magit mbsync pkg)
-themes := $(call liball,theme)
 tests  := $(call liball,tests)
 inits  := $(addsuffix c,early-init.el init.el $(wildcard $(libdir)default.el))
 
 ## Actions
 
 .PHONY: all
-all: themes libs gnus inits test
+all: libs gnus inits test
 
 .PHONY: clean
-clean: clean-themes clean-libs clean-gnus clean-inits clean-tests
+clean: clean-libs clean-gnus clean-inits clean-tests
 
 .PHONY: distclean
 distclean: clean
 	$(RM) --recursive $(pkgdir) index/package-quickstart.el \
 		index/package-quickstart.elc
-
-.PHONY: themes clean-themes
-themes:               $(themes)
-clean-themes: ; $(RM) $(themes)
 
 .PHONY: libs clean-libs
 libs:               $(libs)
@@ -76,4 +71,4 @@ $(call lib,pkg):       $(call lib,lib)
 $(call lib,lib-tests): $(call lib,lib)
 
 gnus.elc: $(call lib,lib mbsync)
-init.elc: $(themes) $(call lib,backup lib magit mbsync pkg) early-init.elc
+init.elc: $(call lib,backup lib magit mbsync pkg) early-init.elc
