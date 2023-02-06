@@ -296,10 +296,12 @@ convention (see the Info node `(gnus) Process/Prefix')."
 
 (with-eval-after-load 'gnus-win
   (let ((oconf (cadr (assq 'article gnus-buffer-configuration))))
-    (gnus-add-configuration `(article (if (display-graphic-p)
-                                          '(frame 1.0
-                                                  (summary 1.0 point frame-focus)
-                                                  (article 1.0))
-                                        ,oconf)))))
+    (gnus-add-configuration
+     `(article (cond ((not pop-up-frames) ,oconf)
+                     ((or (not (eq pop-up-frames 'graphic-only))
+                          (display-graphic-p))
+                      '(frame 1.0
+                              (summary 1.0 point frame-focus)
+                              (article 1.0))))))))
 
 ;;; gnus.el ends here
