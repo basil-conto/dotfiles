@@ -149,6 +149,7 @@ Visit `package-user-dir' if such a directory is not found."
    deadgrep
    define-word
    delight
+   dockerfile-mode
    ducpel
 
    el-search
