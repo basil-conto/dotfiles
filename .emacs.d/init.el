@@ -379,7 +379,7 @@ Destructively adds the group to `blc-ibuffer-filter-groups'."
                                         blc-project)
                                       ',project))))
       (push `(,(directory-file-name (project-root project))
-              ,(if roots `(or ,pred (directory . ,roots)) ,pred)
+              ,(if roots `(or ,pred (directory . ,roots)) pred)
               (predicate . (not (eq (bound-and-true-p ielm-working-buffer)
                                     (current-buffer)))))
             (cddr blc-ibuffer-filter-groups))))
