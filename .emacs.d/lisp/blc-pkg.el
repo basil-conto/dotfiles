@@ -154,7 +154,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    el-search
    elisp-benchmarks
-   emacsql-sqlite-builtin
+   emacsql
    emms
    engine-mode
    enwc
