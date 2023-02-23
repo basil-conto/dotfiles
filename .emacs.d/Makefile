@@ -12,16 +12,19 @@ EMACS ?= emacs
 
 ## Macros
 
-lib    = $(1:%=$(libdir)blc-%.elc)
-liball = $(patsubst %.el,%.elc,$(wildcard $(libdir)blc-*-$(1).el))
+lib   = $(1:%=$(libdir)/blc-%.elc)
+wildc = $(addsuffix c,$(wildcard $(1)))
 
 ## Files
 
-pkgdir := elpa/
-libdir := lisp/
+pkgdir := elpa
+libdir := lisp
+early  := early-init.elc
+init   := init.elc
+gnus   := gnus.elc
+tests  := $(call wildc,$(libdir)/*-tests.el)
 libs   := $(call lib,backup lib magit mbsync pkg)
-tests  := $(call liball,tests)
-inits  := $(addsuffix c,early-init.el init.el $(wildcard $(libdir)default.el))
+inits  := $(early) $(init) $(call wildc,$(libdir)/default.el)
 
 ## Actions
 
@@ -41,8 +44,8 @@ libs:               $(libs)
 clean-libs: ; $(RM) $(libs)
 
 .PHONY: gnus clean-gnus
-gnus:               gnus.elc
-clean-gnus: ; $(RM) gnus.elc
+gnus:               $(gnus)
+clean-gnus: ; $(RM) $(gnus)
 
 .PHONY: inits clean-inits
 inits:               $(inits)
@@ -59,7 +62,7 @@ clean-tests:
 
 .PHONY: profile
 profile: init.elc
-	$(EMACS) --quick $(ELFLAGS) --load=$(libdir)profile-dotemacs.el \
+	$(EMACS) --quick $(ELFLAGS) --load=$(libdir)/profile-dotemacs.el \
 		--funcall=profile-dotemacs
 
 ## Dependencies
@@ -70,5 +73,5 @@ $(call lib,mbsync):    $(call lib,lib)
 $(call lib,pkg):       $(call lib,lib)
 $(call lib,lib-tests): $(call lib,lib)
 
-gnus.elc: $(call lib,lib mbsync)
-init.elc: $(call lib,backup lib magit mbsync pkg) early-init.elc
+$(gnus): $(call lib,lib mbsync)
+$(init): $(libs) $(early)
