@@ -606,6 +606,12 @@ description of the arguments to this function."
                            (completing-read prompt blc-browser-alist nil t))))
     (when browser (apply browser url args))))
 
+;;;; comint
+
+(defun blc-turn-off-prompt-highlight ()
+  "Locally disable the face `comint-highlight-prompt'."
+  (face-remap-add-relative 'comint-highlight-prompt 'default))
+
 ;;;; compile
 
 (defvar blc-compile-duration 30
@@ -2251,6 +2257,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (:hooks redtick-after-rest-hook :fns blc-redtick-notify-work)
   (:hooks redtick-before-rest-hook :fns blc-redtick-notify-break)
   (:hooks redtick-mode-hook :fns blc-stop-redtick)
+
+  ;; shell
+  (:hooks shell-mode-hook :fns blc-turn-off-prompt-highlight)
 
   ;; simple
   (:fns display-line-numbers-mode :hooks visual-line-mode-hook)
