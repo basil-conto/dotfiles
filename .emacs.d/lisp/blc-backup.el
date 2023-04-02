@@ -54,13 +54,13 @@
 
 (defun blc-backup-rsync ()
   "Back up files in `blc-backup-index-file' via rsync."
-  (let* ((default-directory "~/")
+  (let* ((default-directory (expand-file-name "~/"))
          (dest (read-shell-command "rsync destination: ")))
     (make-process :name "blc-backup-rsync"
                   :buffer (pop-to-buffer "*blc-backup-rsync*")
                   :command (list "rsync" "-ahrvP"
                                  (concat "--files-from=" blc-backup-index-file)
-                                 "/home/blc" dest)
+                                 (expand-file-name "~") dest)
                   :connection-type 'pipe
                   :filter #'blc-backup--filter)))
 
