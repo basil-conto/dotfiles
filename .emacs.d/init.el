@@ -1351,6 +1351,7 @@ created.  FRAME defaults to the selected one."
 
  ;; diff-mode
  diff-add-log-use-relative-names        t
+ diff-default-read-only                 t
  diff-font-lock-prettify                t
 
  ;; dired
