@@ -471,12 +471,13 @@ function at URL
   (interactive)
   (unless (= (count-windows) 2)
     (user-error "Can only toggle a frame split in twain"))
-  (let ((split (if (window-combined-p)
+  (let ((buf (current-buffer))
+        (split (if (window-combined-p)
                    #'split-window-right
                  #'split-window-below)))
     (delete-window)
     (funcall split)
-    (pop-to-buffer-same-window nil)))
+    (pop-to-buffer-same-window buf)))
 
 (defvar blc-small-scroll-step 6
   "Number of lines constituting a small scroll.")
