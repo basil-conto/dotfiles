@@ -1822,6 +1822,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; password-cache
  password-cache                         nil
 
+ ;; pdf-info
+ pdf-view-midnight-invert               t
+
  ;; pdf-misc
  pdf-misc-print-programm                lpr-command
 
