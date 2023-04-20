@@ -1548,6 +1548,7 @@ created.  FRAME defaults to the selected one."
  isearch-lazy-count                     t
  isearch-motion-changes-direction       t
  search-exit-option                     nil
+ search-upper-case                      t
 
  ;; ivy
  ivy-action-wrap                        t
