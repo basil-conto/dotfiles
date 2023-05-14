@@ -1,4 +1,5 @@
 import System.Taffybar.SimpleConfig           ( SimpleTaffyConfig(..)
+                                              , StrutSize(ExactSize)
                                               , defaultSimpleTaffyConfig
                                               , simpleTaffybar )
 import System.Taffybar.Widget.Battery         ( batteryIconNew, textBatteryNew )
@@ -24,11 +25,9 @@ main = do
       work = workspacesNew defaultWorkspacesConfig
            { borderWidth      = 0
            , showWorkspaceFn  = hideEmpty
-           , underlineHeight  = 0
-           , underlinePadding = 0
            }
   simpleTaffybar defaultSimpleTaffyConfig
-                 { barHeight    = 22
+                 { barHeight    = ExactSize 22
                  , endWidgets   = [ clck, batt, batteryIconNew , sniTrayNew
                                   , load ]
                  , startWidgets = [ work, lout, wins ]
