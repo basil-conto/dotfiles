@@ -956,7 +956,7 @@ that ignore `inhibit-switch-frame' or `no-focus-on-map'."
   (or (save-excursion
         (message-goto-body)
         (not (re-search-forward
-              (rx (eval `(| "attach"
+              (rx (eval `(| "attach" "joint"
                             ,@(mapcar (lambda (s)
                                         `(regexp ,(char-fold-to-regexp s)))
                                       '("συναπτ" "συναψ" "συνημμ")))))
