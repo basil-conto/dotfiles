@@ -1348,6 +1348,11 @@ created.  FRAME defaults to the selected one."
  ;; dictionary
  dictionary-create-buttons              nil
  dictionary-default-strategy            "re"
+ dictionary-display-definition-function
+ #'dictionary-display-definition-in-help-buffer
+ dictionary-read-dictionary-function    #'dictionary-completing-read-dictionary
+ dictionary-read-word-function          #'dictionary-completing-read-word
+ dictionary-search-interface            'help
 
  ;; diff-mode
  diff-add-log-use-relative-names        t
