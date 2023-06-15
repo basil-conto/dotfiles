@@ -164,6 +164,8 @@ Visit `package-user-dir' if such a directory is not found."
    figlet
    fireplace
    flame
+   font-lock-profiler
+   font-lock-studio
    forge
 
    ghub
@@ -183,6 +185,7 @@ Visit `package-user-dir' if such a directory is not found."
    haskell-mode
    helm-make
    highlight-escape-sequences
+   highlight-refontification
    htmlize
 
    ialign
@@ -201,6 +204,7 @@ Visit `package-user-dir' if such a directory is not found."
    keycast
    know-your-http-well
 
+   latex-table-wizard
    ledger-mode
    logview
    lorem-ipsum
@@ -257,6 +261,8 @@ Visit `package-user-dir' if such a directory is not found."
    typit
 
    unfill
+   urgrep
+   url-http-oauth
 
    visual-fill-column
 
