@@ -278,6 +278,9 @@ Visit `package-user-dir' if such a directory is not found."
                              5 t)))
   (package-refresh-contents)
   (mapc #'blc-package-install missing)
+  (and (memq 'pdf-tools missing)
+       (fboundp 'pdf-tools-install)
+       (pdf-tools-install t t t))
   (package--quickstart-maybe-refresh))
 
 ;; Afford shadowing installed packages
