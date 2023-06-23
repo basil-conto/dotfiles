@@ -668,20 +668,37 @@ overrides them."
   (thunk-delay
    (mapcar
     (lambda (face)
-      (cons (rx symbol-start (literal (symbol-name face)) symbol-end) face))
-    '(font-lock-builtin-face
+      `(,(rx symbol-start (? ?@) ;; Tree-sitter capture name
+             (group (literal (symbol-name face))) symbol-end)
+        1 ,(if (boundp face) face `',face)))
+    '(font-lock-bracket-face
+      font-lock-builtin-face
       font-lock-comment-delimiter-face
       font-lock-comment-face
       font-lock-constant-face
+      font-lock-delimiter-face
       font-lock-doc-face
+      font-lock-doc-markup-face
+      font-lock-escape-face
+      font-lock-function-call-face
       font-lock-function-name-face
       font-lock-keyword-face
+      font-lock-misc-punctuation-face
+      font-lock-negation-char-face
+      font-lock-number-face
+      font-lock-operator-face
       font-lock-preprocessor-face
+      font-lock-property-name-face
+      font-lock-property-use-face
+      font-lock-punctuation-face
+      font-lock-regexp-face
+      font-lock-regexp-grouping-backslash
+      font-lock-regexp-grouping-construct
       font-lock-string-face
       font-lock-type-face
       font-lock-variable-name-face
-      font-lock-warning-face
-      font-lock-negation-char-face)))
+      font-lock-variable-use-face
+      font-lock-warning-face)))
   "Thunk with `font-lock-keywords' for `blc-rainbow-mode'.")
 
 (define-minor-mode blc-rainbow-mode
