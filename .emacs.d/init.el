@@ -1084,12 +1084,6 @@ non-nil, create a new `term' buffer instead."
                    (getenv "ESHELL")
                    shell-file-name)))))
 
-(defun blc-term-p (name &optional _action)
-  "Determine whether NAME names a `term-mode' buffer.
-Intended as a condition for `display-buffer-alist'."
-  (with-current-buffer name
-    (derived-mode-p #'term-mode)))
-
 (defun blc-toggle-subterm-mode ()
   "Toggle between `term-char-mode' and `term-line-mode'."
   (interactive)
@@ -2092,7 +2086,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
  ;; window
  display-buffer-alist
- `((,#'blc-term-p . ,blc-other-window-action))
+ `(((derived-mode . ,#'compilation-mode) () (reusable-frames . 0))
+   ((derived-mode . ,#'term-mode)        . ,blc-other-window-action))
  frame-auto-hide-function               #'blc-delete-spare-frame
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
