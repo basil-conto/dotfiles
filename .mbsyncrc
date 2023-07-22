@@ -2,24 +2,24 @@
 # Skeleton ~/.mbsyncrc
 
 IMAPStore               foo-remote
-User                    foo@bar.baz
-PassCmd                 "pass foo/bar"
 Host                    imap.bar.baz
+PassCmd                 "pass foo/bar"
 SSLType                 IMAPS
 SSLVersions             TLSv1.3
 Timeout                 120
+User                    foo@bar.baz
 
 MaildirStore            foo-local
-Path                    ~/Mail/foo/
-Inbox                   ~/Mail/foo/INBOX
-SubFolders              Verbatim
 Flatten                 .
+Inbox                   ~/Mail/foo/INBOX
+Path                    ~/Mail/foo/
+SubFolders              Verbatim
 
 Channel                 foo
-Master                  :foo-remote:
-Slave                   :foo-local:
+CopyArrivalDate         yes
 Create                  Both
 Expunge                 Both
-CopyArrivalDate         yes
+Master                  :foo-remote:
+Slave                   :foo-local:
 Patterns                *
 SyncState               *
