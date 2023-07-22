@@ -196,6 +196,7 @@ Visit `package-user-dir' if such a directory is not found."
    ivy-hydra
    ivy-pass
 
+   jinx
    jq-mode
    js2-mode
    js2-refactor
