@@ -19,7 +19,8 @@ why-are-you-changing-gc-cons-threshold/'.")
 
   (blc-gc-thresh-maximise))
 
-(setq-default package-enable-at-startup nil)
+(setq-default package-enable-at-startup nil
+              package-install-upgrade-built-in t)
 
 (add-hook 'window-setup-hook #'blc-gc-thresh-restore t)
 
