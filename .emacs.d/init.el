@@ -3415,6 +3415,14 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
 (display-time-mode)
 
+;;;; tramp
+
+(with-eval-after-load 'tramp
+  (setq-default tramp-security-key-confirm-regexp
+                (rx (| (regexp tramp-security-key-confirm-regexp)
+                       (: bol "Place your finger on the fingerprint reader\n")))
+                tramp-security-key-confirmed-regexp (rx)))
+
 ;;;; url
 
 (with-eval-after-load 'url-cookie
