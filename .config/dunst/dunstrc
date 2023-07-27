@@ -197,7 +197,7 @@
     max_icon_size = 32
 
     # Paths to default icons.
-    icon_path = /usr/share/icons/Adwaita/32x32/status/:/usr/share/icons/Adwaita/32x32/devices/:/usr/share/icons/Adwaita/32x32/apps/:/usr/share/icons/Adwaita/32x32/legacy/:/usr/share/icons/Papirus/32x32/apps/
+    icon_path = /usr/share/icons/Adwaita/48x48/status/:/usr/share/icons/Adwaita/48x48/devices/:/usr/share/icons/Adwaita/48x48/apps/:/usr/share/icons/Adwaita/48x48/legacy/:/usr/share/icons/Papirus/48x48/apps/:/usr/share/icons/Papirus/48x48/status/:/usr/share/icons/Papirus/symbolic/status/
 
     ### History ###
 
