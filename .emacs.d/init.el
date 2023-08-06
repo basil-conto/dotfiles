@@ -1874,6 +1874,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  reftex-plug-into-AUCTeX                t
  reftex-revisit-to-follow               t
 
+ ;; relint
+ relint-xr-checks                       'all
+
  ;; replace
  list-matching-lines-current-line-face  'highlight
  list-matching-lines-jump-to-current-line
