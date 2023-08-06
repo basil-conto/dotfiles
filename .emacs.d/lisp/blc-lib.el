@@ -594,6 +594,8 @@ of the alist BINDINGS of the form (KEY DEF [REMOVE]),
      :country "ZW" :lat [17 52 south] :long [31 02 east])
     ("Kfar Qasim"
      :country "IL" :lat [32 07 north] :long [34 59 east] :tz "Tel_Aviv")
+    ("Lausanne"
+     :country "CH" :lat [46 31 north] :long [06 38 east] :tz "Zurich")
     ("Tel Aviv"
      :country "IL" :lat [32 04 north] :long [34 47 east])
     ("Xylokastro"
@@ -601,11 +603,12 @@ of the alist BINDINGS of the form (KEY DEF [REMOVE]),
   "Map location names to related properties.")
 
 (defvar blc-countries
-  '(("GR" :name "Greece"   :area "Europe")
-    ("HU" :name "Hungary"  :area "Europe")
-    ("IE" :name "Ireland"  :area "Europe")
-    ("IL" :name "Israel"   :area "Asia"  )
-    ("ZW" :name "Zimbabwe" :area "Africa"))
+  '(("CH" :name "Switzerland" :area "Europe")
+    ("GR" :name "Greece"      :area "Europe")
+    ("HU" :name "Hungary"     :area "Europe")
+    ("IE" :name "Ireland"     :area "Europe")
+    ("IL" :name "Israel"      :area "Asia"  )
+    ("ZW" :name "Zimbabwe"    :area "Africa"))
   "Map ISO 3166-1 alpha-2 codes to country properties.")
 
 (defun blc--country-xref (&rest plist)
