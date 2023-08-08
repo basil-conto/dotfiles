@@ -1411,8 +1411,7 @@ created.  FRAME defaults to the selected one."
  ;; eww
  eww-auto-rename-buffer                 'title
  eww-bookmarks-directory                blc-index-dir
- eww-search-prefix
- "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q="
+ eww-search-prefix                      "https://google.com/search?q="
 
  ;; ffap
  dired-at-point-require-prefix          t
@@ -2009,11 +2008,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
  ;; webjump
  webjump-sites
- '(("Book Depository"
-    . [simple-query "https://bookdepository.com/"
-                    "https://bookdepository.com/search?searchTerm=hi"
-                    ""])
-   ("Browse URL"
+ '(("Browse URL"
     .               blc-webjump-browse-url)
    ("Emacs Wiki"
     . [simple-query "https://emacswiki.org/"
@@ -2034,14 +2029,14 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                     "https://gitlab.com/dashboard/merge_requests"
                     "https://gitlab.com/dashboard/todos"
                     "https://gitlab.com/search"])
+   ("Google"
+    . [simple-query "https://google.com/"
+                    "https://google.com/search?q="
+                    ""])
    ("Google Definition"
-    . [simple-query "https://encrypted.google.com/"
-                    "https://encrypted.google.com/search?q=define+"
-                    "&ie=utf-8&oe=utf-8"])
-   ("Google Encrypted"
-    . [simple-query "https://encrypted.google.com/"
-                    "https://encrypted.google.com/search?q="
-                    "&ie=utf-8&oe=utf-8"])
+    . [simple-query "https://google.com/"
+                    "https://google.com/search?q=define+"
+                    ""])
    ("Google Scholar"
     . [simple-query "https://scholar.google.com/"
                     "https://scholar.google.com/scholar?q="
@@ -2791,15 +2786,12 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   ;; No eager autoloaded macro expansion
   (eval
    '(progn
-      (defengine book-depository
-        "https://bookdepository.com/search?searchTerm=%s"
-        :keybinding "b")
-      (defengine google-def
-        "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=define+%s"
-        :keybinding "d")
-      (defengine google-enc
-        "https://encrypted.google.com/search?ie=utf-8&oe=utf-8&q=%s"
+      (defengine google
+        "https://google.com/search?q=%s"
         :keybinding "g")
+      (defengine google-def
+        "https://google.com/search?q=define+%s"
+        :keybinding "d")
       (defengine google-sch
         "https://scholar.google.com/scholar?q=%s"
         :keybinding "s")
