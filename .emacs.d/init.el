@@ -1108,6 +1108,15 @@ Intended for `term-exec-hook'."
                    (abbr (abbreviate-file-name (directory-file-name dir))))
                (rename-buffer (format "*%s %s*" base abbr) t)))))))))
 
+;;;; treesit
+
+(defun blc-install-treesit-grammars ()
+  "Install each entry in `treesit-language-source-alist'."
+  (interactive)
+  (defvar treesit-language-source-alist)
+  (pcase-dolist (`(,lang . ,_) treesit-language-source-alist)
+    (treesit-install-language-grammar lang)))
+
 ;;;; webjump
 
 (defun blc-webjump-browse-url (_name)
@@ -1975,6 +1984,33 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
  ;; tramp-sh
  tramp-use-scp-direct-remote-copying    t
+
+ ;; treesit
+ treesit-language-source-alist
+ '((bash       "https://github.com/tree-sitter/tree-sitter-bash")
+   (c          "https://github.com/tree-sitter/tree-sitter-c")
+   (cmake      "https://github.com/uyha/tree-sitter-cmake")
+   (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
+   (css        "https://github.com/tree-sitter/tree-sitter-css")
+   (c-sharp    "https://github.com/tree-sitter/tree-sitter-c-sharp")
+   (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+   (elixir     "https://github.com/elixir-lang/tree-sitter-elixir")
+   (gomod      "https://github.com/camdencheek/tree-sitter-go-mod")
+   (go         "https://github.com/tree-sitter/tree-sitter-go")
+   (heex       "https://github.com/phoenixframework/tree-sitter-heex")
+   (html       "https://github.com/tree-sitter/tree-sitter-html")
+   (java       "https://github.com/tree-sitter/tree-sitter-java")
+   (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+   (json       "https://github.com/tree-sitter/tree-sitter-json")
+   (python     "https://github.com/tree-sitter/tree-sitter-python")
+   (ruby       "https://github.com/tree-sitter/tree-sitter-ruby")
+   (rust       "https://github.com/tree-sitter/tree-sitter-rust")
+   (toml       "https://github.com/ikatyang/tree-sitter-toml")
+   (tsx        "https://github.com/tree-sitter/tree-sitter-typescript"
+               nil "tsx/src")
+   (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
+               nil "typescript/src")
+   (yaml       "https://github.com/ikatyang/tree-sitter-yaml"))
 
  ;; type-break
  type-break-demo-boring-stats           t
