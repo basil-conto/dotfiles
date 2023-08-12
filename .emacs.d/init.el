@@ -47,6 +47,7 @@
 (autoload 'mailcap-file-name-to-mime-type   "mailcap")
 (autoload 'meme                             "meme" nil t)
 (autoload 'meme-file                        "meme" nil t)
+(autoload 'modus-themes-load-theme          "modus-themes")
 (autoload 'notifications-notify             "notifications")
 (autoload 'pdf-view-mode                    "pdf-view" nil t)
 (autoload 'TeX-doc                          "tex" nil t)
@@ -666,6 +667,14 @@ Intended as an Ivy action for `counsel-M-x'."
     (setq this-command      cmd)
     (setq prefix-arg        current-prefix-arg)
     (command-execute cmd t)))
+
+;;;; dbus
+
+(defun blc-xdg-scheme-to-theme (value)
+  "Return a theme corresponding to XDG Portal `color-scheme' VALUE."
+  (pcase value
+    ((or `((,1)) `(,1) 1) 'modus-vivendi)
+    (_                    'modus-operandi)))
 
 ;;;; eww
 
@@ -2622,17 +2631,32 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                      (expand-file-name "custom.el" user-emacs-directory)))
   (lwarn 'blc :warning "Custom file %s exists but not loaded" custom-file))
 
-;;;; custom
-
-(let* ((conf (blc-file (xdg-config-home) "gtk-3.0/settings.ini"))
-       (dark (blc-with-contents conf
-               (search-forward "dark-theme = true" nil t))))
-  (load-theme (if dark 'modus-vivendi 'modus-operandi) t))
-
 ;;;; dash
 
 (with-eval-after-load 'dash
   (dash-enable-font-lock))
+
+;;;; dbus
+
+(require 'dbus)
+(let ((bus       :session)
+      (service   "org.freedesktop.portal.Desktop")
+      (path      "/org/freedesktop/portal/desktop")
+      (interface "org.freedesktop.portal.Settings")
+      (namespace "org.freedesktop.appearance")
+      (key       "color-scheme"))
+
+  (dbus-call-method-asynchronously
+   bus service path interface "Read"
+   (lambda (val) (load-theme (blc-xdg-scheme-to-theme val) t))
+   namespace key)
+
+  (dbus-register-signal
+   bus service path interface "SettingChanged"
+   (lambda (_ key val)
+     (when (equal key "color-scheme")
+       (modus-themes-load-theme (blc-xdg-scheme-to-theme val))))
+   :arg-namespace namespace))
 
 ;;;; deb-view
 
