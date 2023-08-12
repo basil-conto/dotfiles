@@ -22,6 +22,7 @@
 (require 'blc-pkg)
 
 ;; Built-in
+(require 'dbus)
 (require 'map)
 (require 'seq)
 (require 'xdg)
@@ -2638,7 +2639,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
 ;;;; dbus
 
-(require 'dbus)
 (let ((bus       :session)
       (service   "org.freedesktop.portal.Desktop")
       (path      "/org/freedesktop/portal/desktop")
