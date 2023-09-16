@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-[ -x "$(command -v setxkbmap)" ]             \
-  && setxkbmap -layout ie,gr                 \
-               -option caps:ctrl_modifier    \
-               -option grp:lctrl_lwin_toggle \
+[ -x "$(command -v setxkbmap)" ]              \
+  && setxkbmap -layout 'ie,us(altgr-intl),gr' \
+               -option caps:ctrl_modifier     \
+               -option grp:lctrl_lwin_toggle  \
                -option shift:both_capslock
 
 true
