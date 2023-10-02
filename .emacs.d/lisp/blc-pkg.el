@@ -249,6 +249,7 @@ Visit `package-user-dir' if such a directory is not found."
    rmsbolt
    rust-mode
 
+   scala-mode
    scanner
    scribble-mode
    sicp
