@@ -209,6 +209,7 @@ Visit `package-user-dir' if such a directory is not found."
    ledger-mode
    logview
    lorem-ipsum
+   lsp-mode
    lua-mode
    lyrics
 
