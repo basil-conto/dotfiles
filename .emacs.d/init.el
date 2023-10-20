@@ -48,6 +48,9 @@
 (autoload 'mailcap-file-name-to-mime-type   "mailcap")
 (autoload 'meme                             "meme" nil t)
 (autoload 'meme-file                        "meme" nil t)
+(autoload 'mizar-mode                       "mizar" nil t)
+(autoload 'mmlquery-decode                  "mizar")
+(autoload 'mmlquery-mode                    "mizar" nil t)
 (autoload 'modus-themes-load-theme          "modus-themes")
 (autoload 'notifications-notify             "notifications")
 (autoload 'pdf-view-mode                    "pdf-view" nil t)
@@ -3235,6 +3238,17 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
   (setq-default message-expand-name-databases
                 (delq 'eudc message-expand-name-databases)))
+
+;;;; mizar
+
+(dolist (ext '("miz" "abs"))
+  (add-to-list 'auto-mode-alist (cons (rx ?. (literal ext) eos) #'mizar-mode)))
+
+(add-to-list 'format-alist
+             `( text/mmlquery "Extended MIME text/mmlquery format."
+                ,(rx "::" (* blank) "Content-" (in "Tt") "ype:" (* blank)
+                     "text/mmlquery")
+                ,#'mmlquery-decode nil nil ,#'mmlquery-mode))
 
 ;;;; mpc
 
