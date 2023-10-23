@@ -22,8 +22,8 @@ import Graphics.X11.ExtraTypes.XF86       ( xF86XK_AudioLowerVolume
                                           , xF86XK_MonBrightnessUp
                                           , xF86XK_ScreenSaver )
 import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
-                                          , xK_Print, xK_a, xK_d, xK_f, xK_l
-                                          , xK_o, xK_s, xK_u, xK_v )
+                                          , xK_Print, xK_a, xK_d, xK_f, xK_g
+                                          , xK_l, xK_o, xK_s, xK_u, xK_v, xK_y )
 import System.Directory                   ( getHomeDirectory )
 import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
@@ -86,9 +86,11 @@ main = do
              [ (xK_a, ["sensible-editor" ])
              , (xK_d, ["signal-desktop"  ])
              , (xK_f, ["nautilus"        ])
+             , (xK_g, ["slack"           ])
              , (xK_o, ["passmenu"        ])
              , (xK_s, ["sensible-browser"])
              , (xK_v, ["pavucontrol"     ])
+             , (xK_y, ["spotify"         ])
              ]
 
     ++
