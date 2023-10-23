@@ -2022,6 +2022,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    (java       "https://github.com/tree-sitter/tree-sitter-java")
    (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
    (json       "https://github.com/tree-sitter/tree-sitter-json")
+   (lua        "https://github.com/MunifTanjim/tree-sitter-lua")
    (python     "https://github.com/tree-sitter/tree-sitter-python")
    (ruby       "https://github.com/tree-sitter/tree-sitter-ruby")
    (rust       "https://github.com/tree-sitter/tree-sitter-rust")
