@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+lux "$@"
+pct="$(lux -G)"
+dunstify "Brightness ${pct}" \
+         -h 'string:x-dunst-stack-tag:lux' \
+         -h "int:value:${pct}"
+unset pct

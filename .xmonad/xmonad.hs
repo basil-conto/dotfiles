@@ -76,7 +76,7 @@ main = do
              ]
 
     ++
-    mapPairs ((noModMask,), safeSpawn "lux")
+    mapPairs ((noModMask,), safeSpawn "blc-lux")
              [ (xF86XK_MonBrightnessDown, ["-s", lightStep])
              , (xF86XK_MonBrightnessUp,   ["-a", lightStep])
              ]
