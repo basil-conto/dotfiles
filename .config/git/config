@@ -44,11 +44,10 @@
 
 [core]
   compression        = 9
-  editor             = ec
+  editor             = ecc
   whitespace         = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 
 [diff]
-  algorithm          = histogram
   colorMoved         = true
   submodule          = log
 
@@ -68,6 +67,9 @@
 
 [diff "texinfo"]
   xfuncname          = ^@node[[:space:]]+([^,[:space:]][^,]+)
+
+[fetch]
+  writeCommitGraph   = true
 
 [github]
   user               = basil-conto
@@ -112,3 +114,10 @@
   email              = contovob@tcd.ie
   name               = Basil L. Contovounesios
   signingKey         = AB0D D410 0356 7A55 A0B3 B70F 205A B54A 5D5D 8CFF
+  useConfigOnly      = true
+
+[includeIf "gitdir:~/src/epfl/"]
+  path               = ~/.config/git/config-epfl
+
+[includeIf "gitdir:~/src/systemf/"]
+  path               = ~/.config/git/config-epfl
