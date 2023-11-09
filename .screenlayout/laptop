@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-
-# ┌──────┐
-# │LVDS1*│
-# └──────┘
-"$(dirname -- $(realpath -- $0))/xrandr" \
-  --output LVDS1 --mode 1600x900 --pos 0x0 --rotate normal --primary \
-  --output HDMI1 --off
