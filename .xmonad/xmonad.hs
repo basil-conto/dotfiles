@@ -23,13 +23,17 @@ import Graphics.X11.ExtraTypes.XF86       ( xF86XK_AudioLowerVolume
                                           , xF86XK_ScreenSaver )
 import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
                                           , xK_Print, xK_a, xK_d, xK_f, xK_g
-                                          , xK_l, xK_o, xK_s, xK_u, xK_v, xK_y )
+                                          , xK_l, xK_o, xK_s, xK_t, xK_u, xK_v
+                                          , xK_y )
 import System.Directory                   ( getHomeDirectory )
 import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
 import XMonad.Hooks.EwmhDesktops          ( ewmh )
-import XMonad.Hooks.ManageDocks           ( avoidStruts, docks )
+import XMonad.Hooks.ManageDocks           ( ToggleStruts(..)
+                                          , avoidStruts, docks )
+import XMonad.Layout.NoBorders            ( smartBorders )
 import XMonad.Main                        ( xmonad )
+import XMonad.Operations                  ( sendMessage )
 import XMonad.Util.EZConfig               ( additionalKeys )
 import XMonad.Util.Run                    ( safeSpawn, safeSpawnProg )
 
@@ -52,7 +56,7 @@ main = do
     { borderWidth        = 2
     , focusedBorderColor = "#5ada88" -- modus-operandi green-intense-bg
     , focusFollowsMouse  = False
-    , layoutHook         = avoidStruts $ layoutHook def
+    , layoutHook         = avoidStruts . smartBorders $ layoutHook def
     , modMask            = modMask'
     , normalBorderColor  = "#ecf7ed" -- modus-operandi green-nuanced-bg
     , terminal           = "x-terminal-emulator"
@@ -91,6 +95,11 @@ main = do
              , (xK_s, ["sensible-browser"])
              , (xK_v, ["pavucontrol"     ])
              , (xK_y, ["spotify"         ])
+             ]
+
+    ++
+    mapPairs ((modMask' .|. shiftMask,), sendMessage)
+             [ (xK_t, ToggleStruts)
              ]
 
     ++
