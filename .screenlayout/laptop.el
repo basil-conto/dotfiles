@@ -9,6 +9,6 @@
         outs)
     (while (re-search-forward outre nil 'move)
       (setq outs (nconc (list "--output" (match-string 1) "--off") outs)))
-    (apply #'call "xrandr" "--output" "eDP" "--primary" "--mode" "1920x1080"
+    (apply #'call "xrandr" "--output" "eDP" "--primary" "--preferred"
            "--pos" "0x0" "--rotate" "normal" outs))
   (call "~/.fehbg"))
