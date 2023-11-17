@@ -163,6 +163,9 @@ convention (see the Info node `(gnus) Process/Prefix')."
    (nntp "news.gwene.org"
          (nntp-record-commands t)))
 
+ ;; gnus-art
+ gnus-blocked-images                    nil
+
  ;; gnus-dbus
  gnus-dbus-close-on-sleep               t
 

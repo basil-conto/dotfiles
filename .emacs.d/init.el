@@ -1706,6 +1706,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  mm-default-directory                   (blc-user-dir "DOWNLOAD")
  mm-external-terminal-program           "x-terminal-emulator"
  mm-sign-option                         'guided
+ mm-text-html-renderer                  'gnus-w3m
  mm-verify-option                       'always
 
  ;; mml-sec
