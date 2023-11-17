@@ -2492,7 +2492,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
   (project-prefix-map
    ("S"                                   #'project-search)
-   ("o"                                   #'blc-project-complete-regexp))
+   ("i"                                   #'blc-project-complete-regexp))
 
   (search-map
    ("A"                                   #'counsel-ag)
