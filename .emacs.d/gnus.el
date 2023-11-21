@@ -185,6 +185,9 @@ convention (see the Info node `(gnus) Process/Prefix')."
          "\n")
  gnus-group-mode-line-format            "Gnus: %%b"
 
+ ;; gnus-html
+ gnus-html-frame-width                  blc-chars-per-line
+
  ;; gnus-msg
  gnus-gcc-mark-as-read                  t
 
