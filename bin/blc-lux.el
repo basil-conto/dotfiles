@@ -26,8 +26,8 @@
          (max (cadr bnd))
          (new (* 0.01 (- max min) (+ pct (if sub (- inc) inc))))
          (new (min max (max min (+ min (ceiling new))))))
-    (call-process "lux" nil nil nil "-S" (number-to-string new)))
-  (setq pct (blc-lux-bright))
-  (call-process "dunstify" nil 0 nil (format "Brightness %d%%" pct)
-                "-h" "string:x-dunst-stack-tag:lux"
-                "-h" (format "int:value:%d" pct)))
+    (call-process "lux" nil nil nil "-S" (number-to-string new))
+    (setq pct (blc-lux-bright))
+    (call-process "dunstify" nil 0 nil (format "Brightness %d%%" pct)
+                  "-h" "string:x-dunst-stack-tag:lux"
+                  "-h" (format "int:value:%d" pct))))
