@@ -1,10 +1,8 @@
 #!/home/blc/.local/bin/emacs -x
 
+(require 'blc-randr
+         (expand-file-name "blc-randr" (file-name-directory load-file-name)))
 (require 'map)
-(eval-and-compile
-  (let* ((me (or (macroexp-file-name) load-file-name))
-         (load-path (cons (file-name-directory me) load-path)))
-    (require 'blc-randr)))
 
 (blc-randr-with-proc call
   (when-let ((outs (blc-randr-resolutions #'call))
