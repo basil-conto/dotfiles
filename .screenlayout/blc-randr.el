@@ -31,6 +31,10 @@
 (rx-define blc-randr-resolution
   (: bol (+ blank) (group (+ digit) ?x (+ digit))))
 
+(defun blc-randr-mode (x y)
+  "Return \"xrandr\" mode string \"XxY\"."
+  (format "%dx%d" x y))
+
 (defun blc-randr-resolutions (call)
   "CALL \"xrandr\" and return alist of outputs with resolutions."
   (funcall call "xrandr" "-q")
