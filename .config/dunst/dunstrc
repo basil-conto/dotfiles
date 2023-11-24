@@ -281,10 +281,10 @@
 
     ### keyboard
 
-    close = ctrl+space
-    close_all = ctrl+shift+space
-    history = ctrl+grave
-    context = ctrl+shift+period
+    close = mod4+z
+    # close_all =
+    history = mod4+shift+z
+    context = mod4+x
 
 # Experimental features that may or may not work correctly. Do not expect them
 # to have a consistent behaviour across releases.
