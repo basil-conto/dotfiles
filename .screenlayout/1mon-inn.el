@@ -8,11 +8,12 @@
   (when-let ((outs (blc-randr-resolutions #'call))
              (out (map-some (lambda (out res)
                               (and (string-prefix-p "DisplayPort-" out)
-                                   (equal "2560x1440" res)
+                                   (equal (car res) "2560x1440")
                                    out))
                             outs)))
     (apply #'call "xrandr" "--output" "eDP" "--off" "--output" out
            "--primary" "--preferred" "--pos" "0x0" "--rotate" "normal"
-           (mapcan (lambda (out) (list "--output" (car out) "--off"))
-                   (assoc-delete-all out outs)))
+           (mapcan (pcase-lambda (`(,o . ,_))
+                     (unless (equal o out) (list "--output" o "--off")))
+                   outs))
     (call "blc-xkb")))

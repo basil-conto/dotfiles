@@ -26,7 +26,7 @@
           (if (numberp num) num 1))))))
 
 (rx-define blc-randr-output
-  (: bol (group (+ (in alnum ?-)) ?- digit) " connected"))
+  (: bol (group (+ (not blank))) " connected"))
 
 (rx-define blc-randr-resolution
   (: bol (+ blank) (group (+ digit) ?x (+ digit))))
@@ -40,11 +40,10 @@
   (funcall call "xrandr" "-q")
   (let (outs)
     (while (re-search-forward (rx blc-randr-output) nil 'move)
-      (let ((out (match-string 1))
-            (res (and (forward-line)
-                      (looking-at (rx blc-randr-resolution))
-                      (match-string 1))))
-        (push (cons out res) outs)))
+      (let ((out (match-string 1)) res)
+        (while (progn (forward-line) (looking-at (rx blc-randr-resolution)))
+          (push (match-string 1) res))
+        (push (cons out (nreverse res)) outs)))
     (nreverse outs)))
 
 (provide 'blc-randr)
