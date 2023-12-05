@@ -10,6 +10,7 @@
   `(with-temp-buffer
      (condition-case err
          (cl-flet ((,sym (prog &rest args)
+                     (message "> %S %S" prog args)
                      (let ((exit (save-excursion
                                    (apply #'call-process prog nil t nil args))))
                        (unless (eql exit 0)
@@ -26,10 +27,10 @@
           (if (numberp num) num 1))))))
 
 (rx-define blc-randr-output
-  (: bol (group (+ (not blank))) " connected"))
+  (: bol (group (+ (not blank))) ?\s (| "connected" (group "disconnected"))))
 
-(rx-define blc-randr-resolution
-  (: bol (+ blank) (group (+ digit) ?x (+ digit))))
+(rx-define blc-randr-mode
+  (: (+ blank) (group (+ digit) ?x (+ digit))))
 
 (defun blc-randr-mode (x y)
   "Return \"xrandr\" mode string \"XxY\"."
@@ -41,8 +42,9 @@
   (let (outs)
     (while (re-search-forward (rx blc-randr-output) nil 'move)
       (let ((out (match-string 1)) res)
-        (while (progn (forward-line) (looking-at (rx blc-randr-resolution)))
-          (push (match-string 1) res))
+        (unless (match-beginning 2)
+          (while (progn (forward-line) (looking-at (rx blc-randr-mode)))
+            (push (match-string 1) res)))
         (push (cons out (nreverse res)) outs)))
     (nreverse outs)))
 

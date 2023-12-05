@@ -7,8 +7,9 @@
   (when-let ((outs (blc-randr-resolutions #'call))
              (edp (assoc "eDP" outs))
              (out (seq-some (lambda (out)
-                              (unless (eq out edp)
-                                (car out)))
+                              (and (not (eq out edp))
+                                   (cdr out)
+                                   (car out)))
                             outs)))
     (apply #'call "xrandr" "--output" out
            "--primary" "--preferred" "--pos" "0x0" "--rotate" "normal"
