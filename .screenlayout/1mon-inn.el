@@ -11,7 +11,7 @@
                                    (equal (car res) "2560x1440")
                                    out))
                             outs)))
-    (apply #'call "xrandr" "--output" "eDP" "--off" "--output" out
+    (apply #'call "xrandr" "--output" out
            "--primary" "--preferred" "--pos" "0x0" "--rotate" "normal"
            (mapcan (pcase-lambda (`(,o . ,_))
                      (unless (equal o out) (list "--output" o "--off")))
