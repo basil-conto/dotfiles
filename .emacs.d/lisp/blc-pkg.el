@@ -248,6 +248,7 @@ Visit `package-user-dir' if such a directory is not found."
 
    racket-mode
    rainbow-mode
+   rbit
    redtick
    relint
    restclient
