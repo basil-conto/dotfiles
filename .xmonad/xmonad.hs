@@ -18,13 +18,14 @@ import Graphics.X11.ExtraTypes.XF86       ( xF86XK_AudioLowerVolume
                                           , xF86XK_AudioPrev
                                           , xF86XK_AudioRaiseVolume
                                           , xF86XK_Display
+                                          , xF86XK_Favorites
                                           , xF86XK_MonBrightnessDown
                                           , xF86XK_MonBrightnessUp
                                           , xF86XK_ScreenSaver )
 import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
-                                          , xK_Print, xK_a, xK_d, xK_f, xK_g
-                                          , xK_l, xK_o, xK_s, xK_t, xK_u, xK_v
-                                          , xK_y )
+                                          , xK_Print, xK_a, xK_b, xK_d, xK_f
+                                          , xK_g, xK_l, xK_o, xK_s, xK_t, xK_u
+                                          , xK_v, xK_y )
 import System.Directory                   ( getHomeDirectory )
 import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
@@ -69,6 +70,7 @@ main = do
              , (xF86XK_AudioMute,        pactl "sink"      0)
              , (xF86XK_AudioRaiseVolume, pactl "sink"      5)
              , (xF86XK_Display,          ["arandr"])
+             , (xF86XK_Favorites,        ["laptop.el"])
              , (xF86XK_ScreenSaver,      ["blc-lock"])
              ]
 
@@ -88,6 +90,7 @@ main = do
     ++
     mapPairs ((modMask',), safeSpawn')
              [ (xK_a, ["sensible-editor" ])
+             , (xK_b, ["blueman-manager" ])
              , (xK_d, ["signal-desktop"  ])
              , (xK_f, ["nautilus"        ])
              , (xK_g, ["slack"           ])
