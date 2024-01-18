@@ -1297,6 +1297,7 @@ created.  FRAME defaults to the selected one."
  ;; browse-url
  browse-url-browser-function            #'blc-browse-url
  browse-url-firefox-new-window-is-tab   t
+ browse-url-firefox-program             "firefox-devedition"
  browse-url-default-scheme              "https"
 
  ;; calendar
