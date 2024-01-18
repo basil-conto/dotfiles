@@ -229,7 +229,10 @@ Visit `package-user-dir' if such a directory is not found."
    nov
 
    org-contrib
+   org-modern
    org-pomodoro
+   org-tree-slide
+   org-tree-slide-pauses
 
    pacmacs
    paren-face

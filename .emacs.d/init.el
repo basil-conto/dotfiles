@@ -2371,6 +2371,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    ([S-left]                              #'windmove-left)
    ([S-right]                             #'windmove-right)
    ([f6]                                  #'gif-screencast)
+   ([f8]                                  #'org-tree-slide-mode)
    ([remap bookmark-jump]                 #'counsel-bookmark)
    ([remap capitalize-word]               #'capitalize-dwim)
    ([remap count-lines-page]              #'blc-count-lines)
@@ -3378,6 +3379,11 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'org-pomodoro
   (setq-default org-pomodoro-format
                 (blc-sed-tree "pomodoro" "🍅" org-pomodoro-format nil t)))
+
+;;;; org-tree-slide-pauses
+
+(with-eval-after-load 'org-tree-slide
+  (require 'org-tree-slide-pauses))
 
 ;;;; ox-html
 
