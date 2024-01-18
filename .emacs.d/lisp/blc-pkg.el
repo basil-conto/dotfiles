@@ -138,6 +138,7 @@ Visit `package-user-dir' if such a directory is not found."
    cider
    clojure-mode
    cmake-mode
+   company-coq
    counsel
    crontab-mode
    csharp-mode
