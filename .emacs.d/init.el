@@ -319,7 +319,7 @@ Uninstall self as advice on `pdf-view-mode'."
 (defvar blc-ibuffer-filter-groups
   (list
    '("Help"
-     (or (predicate . (apply #'derived-mode-p ibuffer-help-buffer-modes))
+     (or (predicate . (derived-mode-p ibuffer-help-buffer-modes))
          (and (name . "Ivy Help") (starred-name))))
    '("Gnus"
      (or (saved . "gnus")
@@ -907,7 +907,7 @@ name matches REGEXP."
   "Return non-nil if BUF should be auto-reverted by Magit.
 Intended for `auto-revert-buffer-list-filter'."
   (not (provided-mode-derived-p (buffer-local-value 'major-mode buf)
-                                #'pdf-view-mode)))
+                                (list #'pdf-view-mode))))
 
 ;;;; magit-mode
 
@@ -918,8 +918,8 @@ consider windows on all visible frames and try to avoid selecting
 any new frames (though WMs do not always comply)."
   (let ((mode (buffer-local-value 'major-mode (get-buffer buf))))
     (display-buffer buf (if (provided-mode-derived-p mode
-                                                     #'magit-diff-mode
-                                                     #'magit-process-mode)
+                                                     `(,#'magit-diff-mode
+                                                       ,#'magit-process-mode))
                             '(()
                               (inhibit-same-window     . t)
                               (inhibit-switch-frame    . t)

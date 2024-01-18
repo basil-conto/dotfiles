@@ -326,9 +326,8 @@ for compatibility with `browse-url' and ignored."
 (defun blc-derived-buffers (&rest modes)
   "Return subset of `buffer-list' derived from MODES."
   (seq-filter (lambda (buf)
-                (apply #'provided-mode-derived-p
-                       (buffer-local-value 'major-mode buf)
-                       modes))
+                (provided-mode-derived-p
+                 (buffer-local-value 'major-mode buf) modes))
               (buffer-list)))
 
 (defun blc-bury-buffer (&optional buffer-or-name unbury)
