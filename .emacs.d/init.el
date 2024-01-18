@@ -1945,6 +1945,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; shr
  shr-bullet                             "• "
  shr-hr-line                            ?─
+ shr-max-inline-image-size              '(0.4 . 4.0)
 
  ;; simple
  async-shell-command-display-buffer     nil
