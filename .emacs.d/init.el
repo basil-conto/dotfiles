@@ -981,6 +981,15 @@ that ignore `inhibit-switch-frame' or `no-focus-on-map'."
       (y-or-n-p "No attachments; send anyway? ")
       (keyboard-quit)))
 
+;;;; mm-decode
+
+(defun blc-toggle-html-renderer ()
+  "Switch between values of `mm-text-html-renderer'."
+  (interactive)
+  (let ((new (if (eq mm-text-html-renderer 'shr) 'gnus-w3m 'shr)))
+    (setq-default mm-text-html-renderer new)
+    (message "Switched to `%s'" new)))
+
 ;;;; org
 
 (defun blc-org-read-file ()
