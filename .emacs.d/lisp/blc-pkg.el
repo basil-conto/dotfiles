@@ -143,6 +143,8 @@ Visit `package-user-dir' if such a directory is not found."
    csharp-mode
    csv-mode
 
+   dap-mode
+   dape
    dash
    debbugs
    debian-el
