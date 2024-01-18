@@ -1573,6 +1573,9 @@ created.  FRAME defaults to the selected one."
  ielm-noisy                             nil
  ielm-prompt                            "(>) "
 
+ ;; image
+ image-use-external-converter           t
+
  ;; image-dired
  image-dired-dir                        (blc-dir blc-index-dir "image-dired")
 
