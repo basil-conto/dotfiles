@@ -20,6 +20,7 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # Rubbish (bin)
 
+[ -d "/snap/bin"             ] && PATH="/snap/bin:${PATH}"
 [ -d "${HOME}/.screenlayout" ] && PATH="${HOME}/.screenlayout:${PATH}"
 [ -d "${LOCAL_DIR}/share/JetBrains/Toolbox/scripts" ] \
   && PATH="${LOCAL_DIR}/share/JetBrains/Toolbox/scripts:${PATH}"
