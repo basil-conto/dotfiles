@@ -12,6 +12,7 @@ export CACA_DRIVER=ncurses            # libcaca
 export EDITOR=ecc                     # Used by crontab et al.
 export GCALCLI_DIR="${HOME}/.gcalcli" # gcalcli
 export LOCAL_DIR="${HOME}/.local"     # Local installations
+export MIZFILES="${LOCAL_DIR}/share/mizar"
 export N_PREFIX="${LOCAL_DIR}"        # https://github.com/tj/n
 export PDFVIEWER='ecc --no-wait'      # texdoc
 export PSVIEWER='ecc  --no-wait'      # texdoc
