@@ -1,6 +1,6 @@
 ;;; blc-lib.el --- conveniences for blc -*- lexical-binding: t -*-
 
-;; Author:   Basil L. Contovounesios <basil.conto@gmail.com>
+;; Author:   Basil L. Contovounesios <basil@contovou.net>
 ;; Homepage: https://git.sr.ht/~blc/dotfiles
 
 ;;; Commentary:
