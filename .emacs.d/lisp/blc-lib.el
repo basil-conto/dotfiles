@@ -183,7 +183,7 @@ relevant major-mode."
      (let (addresses)
        (rx-let ((ws  (+ space))
                 (!ws (+ (not space))))
-         (while (blc-search-forward (rx bol "account" ws (group !ws) eol))
+         (while (blc-search-forward (rx bol "account" ws (group !ws)))
            (when (blc-search-forward
                   (rx bol "from" ws (group !ws ?@ !ws ?. !ws) eol))
              (push (match-string 1) addresses))))
