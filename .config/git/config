@@ -111,9 +111,9 @@
   fsckObjects        = true
 
 [user]
-  email              = contovob@tcd.ie
+  email              = basil@contovou.net
   name               = Basil L. Contovounesios
-  signingKey         = AB0D D410 0356 7A55 A0B3 B70F 205A B54A 5D5D 8CFF
+  signingKey         = 133F 9063 8557 BE84 F4DB AAB2 5984 0305 8CAF A86C
   useConfigOnly      = true
 
 [includeIf "gitdir:~/src/epfl/"]
@@ -121,3 +121,6 @@
 
 [includeIf "gitdir:~/src/systemf/"]
   path               = ~/.config/git/config-epfl
+
+[includeIf "gitdir:~/src/tcd/"]
+  path               = ~/.config/git/config-tcd
