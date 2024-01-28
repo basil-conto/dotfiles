@@ -91,7 +91,7 @@ main = do
     mapPairs ((modMask',), safeSpawn')
              [ (xK_a, ["sensible-editor" ])
              , (xK_b, ["blueman-manager" ])
-             , (xK_d, ["signal-desktop"  ])
+             , (xK_d, ["signal-desktop", "--use-tray-icon"])
              , (xK_f, ["nautilus"        ])
              , (xK_g, ["slack"           ])
              , (xK_o, ["passmenu"        ])
