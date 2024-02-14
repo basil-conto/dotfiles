@@ -39,7 +39,7 @@
   "Insert GPG information into revision buffer."
   (pcase-let* ((rev magit-buffer-revision)
                (`(,(app string-to-char type) ,signer ,key
-                  ,(app (pcase--flip string-trim-right "\n+") raw))
+                  ,(app (string-trim-right _ "\n+") raw))
                 (with-temp-buffer
                   (magit-rev-insert-format "%G?%x00%GS%x00%GK%x00%GG" rev)
                   (split-string (buffer-string) "\0")))
