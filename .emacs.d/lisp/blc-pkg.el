@@ -37,7 +37,7 @@ New `package-selected-packages': %S"
     (apply args)
     (message "%sdone (%.3fs)"
              (aref (cdr journo) 3)
-             (float-time (time-subtract nil start)))))
+             (float-time (time-since start)))))
 
 (define-advice package-menu-execute
     (:after-while (&rest _) blc-quickstart-refresh)

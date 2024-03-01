@@ -242,7 +242,7 @@ many opusenc processes as there are available processing units."
                      (when (>= nfile (aref (cdr journo) 2))
                        (message "%sdone (%.3fs)"
                                 (aref (cdr journo) 3)
-                                (float-time (time-subtract nil start))))))))))
+                                (float-time (time-since start))))))))))
 
 (defun blc--url-fmt (fmt url)
   "Truncate URL for viewing and substitute in FMT string."

@@ -645,7 +645,7 @@ Intended for `compilation-finish-functions'."
          (id  (plist-get val :id)))
     (cond ((get-buffer-window buf 'visible)
            (when id (notifications-close-notification id)))
-          ((< (float-time (time-subtract nil beg)) blc-compile-duration))
+          ((< (float-time (time-since beg)) blc-compile-duration))
           ((plist-put val :id (notifications-notify
                                :title (string-trim (format "%s %s" buf msg))
                                :actions '("default" "Pop to buffer")
