@@ -1386,6 +1386,7 @@ created.  FRAME defaults to the selected one."
  diff-add-log-use-relative-names        t
  diff-default-read-only                 t
  diff-font-lock-prettify                t
+ diff-refine-nonmodified                t
 
  ;; dired
  dired-auto-revert-buffer               t
@@ -1438,6 +1439,9 @@ created.  FRAME defaults to the selected one."
  enwc-ask-to-save-interfaces            nil
  enwc-default-backend                   'nm
  enwc-display-mode-line                 nil
+
+ ;; epa
+ epa-keys-select-method                 'minibuffer
 
  ;; epg-config
  epg-pinentry-mode                      'loopback
