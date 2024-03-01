@@ -22,7 +22,7 @@ libdir := lisp
 early  := early-init.elc
 init   := init.elc
 gnus   := gnus.elc
-tests  := $(call wildc,$(libdir)/*-tests.el)
+tests  := $(call wildc,$(libdir)/blc*-tests.el)
 libs   := $(call lib,backup lib magit mbsync pkg)
 inits  := $(early) $(init) $(call wildc,$(libdir)/default.el)
 
