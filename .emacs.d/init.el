@@ -499,12 +499,14 @@ DATA is the alist passed to `battery-update-functions'."
   "Visit `bog-stage-directory' in Dired."
   (interactive)
   (require 'bog)
+  (defvar bog-stage-directory)
   (dired bog-stage-directory))
 
 (defun blc-bog-staged-bib ()
   "Like `bog-clean-and-rename-staged-bibs' but with completion."
   (interactive)
   (require 'bog)
+  (defvar bog-stage-directory)
   (let* ((bibs (directory-files bog-stage-directory nil (rx ".bib" eos)))
          (bib  (completing-read "Staged bib: " bibs nil t)))
     (bog--prepare-bib-file (expand-file-name bib bog-stage-directory) t)))
