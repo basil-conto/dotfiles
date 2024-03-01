@@ -1570,6 +1570,7 @@ created.  FRAME defaults to the selected one."
  ido-enable-flex-matching               t
 
  ;; ielm
+ ielm-history-file-name                 (blc-file blc-index-dir "ielm-hist.eld")
  ielm-noisy                             nil
  ielm-prompt                            "(>) "
 
