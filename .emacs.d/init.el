@@ -1734,6 +1734,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
  ;; modus-themes
  modus-themes-completions               '((t accented background intense))
+ modus-themes-mixed-fonts               t
 
  ;; mpc
  mpc-frame-alist                        '((tool-bar-lines . 1))
