@@ -892,7 +892,7 @@ screensaver_xserver()
         timeout=`xset_screensaver_timeout`
         if [ "$timeout" -gt 0 ]; then
             echo "$timeout" > "$screensaver_file.xset"
-            xset s off > /dev/null
+            screensaver_suspend_loop eval killall -HUP xss-lock '||' xset s reset > /dev/null 2>&1
         fi
         result=$?
         ;;

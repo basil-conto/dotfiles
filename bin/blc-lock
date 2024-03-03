@@ -1,14 +1,14 @@
 #!/usr/bin/env sh
 
-env XSECURELOCK_BLANK_TIMEOUT=60 \
-    XSECURELOCK_PASSWORD_PROMPT=emoticon \
-    XSECURELOCK_SHOW_DATETIME=1 \
-    XSECURELOCK_SWITCH_USER_COMMAND='dm-tool switch-to-greeter' \
-    XSECURELOCK_KEY_XF86AudioMute_COMMAND="pactl set-sink-mute @DEFAULT_SINK@ toggle" \
-    XSECURELOCK_KEY_XF86AudioMicMute_COMMAND="pactl set-source-mute @DEFAULT_SOURCE@ toggle" \
-    XSECURELOCK_KEY_XF86AudioLowerVolume_COMMAND="pactl set-sink-volume @DEFAULT_SINK@ -5%" \
-    XSECURELOCK_KEY_XF86AudioRaiseVolume_COMMAND="pactl set-sink-volume @DEFAULT_SINK@ +5%" \
+env XSECURELOCK_KEY_XF86AudioMute_COMMAND='pactl set-sink-mute @DEFAULT_SINK@ toggle' \
+    XSECURELOCK_KEY_XF86AudioMicMute_COMMAND='pactl set-source-mute @DEFAULT_SOURCE@ toggle' \
+    XSECURELOCK_KEY_XF86AudioLowerVolume_COMMAND='pactl set-sink-volume @DEFAULT_SINK@ -5%' \
+    XSECURELOCK_KEY_XF86AudioRaiseVolume_COMMAND='pactl set-sink-volume @DEFAULT_SINK@ +5%' \
     XSECURELOCK_KEY_XF86AudioNext_COMMAND='playerctl next' \
     XSECURELOCK_KEY_XF86AudioPlay_COMMAND='playerctl play-pause' \
     XSECURELOCK_KEY_XF86AudioPrev_COMMAND='playerctl previous' \
+    XSECURELOCK_KEY_XF86Favorites_COMMAND='laptop.el' \
+    XSECURELOCK_PASSWORD_PROMPT=emoticon \
+    XSECURELOCK_SHOW_DATETIME=1 \
+    XSECURELOCK_SWITCH_USER_COMMAND='dm-tool switch-to-greeter' \
     xsecurelock
