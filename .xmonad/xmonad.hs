@@ -72,7 +72,7 @@ main = do
              , (xF86XK_AudioRaiseVolume, pactl "sink"      5)
              , (xF86XK_Display,          ["arandr"])
              , (xF86XK_Favorites,        ["laptop.el"])
-             , (xF86XK_ScreenSaver,      ["blc-lock"])
+             , (xF86XK_ScreenSaver,      ["loginctl", "lock-session"])
              ]
 
     ++
@@ -109,7 +109,7 @@ main = do
     ++
     mapPairs ((modMask' .|. shiftMask,), safeSpawn')
              [ (xK_d, ["discord"])
-             , (xK_l, ["blc-lock"])
+             , (xK_l, ["loginctl", "lock-session"])
              , (xK_s, ["sensible-browser", "-private-window", "--incognito"])
              , (xK_u, ["systemctl", "suspend"])
              ]
