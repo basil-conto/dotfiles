@@ -1684,6 +1684,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  makefile-tab-after-target-colon        nil
 
  ;; man
+ Man-heading-regexp
+ (rx bol (group upper (+ (not lower))) eol)
  Man-notify-method                      'aggressive
 
  ;; map-ynp
