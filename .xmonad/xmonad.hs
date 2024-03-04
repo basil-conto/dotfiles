@@ -36,6 +36,7 @@ import XMonad.Layout.NoBorders            ( smartBorders )
 import XMonad.Main                        ( xmonad )
 import XMonad.Operations                  ( sendMessage )
 import XMonad.Util.EZConfig               ( additionalKeys )
+import XMonad.Util.Hacks                  ( javaHack )
 import XMonad.Util.Run                    ( safeSpawn, safeSpawnProg )
 
 pactl :: String -> Int -> [String]
@@ -53,7 +54,7 @@ main = do
       mapPairs   = map . uncurry (***)
       safeSpawn' = maybe mempty (uncurry safeSpawn) . uncons
 
-  xmonad . docks . ewmh . pagerHints $ additionalKeys def
+  xmonad . docks . javaHack . ewmh . pagerHints $ additionalKeys def
     { borderWidth        = 2
     , focusedBorderColor = "#5ada88" -- modus-operandi green-intense-bg
     , focusFollowsMouse  = False
