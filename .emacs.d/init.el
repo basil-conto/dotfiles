@@ -1404,10 +1404,10 @@ created.  FRAME defaults to the selected one."
  ;; dired-aux
  dired-create-destination-dirs          'ask
  dired-do-revert-buffer                 t
- shell-command-guess-functions          `(,#'shell-command-guess-dired
+ shell-command-guess-functions          `(,#'shell-command-guess-open
                                           ,#'shell-command-guess-mailcap
                                           ,#'shell-command-guess-xdg
-                                          ,#'shell-command-guess-open)
+                                          ,#'shell-command-guess-dired)
 
  ;; doc-view
  doc-view-mupdf-use-svg                 (image-type-available-p 'svg)
