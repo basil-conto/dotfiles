@@ -1279,15 +1279,21 @@ created.  FRAME defaults to the selected one."
  bibtex-autokey-year-title-separator    ""
  bibtex-comment-start                   "%"
  bibtex-entry-kill-ring-max             kill-ring-max
+ bibtex-field-indentation               1
  bibtex-field-kill-ring-max             kill-ring-max
+ bibtex-include-OPTkey                  nil
  bibtex-maintain-sorted-entries         t
  bibtex-search-entry-globally           t
+ bibtex-text-indentation                (+ bibtex-field-indentation
+                                           (length "journaltitleaddon = "))
+ bibtex-user-optional-fields            ()
 
  ;; bindings
  mode-line-percent-position             '(-3 "%o")
 
  ;; bog
  bog-citekey-file-name-separators       (rx ?.)
+ bog-find-citekey-bib-func              #'bog-find-citekey-entry
  bog-keymap-prefix                      "\C-cb"
  bog-root-directory                     (file-name-parent-directory blc-bib-dir)
 
@@ -2618,7 +2624,13 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (setq bibtex-entry-format (delq 'numerical-fields bibtex-entry-format))
   (dolist (fmt '(delimiters realign))
     (add-to-list 'bibtex-entry-format fmt))
-  (add-to-list 'bibtex-files 'bibtex-file-path))
+  (add-to-list 'bibtex-files 'bibtex-file-path)
+  (add-to-list 'bibtex-include-OPTcrossref "InBook"))
+
+;;;; bog
+
+(with-eval-after-load 'bog
+  (setq-default bog-bib-file (expand-file-name "mono.bib" bog-bib-directory)))
 
 ;;;; cc-mode
 
