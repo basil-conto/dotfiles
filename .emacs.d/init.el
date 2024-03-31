@@ -2099,6 +2099,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; vc-hooks
  vc-handled-backends                    '(Git)
 
+ ;; verilog
+ verilog-auto-newline                   nil
+
  ;; warnings
  warning-minimum-log-level              :debug
 
