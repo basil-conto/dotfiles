@@ -448,6 +448,10 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
+(defun blc-TeX-whitespace-style ()
+  "Adapt `whitespace-style' to long TeX lines."
+  (setq-local whitespace-style (remq 'lines-char whitespace-style)))
+
 ;;;; autoconf
 
 (defun blc-toggle-autoconf-comments ()
@@ -2009,6 +2013,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; tex
  TeX-auto-save                          t
  TeX-debug-warnings                     t
+ TeX-master                             'dwim
+ TeX-one-master                         (rx unmatchable)
  TeX-parse-self                         t
 
  ;; tex-style
@@ -2193,10 +2199,11 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
 (blc-hook
   ;; auctex
+  (:hooks LaTeX-mode-hook :fns turn-on-reftex)
   (:hooks TeX-after-compilation-finished-functions
           :fns TeX-revert-document-buffer)
-  (:hooks LaTeX-mode-hook :fns (blc-TeX-command-default
-                                turn-on-reftex))
+  (:hooks TeX-mode-hook :fns (blc-TeX-command-default
+                              blc-TeX-whitespace-style))
 
   ;; auth-source
   (:hooks auth-source-backend-parser-functions
@@ -2359,7 +2366,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   ;; simple
   (:fns display-line-numbers-mode :hooks visual-line-mode-hook)
   (:fns turn-on-auto-fill         :hooks (bookmark-edit-annotation-mode
-                                          LaTeX-mode-hook
                                           org-mode-hook))
 
   ;; startup
