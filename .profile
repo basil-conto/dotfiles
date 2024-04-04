@@ -26,6 +26,8 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
   && PATH="${LOCAL_DIR}/share/JetBrains/Toolbox/scripts:${PATH}"
 [ -d "${LOCAL_DIR}/share/coursier/bin" ] \
   && PATH="${LOCAL_DIR}/share/coursier/bin:${PATH}"
+[ -x "$(command -v ruby)" ] && [ -x "$(command -v gem)" ] \
+  && PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:${PATH}"
 [ -d "${HOME}/.elan/bin"     ] && PATH="${HOME}/.elan/bin:${PATH}"
 [ -d "${HOME}/.luarocks/bin" ] && PATH="${HOME}/.luarocks/bin:${PATH}"
 [ -d "${HOME}/go/bin"        ] && PATH="${HOME}/go/bin:${PATH}"
