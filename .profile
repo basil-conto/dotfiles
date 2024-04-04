@@ -2,7 +2,7 @@
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
 
-[ -n "${BASH_VERSION}" -a -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
+[ -n "${BASH_VERSION}" ] && [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 
 # Do not display messages from other users
 mesg n
