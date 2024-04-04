@@ -1423,6 +1423,9 @@ created.  FRAME defaults to the selected one."
  doc-view-mupdf-use-svg                 (image-type-available-p 'svg)
  doc-view-resolution                    150
 
+ ;; eglot
+ eglot-confirm-server-edits             'summary
+
  ;; eldoc
  eldoc-echo-area-prefer-doc-buffer      t
  eldoc-echo-area-use-multiline-p        t
