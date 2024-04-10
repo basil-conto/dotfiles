@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+# Courtesy of
+# https://github.com/flameshot-org/flameshot/issues/511#issuecomment-1452255076
+flameshot gui -r | zbarimg -1q --raw - | xclip -selection c
+
+id="$(notify-send -pa blc-otp -t 0 'OTP copied to clipboard')"
+
+at now \+ 1 minutes <<EOF
+xclip -d "${DISPLAY}" -selection c /dev/null
+notify-send -r "${id}" -a blc-otp -t 1 'OTP copied to clipboard'
+EOF
