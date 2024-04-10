@@ -110,6 +110,7 @@ main = do
     mapPairs ((modMask' .|. shiftMask,), safeSpawn')
              [ (xK_d, ["discord"])
              , (xK_l, ["loginctl", "lock-session"])
+             , (xK_o, ["passmenu", "--otp"])
              , (xK_s, ["sensible-browser", "-private-window", "--incognito"])
              , (xK_u, ["systemctl", "suspend"])
              ]
