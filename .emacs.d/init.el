@@ -449,10 +449,6 @@ Like `TeX-doc', but with prefix ARG pass it to
       (TeX-documentation-texdoc arg)
     (call-interactively #'TeX-doc)))
 
-(defun blc-TeX-whitespace-style ()
-  "Adapt `whitespace-style' to long TeX lines."
-  (setq-local whitespace-style (remq 'lines-char whitespace-style)))
-
 ;;;; autoconf
 
 (defun blc-toggle-autoconf-comments ()
@@ -1151,6 +1147,12 @@ Intended for `term-exec-hook'."
 (defun blc-webjump-browse-url (_name)
   "Wrap `browse-url-interactive-arg' for use in `webjump-sites'."
   (car (browse-url-interactive-arg "URL: ")))
+
+;;;; whitespace
+
+(defun blc-whitespace-long-lines ()
+  "Adapt `whitespace-style' to long lines."
+  (setq-local whitespace-style (remq 'lines-char whitespace-style)))
 
 ;;;; xref-js2
 
@@ -2212,7 +2214,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (:hooks TeX-after-compilation-finished-functions
           :fns TeX-revert-document-buffer)
   (:hooks TeX-mode-hook :fns (blc-TeX-command-default
-                              blc-TeX-whitespace-style))
+                              blc-whitespace-long-lines))
 
   ;; auth-source
   (:hooks auth-source-backend-parser-functions
@@ -2368,6 +2370,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (:hooks redtick-after-rest-hook :fns blc-redtick-notify-work)
   (:hooks redtick-before-rest-hook :fns blc-redtick-notify-break)
   (:hooks redtick-mode-hook :fns blc-stop-redtick)
+
+  ;; sgml-mode
+  (:hooks html-mode-hook :fns blc-whitespace-long-lines)
 
   ;; shell
   (:hooks shell-mode-hook :fns blc-turn-off-prompt-highlight)
