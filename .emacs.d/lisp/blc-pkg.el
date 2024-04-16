@@ -260,6 +260,7 @@ Visit `package-user-dir' if such a directory is not found."
    scala-mode
    scanner
    scribble-mode
+   sed-mode
    sicp
    sl
    slime-volleyball
