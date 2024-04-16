@@ -1031,6 +1031,18 @@ deferred way of autoloading the `pdf-tools' package."
     (error (lwarn 'blc :error "Error activating PDF Tools: %S" err)
            (doc-view-mode-maybe))))
 
+(defun blc-pdf-revert-soft--advice (&rest args)
+  "Around advice for demoting PDF revert errors."
+  (condition-case-unless-debug err (apply args)
+    (error (ignore (lwarn 'blc :debug "[%s] Error reverting PDF: %s"
+                          (format-time-string "%F %T")
+                          (error-message-string err))))))
+
+(defun blc-pdf-revert-soft ()
+  "Locally demote errors from `revert-buffer-function'."
+  (add-function :around (local 'revert-buffer-function)
+                #'blc-pdf-revert-soft--advice))
+
 ;;;; project
 
 (defun blc-project-complete-regexp ()
@@ -2362,6 +2374,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
   ;; org
   (:hooks org-capture-before-finalize-hook :fns blc-org-prop-captured)
+
+  ;; pdf-view
+  (:hooks pdf-view-mode-hook :fns blc-pdf-revert-soft)
 
   ;; python
   (:hooks python-mode-hook :fns blc-python-pep-8-comments)
