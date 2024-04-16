@@ -431,8 +431,9 @@ Destructively adds the group to `blc-ibuffer-filter-groups'."
 ;;;; auctex
 
 (defvar blc-tex-auxtensions
-  '(".bcf" ".lol" ".fdb_latexmk" ".fls" ".glg" ".glg-abr" ".glo-abr" ".gls"
-    ".gls-abr" ".log" ".out" ".run.xml" ".slg" ".slo" ".sls" ".xdv" ".xdy")
+  '(".bcf" ".brf" ".lol" ".fdb_latexmk" ".fls" ".glg" ".glg-abr" ".glo-abr"
+    ".gls" ".gls-abr" ".log" ".out" ".run.xml" ".slg" ".slo" ".sls" ".xdv"
+    ".xdy")
   "LaTeX-related file extensions to ignore or delete.")
 
 (defun blc-TeX-command-default ()
