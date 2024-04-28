@@ -296,6 +296,9 @@
     # where there are multiple screens with very different dpi values.
     per_monitor_dpi = false
 
+[demote-blueman]
+    body = "Connected *[0-9]%"
+    urgency = low
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
