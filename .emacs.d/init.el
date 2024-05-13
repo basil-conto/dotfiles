@@ -1942,6 +1942,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; prolog
  prolog-system                          'swi
 
+ ;; proof-splash
+ proof-splash-enable                    nil
+
  ;; ps-print
  ps-paper-type                          'a4
 
