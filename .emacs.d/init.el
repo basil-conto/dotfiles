@@ -1429,10 +1429,6 @@ created.  FRAME defaults to the selected one."
  ;; dired-aux
  dired-create-destination-dirs          'ask
  dired-do-revert-buffer                 t
- shell-command-guess-functions          `(,#'shell-command-guess-open
-                                          ,#'shell-command-guess-mailcap
-                                          ,#'shell-command-guess-xdg
-                                          ,#'shell-command-guess-dired)
 
  ;; doc-view
  doc-view-mupdf-use-svg                 (image-type-available-p 'svg)
@@ -2574,7 +2570,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    ("k"                                   #'counsel-ack)
    ("r"                                   #'counsel-rg)
    ("s"                                   #'counsel-grep-or-swiper)))
-
 
 ;;; Packages
 
