@@ -1609,6 +1609,7 @@ created.  FRAME defaults to the selected one."
 
  ;; image-dired
  image-dired-dir                        (blc-dir blc-index-dir "image-dired")
+ image-dired-thumbnail-storage          'standard
 
  ;; isearch
  isearch-allow-motion                   t
@@ -1918,6 +1919,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  proced-enable-color-flag               t
 
  ;; project
+ project-buffers-viewer                 #'project-list-buffers-ibuffer
  project-compilation-buffer-name-function
  #'project-prefixed-buffer-name
  project-kill-buffer-conditions
