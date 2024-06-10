@@ -166,6 +166,13 @@ last visible Emacs client frame."
 
 (advice-add #'find-lisp-object-file-name :filter-return #'blc-dataroot-to-src)
 
+;;;; hydra
+
+(with-eval-after-load 'hydra
+  ;; See URL `https://github.com/abo-abo/hydra/issues/413'.
+  (advice-remove 'find-function-search-for-symbol
+                 #'hydra--around-find-function-search-for-symbol-advice))
+
 ;;;; ivy-bibtex
 
 (define-advice bibtex-completion-format-entry
