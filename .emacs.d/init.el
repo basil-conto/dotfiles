@@ -480,19 +480,25 @@ Like `TeX-doc', but with prefix ARG pass it to
   "Send a notification if battery load percentage is critical.
 DATA is the alist passed to `battery-update-functions'."
   (let ((load (read (alist-get ?p data)))
-        (ac   (string-equal (alist-get ?L data) "on-line")))
+        (ac   (string-equal (alist-get ?L data) "on-line"))
+        (id   blc-battery-id))
     (cond ((and (not ac) (numberp load) (<= load battery-load-critical))
            (let ((new (notifications-notify
                        :title "Low Battery"
                        :body (format "%s%% (%s mins) remaining"
                                      load (alist-get ?m data))
-                       :replaces-id blc-battery-id
+                       :replaces-id id
                        :urgency 'critical
-                       :image-path "battery-caution")))
-             (or blc-battery-id (setq blc-battery-id new))))
-          (blc-battery-id
-           (notifications-close-notification
-            (prog1 blc-battery-id (setq blc-battery-id nil)))))))
+                       :app-icon 'battery-caution)))
+             (when (and id (not (eql id new)))
+               (lwarn 'blc :warning
+                      "Battery notification IDs diverged: old: %s new: %s"
+                      id new)
+               (notifications-close-notification id))
+             (setq blc-battery-id new)))
+          (id
+           (setq blc-battery-id nil)
+           (notifications-close-notification id)))))
 
 ;;;; bbdb
 
