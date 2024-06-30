@@ -1395,8 +1395,8 @@ created.  FRAME defaults to the selected one."
 
  ;; debbugs
  debbugs-gnu-branch-directory
- (blc-dir (file-name-parent-directory source-directory) "emacs-29")
- debbugs-gnu-emacs-current-release      "30.1"
+ (blc-dir (file-name-parent-directory source-directory) "emacs-30")
+ debbugs-gnu-emacs-current-release      "31.1"
  debbugs-gnu-send-mail-function         #'message-send-mail-with-sendmail
  debbugs-gnu-suppress-closed            nil
  debbugs-gnu-trunk-directory            source-directory
