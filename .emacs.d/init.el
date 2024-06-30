@@ -743,33 +743,31 @@ Intended as a predicate for `confirm-kill-emacs'."
   "List of `ghub' scopes for `blc'.")
 
 (defun blc-github-notifications ()
-  "Asynchronously notify of any GitHub notifications."
+  "Asynchronously notify of any unread GitHub notifications."
   (interactive)
   (require 'ghub)
   (ghub-get
    "/notifications" ()
    :auth 'blc
+   :errorback t
    :callback
-   (lambda (nots &rest _)
+   (lambda (notifs &rest _)
      (notifications-notify
       :title "GitHub Notifications"
-      :body (let ((repos '(("other" . 0))))
-              (dolist (not nots)
-                (let ((name (map-nested-elt not '(repository name) "other")))
+      :body (let ((repos (list (cons "other" 0))))
+              (dolist (notif notifs)
+                (let ((name (map-nested-elt notif '(repository name) "other")))
                   (blc-put* repos name (1+ (blc-get repos name 0)))))
-              (let ((fmt (format
-                          "%%-%ds %%%dd"
-                          (apply #'max (map-keys-apply #'string-width repos))
-                          (1+ (floor (log (apply #'max 1 (map-values repos))
-                                          10))))))
+              (let* (;; Could alternatively assume 2 by default.
+                     (wid (1+ (floor (log (apply #'max 1 (map-values repos))
+                                          10))))
+                     (fmt (format "%%%dd %%s" wid)))
                 ;; Include a URL that can be opened by Dunst.
                 (concat (blc-dom-to-xml
                          'a '((href . "https://github.com/notifications")))
                         (mapconcat (pcase-lambda (`(,name . ,count))
-                                     (format fmt name count))
-                                   repos "\n"))))))
-   :errorback (lambda (err &rest _)
-                (signal 'error (list "GitHub error: %S" (cdr err))))))
+                                     (format fmt count name))
+                                   repos "\n"))))))))
 
 ;;;; git-commit
 
