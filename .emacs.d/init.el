@@ -1587,6 +1587,9 @@ created.  FRAME defaults to the selected one."
  ;; help
  help-window-select                     'other
 
+ ;; help-macro
+ help-for-help-use-variable-pitch       nil
+
  ;; holidays
  holiday-bahai-holidays                 ()
  holiday-oriental-holidays              ()
