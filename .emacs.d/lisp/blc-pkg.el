@@ -241,7 +241,6 @@ Visit `package-user-dir' if such a directory is not found."
    pacmacs
    paren-face
    pass
-   passmm
    pdf-tools
    proof-general
    pulseaudio-control
