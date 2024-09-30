@@ -67,9 +67,8 @@ else
   alias em='emacs -nw'
 fi
 
-# youtube-dl
-alias ydl='youtube-dl'
-alias ydl-opus='ydl --extract-audio --audio-format opus --audio-quality 96K'
+# yt-dlp
+alias yt-opus='yt-dlp --extract-audio --audio-format opus --audio-quality 96K'
 
 # gcal
 alias gcal='gcal --starting-day=Monday'
