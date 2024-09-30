@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 # ~/.xsessionrc
 
+## Environment
+
 [ -r /etc/profile       ] && . /etc/profile
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
 
@@ -10,22 +12,21 @@
   && [ -x "$(command -v xwallpaper)" ]  \
   && xwallpaper --daemon --zoom "${HOME}/.bg"
 
+## Tray
+
 if [ -x "$(command -v status-notifier-watcher)" ]; then
   status-notifier-watcher &
+  [ -x "$(command -v gxkb)"           ] && gxkb                   &
   [ -x "$(command -v blueman-applet)" ] && blueman-applet         &
   [ -x "$(command -v nm-applet)"      ] && nm-applet --indicator  &
   [ -x "$(command -v pasystray)"      ] && pasystray --notify=all &
   [ -x "$(command -v redshift-gtk)"   ] && redshift-gtk           &
 fi
 
-[ -x "$(command -v xinput)" ] && \
-  xinput list --id-only 'SynPS/2 Synaptics TouchPad' >/dev/null 2>&1 && \
-  xinput set-prop 'SynPS/2 Synaptics TouchPad' 'libinput Tapping Enabled' 0
+## Utilities
 
 [ -x "$(command -v xset)"           ] && xset b off
 [ -x "$(command -v blc-lock-setup)" ] && blc-lock-setup
-[ -x "$(command -v blc-xkb)"        ] && blc-xkb
-[ -x "$(command -v kbdd)"           ] && kbdd
 [ -x "$(command -v xbanish)"        ] && xbanish -t 10  &
 [ -x "$(command -v smart-notifier)" ] && smart-notifier &
 [ -x "$(command -v ssh-agent)"      ] && eval $(ssh-agent)

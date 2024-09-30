@@ -1,0 +1,10 @@
+# KEYBOARD CONFIGURATION FILE
+
+# Consult the keyboard(5) manual page.
+
+XKBMODEL="pc105"
+XKBLAYOUT="ie,gr,ch,us"
+XKBVARIANT=",,fr,"
+XKBOPTIONS="grp:lctrl_lwin_toggle,caps:ctrl_modifier,shift:both_capslock"
+
+BACKSPACE="guess"

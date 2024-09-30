@@ -1,9 +1,13 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
-[ -x "$(command -v setxkbmap)" ]              \
-  && setxkbmap -layout 'ie,ch,gr'             \
-               -option caps:ctrl_modifier     \
-               -option grp:lctrl_lwin_toggle  \
-               -option shift:both_capslock
-
-true
+# Run either without arguments, or by inputplug(1).
+{ [ "$#" -lt 1 ]                                                        \
+    || { [ "$1" = XIDeviceEnabled ] && [ "$3" = XISlaveKeyboard ]; }; } \
+  && [ -x "$(command -v setxkbmap)" ]                                   \
+  && setxkbmap -layout  ie,gr,ch,us                                     \
+               -variant ,,fr,                                           \
+               -option  ''                                              \
+               -option  grp:lctrl_lwin_toggle                           \
+               -option  caps:ctrl_modifier                              \
+               -option  shift:both_capslock

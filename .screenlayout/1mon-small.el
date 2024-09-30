@@ -15,5 +15,4 @@
            "--primary" "--preferred" "--pos" "0x0" "--rotate" "normal"
            (mapcan (pcase-lambda (`(,o . ,_))
                      (unless (equal o out) (list "--output" o "--off")))
-                   outs))
-    (call "blc-xkb")))
+                   outs))))

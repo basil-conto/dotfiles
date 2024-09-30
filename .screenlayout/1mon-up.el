@@ -18,5 +18,4 @@
            (mapcan (pcase-lambda (`(,o . ,_))
                      (unless (member o (list (car edp) out))
                        (list "--output" o "--off")))
-                   outs))
-    (call "blc-xkb")))
+                   outs))))

@@ -26,5 +26,4 @@
                    outs))
     (call "xrandr" "--output" (car fst)
           "--pos" (blc-randr-mode 0 (- (string-to-number thd-mode)
-                                       (cadr fst-mode))))
-    (call "blc-xkb")))
+                                       (cadr fst-mode))))))
