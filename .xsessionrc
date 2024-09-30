@@ -12,6 +12,10 @@
   && [ -x "$(command -v xwallpaper)" ]  \
   && xwallpaper --daemon --zoom "${HOME}/.bg"
 
+## Compositor
+
+[ -x "$(command -v picom)" ] && picom --daemon
+
 ## Tray
 
 if [ -x "$(command -v status-notifier-watcher)" ]; then
