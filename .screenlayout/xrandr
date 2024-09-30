@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-xrandr "$@"
-
-# Reset background
-[ -x "${HOME}/.fehbg" ] && "${HOME}/.fehbg"

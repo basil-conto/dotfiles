@@ -16,8 +16,7 @@
                        (unless (eql exit 0)
                          (let ((cmd (string-join (cons prog args) " ")))
                            (signal 'error (list cmd exit)))))))
-           ,@body
-           (,sym "~/.fehbg"))
+           ,@body)
        (:success 0)
        (error
         (let ((msg (error-message-string err))

@@ -3,7 +3,12 @@
 
 [ -r /etc/profile       ] && . /etc/profile
 [ -r "${HOME}/.profile" ] && . "${HOME}/.profile"
-[ -x "${HOME}/.fehbg"   ] &&   "${HOME}/.fehbg"
+
+## Wallpaper
+
+[ -r "${HOME}/.bg" ]                    \
+  && [ -x "$(command -v xwallpaper)" ]  \
+  && xwallpaper --daemon --zoom "${HOME}/.bg"
 
 if [ -x "$(command -v status-notifier-watcher)" ]; then
   status-notifier-watcher &
