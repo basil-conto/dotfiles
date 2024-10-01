@@ -39,16 +39,19 @@ import XMonad.Util.EZConfig               ( additionalKeys )
 import XMonad.Util.Hacks                  ( javaHack )
 import XMonad.Util.Run                    ( safeSpawn, safeSpawnProg )
 
-pactl :: String -> Int -> [String]
-pactl s n = case n of 0 -> cmd "mute" "toggle"
-                      _ -> cmd "volume" $ printf "%+d%%" n
-  where def     = printf "@DEFAULT_%s@" $ map toUpper s
-        cmd k v = ["pactl", printf "set-%s-%s" s k, def, v]
+wpctl :: String -> Int -> [String]
+wpctl s n
+  | n == 0    = cmd "mute" "toggle"
+  | n <  0    = vol '-'
+  | otherwise = vol '+'
+  where def     = printf "@DEFAULT_AUDIO_%s@" $ map toUpper s
+        cmd k v = ["wpctl", printf "set-%s" k, def, v]
+        vol sgn = cmd "volume" $ printf "%d%%%c" (abs n) sgn
 
 main :: IO ()
 main = do
   home <- getHomeDirectory
-  let volStep    = 5.0
+  let volStep    = 5
       modMask'   = mod4Mask
       mapPairs   = map . uncurry (***)
       safeSpawn' = maybe mempty (uncurry safeSpawn) . uncons
@@ -65,10 +68,10 @@ main = do
 
     mapPairs ((noModMask,), safeSpawn')
              [ (xK_Print,                ["flameshot", "full", "--path", home])
-             , (xF86XK_AudioLowerVolume, pactl "sink"   (-5))
-             , (xF86XK_AudioMicMute,     pactl "source"    0)
-             , (xF86XK_AudioMute,        pactl "sink"      0)
-             , (xF86XK_AudioRaiseVolume, pactl "sink"      5)
+             , (xF86XK_AudioLowerVolume, wpctl "sink"   (-volStep))
+             , (xF86XK_AudioMicMute,     wpctl "source"         0 )
+             , (xF86XK_AudioMute,        wpctl "sink"           0 )
+             , (xF86XK_AudioRaiseVolume, wpctl "sink"     volStep )
              , (xF86XK_Display,          ["arandr"])
              , (xF86XK_Favorites,        ["laptop.el"])
              , (xF86XK_ScreenSaver,      ["loginctl", "lock-session"])
