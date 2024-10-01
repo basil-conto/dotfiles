@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
 [ -x "$(command -v xssproxy)" ] && xssproxy &
 [ -x "$(command -v xset)"     ] && xset s 600 10
@@ -8,5 +9,3 @@
   && [ -x "$(command -v blc-lock)"        ]              \
   && xss-lock --notifier=/usr/libexec/xsecurelock/dimmer \
               --transfer-sleep-lock -- blc-lock &
-
-true

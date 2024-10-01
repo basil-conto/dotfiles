@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
 emacsclient --create-frame "$@"

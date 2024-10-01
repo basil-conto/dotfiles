@@ -1,3 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+set -euo pipefail
 
 ecc --eval '(message-mailto "'"$1"'")'

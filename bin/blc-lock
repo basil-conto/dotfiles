@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
 env XSECURELOCK_KEY_XF86AudioMute_COMMAND='wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle' \
     XSECURELOCK_KEY_XF86AudioMicMute_COMMAND='wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle' \

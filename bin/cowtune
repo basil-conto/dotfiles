@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -euo pipefail
 
 cowfile="${HOME}/.cowtune"
 cowsay=/usr/games/cowsay
