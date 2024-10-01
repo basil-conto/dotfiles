@@ -17,6 +17,8 @@ export N_PREFIX="${LOCAL_DIR}"        # https://github.com/tj/n
 export PDFVIEWER='ecc --no-wait'      # texdoc
 export PSVIEWER='ecc  --no-wait'      # texdoc
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+export XSECURELOCK_DIM_TIME_MS=5000   # XSecureLock
+export XSECURELOCK_WAIT_TIME_MS=10000 # XSecureLock
 
 # Rubbish (bin)
 

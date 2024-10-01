@@ -1,8 +1,5 @@
 #!/usr/bin/env sh
 
-export XSECURELOCK_DIM_TIME_MS=5000
-export XSECURELOCK_WAIT_TIME_MS=10000
-
 [ -x "$(command -v xssproxy)" ] && xssproxy &
 [ -x "$(command -v xset)"     ] && xset s 600 10
 
