@@ -46,11 +46,11 @@ alias feh='feh   \
 --sort filename'
 
 # xbacklight
-alias dark='lux -S 0%'
-alias half='lux -S 50%'
-alias bright='lux -S 100%'
-alias dim='lux -s 10%'
-alias brighten='lux -a 10%'
+alias dark='blight dec 100 --sweep'
+alias half='brightnessctl set 50%'
+alias bright='blight inc 100 --sweep'
+alias dim='brightnessctl set 10%'
+alias brighten='blight inc 10 --sweep'
 
 # emacsen
 if [[ "${TERM}" =~ tmux ]]; then

@@ -49,7 +49,6 @@ main :: IO ()
 main = do
   home <- getHomeDirectory
   let volStep    = 5.0
-      lightStep  = "10%"
       modMask'   = mod4Mask
       mapPairs   = map . uncurry (***)
       safeSpawn' = maybe mempty (uncurry safeSpawn) . uncons
@@ -84,8 +83,8 @@ main = do
 
     ++
     mapPairs ((noModMask,), safeSpawn "blc-lux.el")
-             [ (xF86XK_MonBrightnessDown, ["-s", lightStep])
-             , (xF86XK_MonBrightnessUp,   ["-a", lightStep])
+             [ (xF86XK_MonBrightnessDown, ["-s"])
+             , (xF86XK_MonBrightnessUp,   [])
              ]
 
     ++
