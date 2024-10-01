@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+# Adapted by blc from /usr/share/doc/pass/examples/dmenu/passmenu.
 
 shopt -s nullglob globstar
 
+cmd=''
 typeit=0
 if [[ $1 == "--type" ]]; then
 	typeit=1
+	shift
+elif [[ $1 == '--otp' ]]; then
+	cmd=otp
 	shift
 fi
 
@@ -24,12 +29,12 @@ password_files=( "$prefix"/**/*.gpg )
 password_files=( "${password_files[@]#"$prefix"/}" )
 password_files=( "${password_files[@]%.gpg}" )
 
-password=$(printf '%s\n' "${password_files[@]}" | "$dmenu" "$@")
+password=$(printf '%s\n' "${password_files[@]}" | "$dmenu" -p "pass${cmd:+-${cmd}}:" "$@")
 
 [[ -n $password ]] || exit
 
 if [[ $typeit -eq 0 ]]; then
-	pass show -c "$password" 2>/dev/null
+	pass $cmd show -c "$password" 2>/dev/null
 else
-	pass show "$password" | { IFS= read -r pass; printf %s "$pass"; } | $xdotool
+	pass $cmd show "$password" | { IFS= read -r pass; printf %s "$pass"; } | $xdotool
 fi
