@@ -28,11 +28,11 @@ import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
                                           , xK_d, xK_f, xK_g, xK_l, xK_o, xK_s
                                           , xK_t, xK_u, xK_v, xK_x, xK_y, xK_z )
 import System.Directory                   ( getHomeDirectory )
-import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
 import XMonad.Hooks.EwmhDesktops          ( ewmh )
 import XMonad.Hooks.ManageDocks           ( ToggleStruts(..)
                                           , avoidStruts, docks )
+import XMonad.Hooks.TaffybarPagerHints    ( pagerHints )
 import XMonad.Layout.NoBorders            ( smartBorders )
 import XMonad.Main                        ( xmonad )
 import XMonad.Operations                  ( sendMessage )
