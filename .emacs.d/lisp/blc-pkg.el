@@ -174,7 +174,6 @@ Visit `package-user-dir' if such a directory is not found."
    ghub
    gif-screencast
    git-annex
-   git-commit
    git-modes
    gnus-desktop-notify
    go-mode
