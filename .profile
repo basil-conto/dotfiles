@@ -70,11 +70,12 @@ fi
 
 # Pyenv
 if [ -d "${HOME}/.pyenv" ]; then
-  PYENV_ROOT="${HOME}/.pyenv"
+  export PYENV_ROOT="${HOME}/.pyenv"
+  export PYENV_VIRTUALENV_INIT=1
   for d in bin shims plugins/pyenv-virtualenv/shims; do
     [ -d "${PYENV_ROOT}/${d}" ] && PATH="${PYENV_ROOT}/${d}:${PATH}"
   done
-  export PATH PYENV_ROOT
+  export PATH
 fi
 
 # Allow safe usage of boolean expressions without spamming error return codes;

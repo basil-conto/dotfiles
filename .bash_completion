@@ -9,7 +9,7 @@ _pip_completion()
 {
     COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \
                    COMP_CWORD=$COMP_CWORD \
-                   PIP_AUTO_COMPLETE=1 $1 ) )
+                   PIP_AUTO_COMPLETE=1 $1 2>/dev/null ) )
 }
 complete -o default -F _pip_completion pip
 
@@ -25,10 +25,10 @@ _pipenv_completion() {
         IFS=',' read type value <<< "$completion"
 
         if [[ $type == 'dir' ]]; then
-            COMREPLY=()
+            COMPREPLY=()
             compopt -o dirnames
         elif [[ $type == 'file' ]]; then
-            COMREPLY=()
+            COMPREPLY=()
             compopt -o default
         elif [[ $type == 'plain' ]]; then
             COMPREPLY+=($value)
@@ -44,24 +44,57 @@ _pipenv_completion_setup() {
 
 _pipenv_completion_setup;
 
-# pyenv
-# Sourced from "${PYENV_ROOT}/completions/pyenv.bash"
-_pyenv() {
-  COMPREPLY=()
-  local word="${COMP_WORDS[COMP_CWORD]}"
-
-  if [ "$COMP_CWORD" -eq 1 ]; then
-    COMPREPLY=( $(compgen -W "$(pyenv commands)" -- "$word") )
-  else
-    local words=("${COMP_WORDS[@]}")
-    unset words[0]
-    unset words[$COMP_CWORD]
-    local completions=$(pyenv completions "${words[@]}")
-    COMPREPLY=( $(compgen -W "$completions" -- "$word") )
-  fi
+# pipx
+# Extracted from "$(register-python-argcomplete pipx)"
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
 }
 
-complete -F _pyenv pyenv
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1 </dev/null
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1 </dev/null
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\013'
+    local script=""
+    local SUPPRESS_SPACE=0
+    if compopt +o nospace 2> /dev/null; then
+        SUPPRESS_SPACE=1
+    fi
+    COMPREPLY=($(IFS="$IFS" \
+        COMP_LINE="$COMP_LINE" \
+        COMP_POINT="$COMP_POINT" \
+        COMP_TYPE="$COMP_TYPE" \
+        _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+        _ARGCOMPLETE=1 \
+        _ARGCOMPLETE_SHELL="bash" \
+        _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+        __python_argcomplete_run ${script:-$1}))
+    if [[ $? != 0 ]]; then
+        unset COMPREPLY
+    elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+        compopt -o nospace
+    fi
+}
+
+complete -o nospace -o default -o bashdefault -F _python_argcomplete pipx
+
+# pyenv
+[ -r "${PYENV_ROOT}/completions/pyenv.bash" ] \
+  && . "${PYENV_ROOT}/completions/pyenv.bash"
 
 # stack
 if [ -r "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion" ]; then

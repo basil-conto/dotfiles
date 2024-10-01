@@ -46,7 +46,6 @@ export GPG_TTY="$(tty)"
 
 # Pyenv
 export PYENV_SHELL=bash
-export PYENV_VIRTUALENV_INIT=1
 command pyenv rehash 2>/dev/null
 
 pyenv() {
@@ -56,27 +55,29 @@ pyenv() {
     shift
   fi
 
-  case "${command}" in
-    activate|deactivate|rehash|shell)
-      eval "$(pyenv "sh-${command}" "$@")" ;;
-    *)
-      command pyenv "$command" "$@" ;;
+  case "$command" in
+  activate|deactivate|rehash|shell)
+    eval "$(pyenv "sh-$command" "$@")"
+    ;;
+  *)
+    command pyenv "$command" "$@"
+    ;;
   esac
 }
 
 _pyenv_virtualenv_hook() {
   local ret=$?
-  if [ -n "$VIRTUAL_ENV" ]; then
-    eval "$(pyenv sh-activate --quiet || pyenv sh-deactivate --quiet || true)" \
-      || true
+  if [ -n "${VIRTUAL_ENV-}" ]; then
+    eval "$(pyenv sh-activate --quiet || pyenv sh-deactivate --quiet || true)" || true
   else
     eval "$(pyenv sh-activate --quiet || true)" || true
   fi
-  return "${ret}"
+  return $ret
 }
 
-[[ -d "${HOME}/.pyenv" && ! "${PROMPT_COMMAND}" =~ _pyenv_virtualenv_hook ]] \
-  && PROMPT_COMMAND="_pyenv_virtualenv_hook;${PROMPT_COMMAND}"
+[[ "${PYENV_VIRTUALENV_INIT:-0}" -ne 0
+   && ! "${PROMPT_COMMAND}" =~ _pyenv_virtualenv_hook ]] \
+  && PROMPT_COMMAND="_pyenv_virtualenv_hook;${PROMPT_COMMAND-}"
 
 # Alias definitions
 [ -r ~/.bash_aliases    ] && . ~/.bash_aliases
