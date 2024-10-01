@@ -1,10 +1,5 @@
 # -*- sh -*-
 
-# git-issue
-if [ -r "${LOCAL_DIR}/etc/bash_completion.d/git-issue" ]; then
-  . "${LOCAL_DIR}/etc/bash_completion.d/git-issue"
-fi
-
 # pip
 _pip_completion()
 {

@@ -25,7 +25,6 @@ alias psgrep='ps -A --no-headers \
 # directories
 alias mkdir='mkdir --parents --verbose'
 alias cdtemp='cd "$(mktemp --directory)"'
-alias venture='pushd .; cd'
 
 # apt
 alias uu='sudo apt update && \
@@ -54,10 +53,6 @@ alias bright='lux -S 100%'
 alias dim='lux -s 10%'
 alias brighten='lux -a 10%'
 
-# GNU compilers
-alias gcc='gcc -fdiagnostics-color'
-alias g++='g++ -fdiagnostics-color'
-
 # emacsen
 if [[ "${TERM}" =~ tmux ]]; then
   alias ec='TERM=xterm-direct emacsclient --tty'
@@ -78,13 +73,6 @@ alias nvlc='nvlc --browse-dir .'
 
 # man
 alias man='TERM=xterm-man man'
-
-# cpupower
-alias policy='sudo cpupower info; cpupower frequency-info --policy'
-alias powersave='sudo cpupower frequency-set --governor powersave && \
-sudo cpupower set --perf-bias 15'
-alias performance='sudo cpupower frequency-set --governor performance && \
-sudo cpupower set --perf-bias 0'
 
 # fun fun fun
 alias hi='printf "%b%s%b\n" "\e[1;31m" "I Love You" "\e[0m"'
