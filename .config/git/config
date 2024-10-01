@@ -47,6 +47,9 @@
   editor             = ecc
   whitespace         = blank-at-eol,blank-at-eof,space-before-tab,tab-in-indent
 
+[credential]
+  helper             = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
+
 [diff]
   colorMoved         = true
   submodule          = log
