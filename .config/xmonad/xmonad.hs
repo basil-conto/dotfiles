@@ -92,15 +92,17 @@ main = do
 
     ++
     mapPairs ((modMask',), safeSpawn')
-             [ (xK_a, ["sensible-editor" ])
-             , (xK_b, ["blueman-manager" ])
+             [ (xK_a, ["sensible-editor"    ])
+             , (xK_b, ["blueman-manager"    ])
              , (xK_d, ["signal-desktop", "--use-tray-icon"])
-             , (xK_f, ["nautilus"        ])
-             , (xK_g, ["slack"           ])
-             , (xK_o, ["passmenu"        ])
-             , (xK_s, ["sensible-browser"])
-             , (xK_v, ["pavucontrol"     ])
-             , (xK_y, ["spotify"         ])
+             , (xK_f, ["nautilus"           ])
+             , (xK_g, ["slack"              ])
+             , (xK_o, ["passmenu"           ])
+             , (xK_s, ["sensible-browser"   ])
+             , (xK_v, ["pavucontrol"        ])
+             , (xK_x, ["dunstctl", "context"])
+             , (xK_y, ["spotify"            ])
+             , (xK_z, ["dunstctl", "close"  ])
              ]
 
     ++
@@ -110,9 +112,10 @@ main = do
 
     ++
     mapPairs ((modMask' .|. shiftMask,), safeSpawn')
-             [ (xK_d, ["discord"])
+             [ (xK_d, ["discord"                 ])
              , (xK_l, ["loginctl", "lock-session"])
-             , (xK_o, ["passmenu", "--otp"])
+             , (xK_o, ["passmenu", "--otp"       ])
              , (xK_s, ["sensible-browser", "-private-window", "--incognito"])
-             , (xK_u, ["systemctl", "suspend"])
+             , (xK_u, ["systemctl", "suspend"    ])
+             , (xK_z, ["dunstctl", "history-pop" ])
              ]
