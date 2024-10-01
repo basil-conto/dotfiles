@@ -1,5 +1,9 @@
 # -*- sh -*-
 
+# opam
+[ -r "${HOME}/.opam/opam-init/complete.sh" ] \
+  && . "${HOME}/.opam/opam-init/complete.sh"
+
 # pip
 _pip_completion()
 {

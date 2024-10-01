@@ -63,7 +63,7 @@ fi
 
 # OPAM (see ~/.opam/opam-init/init.sh)
 if [ -r "${HOME}/.opam/opam-init/variables.sh" ]; then
-  . "${HOME}/.opam/opam-init/variables.sh" >/dev/null 2>&1
+  . "${HOME}/.opam/opam-init/variables.sh"
 fi
 
 # Pyenv
