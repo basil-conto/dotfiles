@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+blc_theme () {
+  # From Modus Operandi/Vivendi palettes: bg-main, fg-main, bg-completion.
+  local args='-nb '#ffffff' -nf '#000000' -sb '#c0deff' -sf '#000000''
+  if [[ -x "$(command -v gsettings)" \
+          && "$(gsettings get org.gnome.desktop.interface color-scheme)" \
+               =~ prefer-dark ]]; then
+    args='-nb '#000000' -nf '#ffffff' -sb '#2f447f' -sf '#ffffff''
+  fi
+  printf '%s' "${args}"
+}
+
+# Font size matches Taffybar height
+/usr/bin/dmenu -i -fn 'Monospace-12' $(blc_theme) "$@"
