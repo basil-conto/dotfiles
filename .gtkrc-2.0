@@ -1,6 +1,7 @@
 # -*- conf-unix -*-
 
-gtk-font-name                     = "DejaVu Sans 10"
-gtk-icon-theme-name               = "Adwaita"
-gtk-recent-files-max-age          = 0
-gtk-theme-name                    = "Adwaita"
+gtk-font-name             = "DejaVu Sans 10"
+gtk-icon-theme-name       = "Adwaita"
+gtk-recent-files-limit    = 0
+gtk-recent-files-max-age  = 0
+gtk-theme-name            = "Adwaita"
