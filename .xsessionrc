@@ -33,4 +33,5 @@ fi
 [ -x "$(command -v blc-lock-setup)" ] && blc-lock-setup
 [ -x "$(command -v xbanish)"        ] && xbanish -t 10  &
 [ -x "$(command -v smart-notifier)" ] && smart-notifier &
+[ -x "$(command -v playerctld)"     ] && playerctld daemon
 [ -x "$(command -v ssh-agent)"      ] && eval $(ssh-agent)

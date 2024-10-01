@@ -19,13 +19,14 @@ import Graphics.X11.ExtraTypes.XF86       ( xF86XK_AudioLowerVolume
                                           , xF86XK_AudioRaiseVolume
                                           , xF86XK_Display
                                           , xF86XK_Favorites
+                                          , xF86XK_Go
                                           , xF86XK_MonBrightnessDown
                                           , xF86XK_MonBrightnessUp
                                           , xF86XK_ScreenSaver )
 import Graphics.X11.Types                 ( mod4Mask, noModMask, shiftMask
-                                          , xK_Print, xK_a, xK_b, xK_d, xK_f
-                                          , xK_g, xK_l, xK_o, xK_s, xK_t, xK_u
-                                          , xK_v, xK_y )
+                                          , xK_Cancel, xK_Print, xK_a, xK_b
+                                          , xK_d, xK_f, xK_g, xK_l, xK_o, xK_s
+                                          , xK_t, xK_u, xK_v, xK_x, xK_y, xK_z )
 import System.Directory                   ( getHomeDirectory )
 import System.Taffybar.Support.PagerHints ( pagerHints )
 import XMonad.Core                        ( XConfig(..) )
@@ -82,6 +83,12 @@ main = do
              [ (xF86XK_AudioNext, ["next"      ])
              , (xF86XK_AudioPlay, ["play-pause"])
              , (xF86XK_AudioPrev, ["previous"  ])
+             ]
+
+    ++
+    mapPairs ((noModMask,), safeSpawn "playerctld")
+             [ (xF86XK_Go, ["shift"  ])
+             , (xK_Cancel, ["unshift"])
              ]
 
     ++
