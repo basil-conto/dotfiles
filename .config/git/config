@@ -110,9 +110,6 @@
 [tag]
   sort               = version:refname
 
-[transfer]
-  fsckObjects        = true
-
 [user]
   email              = basil@contovou.net
   name               = Basil L. Contovounesios
