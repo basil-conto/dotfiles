@@ -38,7 +38,6 @@ alias dis='xdg-open'
 # feh
 # TODO: RC file?
 alias feh='feh   \
---auto-rotate    \
 --borderless     \
 --draw-filename  \
 --image-bg black \
