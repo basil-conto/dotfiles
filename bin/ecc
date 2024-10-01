@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -euo pipefail
 
-emacsclient --create-frame "$@"
+emacsclient --socket-name=blc --create-frame "$@"
