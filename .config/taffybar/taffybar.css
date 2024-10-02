@@ -52,13 +52,13 @@
 }
 
 .active .contents {
-    /* modus-themes-intense-green */
-    background-color: #5ada88;
+    /* modus-operandi bg-green-intense */
+    background-color: #8adf80;
 }
 
 .visible .contents {
-    /* modus-themes-nuanced-green */
-    background-color: #ecf7ed;
+    /* modus-operandi bg-green-nuanced */
+    background-color: #e0f6e0;
 }
 
 .window-icon-container {
