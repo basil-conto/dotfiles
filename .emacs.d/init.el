@@ -1713,7 +1713,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  'ask
 
  ;; magit-repos
- magit-repository-directories           `((,blc-index-dir . 2))
+ magit-repository-directories           `((,blc-index-dir . 2)
+                                          (,(expand-file-name "~") . 1))
 
  ;; magit-utils
  magit-view-git-manual-method           'man
