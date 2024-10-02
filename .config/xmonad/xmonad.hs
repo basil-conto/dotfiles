@@ -59,11 +59,11 @@ main = do
 
   xmonad . docks . javaHack . ewmh . pagerHints $ additionalKeys def
     { borderWidth        = 2
-    , focusedBorderColor = "#5ada88" -- modus-operandi green-intense-bg
+    , focusedBorderColor = "#8adf80" -- modus-operandi bg-green-intense
     , focusFollowsMouse  = False
     , layoutHook         = smartBorders . avoidStruts $ layoutHook def
     , modMask            = modMask'
-    , normalBorderColor  = "#ecf7ed" -- modus-operandi green-nuanced-bg
+    , normalBorderColor  = "#e0f6e0" -- modus-operandi bg-green-nuanced
     , terminal           = "x-terminal-emulator"
     } $
 
