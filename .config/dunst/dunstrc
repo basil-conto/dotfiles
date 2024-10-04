@@ -11,8 +11,8 @@
     follow = keyboard
     font = Monospace 10
     format = "<b><big>%s</big></b> <i><small>%a</small></i>\n%b"
-    # modus-operandi bg-special-cold
-    frame_color = "#dde3f4"
+    # modus-operandi bg-cyan-nuanced
+    frame_color = "#e0f2fa"
     idle_threshold = 30s
     markup = full
     mouse_left_click = close_current
@@ -34,19 +34,19 @@
     urgency = low
 
 [urgency_low]
-    # modus-operandi green-nuanced-bg and fg-alt
-    background = "#ecf7ed"
-    foreground = "#505050"
+    # modus-operandi bg-green-nuanced and fg-dim
+    background = "#e0f6e0"
+    foreground = "#595959"
     timeout = 8
 
 [urgency_normal]
-    # modus-operandi green-intense-bg and fg-main
-    background = "#5ada88"
+    # modus-operandi bg-green-intense and fg-main
+    background = "#8adf80"
     foreground = "#000000"
     timeout = 16
 
 [urgency_critical]
-    # modus-operandi red-intense-bg, fg-main, and red-active
-    background = "#ff9f9f"
+    # modus-operandi bg-prominent-err, fg-prominent-err, and red
+    background = "#ff8f88"
     foreground = "#000000"
-    frame_color = "#8a0000"
+    frame_color = "#a60000"
