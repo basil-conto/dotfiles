@@ -13,13 +13,10 @@
   (require 'subr-x)
   (require 'thunk))
 
-(autoload 'comint-output-filter "comint")
-(autoload 'dom-node             "dom")
-(autoload 'fringe-columns       "fringe")
-(autoload 'shell-mode           "shell")
-(autoload 'shr-dom-to-xml       "shr")
-(autoload 'shr-url-at-point     "shr")
-(autoload 'xdg-user-dir         "xdg")
+(autoload 'dom-node         "dom")
+(autoload 'shr-dom-to-xml   "shr")
+(autoload 'shr-url-at-point "shr")
+(autoload 'xdg-user-dir     "xdg")
 
 (defgroup blc ()
   "Conveniences for blc."

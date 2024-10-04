@@ -13,9 +13,7 @@
 (require 'blc-lib)
 
 (require 'map)
-(require 'seq)
 (eval-when-compile
-  (require 'subr-x)
   (require 'thunk))
 
 (defalias 'blc-mbsync-chandirs

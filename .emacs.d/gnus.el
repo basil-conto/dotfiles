@@ -20,11 +20,9 @@
 (require 'blc-mbsync)
 
 (require 'map)
-(require 'seq)
 (eval-when-compile
   (require 'gnus-sum)
-  (require 'nnheader)
-  (require 'subr-x))
+  (require 'nnheader))
 
 ;;; Byte-compiler declarations
 

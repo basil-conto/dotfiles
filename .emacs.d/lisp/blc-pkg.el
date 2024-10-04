@@ -12,8 +12,6 @@
 
 (require 'package)
 (require 'seq)
-(eval-when-compile
-  (require 'subr-x))
 
 ;; Sandbox this nuisance
 (define-advice package--save-selected-packages
