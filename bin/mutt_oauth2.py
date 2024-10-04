@@ -136,7 +136,7 @@ def writetokenfile():
 
 
 if args.debug:
-    print('Obtained from token file:', json.dumps(token))
+    print('Obtained from token file:', json.dumps(token), file=sys.stderr)
 if not token:
     if not args.authorize:
         sys.exit('You must run script with "--authorize" at least once.')
@@ -187,7 +187,8 @@ def update_tokens(r):
         token['refresh_token'] = r['refresh_token']
     writetokenfile()
     if args.verbose:
-        print(f'NOTICE: Obtained new access token, expires {token["access_token_expiration"]}.')
+        print(f'NOTICE: Obtained new access token, expires {token["access_token_expiration"]}.',
+              file=sys.stderr)
 
 
 if args.authorize:
@@ -266,16 +267,16 @@ if args.authorize:
             response = urllib.request.urlopen(registration['token_endpoint'],
                                               urllib.parse.urlencode(p).encode())
         except urllib.error.HTTPError as err:
-            print(err.code, err.reason)
+            print(err.code, err.reason, file=sys.stderr)
             response = err
         response = response.read()
         if args.debug:
-            print(response)
+            print(response, file=sys.stderr)
         response = json.loads(response)
         if 'error' in response:
-            print(response['error'])
+            print(response['error'], file=sys.stderr)
             if 'error_description' in response:
-                print(response['error_description'])
+                print(response['error_description'], file=sys.stderr)
             sys.exit(1)
 
     elif authflow == 'devicecode':
@@ -283,16 +284,16 @@ if args.authorize:
             response = urllib.request.urlopen(registration['devicecode_endpoint'],
                                               urllib.parse.urlencode(p).encode())
         except urllib.error.HTTPError as err:
-            print(err.code, err.reason)
+            print(err.code, err.reason, file=sys.stderr)
             response = err
         response = response.read()
         if args.debug:
-            print(response)
+            print(response, file=sys.stderr)
         response = json.loads(response)
         if 'error' in response:
-            print(response['error'])
+            print(response['error'], file=sys.stderr)
             if 'error_description' in response:
-                print(response['error_description'])
+                print(response['error_description'], file=sys.stderr)
             sys.exit(1)
         print(response['message'])
         del p['scope']
@@ -312,7 +313,7 @@ if args.authorize:
                 response = err
             response = response.read()
             if args.debug:
-                print(response)
+                print(response, file=sys.stderr)
             response = json.loads(response)
             if 'error' not in response:
                 break
@@ -323,9 +324,9 @@ if args.authorize:
                 print(' too much time has elapsed.')
                 sys.exit(1)
             if response['error'] != 'authorization_pending':
-                print(response['error'])
+                print(response['error'], file=sys.stderr)
                 if 'error_description' in response:
-                    print(response['error_description'])
+                    print(response['error_description'], file=sys.stderr)
                 sys.exit(1)
         print()
 
@@ -339,7 +340,7 @@ if args.authorize:
 if not access_token_valid():
     if args.verbose:
         print('NOTICE: Invalid or expired access token; using refresh token '
-              'to obtain new access token.')
+              'to obtain new access token.', file=sys.stderr)
     if not token['refresh_token']:
         sys.exit('ERROR: No refresh token. Run script with "--authorize".')
     p = baseparams.copy()
@@ -351,17 +352,18 @@ if not access_token_valid():
         response = urllib.request.urlopen(registration['token_endpoint'],
                                           urllib.parse.urlencode(p).encode())
     except urllib.error.HTTPError as err:
-        print(err.code, err.reason)
+        print(err.code, err.reason, file=sys.stderr)
         response = err
     response = response.read()
     if args.debug:
-        print(response)
+        print(response, file=sys.stderr)
     response = json.loads(response)
     if 'error' in response:
-        print(response['error'])
+        print(response['error'], file=sys.stderr)
         if 'error_description' in response:
-            print(response['error_description'])
-        print('Perhaps refresh token invalid. Try running once with "--authorize"')
+            print(response['error_description'], file=sys.stderr)
+        print('Perhaps refresh token invalid. Try running once with "--authorize"',
+              file=sys.stderr)
         sys.exit(1)
     update_tokens(response)
 
@@ -400,9 +402,10 @@ if args.test:
         # IMAP command before reporting success.
         imap_conn.list()
         if args.verbose:
-            print('IMAP authentication succeeded')
+            print('IMAP authentication succeeded', file=sys.stderr)
     except imaplib.IMAP4.error as e:
-        print('IMAP authentication FAILED (does your account allow IMAP?):', e)
+        print('IMAP authentication FAILED (does your account allow IMAP?):', e,
+              file=sys.stderr)
         errors = True
 
     pop_conn = poplib.POP3_SSL(registration['pop_endpoint'])
@@ -417,9 +420,10 @@ if args.test:
         pop_conn._shortcmd('AUTH ' + registration['sasl_method'])
         pop_conn._shortcmd(base64.standard_b64encode(sasl_string.encode()).decode())
         if args.verbose:
-            print('POP authentication succeeded')
+            print('POP authentication succeeded', file=sys.stderr)
     except poplib.error_proto as e:
-        print('POP authentication FAILED (does your account allow POP?):', e.args[0].decode())
+        print('POP authentication FAILED (does your account allow POP?):', e.args[0].decode(),
+              file=sys.stderr)
         errors = True
 
     # SMTP_SSL would be simpler but Microsoft does not answer on port 465.
@@ -434,9 +438,9 @@ if args.test:
     try:
         smtp_conn.auth(registration['sasl_method'], lambda _=None: sasl_string)
         if args.verbose:
-            print('SMTP authentication succeeded')
+            print('SMTP authentication succeeded', file=sys.stderr)
     except smtplib.SMTPAuthenticationError as e:
-        print('SMTP authentication FAILED:', e)
+        print('SMTP authentication FAILED:', e, file=sys.stderr)
         errors = True
 
     if errors:
