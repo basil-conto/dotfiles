@@ -10,6 +10,7 @@
 (require 'map)
 (require 'seq)
 (eval-when-compile
+  (require 'goto-addr)
   (require 'subr-x)
   (require 'thunk))
 
@@ -178,12 +179,9 @@ relevant major-mode."
   (thunk-delay
    (blc-with-contents "~/.msmtprc"
      (let (addresses)
-       (rx-let ((ws  (+ space))
-                (!ws (+ (not space))))
-         (while (blc-search-forward (rx bol "account" ws (group !ws)))
-           (when (blc-search-forward
-                  (rx bol "from" ws (group !ws ?@ !ws ?. !ws) eol))
-             (push (match-string 1) addresses))))
+       (rx-let ((email (eval `(regexp ,goto-address-mail-regexp))))
+         (while (blc-search-forward (rx bol "from" (+ space) (group email) eol))
+           (push (match-string 1) addresses)))
        (nreverse addresses))))
   "Return list of unique addresses in ~/.msmtprc.")
 

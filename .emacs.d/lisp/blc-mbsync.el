@@ -16,36 +16,41 @@
 (eval-when-compile
   (require 'thunk))
 
-(defalias 'blc-mbsync-chandirs
+(defalias 'blc-mbsync-maildirs
   (thunk-delay
    (blc-with-contents "~/.mbsyncrc"
-     (let (chandirs)
-       (while (blc-search-forward (rx bol "MaildirStore"))
-         (when (blc-search-forward
-                (rx bol "Path" (+ space) (group (+ (not space))) eol))
-           (let ((dir (match-string-no-properties 1)))
-             (push (cons (file-name-nondirectory (directory-file-name dir))
-                         (expand-file-name dir))
-                   chandirs))))
-       (nreverse chandirs))))
-  "Thunk with alist of channels to maildirs in ~/.mbsyncrc.")
+     (let (stores)
+       (while (blc-search-forward
+               (rx bol "Path" (+ space) (group (+ (not space))) eol))
+         (let* ((dir (match-string-no-properties 1))
+                (name (file-name-nondirectory (directory-file-name dir)))
+                (chan (blc-search-forward
+                       (rx bol "Channel" (+ space) (literal name) eol))))
+           (push `(,name ,(expand-file-name dir) . ,chan) stores)))
+       (nreverse stores))))
+  "Thunk with alist of (NAME MAILDIR . CHAN) in ~/.mbsyncrc.")
 
-(defun blc--mbsync-crm (prompt)
+(defalias 'blc-mbsync-imapdirs
+  (thunk-delay (seq-filter #'cddr (blc-mbsync-maildirs)))
+  "Subset of `blc-mbsync-maildirs' with non-nil CHAN.")
+
+(defun blc--mbsync-crm (prompt &optional remote)
   "Read multiple mbsync channels with PROMPT.
-Candidates offered are the keys of `blc-mbsync-chandirs', as well
-as the catch-all value `--all', making them all valid arguments
-for the mbsync executable."
-  (let ((chans (cons "--all" (map-keys (blc-mbsync-chandirs)))))
+Candidates are the keys of either `blc-mbsync-imapdirs' when REMOTE is
+non-nil, otherwise `blc-mbsync-maildirs'; as well as the catch-all value
+`--all', making them all valid arguments for the mbsync executable."
+  (let* ((stores (if remote (blc-mbsync-imapdirs) (blc-mbsync-maildirs)))
+         (chans (cons "--all" (map-keys stores))))
     (completing-read-multiple
      prompt chans nil 'confirm nil 'blc-mbsync-history chans)))
 
 (defun blc--mbsync-chans-to-dirs (&rest chans)
   "Translate mbsync CHANS to maildirs.
 See `blc--mbsync-crm' for valid CHANS."
-  (let ((chandirs (blc-mbsync-chandirs)))
-    (blc-keep (apply-partially #'blc-get chandirs)
+  (let ((stores (blc-mbsync-maildirs)))
+    (blc-keep (apply-partially #'blc-get stores)
               (if (member "--all" chans)
-                  (map-keys chandirs)
+                  (map-keys stores)
                 chans))))
 
 (defun blc--mbsync-folders (&rest chans)
@@ -116,8 +121,7 @@ See `blc--mbsync-crm' for valid CHANS."
 
 (defun blc-mbsync-maximise-uid (uid &rest chans)
   "Recalculate max. valid UID in mbsync CHANS if necessary.
-Inform user and do nothing if multiple occurences of UID are
-found."
+Inform user and do nothing if multiple occurences of UID are found."
   (interactive (cons (if current-prefix-arg
                          (prefix-numeric-value current-prefix-arg)
                        (read-number "Current max. valid UID: "))
@@ -169,14 +173,14 @@ all share the same valid max. UID of %d:\n\n" uid))
 When called interactively, prompt the user with completion for
 multiple channels to synchronise.  Otherwise, CHANS should form a
 list of shell-quoted strings to pass to mbsync."
-  (interactive (blc--mbsync-crm "Synchronise mbsync channels: "))
+  (interactive (blc--mbsync-crm "Synchronise mbsync channels: " t))
   (let ((cmd (string-join (cons "mbsync" chans) " ")))
     (async-shell-command cmd (format "*%s*" cmd))))
 
 (defun blc-mbsync-all ()
-  "Call `blc-mbsync' for each channel in `blc-mbsync-chandirs'."
+  "Call `blc-mbsync' for each channel in `blc-mbsync-imapdirs'."
   (interactive)
-  (mapc #'blc-mbsync (map-keys (blc-mbsync-chandirs))))
+  (mapc #'blc-mbsync (map-keys (blc-mbsync-imapdirs))))
 
 (provide 'blc-mbsync)
 
