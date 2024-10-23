@@ -32,6 +32,13 @@ if [ -x "$(command -v status-notifier-watcher)" ]; then
                  --notify=systray_action &
 fi
 
+## Touchpad
+
+[ -x "$(command -v xinput)" ]                                        \
+  && xinput set-prop "$(xinput list --name-only | grep -i touchpad)" \
+            'libinput Tapping Enabled' 0
+
+
 ## Utilities
 
 [ -x "$(command -v xset)"           ] && xset b off
