@@ -1282,6 +1282,9 @@ created.  FRAME defaults to the selected one."
  auth-source-debug                      'trivia
  auth-sources                           '(password-store)
 
+ ;; auth-source-pass
+ auth-source-pass-extra-query-keywords  t
+
  ;; autorevert
  auto-revert-avoid-polling              t
 
