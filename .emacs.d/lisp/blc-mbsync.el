@@ -48,7 +48,7 @@ non-nil, otherwise `blc-mbsync-maildirs'; as well as the catch-all value
   "Translate mbsync CHANS to maildirs.
 See `blc--mbsync-crm' for valid CHANS."
   (let ((stores (blc-mbsync-maildirs)))
-    (blc-keep (apply-partially #'blc-get stores)
+    (blc-keep (lambda (chan) (car (blc-get stores chan)))
               (if (member "--all" chans)
                   (map-keys stores)
                 chans))))
@@ -77,10 +77,11 @@ the QUIT-FUNCTION of `with-temp-buffer-window' or similar."
   (with-selected-window window
     (if-let* ((n (length alist))
               ((> n 0))
-              ((yes-or-no-p (format "Rename %d files? " n))))
-        (dotimes-with-progress-reporter (i n)
-            (format "Renaming %d files..." n)
-          (pcase-let ((`(,from . ,to) (pop alist)))
+              (fmt (ngettext "Rename %d file? " "Rename %d files? " n))
+              ((yes-or-no-p (format fmt n))))
+        (dolist-with-progress-reporter (rename alist)
+            (format (ngettext "Renaming %d file..." "Renaming %d files..." n) n)
+          (pcase-let ((`(,from . ,to) rename))
             (rename-file from to)))
       (quit-window t))))
 
@@ -93,13 +94,14 @@ See `blc--mbsync-crm' for valid CHANS."
   (interactive (blc--mbsync-crm "Deduplicate mbsync maildirs: "))
   (with-current-buffer-window
    "*blc-mbsync-dups*" () #'blc--mbsync-rename
-   (let* ((folders  (apply #'blc--mbsync-folders chans))
-          (nfolders (length folders))
+   (let* ((folders (apply #'blc--mbsync-folders chans))
+          (n (length folders))
+          (fmt (ngettext "Scanning %d folder..." "Scanning %d folders..." n))
           renames)
-     (dotimes-with-progress-reporter (i nfolders (nreverse renames))
-         (format "Scanning %d folders..." nfolders)
+     (dolist-with-progress-reporter (folder folders (nreverse renames))
+         (format fmt n)
        (let ((map (make-hash-table :test #'equal)))
-         (dolist (file (directory-files-recursively (pop folders) ""))
+         (dolist (file (directory-files-recursively folder ""))
            (when-let* ((uid (blc--mbsync-uid file)))
              (let ((dups (gethash uid map)))
                (unless (member file dups)
