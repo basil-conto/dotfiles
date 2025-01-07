@@ -96,14 +96,4 @@ complete -o nospace -o default -o bashdefault -F _python_argcomplete pipx
 [ -r "${PYENV_ROOT}/completions/pyenv.bash" ] \
   && . "${PYENV_ROOT}/completions/pyenv.bash"
 
-# stack
-if [ -r "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion" ]; then
-  . "${LOCAL_DIR}/etc/bash_completion.d/stack.bash-completion"
-fi
-
-# tmux
-if [ -r /usr/share/doc/tmux/examples/bash_completion_tmux.sh ]; then
-  . /usr/share/doc/tmux/examples/bash_completion_tmux.sh
-fi
-
 true
