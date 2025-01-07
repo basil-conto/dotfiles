@@ -4,9 +4,6 @@
 
 [ -n "${BASH_VERSION}" ] && [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 
-# Do not display messages from other users
-mesg n
-
 export ALTERNATE_EDITOR=              # Lazy emacs daemonisation
 export CACA_DRIVER=ncurses            # libcaca
 export EDITOR=ecc                     # Used by crontab et al.
