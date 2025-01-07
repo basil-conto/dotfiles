@@ -152,7 +152,7 @@ last visible Emacs client frame."
 
 (define-advice view-echo-area-messages (:filter-return (win) blc-select-window)
   "Pop to `messages-buffer'."
-  (when-let (frame (and win (window-frame win)))
+  (when-let* ((frame (and win (window-frame win))))
     (select-frame-set-input-focus frame)
     (select-window win))
   win)
@@ -646,7 +646,7 @@ description of the arguments to this function."
 Intended for `compilation-start-hook'."
   (let* ((buf (process-buffer proc))
          (val (gethash buf blc-compile-buffers)))
-    (when-let (id (plist-get val :id))
+    (when-let* ((id (plist-get val :id)))
       (notifications-close-notification id))
     (setq val (plist-put val :start (current-time)))
     (puthash buf val blc-compile-buffers)))
@@ -856,7 +856,7 @@ Suspending or exiting Gnus deletes that frame."
 
 (defun blc-info-mode-line-id (buf)
   "Return Info BUF's mode line ID as a simple string for completion."
-  (when-let (id (buffer-local-value 'mode-line-buffer-identification buf))
+  (when-let* ((id (buffer-local-value 'mode-line-buffer-identification buf)))
     (string-replace "%%" "%" (substring-no-properties
                               (apply #'concat (cdr id))))))
 
@@ -1146,8 +1146,8 @@ Intended for `term-exec-hook'."
    :after (process-filter (get-buffer-process (current-buffer)))
    (let (dir)
      (lambda (proc _s)
-       (when-let ((buf (process-buffer proc))
-                  (nom (buffer-name buf)))
+       (when-let* ((buf (process-buffer proc))
+                   (nom (buffer-name buf)))
          (with-current-buffer buf
            (unless (equal dir default-directory)
              (setq dir default-directory)
@@ -1307,16 +1307,15 @@ created.  FRAME defaults to the selected one."
  bibtex-autokey-titlewords-stretch      0
  bibtex-autokey-year-length             4
  bibtex-autokey-year-title-separator    ""
+ bibtex-aux-opt-alist                   ()
  bibtex-comment-start                   "%"
  bibtex-entry-kill-ring-max             kill-ring-max
  bibtex-field-indentation               1
  bibtex-field-kill-ring-max             kill-ring-max
- bibtex-include-OPTkey                  nil
  bibtex-maintain-sorted-entries         t
  bibtex-search-entry-globally           t
  bibtex-text-indentation                (+ bibtex-field-indentation
                                            (length "journaltitleaddon = "))
- bibtex-user-optional-fields            ()
 
  ;; bindings
  mode-line-percent-position             '(-3 "%o")
@@ -1442,7 +1441,6 @@ created.  FRAME defaults to the selected one."
  dired-do-revert-buffer                 t
 
  ;; doc-view
- doc-view-mupdf-use-svg                 (image-type-available-p 'svg)
  doc-view-resolution                    150
 
  ;; eglot
@@ -1831,9 +1829,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; novice
  disabled-command-function              nil
 
- ;; ob-python
- org-babel-python-command               "python3"
-
  ;; org
  org-directory                          (blc-dir user-emacs-directory "org")
  org-default-notes-file                 (blc-file org-directory "notes.org")
@@ -2131,10 +2126,10 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  type-break-time-warning-intervals      ()
 
  ;; uniquify
- uniquify-after-kill-buffer-p           nil
+ uniquify-after-kill-buffer-flag        nil
  uniquify-buffer-name-style             'forward
  uniquify-min-dir-content               1
- uniquify-trailing-separator-p          t
+ uniquify-trailing-separator-flag       t
 
  ;; vc-git
  vc-git-log-edit-summary-target-len     50
@@ -3054,7 +3049,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; gscholar-bibtex
 
 (with-eval-after-load 'gscholar-bibtex
-  (when-let ((src (assoc "Google Scholar" gscholar-bibtex-available-sources)))
+  (when-let* ((src (assoc "Google Scholar" gscholar-bibtex-available-sources)))
     (setq-default gscholar-bibtex-default-source (car src))))
 
 ;;;; hacker-typer
@@ -3559,7 +3554,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; python
 
 (with-eval-after-load 'python
-  (when-let (ipython (seq-find #'executable-find '("ipython3" "ipython")))
+  (when-let* ((ipython (seq-find #'executable-find '("ipython3" "ipython"))))
     (setq-default python-shell-interpreter ipython
                   python-shell-interpreter-args
                   (concat python-shell-interpreter-args " --simple-prompt"))))
@@ -3599,14 +3594,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; time
 
 (display-time-mode)
-
-;;;; tramp
-
-(with-eval-after-load 'tramp
-  (setq-default tramp-security-key-confirm-regexp
-                (rx (| (regexp tramp-security-key-confirm-regexp)
-                       (: bol "Place your finger on the fingerprint reader\n")))
-                tramp-security-key-confirmed-regexp (rx)))
 
 ;;;; url
 

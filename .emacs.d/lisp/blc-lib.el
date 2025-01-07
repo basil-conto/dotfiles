@@ -667,7 +667,7 @@ overrides them."
     (lambda (face)
       `(,(rx symbol-start (? ?@) ;; Tree-sitter capture name
              (group (literal (symbol-name face))) symbol-end)
-        1 ,(if (boundp face) face `',face)))
+        1 ',face))
     '(font-lock-bracket-face
       font-lock-builtin-face
       font-lock-comment-delimiter-face

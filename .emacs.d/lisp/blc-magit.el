@@ -91,7 +91,7 @@ Format the Git revision as per CONTRIBUTE guidelines."
 
 ;; Set default log arguments
 (mapatoms (lambda (sym)
-            (when-let (args (get sym 'magit-log-default-arguments))
+            (when-let* ((args (get sym 'magit-log-default-arguments)))
               (put sym 'magit-log-default-arguments
                    `("-n64" "--show-signature" ,@args)))))
 
