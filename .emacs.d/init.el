@@ -2313,6 +2313,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   ;; eshell
   (:hooks eshell-output-filter-functions :fns eshell-truncate-buffer)
 
+  ;; eww
+  (:hooks eww-mode-hook :fns mathjax-shr-setup)
+
   ;; executable
   (:hooks after-save-hook
           :fns executable-make-buffer-file-executable-if-script-p)

@@ -219,6 +219,7 @@ Visit `package-user-dir' if such a directory is not found."
    magit-annex
    magit-tbdiff
    markdown-mode
+   mathjax
    matlab-mode
    merlin
    mines
@@ -257,6 +258,7 @@ Visit `package-user-dir' if such a directory is not found."
    scanner
    scribble-mode
    sed-mode
+   show-font
    sicp
    sl
    slime-volleyball
