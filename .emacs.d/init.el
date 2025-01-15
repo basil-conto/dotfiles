@@ -2530,7 +2530,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    ("\C-n"                                #'blc-open-next-line)
    ("\C-p"                                #'blc-open-previous-line)
    ("/"                                   #'engine-mode-prefixed-map)
-   ("7"                                   #'blc-transpose-split)
+   ("7"                                   #'transpose-window-layout)
    (";"                                   #'comment-line)
    ("B"                                   #'blc-bury-buffer)
    ("M"                                   #'blc-gnus))
