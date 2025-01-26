@@ -4,8 +4,8 @@
 IMAPStore               foo-remote
 Host                    imap.bar.baz
 PassCmd                 "pass foo/bar"
-SSLType                 IMAPS
-SSLVersions             TLSv1.3
+TLSType                 IMAPS
+TLSVersions             -1.2
 Timeout                 120
 User                    foo@bar.baz
 
@@ -19,7 +19,7 @@ Channel                 foo
 CopyArrivalDate         yes
 Create                  Both
 Expunge                 Both
-Master                  :foo-remote:
-Slave                   :foo-local:
+Far                     :foo-remote:
+Near                    :foo-local:
 Patterns                *
 SyncState               *
