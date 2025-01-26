@@ -163,6 +163,7 @@ Visit `package-user-dir' if such a directory is not found."
    expand-region
 
    figlet
+   firefox-javascript-repl
    fireplace
    flame
    font-lock-profiler
