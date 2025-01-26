@@ -474,6 +474,14 @@ Scroll a default of `blc-small-scroll-step' lines."
 
 ;;; Frames
 
+(defun blc-text-frame-p (&optional frame)
+  "Return non-nil if FRAME is a normal text terminal frame.
+This excludes frames on the initial daemon terminal.
+FRAME defaults to the selected one."
+  (not (or (display-graphic-p frame)
+           (string-equal "initial_terminal"
+                         (terminal-name (frame-terminal frame))))))
+
 (defun blc-make-frame (&optional params)
   "Like `make-frame', but select the new frame."
   (select-frame (make-frame params)))

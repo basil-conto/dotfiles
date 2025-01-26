@@ -696,6 +696,20 @@ Intended as an Ivy action for `counsel-M-x'."
     ((or `((,1)) `(,1) 1) 'modus-vivendi)
     (_                    'modus-operandi)))
 
+;;;; disp-table
+
+(defvar blc-unicode-special-glyphs nil
+  "Non-nil if `standard-display-unicode-special-glyphs' has been called.")
+
+(defun blc-unicode-special-glyphs (&optional frame)
+  "Conditionally call `standard-display-unicode-special-glyphs' on FRAME.
+Do so only once, on the first terminal frame selected.
+FRAME defaults to the selected one."
+  (and (blc-text-frame-p frame)
+       (not blc-unicode-special-glyphs)
+       (setq blc-unicode-special-glyphs t)
+       (standard-display-unicode-special-glyphs)))
+
 ;;;; eww
 
 (defun blc-eww-bookmark-save ()
@@ -1189,10 +1203,9 @@ Intended for `term-exec-hook'."
   "Conditionally enable `xterm-mouse-mode' on FRAME.
 Enable the mode only if FRAME is the first terminal frame
 created.  FRAME defaults to the selected one."
-  (or (display-graphic-p frame)
-      (string-equal "initial_terminal" (terminal-name (frame-terminal frame)))
-      xterm-mouse-mode
-      (xterm-mouse-mode)))
+  (and (blc-text-frame-p frame)
+       (not xterm-mouse-mode)
+       (xterm-mouse-mode)))
 
 ;;; Variables
 
@@ -2330,6 +2343,12 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   ;; footnote
   (:hooks message-setup-hook :fns footnote-mode)
 
+  ;; frame
+  ( :hooks (after-make-frame-functions
+            window-setup-hook)
+    :fns (blc-turn-on-xterm-mouse
+          blc-unicode-special-glyphs))
+
   ;; git-commit
   (:hooks git-commit-setup-hook :fns (blc-git-commit-set-fill-column
                                       blc-turn-on-double-space-sentence-ends
@@ -2427,11 +2446,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (:hooks window-setup-hook :depth t :fns blc-report-init-time)
 
   ;; term
-  (:hooks term-exec-hook :fns blc-term-rename)
-
-  ;; xt-mouse
-  (:fns blc-turn-on-xterm-mouse :hooks (after-make-frame-functions
-                                        window-setup-hook)))
+  (:hooks term-exec-hook :fns blc-term-rename))
 
 ;;; Bindings
 
