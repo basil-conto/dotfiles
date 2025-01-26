@@ -1621,8 +1621,10 @@ created.  FRAME defaults to the selected one."
  ;; ibuffer
  ibuffer-always-compile-formats         t
  ibuffer-default-sorting-mode           'alphabetic
+ ibuffer-human-readable-size            t
  ibuffer-jump-offer-only-visible-buffers
  t
+ ibuffer-use-header-line                'title
 
  ;; ido
  ido-enable-flex-matching               t
