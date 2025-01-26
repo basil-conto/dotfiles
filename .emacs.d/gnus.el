@@ -130,6 +130,10 @@ convention (see the Info node `(gnus) Process/Prefix')."
     (gnus-summary-goto-article
      (blc-get arts (gnus-completing-read "Article" arts t)))))
 
+(defun blc-gnus-expiry-target (group)
+  "Fallback `expiry-target'; return nil for any GROUP."
+  (ignore (lwarn 'blc :error "Group expiry target not set: %S" group)))
+
 ;;; Options
 
 (setq-default
@@ -243,7 +247,11 @@ convention (see the Info node `(gnus) Process/Prefix')."
 
  ;; gnus-util
  gnus-add-timestamp-to-message          'log
- gnus-widen-article-window              t)
+ gnus-widen-article-window              t
+
+ ;; nnmail
+ nnmail-expiry-target                   #'blc-gnus-expiry-target
+ nnmail-expiry-wait                     'immediate)
 
 ;;; Hooks
 
