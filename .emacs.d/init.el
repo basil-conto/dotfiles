@@ -1460,6 +1460,7 @@ created.  FRAME defaults to the selected one."
  doc-view-resolution                    150
 
  ;; eglot
+ eglot-advertise-cancellation           t
  eglot-confirm-server-edits             'summary
 
  ;; eldoc
