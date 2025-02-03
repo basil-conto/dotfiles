@@ -591,12 +591,12 @@ See `browse-url' for a description of the arguments."
   (let ((browse-url-generic-program "surf"))
     (apply #'browse-url-generic args)))
 
-(defun blc-browse-url-firefox (&rest args)
+(defun blc-browse-url-firefox (url &rest _)
   "Like `browse-url-firefox', but private."
   (defvar browse-url-firefox-arguments)
   (let ((browse-url-firefox-arguments
-         `("-P" "private" "-private-window" ,@browse-url-firefox-arguments)))
-    (apply #'browse-url-firefox args)))
+         (append browse-url-firefox-arguments '("-private-window"))))
+    (browse-url-firefox url)))
 
 (defvar blc-browser-alist
   `(("Firefox"            . ,#'browse-url-firefox    )
