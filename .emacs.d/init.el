@@ -2249,7 +2249,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  frame-auto-hide-function               #'blc-delete-spare-frame
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
- split-window-keep-point                nil
+ split-window-preferred-direction       'longest
 
  ;; xref
  xref-search-program                    'ripgrep
