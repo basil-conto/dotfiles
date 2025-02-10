@@ -160,10 +160,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
                                 (nnimap-record-commands t)
                                 (nnimap-stream          network)
                                 (nnimap-user            ,user)))
-                     (blc-mbsync-maildirs))
-   ;; FIXME: Firewall
-   (nntp "news.gwene.org"
-         (nntp-record-commands t)))
+                     (blc-mbsync-maildirs)))
 
  ;; gnus-art
  gnus-blocked-images                    nil
