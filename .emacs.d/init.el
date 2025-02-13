@@ -1768,13 +1768,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  message-mail-alias-type                nil
  message-sendmail-envelope-from         'header
  message-signature                      (car (split-string user-full-name))
- message-subject-re-regexp
- (rx-let ((ws    (* blank))
-          (brack (* ?\[ (* digit) ?\]))
-          (antw  (: (in "Aa") (in "Nn") (in "Tt") (in "Ww") (? ?.)))
-          (aw    (: (in "Aa") (in "Ww")))
-          (re    (: (in "Rr") (in "Ee"))))
-   (rx bos (* ws (| antw aw re) brack ws ?:) ws))
 
  ;; mines
  mines-empty-cell-char                  ?\s
