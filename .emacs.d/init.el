@@ -2106,8 +2106,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    (c-sharp         "https://github.com/tree-sitter/tree-sitter-c-sharp")
    (dockerfile      "https://github.com/camdencheek/tree-sitter-dockerfile")
    (elixir          "https://github.com/elixir-lang/tree-sitter-elixir")
-   (gomod           "https://github.com/camdencheek/tree-sitter-go-mod")
    (go              "https://github.com/tree-sitter/tree-sitter-go")
+   (go-work         "https://github.com/omertuc/tree-sitter-go-work")
+   (gomod           "https://github.com/camdencheek/tree-sitter-go-mod")
    (haskell         "https://github.com/tree-sitter/tree-sitter-haskell")
    (heex            "https://github.com/phoenixframework/tree-sitter-heex")
    (html            "https://github.com/tree-sitter/tree-sitter-html")
@@ -2122,6 +2123,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                     nil "grammars/interface/src")
    (ocaml-type      "https://github.com/tree-sitter/tree-sitter-ocaml"
                     nil "grammars/type/src")
+   (php             "https://github.com/tree-sitter/tree-sitter-php"
+                    nil "php/src")
    (python          "https://github.com/tree-sitter/tree-sitter-python")
    (ruby            "https://github.com/tree-sitter/tree-sitter-ruby")
    (rust            "https://github.com/tree-sitter/tree-sitter-rust")

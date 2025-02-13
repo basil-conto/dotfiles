@@ -153,6 +153,7 @@ Visit `package-user-dir' if such a directory is not found."
    dockerfile-mode
    ducpel
 
+   ef-themes
    el-search
    elisp-benchmarks
    emacsql
@@ -176,14 +177,13 @@ Visit `package-user-dir' if such a directory is not found."
    git-modes
    gnus-desktop-notify
    go-mode
-   google-contacts
-   google-maps
    graphviz-dot-mode
    gscholar-bibtex
 
    hacker-typer
    hackernews
    haskell-mode
+   haskell-ts-mode
    helm-make
    highlight-escape-sequences
    highlight-refontification
@@ -236,6 +236,7 @@ Visit `package-user-dir' if such a directory is not found."
    org-pomodoro
    org-tree-slide
    org-tree-slide-pauses
+   osm
 
    pacmacs
    paren-face
