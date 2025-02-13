@@ -67,9 +67,10 @@
   "Transcribe AC line status in alist DATA to Unicode.
 Disable `display-battery-mode' on unrecognised supply."
   (unless (setq battery-mode-line-format
-                (pcase (alist-get ?L data)
-                  ( "on-line" "🔌")
-                  ("off-line" "🔋")))
+                (pcase data
+                  ((or (map (?L "on-line")) (map (?b "+"))) "🔌")
+                  ((map (?b (or "-" "!")))                  "🪫")
+                  ((or (map (?L "off-line")) (map (?b ""))) "🔋")))
     (display-battery-mode 0))
   data)
 
