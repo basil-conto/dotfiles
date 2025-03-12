@@ -1231,6 +1231,7 @@ created.  FRAME defaults to the selected one."
  use-short-answers                      t
 
  ;; frame.c
+ frame-inhibit-implied-resize           'force
  frame-resize-pixelwise                 t
 
  ;; indent.c
@@ -1344,7 +1345,7 @@ created.  FRAME defaults to the selected one."
  bog-root-directory                     (file-name-parent-directory blc-bib-dir)
 
  ;; bookmark
- bookmark-default-file                  (blc-file blc-index-dir "bookmarks.el")
+ bookmark-default-file                  (blc-file blc-index-dir "bookmarks.eld")
  bookmark-save-flag                     1
  bookmark-search-delay                  0
 
@@ -1957,7 +1958,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    (derived-mode . magit-section-mode))
  project-kill-buffers-display-buffer-list
  t
- project-list-file                      (blc-file blc-index-dir "projects")
+ project-list-file                      (blc-file blc-index-dir "projects.eld")
  project-switch-use-entire-map          t
 
  ;; prolog
@@ -2013,6 +2014,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
  ;; simple
  async-shell-command-display-buffer     nil
+ exchange-point-and-mark-highlight-region
+ nil
  kill-do-not-save-duplicates            t
  kill-whole-line                        t
  mail-user-agent                        'gnus-user-agent
