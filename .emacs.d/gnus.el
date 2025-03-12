@@ -52,6 +52,7 @@
 (declare-function gnus-article-sort-by-number           "gnus-sum")
 (declare-function gnus-data-find-in                     "gnus-sum")
 (declare-function gnus-summary-goto-article             "gnus-sum")
+(declare-function gnus-summary-mark-as-expirable        "gnus-sum")
 (declare-function gnus-summary-save-parts               "gnus-sum")
 (declare-function gnus-thread-sort-by-date              "gnus-sum")
 (declare-function gnus-thread-sort-by-most-recent-date  "gnus-sum")
@@ -292,6 +293,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
     (gnus-summary-mode-map
      ([?\C-\M-s]                        nil t)
      ([?\M-r]                           nil t)
+     ([remap gnus-summary-edit-article] #'gnus-summary-mark-as-expirable)
      ([remap gnus-summary-goto-article] #'blc-gnus-goto-article)
      ("va"                              #'blc-gnus-apply-attachments))))
 
