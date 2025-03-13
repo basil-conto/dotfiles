@@ -22,9 +22,6 @@
 (require 'magit-git)
 (require 'magit-section)
 
-(eval-when-compile
-  (require 'subr-x))
-
 (defvar blc-magit-gpg-types
   '((?G "VALID"       magit-signature-good)
     (?B "BAD"         magit-signature-bad)
@@ -78,7 +75,7 @@ Format the Git revision as per CONTRIBUTE guidelines."
                         t)
 
 ;; Always highlight tabs
-(blc-put* magit-diff-highlight-indentation "" 'tabs)
+(setf (blc-get magit-diff-highlight-indentation "") 'tabs)
 
 ;; Status buffer
 (dolist (fn '(magit-insert-repo-header magit-insert-remote-header))

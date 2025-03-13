@@ -11,7 +11,6 @@
 (require 'blc-lib)
 
 (require 'package)
-(require 'seq)
 
 ;; Sandbox this nuisance
 (define-advice package--save-selected-packages
@@ -60,7 +59,7 @@ New `package-selected-packages': %S"
 Return `package-user-dir' if no directory is found."
   (or (blc-package-dir
        (completing-read "Package name: "
-                        (sort (mapcar #'car package-alist) #'string-lessp)
+                        (sort (mapcar #'car package-alist) :in-place t)
                         nil t nil 'blc-package-history))
       package-user-dir))
 

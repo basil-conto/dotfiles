@@ -8,7 +8,6 @@
 ;;; Code:
 
 (require 'map)
-(require 'seq)
 (eval-when-compile
   (require 'goto-addr)
   (require 'subr-x)
@@ -25,27 +24,16 @@
 
 ;;; Sequences
 
-(defun blc-keep (fn seq &optional copy)
-  "Map FN over SEQ and return list of non-nil results.
-SEQ is modified destructively unless COPY is non-nil."
-  (funcall (if copy #'seq-mapcat #'mapcan)
-           (lambda (item)
-             (and-let* ((result (funcall fn item)))
-               (list result)))
-           seq))
+(defun blc-keep (fn seq)
+  "Map FN over SEQ and return list of non-nil results."
+  (mapcan (lambda (item)
+            (and-let* ((result (funcall fn item)))
+              (list result)))
+          seq))
 
-(defun blc-get (alist key &optional default testfn)
-  "Like `alist-get', but TESTFN defaults to `equal'."
-  (alist-get key alist default nil (or testfn #'equal)))
-
-(defmacro blc-put (alist key val &optional testfn)
-  "Associate KEY with VAL in ALIST and return VAL.
-TESTFN is as in `alist-get'."
-  `(setf (alist-get ,key ,alist nil nil ,testfn) ,val))
-
-(defmacro blc-put* (alist key val)
-  "Like `blc-put', but with `equal' as TESTFN."
-  `(blc-put ,alist ,key ,val #'equal))
+(define-inline blc-get (alist key &optional default)
+  "Like `alist-get', but with `equal' as TESTFN."
+  (inline-quote (alist-get ,key ,alist ,default nil #'equal)))
 
 ;;; Functions
 
@@ -129,7 +117,7 @@ Order is breadth-first lexicographic."
                                                  file2 beg2 end2))))
       (setq beg1 (1+ end1) beg2 beg1))
     (cond ((integerp cmp)
-           (< cmp 0))
+           (minusp cmp))
           (end2)
           ((not end1)
            (string-lessp file1 file2)))))
@@ -230,7 +218,7 @@ many opusenc processes as there are available processing units."
                                     (if (not (blc-process-success-p proc))
                                         (lwarn 'blc :error "opusenc: %s" event)
                                       (progress-reporter-update
-                                       journo (setq nfile (1+ nfile)))
+                                       journo (incf nfile))
                                       (funcall sentinel))))))
                    (aref parts i)
                    (lambda ()
@@ -337,13 +325,10 @@ pass BUFFER-OR-NAME to `bury-buffer'."
 (defun blc-rename-buffer (&optional unique)
   "Like `rename-buffer', but with completion."
   (interactive "P")
-  (rename-buffer (completing-read "Rename buffer (to new name): "
-                                  (sort (copy-sequence buffer-name-history)
-                                        #'string-lessp)
-                                  nil nil nil
-                                  'buffer-name-history
-                                  (buffer-name))
-                 unique))
+  (let ((name (completing-read
+               "Rename buffer (to new name): " (sort buffer-name-history)
+               nil nil nil 'buffer-name-history (buffer-name))))
+    (rename-buffer name unique)))
 
 (defun blc-iwb ()
   "Indent Whole Buffer and delete trailing whitespace.
@@ -402,7 +387,7 @@ Like `indent-relative', but with prefix argument BELOW, first
 exchange current and next lines."
   (interactive "P")
   (when below (blc-move-line-down))
-  (let (indent-tabs-mode)
+  (let ((indent-tabs-mode nil))
     (indent-relative))
   (when below (blc-move-line-up)))
 

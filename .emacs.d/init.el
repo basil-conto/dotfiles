@@ -24,10 +24,7 @@
 ;; Built-in
 (require 'dbus)
 (require 'map)
-(require 'seq)
 (require 'xdg)
-(eval-when-compile
-  (require 'subr-x))
 
 (autoload 'auth-source-pass-backend-parse   "auth-source-pass")
 (autoload 'blc-backup                       "blc-backup" nil t)
@@ -308,7 +305,7 @@ Offer all entities found in `org-entities-user' and
        (point))
      (point)
      (sort (blc-keep #'car-safe (append org-entities-user org-entities))
-           #'string-lessp)
+           :in-place t)
      (lambda (entity)
        (/= ?_ (string-to-char entity))))))
 
@@ -377,8 +374,9 @@ Should be kept in sync with `project-current@blc-ibuffer-cache'.")
 (defvar blc-projects (make-hash-table :test #'equal)
   "Hash table cache of `project' instances encountered so far.")
 
-(defvar-local blc-project 'unset
-  "Per-buffer cached `project-current' or `unset'.")
+(defvar-local blc-project)
+(put 'blc-project 'variable-documentation
+     "Per-buffer cached `project-current'.")
 
 (define-advice project-current (:filter-return (project) blc-ibuffer-cache)
   "Create an Ibuffer filter group for any hitherto unseen PROJECT.
@@ -387,9 +385,9 @@ Destructively adds the group to `blc-ibuffer-filter-groups'."
     (puthash project t blc-projects)
     (let* ((roots (mapcar #'file-truename (project-external-roots project)))
            (roots (and roots (blc-rx `(: bos (eval '(| ,@roots))))))
-           (pred `(predicate . (equal (if (eq blc-project 'unset)
-                                          (setq blc-project (project-current))
-                                        blc-project)
+           (pred `(predicate . (equal (if (local-variable-p 'blc-project)
+                                          blc-project
+                                        (setq blc-project (project-current)))
                                       ',project))))
       (push `(,(directory-file-name (project-root project))
               ,(if roots `(or ,pred (directory . ,roots)) pred)
@@ -772,7 +770,7 @@ Intended as a predicate for `confirm-kill-emacs'."
       :body (let ((repos (list (cons "other" 0))))
               (dolist (notif notifs)
                 (let ((name (map-nested-elt notif '(repository name) "other")))
-                  (blc-put* repos name (1+ (blc-get repos name 0)))))
+                  (incf (blc-get repos name 0))))
               (let* (;; Could alternatively assume 2 by default.
                      (wid (1+ (floor (log (apply #'max 1 (map-values repos))
                                           10))))
@@ -802,7 +800,7 @@ desirable."
                                          (buf (symbol-value var))
                                          (buf (get-buffer buf))
                                          ((buffer-live-p buf))
-                                         ((> (buffer-size buf) 0)))
+                                         ((plusp (buffer-size buf))))
                                 buf))
                             '(gnus-article-buffer
                               gnus-summary-buffer
@@ -886,8 +884,7 @@ Return the name of the buffer as a string or `nil'."
                        (cons (concat name id) name)))
                    (blc-derived-buffers #'Info-mode)))
             ((cdr bufs)))
-      (blc-get bufs (completing-read
-                     "Info buffer: " (seq-sort-by #'car #'string-lessp bufs)))
+      (blc-get bufs (completing-read "Info buffer: " (sort bufs :key #'car)))
     (cdar bufs)))
 
 (defun blc-info (&optional buffer)
@@ -918,7 +915,7 @@ Return the name of the buffer as a string or `nil'."
 (defun blc-ivy-string< (_name cands)
   "Sort CANDS in lexicographic order.
 Intended as a value for `ivy-sort-matches-functions-alist'."
-  (sort (copy-sequence cands) #'string-lessp))
+  (sort cands))
 
 (defun blc-ivy-strip-init-inputs (regexp)
   "Undo some default settings for Ivy initial inputs.
@@ -988,10 +985,9 @@ that ignore `inhibit-switch-frame' or `no-focus-on-map'."
 (defun blc-message-set-msmtp-from ()
   "Replace From header with address read from `~/.msmtprc'."
   (interactive)
-  (thread-last (completing-read "From address: " (blc-msmtp-addresses)
-                                nil t nil nil user-mail-address)
-    (message-make-from nil)
-    (message-replace-header "From")))
+  (let ((addr (completing-read "From address: " (blc-msmtp-addresses)
+                               nil t nil nil user-mail-address)))
+    (message-replace-header "From" (message-make-from nil addr))))
 
 (defun blc-message-confirm-attach ()
   "Allow user to quit sending on missing attachment detection."
@@ -2662,7 +2658,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; auth-source
 
 (with-eval-after-load 'auth-source
-  (blc-put auth-source-protocols 'smtp '("smtp" "smtps" "25" "465" "587")))
+  (setf (alist-get 'smtp auth-source-protocols)
+        '("smtp" "smtps" "25" "465" "587")))
 
 ;;;; autoconf
 
@@ -2735,7 +2732,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                          (innamespace       .  0)
                          (member-init-intro . ++))))
 
-    (blc-put c-default-style 'other name)
+    (setf (alist-get 'other c-default-style) name)
 
     (define-advice c-set-style (:after (&rest _) blc-comment-style)
       "Set default comment style after `c-indentation-style'."
@@ -2942,9 +2939,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                                         (regexp dired-omit-files))))
 
   (map-do (lambda (cmds suffs)
-            (blc-put* dired-guess-shell-alist-user
-                      (blc-rx `(: ?. (| ,@suffs) eos))
-                      cmds))
+            (setf (blc-get dired-guess-shell-alist-user
+                           (blc-rx `(: ?. (| ,@suffs) eos)))
+                  cmds))
           '((("jpegoptim")      "jpg" "jpeg")
             (("localc")         "ods" "xls" "xlsx")
             (("lowriter")       "doc" "docx" "odt")
@@ -3169,14 +3166,14 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
           [,#'isearch-yank-word-or-char ,#'ivy-yank-word ,isearch-mode-map]))
 
   ;; Set defaults
-  (blc-put ivy-format-functions-alist t #'ivy-format-function-arrow)
-  (blc-put ivy-more-chars-alist       t 2)
-  (blc-put ivy-re-builders-alist      t #'ivy--regex-ignore-order)
+  (setf (alist-get t ivy-format-functions-alist) #'ivy-format-function-arrow)
+  (setf (alist-get t ivy-more-chars-alist) 2)
+  (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)
 
   ;; Fix ordering
   (map-do (lambda (sort callers)
             (dolist (caller callers)
-              (blc-put ivy-sort-functions-alist caller sort)))
+              (setf (alist-get caller ivy-sort-functions-alist) sort)))
           `((nil                 t)
             (,#'always           ,#'ivy-bibtex
                                  ,#'package-install)
@@ -3186,8 +3183,8 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                                  ,#'find-face-definition
                                  ,#'find-function)))
 
-  (blc-put ivy-sort-matches-functions-alist
-           #'ivy-completion-in-region #'blc-ivy-string<)
+  (setf (alist-get #'ivy-completion-in-region ivy-sort-matches-functions-alist)
+        #'blc-ivy-string<)
 
   (dolist (caller (list #'Info-menu #'webjump))
     (setq ivy-completing-read-handlers-alist
@@ -3295,7 +3292,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   ;; Expand GNU functions
   (map-do (lambda (fn args)
             (unless (assoc-string fn makefile-gnumake-functions-alist)
-              (blc-put* makefile-gnumake-functions-alist fn args)))
+              (setf (blc-get makefile-gnumake-functions-alist fn) args)))
           '(("abspath"  "Names")
             ("error"    "Text")
             ("flavor"   "Variable")
@@ -3307,8 +3304,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
             ("wordlist" "Start index" "End index" "Text")))
 
   (setq-default makefile-gnumake-functions-alist
-                (seq-sort-by #'car #'string-lessp
-                             makefile-gnumake-functions-alist))
+                (sort makefile-gnumake-functions-alist :key #'car))
 
   ;; Expand special targets
   (let ((targets 'makefile-special-targets-list))
@@ -3329,7 +3325,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
             "SECONDARY"
             "SECONDEXPANSION"))
 
-    (set-default targets (sort (symbol-value targets) #'string-lessp))))
+    (set-default targets (sort (symbol-value targets)))))
 
 ;;;; man
 
@@ -3344,7 +3340,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'markdown-mode
   (let ((lang "lang-el"))               ; For StackExchange
     (add-to-list 'markdown-gfm-additional-languages lang)
-    (blc-put* markdown-code-lang-modes lang #'emacs-lisp-mode)))
+    (setf (blc-get markdown-code-lang-modes lang) #'emacs-lisp-mode)))
 
 ;;;; message
 
@@ -3428,16 +3424,16 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
 (with-eval-after-load 'org-agenda
   (if-let* ((key "n")
-            (cmd (seq-take (blc-get org-agenda-custom-commands key) 2))
-            ((= (length cmd) 2)))
-      (blc-put* org-agenda-custom-commands key
-                `(,@cmd () ,(blc-file org-directory "agenda.html")))
+            (cmd (take 2 (blc-get org-agenda-custom-commands key)))
+            ((length= cmd 2)))
+      (setf (blc-get org-agenda-custom-commands key)
+            `(,@cmd () ,(blc-file org-directory "agenda.html")))
     (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'"))
 
   (mapc (lambda (icon)
-          (blc-put* org-agenda-category-icon-alist
-                    (rx bos (literal (file-name-base icon)) eos)
-                    (list (file-truename icon) nil nil :ascent 'center)))
+          (setf (blc-get org-agenda-category-icon-alist
+                         (rx bos (literal (file-name-base icon)) eos))
+                (list (file-truename icon) nil nil :ascent 'center)))
         (and-let* ((dir (blc-dir org-directory "icons"))
                    ((file-directory-p dir)))
           (nreverse
@@ -3501,20 +3497,18 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                    (dom-node 'h3  '((class .      footnotes)) "%s")
                    (dom-node 'div '((id    . text-footnotes)) "%s")))
 
-  (blc-put org-html-checkbox-types
-           'html
-           (let ((checkbox '((type     . checkbox)
-                             (disabled . ""))))
-             (map-apply
-              (lambda (state checked)
-                (cons state (blc-dom-to-xml 'input (append checkbox checked))))
-              '((on    . ((checked . "")))
-                (off   . ())
-                (trans . ())))))
+  (setf (alist-get 'html org-html-checkbox-types)
+        (let ((checkbox '((type     . checkbox)
+                          (disabled . ""))))
+          (map-apply
+           (lambda (state checked)
+             (cons state (blc-dom-to-xml 'input (append checkbox checked))))
+           '((on    . ((checked . "")))
+             (off   . ())
+             (trans . ())))))
 
-  (blc-put* org-html-postamble-format
-            org-export-default-language
-            (list (blc-dom-to-xml 'p '((class . modification)) "Updated: %C"))))
+  (setf (blc-get org-html-postamble-format org-export-default-language)
+        (list (blc-dom-to-xml 'p '((class . modification)) "Updated: %C"))))
 
 ;;;; ox-publish
 

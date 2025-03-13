@@ -76,7 +76,7 @@ This is a subroutine of `blc-mbsync-deduplicate' and intended as
 the QUIT-FUNCTION of `with-temp-buffer-window' or similar."
   (with-selected-window window
     (if-let* ((n (length alist))
-              ((> n 0))
+              ((plusp n))
               (fmt (ngettext "Rename %d file? " "Rename %d files? " n))
               ((yes-or-no-p (format fmt n))))
         (dolist-with-progress-reporter (rename alist)
@@ -107,7 +107,9 @@ See `blc--mbsync-crm' for valid CHANS."
                (unless (member file dups)
                  (puthash uid (cons file dups) map)))))
          (maphash (lambda (_ dups)
-                    (dolist (dup (butlast (sort dups #'file-newer-than-file-p)))
+                    (dolist (dup (butlast
+                                  (sort dups :in-place t
+                                        :lessp #'file-newer-than-file-p)))
                       (let ((new (replace-regexp-in-string
                                   (rx ",U=" (+ (not ?,))) "" dup t t)))
                         (insert (format "Rename %s\n    -> %s\n" dup new))
