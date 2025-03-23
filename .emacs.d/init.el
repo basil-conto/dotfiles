@@ -1399,6 +1399,9 @@ created.  FRAME defaults to the selected one."
  counsel-org-goto-face-style            'verbatim
  counsel-yank-pop-filter                #'identity
 
+ ;; crm
+ crm-prompt                             "[CRM %s] %p"
+
  ;; csv-mode
  csv-align-style                        'auto
  csv-invisibility-default               nil
