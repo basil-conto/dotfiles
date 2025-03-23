@@ -241,6 +241,7 @@ Visit `package-user-dir' if such a directory is not found."
    paren-face
    pass
    pdf-tools
+   plz-see
    proof-general
    pulseaudio-control
 
