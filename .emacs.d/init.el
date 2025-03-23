@@ -1540,11 +1540,12 @@ created.  FRAME defaults to the selected one."
  footnote-section-tag                   ""
  footnote-spaced-footnotes              nil
 
- ;; forge
- forge-database-connector               'sqlite-builtin
+ ;; forge-db
  forge-database-file                    (blc-file blc-index-dir
                                                   "forge-db.sqlite")
- forge-topic-list-limit                 '(60 . -1)
+
+ ;; forge-topics
+ forge-owned-accounts                   '(("basil-conto"))
 
  ;; frame
  window-divider-default-right-width     2
@@ -3041,7 +3042,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; forge
 
 (with-eval-after-load 'forge
-  (remove-hook 'forge-post-mode-hook #'turn-on-flyspell))
+  (remove-hook 'forge-post-mode-hook 'turn-on-flyspell))
 
 ;;;; frame
 
