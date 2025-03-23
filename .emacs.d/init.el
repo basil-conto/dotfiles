@@ -1652,6 +1652,7 @@ created.  FRAME defaults to the selected one."
  ;; ivy
  ivy-action-wrap                        t
  ivy-count-format                       "(%d/%d) "
+ ivy-dynamic-exhibit-delay-ms           200
  ivy-extra-directories                  ()
  ivy-on-del-error-function              #'ignore
  ivy-pulse-delay                        nil
