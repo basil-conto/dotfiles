@@ -110,6 +110,12 @@ Disable `display-battery-mode' on unrecognised supply."
   "Pass LIB through `blc-dataroot-to-src'."
   (funcall search sym type (blc-dataroot-to-src lib)))
 
+;;;; forge-topic
+
+(define-advice forge-read-topic-lift-limit (:after (&rest _) blc-reset-ivy)
+  "Tell Ivy to reevaluate dynamic topic collection."
+  (ivy--reset-state ivy-last))
+
 ;;;; gnus-sum
 
 (define-advice gnus-summary-exit (:after (&rest _) blc-gnus-single-group-frame)
@@ -3049,6 +3055,14 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
 (with-eval-after-load 'forge
   (remove-hook 'forge-post-mode-hook 'turn-on-flyspell))
+
+;;;; forge-topic
+
+(with-eval-after-load 'forge-topic
+  (require 'eieio)
+  (eieio-declare-slots (limit :allocation :class))
+  ;; Don't limit to 200 by default.
+  (oset-default forge--topics-spec limit nil))
 
 ;;;; frame
 
