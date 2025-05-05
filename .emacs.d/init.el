@@ -95,11 +95,11 @@ Disable `display-battery-mode' on unrecognised supply."
 
 ;;;; files
 
-(define-advice kill-some-buffers (:around (&rest args) my-save-windows)
+(define-advice kill-some-buffers (:around (&rest args) blc-save-windows)
   "Wrap ARGS in `save-window-excursion'."
   (save-window-excursion (apply args)))
 
-(define-advice kill-buffer-ask (:before (buf) my-show-buffer)
+(define-advice kill-buffer-ask (:before (buf) blc-show-buffer)
   "Switch to BUF before asking whether to kill it."
   (switch-to-buffer buf t t))
 
