@@ -1451,6 +1451,7 @@ created.  FRAME defaults to the selected one."
                                            "-lv")
                                          " ")
  dired-maybe-use-globstar               t
+ dired-movement-style                   'bounded-files
  dired-recursive-copies                 'always
 
  ;; dired-aux
@@ -1467,6 +1468,7 @@ created.  FRAME defaults to the selected one."
  ;; eldoc
  eldoc-echo-area-prefer-doc-buffer      t
  eldoc-echo-area-use-multiline-p        t
+ eldoc-help-at-pt                       t
 
  ;; emacsbug
  report-emacs-bug-no-explanations       t
