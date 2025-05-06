@@ -3064,6 +3064,13 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   ;; Don't limit to 200 by default.
   (oset-default forge--topics-spec limit nil))
 
+;;;; forge-topics
+
+(with-eval-after-load 'forge-topics
+  (require 'eieio)
+  ;; Restore default in Magit status buffer.
+  (oset forge-status-buffer-default-topic-filters limit 200))
+
 ;;;; frame
 
 (window-divider-mode)
