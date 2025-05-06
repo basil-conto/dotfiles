@@ -1391,19 +1391,11 @@ created.  FRAME defaults to the selected one."
  copyright-names-regexp                 (regexp-quote user-full-name)
 
  ;; counsel
+ counsel-M-x-collection                 'obarray
+ counsel-async-command-delay            0.2
  counsel-describe-function-preselect    #'ivy-function-called-at-point
  counsel-git-grep-cmd-function
  #'counsel-git-grep-cmd-function-ignore-order
- counsel-grep-base-command              (string-join '("rg"
-                                                       "--color" "never"
-                                                       "--line-number"
-                                                       "--no-heading"
-                                                       "--smart-case"
-                                                       "--with-filename"
-                                                       "--regexp" "%s"
-                                                       "%s")
-                                                     " ")
- counsel-mode-map                       () ; Control remaps
  counsel-org-goto-display-tags          t
  counsel-org-goto-display-todo          t
  counsel-org-goto-face-style            'verbatim
