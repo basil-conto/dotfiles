@@ -1,25 +1,25 @@
 # -*- conf-space -*-
 # Skeleton ~/.mbsyncrc
 
-IMAPStore               foo-remote
-Host                    imap.bar.baz
-PassCmd                 "pass foo/bar"
-TLSType                 IMAPS
-TLSVersions             -1.2
-Timeout                 120
-User                    foo@bar.baz
+Create              Both
+Expunge             Both
+CopyArrivalDate     yes
 
-MaildirStore            foo-local
-Flatten                 .
-Inbox                   ~/Mail/foo/INBOX
-Path                    ~/Mail/foo/
-SubFolders              Verbatim
+IMAPStore           foo-remote
+Host                imap.bar.baz
+PassCmd             "pass foo/bar"
+TLSType             IMAPS
+TLSVersions         -1.2
+Timeout             120
+User                foo@bar.baz
 
-Channel                 foo
-CopyArrivalDate         yes
-Create                  Both
-Expunge                 Both
-Far                     :foo-remote:
-Near                    :foo-local:
-Patterns                *
-SyncState               *
+IMAPStore           foo-local
+Host                localhost
+PassCmd             "pass foo/baz"
+TLSType             None
+User                foo
+
+Channel             foo
+Far                 :foo-remote:
+Near                :foo-local:
+Patterns            *
