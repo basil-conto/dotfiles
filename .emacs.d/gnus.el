@@ -17,34 +17,20 @@
   (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)))
 
 (require 'blc-lib)
-(require 'blc-mbsync)
 
-(require 'map)
 (eval-when-compile
   (require 'gnus-sum)
   (require 'nnheader))
 
 ;;; Byte-compiler declarations
 
-(defvar gnus-article-mode-map)
-(defvar gnus-buffer-configuration)
-(defvar gnus-directory)
 (defvar gnus-level-default-subscribed)
-(defvar gnus-newsgroup-limit)
-(defvar gnus-sorted-header-list)
-(defvar gnus-startup-file)
-(defvar gnus-summary-mode-map)
-(defvar gnus-tmp-group)
-(defvar gnus-topic-mode-map)
-(defvar gnus-visible-headers)
 
 (declare-function bbdb-mua-summary-unify                "bbdb-mua")
 (declare-function diff-file-next                        "diff-mode")
 (declare-function diff-file-prev                        "diff-mode")
 (declare-function diff-hunk-next                        "diff-mode")
 (declare-function diff-hunk-prev                        "diff-mode")
-(declare-function gnus-demon-add-handler                "gnus-demon")
-(declare-function gnus-demon-scan-news                  "gnus-demon")
 (declare-function gnus-group-set-timestamp              "gnus-group")
 (declare-function gnus-group-timestamp                  "gnus-group")
 (declare-function gnus-score-find-single                "gnus-score")
@@ -75,6 +61,7 @@
 
 (defun gnus-user-format-function-dgroup (&rest _)
   "User-defined Gnus group line timestamp format."
+  (defvar gnus-tmp-group)
   (if-let* ((time (gnus-group-timestamp gnus-tmp-group)))
       (blc-gnus-user-date time)
     ""))
@@ -127,6 +114,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
 (defun blc-gnus-goto-article ()
   "Like `gnus-summary-goto-article', but human-readable."
   (interactive)
+  (defvar gnus-newsgroup-limit)
   (let ((arts (mapcar #'blc-gnus-format-article gnus-newsgroup-limit)))
     (gnus-summary-goto-article
      (blc-get arts (gnus-completing-read "Article" arts t)))))
@@ -155,13 +143,13 @@ convention (see the Info node `(gnus) Process/Prefix')."
  gnus-update-message-archive-method     t
  gnus-save-score                        t
  gnus-secondary-select-methods
- `(,@(map-keys-apply (lambda (user)
-                       `(nnimap ,user
-                                (nnimap-address         "127.0.0.1")
-                                (nnimap-record-commands t)
-                                (nnimap-stream          network)
-                                (nnimap-user            ,user)))
-                     (blc-mbsync-maildirs)))
+ (mapcar (pcase-lambda (`(,user . ,_))
+           `(nnimap ,user
+                    (nnimap-address         "127.0.0.1")
+                    (nnimap-record-commands t)
+                    (nnimap-stream          network)
+                    (nnimap-user            ,user)))
+         (blc-mbsync-stores))
 
  ;; gnus-art
  gnus-blocked-images                    nil
@@ -267,6 +255,10 @@ convention (see the Info node `(gnus) Process/Prefix')."
 ;;;; gnus-art
 
 (with-eval-after-load 'gnus-art
+  (defvar gnus-article-mode-map)
+  (defvar gnus-sorted-header-list)
+  (defvar gnus-visible-headers)
+
   (blc-define-keys
     (gnus-article-mode-map
      ("vN" #'diff-file-next)
@@ -289,6 +281,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
 ;;;; gnus-sum
 
 (with-eval-after-load 'gnus-sum
+  (defvar gnus-summary-mode-map)
   (blc-define-keys
     (gnus-summary-mode-map
      ([?\C-\M-s]                        nil t)
@@ -300,12 +293,14 @@ convention (see the Info node `(gnus) Process/Prefix')."
 ;;;; gnus-topic
 
 (with-eval-after-load 'gnus-topic
+  (defvar gnus-topic-mode-map)
   (define-key
     gnus-topic-mode-map [remap gnus-topic-indent] #'blc-gnus-topic-fold))
 
 ;;;; gnus-win
 
 (with-eval-after-load 'gnus-win
+  (defvar gnus-buffer-configuration)
   (let ((oconf (cadr (assq 'article gnus-buffer-configuration))))
     (gnus-add-configuration
      `(article (cond ((not pop-up-frames) ,oconf)

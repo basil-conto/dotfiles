@@ -163,16 +163,6 @@ relevant major-mode."
     (and (blc-search-forward (rx (group (+ nonl)) (? ?\n) eos))
          (cadr (split-string (match-string 1) "/" t)))))
 
-(defalias 'blc-msmtp-addresses
-  (thunk-delay
-   (blc-with-contents "~/.msmtprc"
-     (let (addresses)
-       (rx-let ((email (eval `(regexp ,goto-address-mail-regexp))))
-         (while (blc-search-forward (rx bol "from" (+ space) (group email) eol))
-           (push (match-string 1) addresses)))
-       (nreverse addresses))))
-  "Return list of unique addresses in ~/.msmtprc.")
-
 (defun blc--opusenc-files (dir)
   "Return mapping of new flac to opus filenames under DIR.
 See `blc-opusenc-flac'."
@@ -293,6 +283,60 @@ for compatibility with `browse-url' and ignored."
     (mapcar (lambda (pid)
               (alist-get attr (process-attributes pid) def))
             (list-system-processes))))
+
+(defalias 'blc-msmtp-addresses
+  (thunk-delay
+   (blc-with-contents "~/.msmtprc"
+     (let (addresses)
+       (rx-let ((email (eval `(regexp ,goto-address-mail-regexp))))
+         (while (blc-search-forward (rx bol "from" (+ space) (group email) eol))
+           (push (match-string 1) addresses)))
+       (nreverse addresses))))
+  "Return list of unique addresses in ~/.msmtprc.")
+
+(defalias 'blc-mbsync-stores
+  (thunk-delay
+   (blc-with-contents "~/.mbsyncrc"
+     (let (stores)
+       (while (blc-search-forward (rx bol "IMAPStore" (+ space)
+                                      (group (+ (not space))) "-near" eol))
+         (let* ((name (match-string-no-properties 1))
+                (chan (blc-search-forward
+                       (rx bol "Channel" (+ space) (literal name) eol))))
+           (push (cons name chan) stores)))
+       (nreverse stores))))
+  "Return alist of store names in ~/.mbsyncrc.
+Non-nil cdr means the store is connected to a channel.")
+
+(defalias 'blc-mbsync-channels
+  (thunk-delay (mapcar #'car (seq-filter #'cdr (blc-mbsync-stores))))
+  "Return list of channels in ~/.mbsyncrc.")
+
+(defalias 'blc--mbsync-args
+  (thunk-delay
+   (let ((chans (blc-mbsync-channels)))
+     (append '("--all") chans
+             (mapcan (lambda (chan)
+                       (mapcar (lambda (box) (concat chan ":" box))
+                               (process-lines "doveadm" "mailbox" "list"
+                                              "-8su" chan)))
+                     chans))))
+  "Return completion table for mbsync channel/mailbox arguments.")
+
+(defun blc-mbsync (&rest args)
+  "Call mbsync with ARGS asynchronously via a shell.
+Interactively, read multiple channels/mailboxes with completion."
+  (interactive (let ((opts (blc--mbsync-args)))
+                 (completing-read-multiple "Synchronise mbsync channels: " opts
+                                           nil t nil 'blc-mbsync-history opts)))
+  (let ((cmd (cons "mbsync" args)))
+    (async-shell-command (mapconcat #'shell-quote-argument cmd " ")
+                         (format "*%s*" (string-join cmd " ")))))
+
+(defun blc-mbsync-all ()
+  "Call `blc-mbsync' for each channel in `blc-mbsync-channels'."
+  (interactive)
+  (mapc #'blc-mbsync (blc-mbsync-channels)))
 
 ;;; Buffers
 

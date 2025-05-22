@@ -28,10 +28,6 @@
 
 (autoload 'auth-source-pass-backend-parse   "auth-source-pass")
 (autoload 'blc-backup                       "blc-backup" nil t)
-(autoload 'blc-mbsync                       "blc-mbsync" nil t)
-(autoload 'blc-mbsync-all                   "blc-mbsync" nil t)
-(autoload 'blc-mbsync-deduplicate           "blc-mbsync" nil t)
-(autoload 'blc-mbsync-maximise-uid          "blc-mbsync" nil t)
 (autoload 'browse-url-interactive-arg       "browse-url")
 (autoload 'debbugs-gnu-apply-patch          "debbugs-gnu" nil t)
 (autoload 'debbugs-gnu-find-contributor     "debbugs-gnu" nil t)
