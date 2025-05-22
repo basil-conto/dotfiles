@@ -76,6 +76,14 @@ Disable `display-battery-mode' on unrecognised supply."
                     (apply #'call-process prog nil 0 nil args))
     (apply fn args)))
 
+;;;; compile
+
+(define-advice compilation-mode
+    (:around (fn &optional name &rest args) blc-delight)
+  "Delight `mode-name' of `compilation-mode'.
+Needed while the latter is incompatible with `delight'."
+  (apply fn (if (member name '(nil "Compilation")) "Comp" name) args))
+
 ;;;; elisp-mode
 
 (define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
@@ -1213,7 +1221,6 @@ created.  FRAME defaults to the selected one."
  fill-column                            blc-chars-per-line
  indicate-buffer-boundaries             t
  indicate-empty-lines                   t
- mode-line-format                       (blc-sed-tree " +" " " mode-line-format)
 
  ;; callint.c
  mark-even-if-inactive                  nil
@@ -1264,6 +1271,7 @@ created.  FRAME defaults to the selected one."
  ;; xdisp.c
  auto-hscroll-mode                      'current-line
  line-number-display-limit-width        (ash blc-chars-per-line 3)
+ mode-line-compact                      'long
  redisplay-skip-fontification-on-input  t
  scroll-conservatively                  most-positive-fixnum
  scroll-margin                          1
@@ -2854,7 +2862,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    (inferior-emacs-lisp-mode "(>)" :major)
 
    ;; info
-   (Info-mode "📘" :major)
+   (Info-mode "📖" :major)
 
    ;; ivy
    (ivy-mode nil ivy)
