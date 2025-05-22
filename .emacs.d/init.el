@@ -1475,6 +1475,9 @@ created.  FRAME defaults to the selected one."
  eglot-advertise-cancellation           t
  eglot-confirm-server-edits             'summary
 
+ ;; eglot-inactive-regions
+ eglot-inactive-regions-style           'shadow-face
+
  ;; eldoc
  eldoc-echo-area-prefer-doc-buffer      t
  eldoc-echo-area-use-multiline-p        t

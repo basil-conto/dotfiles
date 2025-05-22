@@ -153,6 +153,7 @@ Visit `package-user-dir' if such a directory is not found."
    ducpel
 
    ef-themes
+   eglot-inactive-regions
    el-search
    elisp-benchmarks
    emacsql
