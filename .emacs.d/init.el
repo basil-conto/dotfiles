@@ -2102,49 +2102,14 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
  ;; treesit
  treesit-language-source-alist
- '((bash            "https://github.com/tree-sitter/tree-sitter-bash")
-   (c               "https://github.com/tree-sitter/tree-sitter-c")
-   (cmake           "https://github.com/uyha/tree-sitter-cmake")
-   (cpp             "https://github.com/tree-sitter/tree-sitter-cpp")
-   (css             "https://github.com/tree-sitter/tree-sitter-css")
-   (c-sharp         "https://github.com/tree-sitter/tree-sitter-c-sharp")
-   (dockerfile      "https://github.com/camdencheek/tree-sitter-dockerfile")
-   (elixir          "https://github.com/elixir-lang/tree-sitter-elixir")
-   (go              "https://github.com/tree-sitter/tree-sitter-go")
-   (gomod           "https://github.com/camdencheek/tree-sitter-go-mod")
-   (gowork          "https://github.com/omertuc/tree-sitter-go-work")
-   (haskell         "https://github.com/tree-sitter/tree-sitter-haskell")
-   (heex            "https://github.com/phoenixframework/tree-sitter-heex")
-   (html            "https://github.com/tree-sitter/tree-sitter-html")
-   (java            "https://github.com/tree-sitter/tree-sitter-java")
-   (javascript      "https://github.com/tree-sitter/tree-sitter-javascript")
-   (jsdoc           "https://github.com/tree-sitter/tree-sitter-jsdoc")
-   (json            "https://github.com/tree-sitter/tree-sitter-json")
-   (lua             "https://github.com/MunifTanjim/tree-sitter-lua")
-   (markdown
-    "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-    nil "tree-sitter-markdown/src")
-   (markdown-inline
-    "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-    nil "tree-sitter-markdown-inline/src")
+ '((haskell         "https://github.com/tree-sitter/tree-sitter-haskell")
    (ocaml           "https://github.com/tree-sitter/tree-sitter-ocaml"
                     nil "grammars/ocaml/src")
    (ocaml-interface "https://github.com/tree-sitter/tree-sitter-ocaml"
                     nil "grammars/interface/src")
    (ocaml-type      "https://github.com/tree-sitter/tree-sitter-ocaml"
                     nil "grammars/type/src")
-   (php             "https://github.com/tree-sitter/tree-sitter-php"
-                    nil "php/src")
-   (python          "https://github.com/tree-sitter/tree-sitter-python")
-   (ruby            "https://github.com/tree-sitter/tree-sitter-ruby")
-   (rust            "https://github.com/tree-sitter/tree-sitter-rust")
-   (scala           "https://github.com/tree-sitter/tree-sitter-scala")
-   (toml            "https://github.com/ikatyang/tree-sitter-toml")
-   (tsx             "https://github.com/tree-sitter/tree-sitter-typescript"
-                    nil "tsx/src")
-   (typescript      "https://github.com/tree-sitter/tree-sitter-typescript"
-                    nil "typescript/src")
-   (yaml            "https://github.com/ikatyang/tree-sitter-yaml"))
+   (scala           "https://github.com/tree-sitter/tree-sitter-scala"))
 
  ;; type-break
  type-break-demo-boring-stats           t
