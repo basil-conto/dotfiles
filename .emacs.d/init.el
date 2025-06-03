@@ -1511,7 +1511,6 @@ created.  FRAME defaults to the selected one."
  ;; eww
  eww-auto-rename-buffer                 'title
  eww-bookmarks-directory                blc-index-dir
- eww-search-prefix                      "https://google.com/search?q="
 
  ;; ffap
  dired-at-point-require-prefix          t
