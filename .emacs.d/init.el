@@ -38,6 +38,7 @@
 (autoload 'samba-generic-mode               "generic-x" nil t)
 (autoload 'gnus-find-subscribed-addresses   "gnus")
 (autoload 'ivy-completion-in-region         "ivy")
+(autoload 'log-edit-mode                    "log-edit" nil t)
 (autoload 'mailcap-file-name-to-mime-type   "mailcap")
 (autoload 'meme                             "meme" nil t)
 (autoload 'meme-file                        "meme" nil t)
@@ -793,6 +794,12 @@ Intended as a predicate for `confirm-kill-emacs'."
                                    repos "\n"))))))))
 
 ;;;; git-commit
+
+(defun blc-git-commit-mode ()
+  "Either `log-edit-mode' or `text-mode' for `git-commit-major-mode'.
+The former is better for editing commit messages, but its fontification
+is distracting when viewing commits in `magit-revision-mode'."
+  (funcall (if buffer-file-name #'log-edit-mode #'text-mode)))
 
 (defun blc-git-commit-set-fill-column ()
   "Set local `fill-column' for `git-commit-mode' buffers."
@@ -1566,6 +1573,7 @@ created.  FRAME defaults to the selected one."
  git-annex-commit                       nil
 
  ;; git-commit
+ git-commit-major-mode                  #'blc-git-commit-mode
  git-commit-summary-max-length          50
 
  ;; gnus
@@ -2374,6 +2382,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (:hooks js2-mode-hook :fns (js2-highlight-unused-variables-mode
                               js2-refactor-mode
                               blc-xref-js2-install-backend))
+
+  ;; log-edit
+  (:hooks log-edit-hook :fns log-edit-maybe-show-diff)
 
   ;; magit-diff
   (:fns blc-turn-on-visual-lines :hooks (magit-diff-mode-hook
