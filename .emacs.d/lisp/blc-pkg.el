@@ -150,6 +150,7 @@ Visit `package-user-dir' if such a directory is not found."
    define-word
    delight
    dockerfile-mode
+   doric-themes
    ducpel
 
    ef-themes
