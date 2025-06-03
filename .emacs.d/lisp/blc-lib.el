@@ -523,8 +523,9 @@ Display is determined by the environment variable DISPLAY."
 
 (defun blc-delete-spare-frame (&optional frame force)
   "Delegate to `delete-frame' unless FRAME is alone in terminal."
-  (unless (eq (next-frame) (selected-frame))
-    (delete-frame frame force)))
+  (and (not (eq (next-frame) (selected-frame)))
+       (frame-deletable-p frame)
+       (delete-frame frame force)))
 
 (defun blc-export-frame (file &optional type &rest frames)
   "Export image data of FRAMES in TYPE format to FILE.
