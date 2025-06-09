@@ -2744,7 +2744,12 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                    `(("j" ,#'blc-counsel-M-x-other-window "other window")))
 
   ;; Do not match start of input for counsel commands
-  (blc-ivy-strip-init-inputs (rx bos "counsel-")))
+  (blc-ivy-strip-init-inputs (rx bos "counsel-"))
+
+  ;; Use only `read-extended-command-predicate'.
+  (mapatoms (lambda (sym)
+              (when (function-get sym 'no-counsel-M-x)
+                (function-put sym 'no-counsel-M-x nil)))))
 
 ;;;; cus-edit
 
