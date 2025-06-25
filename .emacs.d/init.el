@@ -2238,7 +2238,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  split-window-preferred-direction       'longest
 
  ;; xref
+ xref-history-storage                   #'xref-window-local-history
  xref-search-program                    'ripgrep
+ xref-show-definitions-function         #'xref-show-definitions-completing-read
 
  ;; youtube-dl
  youtube-dl-directory                   (blc-user-dir "VIDEOS"))
@@ -2438,7 +2440,10 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (:hooks window-setup-hook :depth t :fns blc-report-init-time)
 
   ;; term
-  (:hooks term-exec-hook :fns blc-term-rename))
+  (:hooks term-exec-hook :fns blc-term-rename)
+
+  ;; xref
+  (:hooks xref-after-update-hook :fns blc-turn-on-line-truncation))
 
 ;;; Bindings
 
