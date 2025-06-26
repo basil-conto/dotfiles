@@ -423,7 +423,8 @@ Destructively adds the group to `blc-ibuffer-filter-groups'."
 
 (defun blc-whitespace-enable--advice ()
   "Advice intended for predicate `whitespace-enable-predicate'."
-  (not (equal (buffer-name) "*scratch*")))
+  (not (member (buffer-name)
+               (list "*scratch*" (bound-and-true-p xref-buffer-name)))))
 
 (with-eval-after-load 'whitespace
   (add-function :after-while whitespace-enable-predicate
