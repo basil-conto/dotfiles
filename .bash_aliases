@@ -30,7 +30,7 @@ alias cdtemp='cd "$(mktemp --directory)"'
 alias uu='sudo apt update && \
 sudo apt full-upgrade     && \
 sudo apt autoremove       && \
-sudo apt-get autoclean'
+sudo apt autoclean'
 
 # xdg
 alias dis='xdg-open'
