@@ -38,7 +38,6 @@ fi
   && xinput set-prop "$(xinput list --name-only | grep -i touchpad)" \
             'libinput Tapping Enabled' 0
 
-
 ## Utilities
 
 [ -x "$(command -v xset)"           ] && xset b off
