@@ -74,7 +74,7 @@
 
 (defun blc-backup-etc ()
   "Back up etckeeper to `blc-backup-etc-file' via git-archive."
-  (let* ((default-directory "/sudo::/etc")
+  (let* ((default-directory "/sudo::/etc/")
          (ret (process-file "git" nil nil nil "archive"
                             "-o" blc-backup-etc-file "master")))
     (or (eq ret 0) (error "git-archive exited with status %s" ret))))
