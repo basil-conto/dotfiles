@@ -2232,7 +2232,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; window
  display-buffer-alist
  `(((derived-mode . ,#'compilation-mode) () (reusable-frames . 0))
-   ((derived-mode . ,#'term-mode)        . ,blc-other-window-action))
+   ((derived-mode . ,#'term-mode)        . ,blc-other-window-action)
+   (,(rx bos " *Marked Files*" eos) ()
+    (window-height . ,#'shrink-window-if-larger-than-buffer)))
  frame-auto-hide-function               #'blc-delete-spare-frame
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
