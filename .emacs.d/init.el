@@ -2600,6 +2600,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    ([down]                                #'isearch-repeat-forward))
 
   (project-prefix-map
+   ("C"                                   #'project-recompile)
    ("S"                                   #'project-search)
    ("i"                                   #'blc-project-complete-regexp))
 
