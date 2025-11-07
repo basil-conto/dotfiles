@@ -3295,6 +3295,19 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
   (setq-default magit-log-margin
                 '(t age-abbreviated magit-log-margin-width t 16)))
 
+;;;; magit-push
+
+(with-eval-after-load 'magit-push
+  (transient-append-suffix 'magit-push "-F"
+    `("-o" "Transmit string" ("-o" "--push-option=")
+      :multi-value repeat
+      :choices ,(map-apply (lambda (str suf)
+                             (let ((fmt #("%s (%s)" 2 7
+                                          (face completions-annotations))))
+                               (propertize str 'display (format fmt str suf))))
+                           '(("skip-ci" . "SourceHut")
+                             ("ci.skip" . "GitLab"))))))
+
 ;;;; magit-utils
 
 (with-eval-after-load 'magit-utils
