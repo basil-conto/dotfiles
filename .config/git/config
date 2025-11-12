@@ -120,11 +120,5 @@
   signingKey         = 133F 9063 8557 BE84 F4DB AAB2 5984 0305 8CAF A86C
   useConfigOnly      = true
 
-[includeIf "gitdir:~/src/epfl/"]
-  path               = ~/.config/git/config-epfl
-
-[includeIf "gitdir:~/src/systemf/"]
-  path               = ~/.config/git/config-epfl
-
 [includeIf "gitdir:~/src/tcd/"]
   path               = ~/.config/git/config-tcd
