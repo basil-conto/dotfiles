@@ -2,6 +2,8 @@
 
 ## Built-in
 *.ad[abs]       diff=ada
+*[-.]sh         diff=bash
+*.bash          diff=bash
 *.bib           diff=bibtex
 *.[Cch]         diff=cpp
 *.[ch]pp        diff=cpp
@@ -15,10 +17,12 @@
 *.f9[05]        diff=fortran
 *.for           diff=fortran
 *.fountain      diff=fountain
+*.go            diff=golang
 *.html          diff=html
 *.[sx]html      diff=html
 *.xml           diff=html
 *.java          diff=java
+*.md            diff=markdown
 *.m             diff=matlab
 # .h and .m clash with cpp and matlab, respectively ;_;
 *.[CHM]         diff=objc
@@ -37,14 +41,15 @@
 *.py            diff=python
 *.rb            diff=ruby
 *.ruby          diff=ruby
+*.rs            diff=rust
 *.tex           diff=tex
 
 ## Custom
 *.el            diff=elisp
 *.gpg           diff=gpg     filter=gpg
+*.m4            diff=m4
 *.mk            diff=make
 *[Mm]akefile    diff=make
 *[Mm]akefile.in diff=make
-*.bash          diff=shell
-*[-.]sh         diff=shell
-*.texi          diff=texinfo
+*.texi*         diff=texinfo
+ChangeLog       merge=merge-changelog

@@ -60,13 +60,12 @@
 [diff "gpg"]
   textconv           = gpg --decrypt
 
+[diff "m4"]
+  xfuncname          = ^((AC_DEFUN|m4_define)[^),]*)
+
 [diff "make"]
   xfuncname          = ^([$.[:alnum:]_].*:|[[:alnum:]_]+[[:space:]]*\
 ([*:+]?[:?]?|!?)=|define .*)
-
-[diff "shell"]
-  xfuncname          = ^([[:space:]]*[[:alpha:]_][[:alnum:]_]*[[:space:]]*\
-\\(\\) |[[:alpha:]_][[:alnum:]_]*=)
 
 [diff "texinfo"]
   xfuncname          = ^@node[[:space:]]+([^,[:space:]][^,]+)
@@ -91,6 +90,11 @@
 
 [mailinfo]
   scissors           = true
+
+# As per https://www.gnu.org/s/vc-changelog
+[merge "merge-changelog"]
+  name               = GNU-style ChangeLog merge driver
+  driver             = git-merge-changelog %O %A %B "%Y"
 
 [pager]
   diff               = diff-highlight | pager
