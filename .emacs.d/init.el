@@ -277,7 +277,11 @@ This is much less accurate but also much more performant than
 
 ;;;; octave
 
-(advice-add #'octave-maybe-mode :override #'octave-mode)
+(define-advice octave-maybe-mode (:before-until (&rest _) blc-objc-p)
+  "Turn on `obj-mode' if the current .m file has a .h pair."
+  (and buffer-file-name
+       (file-exists-p (file-name-with-extension buffer-file-name ".h"))
+       (or (objc-mode) t)))
 
 ;;;; org
 
