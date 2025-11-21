@@ -966,7 +966,6 @@ any new frames (though WMs do not always comply)."
                                                      `(,#'magit-diff-mode
                                                        ,#'magit-process-mode))
                             '(()
-                              (inhibit-same-window     . t)
                               (inhibit-switch-frame    . t)
                               (pop-up-frame-parameters
                                (no-focus-on-map        . t))
