@@ -15,20 +15,17 @@
 (defvar blc-backup-dir "~/Backup/"
   "Directory containing backup-related files.")
 
-(defvar blc-backup-dpkg-file (blc-file blc-backup-dir "dpkg-selections.txt.gz")
-  "File to write dpkgs selections to in `blc-backup-dpkg'.")
-
-(defvar blc-backup-etc-file (blc-file blc-backup-dir "etckeeper.tar.gz")
-  "Name of etckeeper archive to use in `blc-backup-etc'.")
-
-(defvar blc-backup-opt-file (blc-file blc-backup-dir "opt.txt.gz")
-  "File to write /opt directory listing to in `blc-backup-opt'.")
-
 (defvar blc-backup-cabal-file (blc-file blc-backup-dir "cabal-install.txt.gz")
   "File to write cabal package list to in `blc-backup-cabal'.")
 
 (defvar blc-backup-cargo-file (blc-file blc-backup-dir "cargo-install.txt.gz")
   "File to write cargo crate list to in `blc-backup-cargo'.")
+
+(defvar blc-backup-dpkg-file (blc-file blc-backup-dir "dpkg-selections.txt.gz")
+  "File to write dpkgs selections to in `blc-backup-dpkg'.")
+
+(defvar blc-backup-etc-file (blc-file blc-backup-dir "etckeeper.tar.gz")
+  "Name of etckeeper archive to use in `blc-backup-etc'.")
 
 (defvar blc-backup-go-file (blc-file blc-backup-dir "go-install.txt.gz")
   "File to write go package list to in `blc-backup-go'.")
@@ -43,6 +40,9 @@
 (defvar blc-backup-opam-file (blc-file blc-backup-dir "opam-install.txt.gz")
   "File to write opam package list to in `blc-backup-opam'.")
 
+(defvar blc-backup-opt-file (blc-file blc-backup-dir "opt.txt.gz")
+  "File to write /opt directory listing to in `blc-backup-opt'.")
+
 (defvar blc-backup-snap-file (blc-file blc-backup-dir "snap-install.txt.gz")
   "File to write snaps list to in `blc-backup-snap'.")
 
@@ -53,18 +53,30 @@
   "File listing files to back up in `blc-backup-rsync'.")
 
 (defvar blc-backup-hook
-  (list #'blc-backup-dpkg
-        #'blc-backup-etc
-        #'blc-backup-opt
-        #'blc-backup-cabal
+  (list #'blc-backup-cabal
         #'blc-backup-cargo
+        #'blc-backup-dpkg
+        #'blc-backup-etc
         #'blc-backup-go
         #'blc-backup-luarocks
         #'blc-backup-npm
         #'blc-backup-opam
+        #'blc-backup-opt
         #'blc-backup-snap
         #'blc-backup-rsync)
   "List of backup functions to call in `blc-backup'.")
+
+(defun blc-backup-cabal ()
+  "Back up cabal package list to `blc-backup-cabal-file'."
+  (with-temp-file blc-backup-cabal-file
+    (let ((ret (call-process "cabal" nil t nil "list" "--installed")))
+      (or (eq ret 0) (error "cabal exited with status %s" ret)))))
+
+(defun blc-backup-cargo ()
+  "Back up cargo crate list to `blc-backup-cargo-file'."
+  (with-temp-file blc-backup-cargo-file
+    (let ((ret (call-process "cargo" nil t nil "install" "--list")))
+      (or (eq ret 0) (error "cargo exited with status %s" ret)))))
 
 (defun blc-backup-dpkg ()
   "Back up dpkg selections to `blc-backup-dpkg-file'."
@@ -78,25 +90,6 @@
          (ret (process-file "git" nil nil nil "archive"
                             "-o" blc-backup-etc-file "master")))
     (or (eq ret 0) (error "git-archive exited with status %s" ret))))
-
-(defun blc-backup-opt ()
-  "Back up directory list under /opt to `blc-backup-opt-file'."
-  (with-temp-file blc-backup-opt-file
-    (let ((ret (call-process "find" nil t nil
-                             "/opt" "-maxdepth" "2" "-type" "d")))
-      (or (eq ret 0) (error "find exited with status %s" ret)))))
-
-(defun blc-backup-cabal ()
-  "Back up cabal package list to `blc-backup-cabal-file'."
-  (with-temp-file blc-backup-cabal-file
-    (let ((ret (call-process "cabal" nil t nil "list" "--installed")))
-      (or (eq ret 0) (error "cabal exited with status %s" ret)))))
-
-(defun blc-backup-cargo ()
-  "Back up cargo crate list to `blc-backup-cargo-file'."
-  (with-temp-file blc-backup-cargo-file
-    (let ((ret (call-process "cargo" nil t nil "install" "--list")))
-      (or (eq ret 0) (error "cargo exited with status %s" ret)))))
 
 (defun blc-backup-go ()
   "Back up go packages to `blc-backup-go-file'."
@@ -122,6 +115,13 @@
     (let ((ret (call-process "opam" nil t nil "list")))
       (or (eq ret 0) (error "opam exited with status %s" ret)))))
 
+(defun blc-backup-opt ()
+  "Back up directory list under /opt to `blc-backup-opt-file'."
+  (with-temp-file blc-backup-opt-file
+    (let ((ret (call-process "find" nil t nil
+                             "/opt" "-maxdepth" "2" "-type" "d")))
+      (or (eq ret 0) (error "find exited with status %s" ret)))))
+
 (defun blc-backup-snap ()
   "Back up snaps list to `blc-backup-snap-file'."
   (with-temp-file blc-backup-snap-file
@@ -137,7 +137,7 @@
           (let ((start (goto-char (marker-position (process-mark proc)))))
             (insert-before-markers str)
             (comint-carriage-motion start (point))))
-        (if moving (goto-char (process-mark proc)))))))
+        (when moving (goto-char (process-mark proc)))))))
 
 (defun blc-backup-rsync ()
   "Back up files in `blc-backup-index-file' via rsync."
