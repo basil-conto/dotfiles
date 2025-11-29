@@ -27,6 +27,10 @@
 (defvar blc-backup-etc-file (blc-file blc-backup-dir "etckeeper.tar.gz")
   "Name of etckeeper archive to use in `blc-backup-etc'.")
 
+(defvar blc-backup-gpg-ownertrust-file
+  (blc-file blc-backup-dir "gpg-otrust.txt.gz")
+  "File to write GPG ownertrust values to in `blc-backup-gpg-ownertrust'.")
+
 (defvar blc-backup-go-file (blc-file blc-backup-dir "go-install.txt.gz")
   "File to write go package list to in `blc-backup-go'.")
 
@@ -90,6 +94,12 @@
          (ret (process-file "git" nil nil nil "archive"
                             "-o" blc-backup-etc-file "master")))
     (or (eq ret 0) (error "git-archive exited with status %s" ret))))
+
+(defun blc-backup-gpg-ownertrust ()
+  "Back up GPG ownertrust values to `blc-backup-gpg-ownertrust-file'."
+  (with-temp-file blc-backup-gpg-ownertrust-file
+    (let ((ret (call-process "gpg" nil t nil "--export-ownertrust")))
+      (or (eq ret 0) (error "gpg exited with status %s" ret)))))
 
 (defun blc-backup-go ()
   "Back up go packages to `blc-backup-go-file'."
