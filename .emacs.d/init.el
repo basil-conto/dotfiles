@@ -2074,6 +2074,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  term-suppress-hard-newline             t
 
  ;; tex
+ TeX-auto-local                         ".auctex-auto"
  TeX-auto-save                          t
  TeX-debug-warnings                     t
  TeX-master                             'dwim
