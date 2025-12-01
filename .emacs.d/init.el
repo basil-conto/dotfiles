@@ -1809,7 +1809,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  mml-secure-verbose                     t
 
  ;; modus-themes
- modus-themes-completions               '((t accented background intense))
  modus-themes-mixed-fonts               t
 
  ;; mpc
