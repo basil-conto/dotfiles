@@ -408,6 +408,11 @@ Destructively adds the group to `blc-ibuffer-filter-groups'."
           (cddr blc-ibuffer-filter-groups)))
   project)
 
+(define-advice project-find-file (:around (fn &rest args) blc-this-command)
+  "Use FN as `this-command' even when called via `project-switch-project'."
+  (setq this-command fn)
+  (apply fn args))
+
 (define-advice project-switch-project (:after (&rest _) blc-clear-echo)
   "Clear echo area."
   (message nil))
