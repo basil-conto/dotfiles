@@ -115,6 +115,7 @@ Visit `package-user-dir' if such a directory is not found."
  '(2048-game
 
    academic-phrases
+   adoc-mode
    ag
    apache-mode
    apt-sources-list
