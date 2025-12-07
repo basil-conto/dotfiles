@@ -833,7 +833,7 @@ desirable."
 
 (defun blc-gnus ()
   "Display first desirable Gnus buffer found in selected window.
-If none of the article, summary or group buffer are found, in
+If none of the article, summary, or group buffer are found, in
 order of descending priority, start `gnus'."
   (interactive)
   (unless (blc--gnus-switch-buffer #'pop-to-buffer-same-window)
@@ -1583,6 +1583,7 @@ created.  FRAME defaults to the selected one."
  git-commit-summary-max-length          50
 
  ;; gnus
+ gnus-default-directory                 "~"
  gnus-home-directory                    user-emacs-directory
  gnus-init-file                         (expand-file-name
                                          "gnus" gnus-home-directory)
