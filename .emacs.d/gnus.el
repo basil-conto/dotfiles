@@ -31,6 +31,8 @@
 (declare-function diff-file-prev                        "diff-mode")
 (declare-function diff-hunk-next                        "diff-mode")
 (declare-function diff-hunk-prev                        "diff-mode")
+(declare-function gnus-mime-view-part-externally        "gnus-art")
+(declare-function gnus-mime-view-part-internally        "gnus-art")
 (declare-function gnus-group-set-timestamp              "gnus-group")
 (declare-function gnus-group-timestamp                  "gnus-group")
 (declare-function gnus-score-find-single                "gnus-score")
@@ -256,6 +258,7 @@ convention (see the Info node `(gnus) Process/Prefix')."
 
 (with-eval-after-load 'gnus-art
   (defvar gnus-article-mode-map)
+  (defvar gnus-mime-button-map)
   (defvar gnus-sorted-header-list)
   (defvar gnus-visible-headers)
 
@@ -266,6 +269,12 @@ convention (see the Info node `(gnus) Process/Prefix')."
      ("vd" #'blc-download)
      ("vn" #'diff-hunk-next)
      ("vp" #'diff-hunk-prev)))
+
+  (blc-define-keys
+    (gnus-mime-button-map
+     ("E" #'gnus-mime-view-part-externally)
+     ("I" #'gnus-mime-view-part-internally)
+     ("e" nil t)))
 
   (setq-default
    gnus-sorted-header-list
