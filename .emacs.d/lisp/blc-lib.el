@@ -329,7 +329,8 @@ Interactively, read multiple channels/mailboxes with completion."
   (interactive (let ((opts (blc--mbsync-args)))
                  (completing-read-multiple "Synchronise mbsync channels: " opts
                                            nil t nil 'blc-mbsync-history opts)))
-  (let ((cmd (cons "mbsync" args)))
+  (let ((cmd (cons "mbsync" args))
+        (default-directory (blc-dir "~")))
     (async-shell-command (mapconcat #'shell-quote-argument cmd " ")
                          (format "*%s*" (string-join cmd " ")))))
 
