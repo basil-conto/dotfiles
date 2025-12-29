@@ -509,8 +509,7 @@ Scroll a default of `blc-small-scroll-step' lines."
 This excludes frames on the initial daemon terminal.
 FRAME defaults to the selected one."
   (not (or (display-graphic-p frame)
-           (string-equal "initial_terminal"
-                         (terminal-name (frame-terminal frame))))))
+           (eq frame terminal-frame))))
 
 (defun blc-make-frame (&optional params)
   "Like `make-frame', but select the new frame."
