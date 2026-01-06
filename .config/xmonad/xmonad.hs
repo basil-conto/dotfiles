@@ -121,5 +121,6 @@ main = do
              , (xK_o, ["passmenu", "--otp"       ])
              , (xK_s, ["sensible-browser", "-private-window", "--incognito"])
              , (xK_u, ["systemctl", "suspend"    ])
+             , (xK_y, ["strawberry"              ])
              , (xK_z, ["dunstctl", "history-pop" ])
              ]
