@@ -43,7 +43,7 @@ wpctl s n
   | n == 0    = cmd "mute" "toggle"
   | n <  0    = vol '-'
   | otherwise = vol '+'
-  where def     = printf "@DEFAULT_AUDIO_%s@" $ map toUpper s
+  where def     = printf "@DEFAULT_%s@" $ map toUpper s
         cmd k v = ["wpctl", printf "set-%s" k, def, v]
         vol sgn = cmd "volume" $ printf "%d%%%c" (abs n) sgn
 
