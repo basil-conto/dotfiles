@@ -644,6 +644,19 @@ description of the arguments to this function."
                            (completing-read prompt blc-browser-alist nil t))))
     (when browser (apply browser url args))))
 
+;;;; cc-mode
+
+(defun blc-emacs-c-whitespace-style ()
+  "Adapt `whitespace-style' to that of Emacs C sources."
+  (when-let* ((file buffer-file-name)
+              (back (vc-responsible-backend file t))
+              (url (seq-some (lambda (remote)
+                               (ignore-errors
+                                 (vc-call-backend back 'repository-url remote)))
+                             '("upstream" nil)))
+              ((string-match-p (rx "/emacs" (? ".git") eos) url)))
+    (blc-go-whitespace-style)))
+
 ;;;; comint
 
 (defun blc-turn-off-prompt-highlight ()
@@ -2298,6 +2311,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
   ;; cc-mode
   (:hooks c-mode-common-hook :fns hs-minor-mode)
+  (:hooks c-mode-hook :fns blc-emacs-c-whitespace-style)
 
   ;; comint
   (:hooks comint-output-filter-functions :fns comint-osc-process-output)
