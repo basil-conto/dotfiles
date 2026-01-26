@@ -1490,7 +1490,6 @@ created.  FRAME defaults to the selected one."
  doc-view-resolution                    150
 
  ;; eglot
- eglot-advertise-cancellation           t
  eglot-confirm-server-edits             'summary
 
  ;; eglot-inactive-regions
@@ -2263,6 +2262,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  xref-history-storage                   #'xref-window-local-history
  xref-search-program                    'ripgrep
  xref-show-definitions-function         #'xref-show-definitions-completing-read
+
+ ;; xterm
+ xterm-update-cursor                    t
 
  ;; youtube-dl
  youtube-dl-directory                   (blc-user-dir "VIDEOS"))
