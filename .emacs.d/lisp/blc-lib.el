@@ -169,7 +169,7 @@ See `blc-opusenc-flac'."
   (let ((flacre (rx ".flac" eos)))
     (mapcan (lambda (flac)
               (and-let* ((opus (blc-sed flacre ".opus" flac t t))
-                         ((file-newer-than-file-p flac opus)))
+                         (_ (file-newer-than-file-p flac opus)))
                 (list (cons flac opus))))
             (directory-files-recursively dir flacre))))
 

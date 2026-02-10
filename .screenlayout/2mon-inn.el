@@ -13,9 +13,9 @@
                         (pcase-lambda (`(,out . ,res))
                           (and (string-prefix-p "DisplayPort-" out)
                                (equal (car res) mode))))))
-              (fst (seq-find (apply pred fst-mode) outs))
-              (snd (seq-find (apply pred snd-mode) outs))
-              ((member thd-mode (cdr snd))))
+              (fst (car (any (apply pred fst-mode) outs)))
+              (snd (car (any (apply pred snd-mode) outs)))
+              (_ (member thd-mode (cdr snd))))
     (apply #'call "xrandr" "--output" (car fst)
            "--primary" "--preferred" "--pos" "0x0" "--rotate" "normal"
            "--output" (car snd) "--mode" thd-mode

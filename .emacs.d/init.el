@@ -89,9 +89,9 @@ Needed while the latter is incompatible with `delight'."
 
 (define-advice elisp-completion-at-point (:filter-return (ret) blc-elisp-pred)
   "Filter unwanted symbols from `elisp-completion-at-point'."
-  (when-let* (((consp ret))
+  (when-let* ((_ (consp ret))
               (props (cdddr ret))
-              (pred  (plist-get props :predicate)))
+              (pred (plist-get props :predicate)))
     (plist-put props :predicate
                (lambda (sym)
                  (and (funcall pred sym)
@@ -255,10 +255,10 @@ This is much less accurate but also much more performant than
          (cmds (blc-system-procs-by-attr 'comm)))
     ;; Fire ze missiles
     (when-let* ((cmd "mpd")
-                ((not (member cmd cmds))))
+                (_ (not (member cmd cmds))))
       (call-process cmd))
     (when-let* ((cmd "mpDris2")
-                ((not (member cmd cmds))))
+                (_ (not (member cmd cmds))))
       (call-process-shell-command (concat cmd " &")))
     ;; Hold on to your butts
     (unwind-protect
@@ -350,8 +350,8 @@ Uninstall self as advice on `pdf-view-mode'."
                                   (bound-and-true-p bbdb-buffer))))
          (predicate . (equal (bound-and-true-p bbdb-buffer-name)
                              (buffer-name)))
-         (predicate . (seq-some (apply-partially #'equal (buffer-name))
-                                blc-gnus-log-buffers))))
+         (predicate . (any (apply-partially #'equal (buffer-name))
+                           blc-gnus-log-buffers))))
    '("Package" (saved . "package"))
    '("Code"
      (or (derived-mode . prog-mode)
@@ -654,7 +654,7 @@ description of the arguments to this function."
                                (ignore-errors
                                  (vc-call-backend back 'repository-url remote)))
                              '("upstream" nil)))
-              ((string-match-p (rx "/emacs" (? ".git") eos) url)))
+              (_ (string-match-p (rx "/emacs" (? ".git") eos) url)))
     (blc-go-whitespace-style)))
 
 ;;;; comint
@@ -833,11 +833,11 @@ is distracting when viewing commits in `magit-revision-mode'."
 Return result of ACTION.  See `blc-gnus' for a definition of
 desirable."
   (and-let* ((buf (seq-some (lambda (var)
-                              (and-let* (((boundp var))
+                              (and-let* ((_ (boundp var))
                                          (buf (symbol-value var))
                                          (buf (get-buffer buf))
-                                         ((buffer-live-p buf))
-                                         ((plusp (buffer-size buf))))
+                                         (_ (buffer-live-p buf))
+                                         (_ (plusp (buffer-size buf))))
                                 buf))
                             '(gnus-article-buffer
                               gnus-summary-buffer
@@ -916,11 +916,11 @@ Return the name of the buffer as a string or `nil'."
   (if-let* ((bufs (blc-keep
                    (lambda (buf)
                      (and-let* ((name (buffer-name buf))
-                                ((/= (aref name 0) ?\s))
-                                (id   (blc-info-mode-line-id buf)))
+                                (_ (/= (aref name 0) ?\s))
+                                (id (blc-info-mode-line-id buf)))
                        (cons (concat name id) name)))
                    (blc-derived-buffers #'Info-mode)))
-            ((cdr bufs)))
+            (_ (cdr bufs)))
       (blc-get bufs (completing-read "Info buffer: " (sort bufs :key #'car)))
     (cdar bufs)))
 
@@ -1167,11 +1167,11 @@ Create a new `ansi-term' buffer if the special first candidate
 \"New\" is selected.  With optional prefix argument NON-ANSI
 non-nil, create a new `term' buffer instead."
   (interactive "P")
-  (if-let* ((new   "New")
+  (if-let* ((new "New")
             (names (mapcar #'buffer-name (blc-derived-buffers #'term-mode)))
-            (name  (completing-read "Term: " (cons new names)
-                                    nil t nil 'blc-term-history names))
-            ((not (string-equal name new))))
+            (name (completing-read "Term: " (cons new names)
+                                   nil t nil 'blc-term-history names))
+            (_ (not (string-equal name new))))
       (pop-to-buffer name)
     (let ((switch-to-buffer-obey-display-actions t))
       (funcall (if non-ansi #'term #'ansi-term)
@@ -1474,6 +1474,7 @@ created.  FRAME defaults to the selected one."
  dired-listing-switches                 (string-join
                                          '("--almost-all"
                                            "--classify"
+                                           "--escape"
                                            "--group-directories-first"
                                            "--human-readable"
                                            "-lv")
@@ -1540,6 +1541,7 @@ created.  FRAME defaults to the selected one."
  ;; ffap
  dired-at-point-require-prefix          t
  ffap-file-finder                       #'blc-counsel-find-file
+ ffap-prefer-remote-file                t
  ffap-require-prefix                    t
  ffap-rfc-directories
  (and-let* ((docs (blc-user-dir "DOCUMENTS")))
@@ -1640,6 +1642,9 @@ created.  FRAME defaults to the selected one."
  ;; help-macro
  help-for-help-use-variable-pitch       nil
 
+ ;; hideshow
+ hs-cycle-filter                        'eolp
+
  ;; holidays
  holiday-bahai-holidays                 ()
  holiday-oriental-holidays              ()
@@ -1730,8 +1735,8 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; magit-autorevert
  auto-revert-buffer-list-filter         #'blc-magit-auto-revert-p
 
- ;; magit-branch
- magit-branch-popup-show-variables      t
+ ;; magit-base
+ magit-view-git-manual-method           'man
 
  ;; magit-diff
  magit-diff-adjust-tab-width            t
@@ -1755,9 +1760,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; magit-mode
  magit-display-buffer-function          #'blc-magit-display-buffer
 
- ;; magit-process
- magit-process-finish-apply-ansi-colors t
-
  ;; magit-refs
  magit-refs-pad-commit-counts           t
 
@@ -1768,9 +1770,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; magit-repos
  magit-repository-directories           `((,blc-index-dir . 2)
                                           (,(expand-file-name "~") . 1))
-
- ;; magit-utils
- magit-view-git-manual-method           'man
 
  ;; make-mode
  makefile-macro-assign                  " := "
@@ -1983,12 +1982,12 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  `(buffer-file-name
    (and ,(rx bos (not ?\s))
         (major-mode . fundamental-mode))
-   (derived-mode . change-log-mode)
-   (derived-mode . comint-mode)
-   (derived-mode . compilation-mode)
-   (derived-mode . diff-mode)
-   (derived-mode . dired-mode)
-   (derived-mode . magit-section-mode))
+   (derived-mode change-log-mode
+                 comint-mode
+                 compilation-mode
+                 diff-mode
+                 dired-mode
+                 magit-section-mode))
  project-kill-buffers-display-buffer-list
  t
  project-list-file                      (blc-file blc-index-dir "projects.eld")
@@ -2127,6 +2126,9 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  ;; tramp-sh
  tramp-use-scp-direct-remote-copying    t
 
+ ;; transient
+ transient-error-on-insert-failure      t
+
  ;; treesit
  treesit-language-source-alist
  '((haskell         "https://github.com/tree-sitter/tree-sitter-haskell")
@@ -2154,6 +2156,13 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  uniquify-buffer-name-style             'forward
  uniquify-min-dir-content               1
  uniquify-trailing-separator-flag       t
+
+ ;; vc
+ vc-allow-async-diff                    t
+ vc-async-checkin                       t
+
+ ;; vc-dir
+ vc-dir-save-some-buffers-on-revert     t
 
  ;; vc-git
  vc-git-log-edit-summary-target-len     50
@@ -2256,10 +2265,10 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
  frame-auto-hide-function               #'blc-delete-spare-frame
  pop-up-frames                          'graphic-only
  scroll-error-top-bottom                t
- split-window-preferred-direction       'longest
 
  ;; xref
  xref-history-storage                   #'xref-window-local-history
+ xref-references-in-directory-function  #'xref-references-in-directory-grep
  xref-search-program                    'ripgrep
  xref-show-definitions-function         #'xref-show-definitions-completing-read
 
@@ -3129,11 +3138,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    (mapcar (apply-partially #'* 2)
            hacker-typer-random-range)))
 
-;;;; hideshow
-
-(with-eval-after-load 'hideshow
-  (define-key hs-minor-mode-map "\C-c\t" #'hs-toggle-hiding))
-
 ;;;; highlight-escape-sequences
 
 (turn-on-hes-mode)
@@ -3311,6 +3315,11 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'magit
   (require 'blc-magit))
 
+;;;; magit-base
+
+(with-eval-after-load 'magit-base
+  (require 'ivy))
+
 ;;;; magit-log
 
 (with-eval-after-load 'magit-log
@@ -3329,11 +3338,6 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                                (propertize str 'display (format fmt str suf))))
                            '(("skip-ci" . "SourceHut")
                              ("ci.skip" . "GitLab"))))))
-
-;;;; magit-utils
-
-(with-eval-after-load 'magit-utils
-  (require 'ivy))
 
 ;;;; make-mode
 
@@ -3476,7 +3480,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 (with-eval-after-load 'org-agenda
   (if-let* ((key "n")
             (cmd (take 2 (blc-get org-agenda-custom-commands key)))
-            ((length= cmd 2)))
+            (_ (length= cmd 2)))
       (setf (blc-get org-agenda-custom-commands key)
             `(,@cmd () ,(blc-file org-directory "agenda.html")))
     (lwarn 'blc :error "Could not hijack `org-agenda-custom-commands'"))
@@ -3486,7 +3490,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                          (rx bos (literal (file-name-base icon)) eos))
                 (list (file-truename icon) nil nil :ascent 'center)))
         (and-let* ((dir (blc-dir org-directory "icons"))
-                   ((file-directory-p dir)))
+                   (_ (file-directory-p dir)))
           (nreverse
            (directory-files dir t directory-files-no-dot-files-regexp t)))))
 
@@ -3613,14 +3617,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 
 (with-eval-after-load 'project
   (define-key project-prefix-map "m" #'magit-project-status)
-  (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)
-  (dolist-with-progress-reporter (root (project-known-project-roots))
-      "Cleaning up known project roots..."
-    (cond (;; Instead of `file-remote-p' to avoid loading `tramp'.
-           (string-match-p tramp-file-name-regexp root)
-           (project-forget-project root))
-          ((not (file-exists-p root))
-           (lwarn 'blc :warning "Zombie project root: %S" root)))))
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 ;;;; prolog
 
@@ -3629,7 +3626,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; python
 
 (with-eval-after-load 'python
-  (when-let* ((ipython (seq-find #'executable-find '("ipython3" "ipython"))))
+  (when-let* ((ipython (car (any #'executable-find '("ipython3" "ipython")))))
     (setq-default python-shell-interpreter ipython
                   python-shell-interpreter-args
                   (concat python-shell-interpreter-args " --simple-prompt"))))

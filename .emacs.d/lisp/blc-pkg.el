@@ -44,14 +44,15 @@ New `package-selected-packages': %S"
 (defun blc-package-install (pkg)
   "Install and do not select PKG with demoted errors."
   (condition-case err
-      (package-install pkg t)
+      (let ((package-review-policy nil))
+        (package-install pkg t))
     (error (lwarn 'blc :error "%S" err))))
 
 (defun blc-package-dir (pkg)
   "Return installation directory of external PKG or nil."
   (and-let* ((dsc (cadr (assoc-string pkg package-alist)))
              (dir (package-desc-dir dsc))
-             ((stringp dir)))
+             (_ (stringp dir)))
     dir))
 
 (defun blc--package-read-dir ()
@@ -296,9 +297,9 @@ Visit `package-user-dir' if such a directory is not found."
 ;; Install missing packages
 (when-let*
     ((missing (seq-remove #'package-installed-p package-selected-packages))
-     ((y-or-n-p-with-timeout (format "Install %d missing packages? "
-                                     (length missing))
-                             5 t)))
+     (_ (y-or-n-p-with-timeout (format "Install %d missing packages? "
+                                       (length missing))
+                               5 t)))
   (package-refresh-contents)
   (mapc #'blc-package-install missing)
   (and (memq 'pdf-tools missing)

@@ -96,9 +96,7 @@ Format the Git revision as per CONTRIBUTE guidelines."
                    `("-n64" "--show-signature" ,@args)))))
 
 ;; Modes
-(magit-wip-after-apply-mode)
-(magit-wip-after-save-mode)
-(magit-wip-before-change-mode)
+(magit-wip-mode)
 
 (provide 'blc-magit)
 
