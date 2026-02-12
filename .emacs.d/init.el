@@ -2906,9 +2906,7 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
    (magit-stashes-mode              "±︷" :major     )
    (magit-status-mode               "±"   :major     )
    (magit-submodule-list-mode       "±%"  :major     )
-   (magit-wip-after-apply-mode      ""    magit-wip  )
-   (magit-wip-after-save-local-mode ""    magit-wip  )
-   (magit-wip-before-change-mode    ""    magit-wip  )
+   (magit-wip-mode                  ""    magit-wip  )
 
    ;; make-mode
    (makefile-automake-mode "⛏.am" :major)
