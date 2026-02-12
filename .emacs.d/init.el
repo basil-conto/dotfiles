@@ -1341,6 +1341,7 @@ created.  FRAME defaults to the selected one."
 
  ;; battery
  battery-load-low                       20
+ battery-update-interval                nil
 
  ;; bbdb
  bbdb-default-country                   nil
