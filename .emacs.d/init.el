@@ -1751,6 +1751,13 @@ ${author:30} ${date:4} ${title:*} ${=has-pdf=:1}${=has-note=:1} ${=type=:14}"))
  ;; magit-base
  magit-view-git-manual-method           'man
 
+ ;; magit-branch
+ magit-published-branches
+ (mapcan (lambda (r)
+           (mapcar (lambda (b) (format "%s/%s" r b))
+                   '("main" "master")))
+         '("origin" "upstream"))
+
  ;; magit-diff
  magit-diff-adjust-tab-width            t
  magit-diff-extra-stat-arguments
