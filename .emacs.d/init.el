@@ -972,6 +972,18 @@ Intended for `auto-revert-buffer-list-filter'."
   (not (provided-mode-derived-p (buffer-local-value 'major-mode buf)
                                 (list #'pdf-view-mode))))
 
+;;;; magit-extras
+
+(defun blc-magit-insert-emacs-revision ()
+  "Insert the head of `magit-revision-stack' before point.
+Format the Git revision as per CONTRIBUTE guidelines."
+  (interactive)
+  (defvar magit-revision-stack)
+  (let ((default-directory (or (cadar magit-revision-stack)
+                               (user-error "Revision stack is empty"))))
+    (insert (car (process-lines "git" "show" "--no-patch" "--format=%cd \"%s\""
+                                "--date=short" (caar magit-revision-stack))))))
+
 ;;;; magit-mode
 
 (defun blc-magit-display-buffer (buf)
@@ -3312,12 +3324,18 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
 ;;;; magit
 
 (with-eval-after-load 'magit
-  (require 'blc-magit))
+  (magit-wip-mode))
 
 ;;;; magit-base
 
 (with-eval-after-load 'magit-base
   (require 'ivy))
+
+;;;; magit-diff
+
+(with-eval-after-load 'magit-diff
+  ;; Always highlight tabs
+  (setf (blc-get magit-diff-highlight-indentation (rx)) 'tabs))
 
 ;;;; magit-log
 
@@ -3337,6 +3355,22 @@ https://git.sv.gnu.org/cgit/emacs.git/commit/?id=%h\n"
                                (propertize str 'display (format fmt str suf))))
                            '(("skip-ci" . "SourceHut")
                              ("ci.skip" . "GitLab"))))))
+
+;;;; magit-repos
+
+(with-eval-after-load 'magit-repos
+  ;; Insert flag column in third position
+  (push (list "D" 1 #'magit-repolist-column-flag ())
+        (nthcdr 2 magit-repolist-columns)))
+
+;;;; magit-status
+
+(with-eval-after-load 'magit-status
+  (dolist (fn '(magit-insert-repo-header magit-insert-remote-header))
+    (magit-add-section-hook
+     'magit-status-headers-hook fn 'magit-insert-head-branch-header))
+  (magit-add-section-hook 'magit-status-sections-hook #'magit-insert-modules
+                          'magit-insert-untracked-files))
 
 ;;;; make-mode
 

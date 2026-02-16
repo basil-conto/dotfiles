@@ -23,7 +23,7 @@ early  := early-init.elc
 init   := init.elc
 gnus   := gnus.elc
 tests  := $(call wildc,$(libdir)/blc*-tests.el)
-libs   := $(call lib,backup lib magit pkg)
+libs   := $(call lib,backup lib pkg)
 inits  := $(early) $(init) $(call wildc,$(libdir)/default.el)
 
 ## Actions
@@ -68,7 +68,6 @@ profile: init.elc
 ## Dependencies
 
 $(call lib,backup):    $(call lib,lib)
-$(call lib,magit):     $(call lib,lib pkg)
 $(call lib,pkg):       $(call lib,lib)
 $(call lib,lib-tests): $(call lib,lib)
 

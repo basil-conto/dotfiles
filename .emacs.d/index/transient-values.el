@@ -1,2 +1,6 @@
-((magit-merge "--ff-only")
+((magit-diff:magit-revision-mode "--no-ext-diff" "--stat" "--show-signature")
+ (magit-log:magit-log-mode "-n64" "--decorate" "--graph" "--show-signature")
+ (magit-log:magit-log-select-mode "-n64" "--decorate" "--graph" "--show-signature")
+ (magit-log:magit-status-mode "-n64" "--decorate" "--show-signature")
+ (magit-merge "--ff-only")
  (magit-rebase "--interactive"))
